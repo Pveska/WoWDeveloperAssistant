@@ -1,0 +1,15 @@
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\WoWDeveloperAssistant.exe.config
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\WoWDeveloperAssistant.exe
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\WoWDeveloperAssistant.pdb
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\CascStorageLib.dll
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\MySql.Data.dll
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\CascStorageLib.pdb
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\bin\Debug\CascStorageLib.dll.config
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.csprojResolveAssemblyReference.cache
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.MainForm.resources
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.Properties.Resources.resources
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.csproj.GenerateResource.Cache
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.csproj.CoreCompileInputs.cache
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.exe
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.pdb
+D:\WoWDeveloperAssistant\WoWDeveloperAssistant\obj\Debug\WoWDeveloperAssistant.LoginForm.resources
