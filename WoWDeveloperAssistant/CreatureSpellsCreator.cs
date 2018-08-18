@@ -367,14 +367,18 @@ namespace WoWDeveloperAssistant
         public static void FillSQLOutput(DataTable guidsDataTable, DataGridView dataGrid, TextBox textBox, string creatureGuid)
         {
             string SQLtext = "";
-            string creatureName = "";
             string creatureEntry = GetCreatureEntryByGuid(guidsDataTable, creatureGuid);
-            DataSet creatureNameDs = new DataSet();
-            string creatureNameQuery = "SELECT `name1` FROM `creature_template_wdb` WHERE `entry` = " + creatureEntry + ";";
-            creatureNameDs = (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery);
+            string creatureName = "Unknown";
 
-            if (creatureNameDs != null && creatureNameDs.Tables["table1"].Rows.Count > 0)
-                creatureName = creatureNameDs.Tables["table1"].Rows[0][0].ToString();
+            if (Properties.Settings.Default.UsingDB == true)
+            {
+                DataSet creatureNameDs = new DataSet();
+                string creatureNameQuery = "SELECT `name1` FROM `creature_template_wdb` WHERE `entry` = " + creatureEntry + ";";
+                creatureNameDs = (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery);
+
+                if (creatureNameDs != null && creatureNameDs.Tables["table1"].Rows.Count > 0)
+                    creatureName = creatureNameDs.Tables["table1"].Rows[0][0].ToString();
+            }
 
             SQLtext = "UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` = " + creatureEntry + ";\r\n";
             SQLtext = SQLtext + "DELETE FROM `smart_scripts` WHERE `entryorguid` = " + creatureEntry + ";\r\n";
