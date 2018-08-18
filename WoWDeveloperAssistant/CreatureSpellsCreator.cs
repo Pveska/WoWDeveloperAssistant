@@ -415,7 +415,7 @@ namespace WoWDeveloperAssistant
                     targetType = "99";
                 }
 
-                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(dataGrid[4, l].Value) + ", " + Convert.ToString(dataGrid[5, l].Value) + ", " + Convert.ToString(dataGrid[6, l].Value) + ", " + Convert.ToString(dataGrid[7, l].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, 0, 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
+                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(dataGrid[3, l].Value) + ", " + Convert.ToString(dataGrid[4, l].Value) + ", " + Convert.ToString(dataGrid[5, l].Value) + ", " + Convert.ToString(dataGrid[6, l].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, 0, 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
 
                 if (l < (dataGrid.RowCount - 1))
                 {
