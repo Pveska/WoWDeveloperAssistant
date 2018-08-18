@@ -31,9 +31,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -51,6 +51,9 @@
   <PropertyGroup>
     <ApplicationIcon>MainIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>WoWDeveloperAssistant.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CascStorageLib">
       <HintPath>Packages\CascStorageLib\CascStorageLib.dll</HintPath>
@@ -60,6 +63,7 @@
       <HintPath>Packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -72,6 +76,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreatureSpellsCreator.cs" />
+    <Compile Include="DBC\DBC.cs" />
+    <Compile Include="DBC\Misc\Configuration.cs" />
+    <Compile Include="DBC\Misc\Settings.cs" />
+    <Compile Include="DBC\Structures\DBFileAttribute.cs" />
+    <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
+    <Compile Include="DBC\Structures\SpellEntry.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
