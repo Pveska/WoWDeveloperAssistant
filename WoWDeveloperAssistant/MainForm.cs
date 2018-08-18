@@ -11,8 +11,6 @@ namespace WoWDeveloperAssistant
         private DataTable spellsDataTable   = new DataTable();
         private DataTable guidsDataTable    = new DataTable();
 
-        private string creatureEntry        = "";
-
         public MainForm()
         {
             InitializeComponent();
@@ -20,7 +18,10 @@ namespace WoWDeveloperAssistant
 
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CreatureSpellsCreator.FillSQLOutput(guidsDataTable, dataGridView_Spells, textBox_SQLOutput, listBox_CreatureGuids.SelectedItem.ToString());
+            if (dataGridView_Spells.Rows.Count > 0)
+            {
+                CreatureSpellsCreator.FillSQLOutput(guidsDataTable, dataGridView_Spells, textBox_SQLOutput, listBox_CreatureGuids.SelectedItem.ToString());
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
