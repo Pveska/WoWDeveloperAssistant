@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.Database_Advisor;
 
 namespace WoWDeveloperAssistant
 {
@@ -111,6 +112,14 @@ namespace WoWDeveloperAssistant
             openFileDialog.ShowReadOnly = false;
             openFileDialog.Multiselect = false;
             openFileDialog.CheckFileExists = true;
+        }
+
+        private void textBox_CreatureFlags_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                CreatureFlagsAdvisor.GetCreatureFlags(textBox_CreatureFlags.Text);
+            }
         }
     }
 }

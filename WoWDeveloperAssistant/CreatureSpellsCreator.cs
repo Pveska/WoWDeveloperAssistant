@@ -376,8 +376,8 @@ namespace WoWDeveloperAssistant
                 string creatureNameQuery = "SELECT `name1` FROM `creature_template_wdb` WHERE `entry` = " + creatureEntry + ";";
                 creatureNameDs = (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery);
 
-                if (creatureNameDs != null && creatureNameDs.Tables["table1"].Rows.Count > 0)
-                    creatureName = creatureNameDs.Tables["table1"].Rows[0][0].ToString();
+                if (creatureNameDs != null && creatureNameDs.Tables["table"].Rows.Count > 0)
+                    creatureName = creatureNameDs.Tables["table"].Rows[0][0].ToString();
             }
 
             SQLtext = "UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` = " + creatureEntry + ";\r\n";

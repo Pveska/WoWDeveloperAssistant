@@ -18,7 +18,7 @@ namespace WoWDeveloperAssistant
                 MySqlCommand myCommand = new MySqlCommand(query, sqlConnection);
                 MySqlDataAdapter DataAdapter = new MySqlDataAdapter();
                 DataAdapter.SelectCommand = myCommand;
-                DataAdapter.Fill(dataSet, "table1");
+                DataAdapter.Fill(dataSet, "table");
                 return dataSet;
             }
             catch (MySqlException myerror)
