@@ -121,5 +121,13 @@ namespace WoWDeveloperAssistant
                 CreatureFlagsAdvisor.GetCreatureFlags(textBox_CreatureFlags.Text);
             }
         }
+
+        private void textBox_QuestFlags_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                QuestFlagsAdvisor.GetQuestFlags(textBox_QuestFlags.Text);
+            }
+        }
     }
 }

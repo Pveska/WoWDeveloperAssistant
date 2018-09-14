@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="CreatureSpellsCreator.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
+    <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
     <Compile Include="DBC\DBC.cs" />
     <Compile Include="DBC\Misc\Configuration.cs" />
     <Compile Include="DBC\Misc\Settings.cs" />

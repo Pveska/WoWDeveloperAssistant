@@ -64,6 +64,8 @@
             this.statusStrip_LoadedFile = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label_QuestFlags = new System.Windows.Forms.Label();
+            this.textBox_QuestFlags = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureSpellsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
@@ -264,14 +266,13 @@
             this.toolStrip_CreatureSpellsCreator.Size = new System.Drawing.Size(1759, 32);
             this.toolStrip_CreatureSpellsCreator.TabIndex = 1;
             this.toolStrip_CreatureSpellsCreator.Text = "toolStrip_CreatureSpellsCreator";
-            this.toolStrip_CreatureSpellsCreator.ImageScalingSize = new System.Drawing.Size(16, 16);
             //
             // toolStripButton_ImportSniff
             //
             this.toolStripButton_ImportSniff.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Import;
             this.toolStripButton_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_ImportSniff.Name = "toolStripButton_ImportSniff";
-            this.toolStripButton_ImportSniff.Size = new System.Drawing.Size(136, 29);
+            this.toolStripButton_ImportSniff.Size = new System.Drawing.Size(128, 29);
             this.toolStripButton_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
             //
@@ -282,7 +283,7 @@
             this.toolStripButton_Search.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Search;
             this.toolStripButton_Search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_Search.Name = "toolStripButton_Search";
-            this.toolStripButton_Search.Size = new System.Drawing.Size(92, 29);
+            this.toolStripButton_Search.Size = new System.Drawing.Size(84, 29);
             this.toolStripButton_Search.Text = "Search";
             this.toolStripButton_Search.Click += new System.EventHandler(this.toolStripButton_Search_Click);
             //
@@ -326,6 +327,8 @@
             //
             // tabPage_DatabaseAdvisor
             //
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_QuestFlags);
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.label_QuestFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_CreatureFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_CreatureFlags);
             this.tabPage_DatabaseAdvisor.Location = new System.Drawing.Point(4, 29);
@@ -373,6 +376,23 @@
             // openFileDialog
             //
             this.openFileDialog.FileName = "openFileDialog";
+            //
+            // label_QuestFlags
+            //
+            this.label_QuestFlags.AutoSize = true;
+            this.label_QuestFlags.Location = new System.Drawing.Point(6, 60);
+            this.label_QuestFlags.Name = "label_QuestFlags";
+            this.label_QuestFlags.Size = new System.Drawing.Size(95, 20);
+            this.label_QuestFlags.TabIndex = 2;
+            this.label_QuestFlags.Text = "Quest Flags";
+            //
+            // textBox_QuestFlags
+            //
+            this.textBox_QuestFlags.Location = new System.Drawing.Point(7, 83);
+            this.textBox_QuestFlags.Name = "textBox_QuestFlags";
+            this.textBox_QuestFlags.Size = new System.Drawing.Size(112, 26);
+            this.textBox_QuestFlags.TabIndex = 3;
+            this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
             //
             // MainForm
             //
@@ -436,6 +456,8 @@
         private System.Windows.Forms.TabPage tabPage_DatabaseAdvisor;
         private System.Windows.Forms.TextBox textBox_CreatureFlags;
         private System.Windows.Forms.Label label_CreatureFlags;
+        private System.Windows.Forms.TextBox textBox_QuestFlags;
+        private System.Windows.Forms.Label label_QuestFlags;
     }
 }
 
