@@ -34,7 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabControl_DoubleSpawnsRemover = new System.Windows.Forms.TabControl();
             this.tabPage_CreatureSpellsCreator = new System.Windows.Forms.TabPage();
             this.checkBox_OnlyCombatSpells = new System.Windows.Forms.CheckBox();
             this.dataGridView_Spells = new System.Windows.Forms.DataGridView();
@@ -59,33 +59,41 @@
             this.tabPage_Output = new System.Windows.Forms.TabPage();
             this.textBox_SQLOutput = new System.Windows.Forms.TextBox();
             this.tabPage_DatabaseAdvisor = new System.Windows.Forms.TabPage();
+            this.textBox_QuestFlags = new System.Windows.Forms.TextBox();
+            this.label_QuestFlags = new System.Windows.Forms.Label();
             this.textBox_CreatureFlags = new System.Windows.Forms.TextBox();
             this.label_CreatureFlags = new System.Windows.Forms.Label();
+            this.tabPage_DoubleSpawnsRemover = new System.Windows.Forms.TabPage();
+            this.label_CreaturesRemoved = new System.Windows.Forms.Label();
+            this.button_ImportFileForRemoving = new System.Windows.Forms.Button();
             this.statusStrip_LoadedFile = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label_QuestFlags = new System.Windows.Forms.Label();
-            this.textBox_QuestFlags = new System.Windows.Forms.TextBox();
-            this.tabControl.SuspendLayout();
+            this.checkBox_CreaturesRemover = new System.Windows.Forms.CheckBox();
+            this.checkBox_GameobjectsRemover = new System.Windows.Forms.CheckBox();
+            this.label_GameobjectsRemoved = new System.Windows.Forms.Label();
+            this.tabControl_DoubleSpawnsRemover.SuspendLayout();
             this.tabPage_CreatureSpellsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
             this.toolStrip_CreatureSpellsCreator.SuspendLayout();
             this.tabPage_Output.SuspendLayout();
             this.tabPage_DatabaseAdvisor.SuspendLayout();
+            this.tabPage_DoubleSpawnsRemover.SuspendLayout();
             this.statusStrip_LoadedFile.SuspendLayout();
             this.SuspendLayout();
             //
-            // tabControl
+            // tabControl_DoubleSpawnsRemover
             //
-            this.tabControl.Controls.Add(this.tabPage_CreatureSpellsCreator);
-            this.tabControl.Controls.Add(this.tabPage_Output);
-            this.tabControl.Controls.Add(this.tabPage_DatabaseAdvisor);
-            this.tabControl.Location = new System.Drawing.Point(3, 3);
-            this.tabControl.Name = "tabControl";
-            this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1773, 992);
-            this.tabControl.TabIndex = 1;
+            this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_CreatureSpellsCreator);
+            this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_Output);
+            this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_DatabaseAdvisor);
+            this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_DoubleSpawnsRemover);
+            this.tabControl_DoubleSpawnsRemover.Location = new System.Drawing.Point(3, 3);
+            this.tabControl_DoubleSpawnsRemover.Name = "tabControl_DoubleSpawnsRemover";
+            this.tabControl_DoubleSpawnsRemover.SelectedIndex = 0;
+            this.tabControl_DoubleSpawnsRemover.Size = new System.Drawing.Size(1773, 992);
+            this.tabControl_DoubleSpawnsRemover.TabIndex = 1;
             //
             // tabPage_CreatureSpellsCreator
             //
@@ -256,6 +264,7 @@
             //
             // toolStrip_CreatureSpellsCreator
             //
+            this.toolStrip_CreatureSpellsCreator.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip_CreatureSpellsCreator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_ImportSniff,
             this.toolStripButton_Search,
@@ -266,6 +275,7 @@
             this.toolStrip_CreatureSpellsCreator.Size = new System.Drawing.Size(1759, 32);
             this.toolStrip_CreatureSpellsCreator.TabIndex = 1;
             this.toolStrip_CreatureSpellsCreator.Text = "toolStrip_CreatureSpellsCreator";
+            this.toolStrip_CreatureSpellsCreator.ImageScalingSize = new System.Drawing.Size(16, 16);
             //
             // toolStripButton_ImportSniff
             //
@@ -339,6 +349,23 @@
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
             //
+            // textBox_QuestFlags
+            //
+            this.textBox_QuestFlags.Location = new System.Drawing.Point(7, 83);
+            this.textBox_QuestFlags.Name = "textBox_QuestFlags";
+            this.textBox_QuestFlags.Size = new System.Drawing.Size(112, 26);
+            this.textBox_QuestFlags.TabIndex = 3;
+            this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
+            //
+            // label_QuestFlags
+            //
+            this.label_QuestFlags.AutoSize = true;
+            this.label_QuestFlags.Location = new System.Drawing.Point(6, 60);
+            this.label_QuestFlags.Name = "label_QuestFlags";
+            this.label_QuestFlags.Size = new System.Drawing.Size(95, 20);
+            this.label_QuestFlags.TabIndex = 2;
+            this.label_QuestFlags.Text = "Quest Flags";
+            //
             // textBox_CreatureFlags
             //
             this.textBox_CreatureFlags.Location = new System.Drawing.Point(7, 27);
@@ -355,6 +382,47 @@
             this.label_CreatureFlags.Size = new System.Drawing.Size(114, 20);
             this.label_CreatureFlags.TabIndex = 0;
             this.label_CreatureFlags.Text = "Creature Flags";
+            //
+            // tabPage_DoubleSpawnsRemover
+            //
+            this.tabPage_DoubleSpawnsRemover.Controls.Add(this.label_GameobjectsRemoved);
+            this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_GameobjectsRemover);
+            this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_CreaturesRemover);
+            this.tabPage_DoubleSpawnsRemover.Controls.Add(this.label_CreaturesRemoved);
+            this.tabPage_DoubleSpawnsRemover.Controls.Add(this.button_ImportFileForRemoving);
+            this.tabPage_DoubleSpawnsRemover.Location = new System.Drawing.Point(4, 29);
+            this.tabPage_DoubleSpawnsRemover.Name = "tabPage_DoubleSpawnsRemover";
+            this.tabPage_DoubleSpawnsRemover.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_DoubleSpawnsRemover.Size = new System.Drawing.Size(1765, 959);
+            this.tabPage_DoubleSpawnsRemover.TabIndex = 3;
+            this.tabPage_DoubleSpawnsRemover.Text = "Double-Spawns Remover";
+            this.tabPage_DoubleSpawnsRemover.UseVisualStyleBackColor = true;
+            //
+            // label_CreaturesRemoved
+            //
+            this.label_CreaturesRemoved.AutoSize = true;
+            this.label_CreaturesRemoved.Location = new System.Drawing.Point(697, 75);
+            this.label_CreaturesRemoved.Name = "label_CreaturesRemoved";
+            this.label_CreaturesRemoved.Size = new System.Drawing.Size(165, 20);
+            this.label_CreaturesRemoved.TabIndex = 1;
+            this.label_CreaturesRemoved.Text = "No creatures removed";
+            this.label_CreaturesRemoved.Visible = false;
+            //
+            // button_ImportFileForRemoving
+            //
+            this.button_ImportFileForRemoving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_ImportFileForRemoving.Enabled = false;
+            this.button_ImportFileForRemoving.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button_ImportFileForRemoving.FlatAppearance.BorderSize = 5;
+            this.button_ImportFileForRemoving.Font = new System.Drawing.Font("Sitka Small", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_ImportFileForRemoving.Location = new System.Drawing.Point(701, 30);
+            this.button_ImportFileForRemoving.Name = "button_ImportFileForRemoving";
+            this.button_ImportFileForRemoving.Size = new System.Drawing.Size(232, 42);
+            this.button_ImportFileForRemoving.TabIndex = 0;
+            this.button_ImportFileForRemoving.Text = "Import File";
+            this.button_ImportFileForRemoving.UseVisualStyleBackColor = true;
+            this.button_ImportFileForRemoving.Click += new System.EventHandler(this.button_ImportFile_Click);
             //
             // statusStrip_LoadedFile
             //
@@ -377,22 +445,37 @@
             //
             this.openFileDialog.FileName = "openFileDialog";
             //
-            // label_QuestFlags
+            // checkBox_CreaturesRemover
             //
-            this.label_QuestFlags.AutoSize = true;
-            this.label_QuestFlags.Location = new System.Drawing.Point(6, 60);
-            this.label_QuestFlags.Name = "label_QuestFlags";
-            this.label_QuestFlags.Size = new System.Drawing.Size(95, 20);
-            this.label_QuestFlags.TabIndex = 2;
-            this.label_QuestFlags.Text = "Quest Flags";
+            this.checkBox_CreaturesRemover.AutoSize = true;
+            this.checkBox_CreaturesRemover.Location = new System.Drawing.Point(701, 4);
+            this.checkBox_CreaturesRemover.Name = "checkBox_CreaturesRemover";
+            this.checkBox_CreaturesRemover.Size = new System.Drawing.Size(105, 24);
+            this.checkBox_CreaturesRemover.TabIndex = 2;
+            this.checkBox_CreaturesRemover.Text = "Creatures";
+            this.checkBox_CreaturesRemover.UseVisualStyleBackColor = true;
+            this.checkBox_CreaturesRemover.CheckedChanged += new System.EventHandler(this.checkBox_CreaturesRemover_CheckedChanged);
             //
-            // textBox_QuestFlags
+            // checkBox_GameobjectsRemover
             //
-            this.textBox_QuestFlags.Location = new System.Drawing.Point(7, 83);
-            this.textBox_QuestFlags.Name = "textBox_QuestFlags";
-            this.textBox_QuestFlags.Size = new System.Drawing.Size(112, 26);
-            this.textBox_QuestFlags.TabIndex = 3;
-            this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
+            this.checkBox_GameobjectsRemover.AutoSize = true;
+            this.checkBox_GameobjectsRemover.Location = new System.Drawing.Point(803, 4);
+            this.checkBox_GameobjectsRemover.Name = "checkBox_GameobjectsRemover";
+            this.checkBox_GameobjectsRemover.Size = new System.Drawing.Size(130, 24);
+            this.checkBox_GameobjectsRemover.TabIndex = 3;
+            this.checkBox_GameobjectsRemover.Text = "Gameobjects";
+            this.checkBox_GameobjectsRemover.UseVisualStyleBackColor = true;
+            this.checkBox_GameobjectsRemover.CheckedChanged += new System.EventHandler(this.checkBox_GameobjectsRemover_CheckedChanged);
+            //
+            // label_GameobjectsRemoved
+            //
+            this.label_GameobjectsRemoved.AutoSize = true;
+            this.label_GameobjectsRemoved.Location = new System.Drawing.Point(697, 95);
+            this.label_GameobjectsRemoved.Name = "label_GameobjectsRemoved";
+            this.label_GameobjectsRemoved.Size = new System.Drawing.Size(189, 20);
+            this.label_GameobjectsRemoved.TabIndex = 4;
+            this.label_GameobjectsRemoved.Text = "No gameobjects removed";
+            this.label_GameobjectsRemoved.Visible = false;
             //
             // MainForm
             //
@@ -400,13 +483,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1776, 1027);
             this.Controls.Add(this.statusStrip_LoadedFile);
-            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.tabControl_DoubleSpawnsRemover);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Wow Developer Assistant";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.tabControl.ResumeLayout(false);
+            this.tabControl_DoubleSpawnsRemover.ResumeLayout(false);
             this.tabPage_CreatureSpellsCreator.ResumeLayout(false);
             this.tabPage_CreatureSpellsCreator.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).EndInit();
@@ -417,6 +500,8 @@
             this.tabPage_Output.PerformLayout();
             this.tabPage_DatabaseAdvisor.ResumeLayout(false);
             this.tabPage_DatabaseAdvisor.PerformLayout();
+            this.tabPage_DoubleSpawnsRemover.ResumeLayout(false);
+            this.tabPage_DoubleSpawnsRemover.PerformLayout();
             this.statusStrip_LoadedFile.ResumeLayout(false);
             this.statusStrip_LoadedFile.PerformLayout();
             this.ResumeLayout(false);
@@ -426,7 +511,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabControl tabControl_DoubleSpawnsRemover;
         private System.Windows.Forms.TabPage tabPage_CreatureSpellsCreator;
         private System.Windows.Forms.ToolStrip toolStrip_CreatureSpellsCreator;
         private System.Windows.Forms.ToolStripButton toolStripButton_ImportSniff;
@@ -458,6 +543,12 @@
         private System.Windows.Forms.Label label_CreatureFlags;
         private System.Windows.Forms.TextBox textBox_QuestFlags;
         private System.Windows.Forms.Label label_QuestFlags;
+        private System.Windows.Forms.TabPage tabPage_DoubleSpawnsRemover;
+        private System.Windows.Forms.Label label_CreaturesRemoved;
+        private System.Windows.Forms.Button button_ImportFileForRemoving;
+        private System.Windows.Forms.CheckBox checkBox_GameobjectsRemover;
+        private System.Windows.Forms.CheckBox checkBox_CreaturesRemover;
+        private System.Windows.Forms.Label label_GameobjectsRemoved;
     }
 }
 

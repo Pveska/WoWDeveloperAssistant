@@ -129,5 +129,63 @@ namespace WoWDeveloperAssistant
                 QuestFlagsAdvisor.GetQuestFlags(textBox_QuestFlags.Text);
             }
         }
+
+        private void button_ImportFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialogForRemoving();
+
+            this.Cursor = Cursors.WaitCursor;
+            button_ImportFileForRemoving.Enabled = false;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked);
+                button_ImportFileForRemoving.Enabled = true;
+                this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                label_CreaturesRemoved.Text = "No creatures removed";
+                label_GameobjectsRemoved.Text = "No gameobjects removed";
+            }
+
+            button_ImportFileForRemoving.Enabled = true;
+            this.Cursor = Cursors.Default;
+        }
+
+        private void OpenFileDialogForRemoving()
+        {
+            openFileDialog.Title = "Open File";
+            openFileDialog.Filter = "SQL File (*.sql)|*.sql";
+            openFileDialog.FileName = "";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.ShowReadOnly = false;
+            openFileDialog.Multiselect = false;
+            openFileDialog.CheckFileExists = true;
+        }
+
+        private void checkBox_CreaturesRemover_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_CreaturesRemover.Checked)
+            {
+                button_ImportFileForRemoving.Enabled = true;
+            }
+            else if (!checkBox_CreaturesRemover.Checked && !checkBox_GameobjectsRemover.Checked)
+            {
+                button_ImportFileForRemoving.Enabled = false;
+            }
+        }
+
+        private void checkBox_GameobjectsRemover_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_GameobjectsRemover.Checked)
+            {
+                button_ImportFileForRemoving.Enabled = true;
+            }
+            else if (!checkBox_GameobjectsRemover.Checked && !checkBox_CreaturesRemover.Checked)
+            {
+                button_ImportFileForRemoving.Enabled = false;
+            }
+        }
     }
 }
