@@ -39,6 +39,7 @@ namespace WoWDeveloperAssistant
                             {
                                 creaturesLinkedIdsDictionary[linkedId] = lines[i];
                                 outputLines.Add(lines[i]);
+                                continue;
                             }
                             else
                             {
@@ -70,6 +71,7 @@ namespace WoWDeveloperAssistant
                         {
                             gameobjectsLinkedIdsDictionary[linkedId] = lines[i];
                             outputLines.Add(lines[i]);
+                            continue;
                         }
                         else
                         {
