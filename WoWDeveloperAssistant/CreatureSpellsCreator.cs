@@ -298,6 +298,11 @@ namespace WoWDeveloperAssistant
                                 string[] packetline = lines[i].Split(new char[] { ' ' });
                                 packet.creature_entry = packetline[8];
                                 packet.creature_guid = packetline[2];
+
+                                if (packet.creature_entry == "Entry:")
+                                {
+                                    packet.creature_entry = packetline[9];
+                                }
                             }
                         }
 
@@ -336,6 +341,11 @@ namespace WoWDeveloperAssistant
                                 string[] packetline = lines[i].Split(new char[] { ' ' });
                                 packet.creature_entry = packetline[9];
                                 packet.creature_guid = packetline[3];
+
+                                if (packet.creature_entry == "Entry:")
+                                {
+                                    packet.creature_entry = packetline[10];
+                                }
                             }
                         }
 
