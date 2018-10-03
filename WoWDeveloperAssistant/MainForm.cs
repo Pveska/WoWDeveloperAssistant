@@ -15,6 +15,11 @@ namespace WoWDeveloperAssistant
         public MainForm()
         {
             InitializeComponent();
+
+            if (Properties.Settings.Default.UsingDB != true)
+            {
+                checkBox_DatabaseConsidering.Enabled = false;
+            }
         }
 
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
@@ -139,7 +144,7 @@ namespace WoWDeveloperAssistant
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked);
+                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked, checkBox_DatabaseConsidering.Checked);
                 button_ImportFileForRemoving.Enabled = true;
                 this.Cursor = Cursors.Default;
             }
