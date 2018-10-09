@@ -33,10 +33,10 @@ namespace WoWDeveloperAssistant
             }
         }
 
-        public static bool TryConnectToDB()
+        public static bool TryConnectToDB(string hostName, string port, string userName, string password, string databaseName)
         {
             MySqlConnection sqlConnection = new MySqlConnection();
-            sqlConnection.ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.Database;
+            sqlConnection.ConnectionString = "server = " + hostName + "; port = " + port + "; user id = " + userName + "; password = " + password + "; database = " + databaseName;
             try
             {
                 sqlConnection.Open();

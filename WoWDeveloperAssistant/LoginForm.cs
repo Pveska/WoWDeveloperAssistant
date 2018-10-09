@@ -21,7 +21,7 @@ namespace WoWDeveloperAssistant
 
         private void button_Login_Click(object sender, EventArgs e)
         {
-            if (SQLModule.TryConnectToDB())
+            if (SQLModule.TryConnectToDB(textBox_Host.Text, textBox_Port.Text, textBox_UserName.Text, textBox_Password.Text, textBox_DB.Text))
             {
                 if (checkBox_SaveValues.Checked == true)
                 {

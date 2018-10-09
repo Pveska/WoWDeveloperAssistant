@@ -9,7 +9,7 @@
       <Value Profile="(Default)">root</Value>
     </Setting>
     <Setting Name="Password" Type="System.String" Scope="User">
-      <Value Profile="(Default)">trinity</Value>
+      <Value Profile="(Default)">root</Value>
     </Setting>
     <Setting Name="Database" Type="System.String" Scope="User">
       <Value Profile="(Default)">dev_735_world</Value>
