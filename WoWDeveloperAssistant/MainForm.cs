@@ -192,5 +192,18 @@ namespace WoWDeveloperAssistant
                 button_ImportFileForRemoving.Enabled = false;
             }
         }
+
+        private void textBox_AreatriggerVerticesParser_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                OpenFileDialog();
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    AreatriggerVerticesParser.GetVerticesForGuidFromSniff(textBox_AreatriggerVerticesParser.Text, openFileDialog.FileName, textBox_SQLOutput);
+                }
+            }
+        }
     }
 }
