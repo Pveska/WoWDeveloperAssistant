@@ -86,7 +86,7 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        public static void FillSpellsGrid(DataTable guidsDataTable, DataTable combatDataTable, DataTable spellsDataTable, ListBox guidsListBox, DataGridView dataGrid, string creatureGuid, bool onlyCombatSpells)
+        public static void FillSpellsGrid(DataTable guidsDataTable, DataTable combatDataTable, DataTable spellsDataTable, ListBox guidsListBox, DataGridView dataGrid, string creatureGuid, bool onlyCombatSpells, Expansions expansion)
         {
             DataTable defaultDataTable = spellsDataTable.Clone();
             DataTable antiDoublesDataTable = spellsDataTable.Clone();
@@ -174,9 +174,31 @@ namespace WoWDeveloperAssistant
                             castsCount++;
                     }
 
-                    if (DBC.Spell.ContainsKey(spellId))
+                    switch (expansion)
                     {
-                        spellName = DBC.Spell[spellId].Name;
+                        case Expansions.Legion:
+                        {
+                            if (DBC.SpellLegion.ContainsKey(spellId))
+                            {
+                                spellName = DBC.SpellLegion[spellId].Name;
+                            }
+
+                            break;
+                        }
+                        case Expansions.BattleForAzeroth:
+                        {
+                            if (DBC.SpellNameBfa.ContainsKey(spellId))
+                            {
+                                spellName = DBC.SpellNameBfa[spellId].Name;
+                            }
+
+                            break;
+                        }
+                        default:
+                        {
+                            spellName = "Unknown";
+                            break;
+                        }
                     }
 
                     dataGrid.Rows.Add(spellId, spellName, castTime, startCastTimesList.Count != 0 ? startCastTimesList.Min() : 0, startCastTimesList.Count != 0 ? startCastTimesList.Max() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Min() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Max() : 0, castsCount);
@@ -191,9 +213,31 @@ namespace WoWDeveloperAssistant
                     string castTime = dataRow[3].ToString();
                     uint castsCount = 0;
 
-                    if (DBC.Spell.ContainsKey(spellId))
+                    switch (expansion)
                     {
-                        spellName = DBC.Spell[spellId].Name;
+                        case Expansions.Legion:
+                        {
+                            if (DBC.SpellLegion.ContainsKey(spellId))
+                            {
+                                spellName = DBC.SpellLegion[spellId].Name;
+                            }
+
+                            break;
+                        }
+                        case Expansions.BattleForAzeroth:
+                        {
+                            if (DBC.SpellNameBfa.ContainsKey(spellId))
+                            {
+                                spellName = DBC.SpellNameBfa[spellId].Name;
+                            }
+
+                            break;
+                        }
+                        default:
+                        {
+                            spellName = "Unknown";
+                            break;
+                        }
                     }
 
                     foreach (DataRow row in defaultDataTable.Rows)
@@ -260,6 +304,27 @@ namespace WoWDeveloperAssistant
                 MessageBox.Show(fileName + " is is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return null;
             }
+        }
+
+        public static uint GetExpansion(string fileName)
+        {
+            var lines = File.ReadAllLines(fileName);
+
+            for (int i = 1; i < lines.Count(); i++)
+            {
+                if (lines[i].Contains("# Targeted database:"))
+                {
+                    string[] splittedLine = lines[i].Split(new char[] { ' ' });
+                    string expansion = splittedLine[3];
+
+                    if (expansion == "Legion")
+                        return 1;
+                    else if (expansion == "BattleForAzeroth")
+                        return 2;
+                }
+            }
+
+            return 0;
         }
 
         private static DataSet GetDataFromSniffFile(string fileName)
@@ -374,7 +439,7 @@ namespace WoWDeveloperAssistant
             return dataSet;
         }
 
-        public static void FillSQLOutput(DataTable guidsDataTable, DataGridView dataGrid, TextBox textBox, string creatureGuid)
+        public static void FillSQLOutput(DataTable guidsDataTable, DataGridView dataGrid, TextBox textBox, string creatureGuid, Expansions expansion)
         {
             string SQLtext = "";
             string creatureEntry = GetCreatureEntryByGuid(guidsDataTable, creatureGuid);
@@ -402,31 +467,75 @@ namespace WoWDeveloperAssistant
 
                 List<uint> effectIds = new List<uint>();
 
-                foreach (var effectId in DBC.SpellEffect.Values)
+                switch (expansion)
                 {
-                    if (effectId.SpellID == spellId)
-                        effectIds.Add(effectId.ID);
-                }
-
-                if (effectIds.Count != 0)
-                {
-                    uint targeType = 0;
-
-                    foreach (var effectId in effectIds)
+                    case Expansions.Legion:
                     {
-                        targeType = DBC.SpellEffect[Convert.ToInt32(effectId)].ImplicitTarget[0] > 0 ? DBC.SpellEffect[Convert.ToInt32(effectId)].ImplicitTarget[0] : DBC.SpellEffect[Convert.ToInt32(effectId)].ImplicitTarget[1];
-                    }
+                        foreach (var effectId in DBC.SpellEffectlegion.Values)
+                        {
+                            if (effectId.SpellID == spellId)
+                                effectIds.Add(effectId.ID);
+                        }
 
-                    if (IsSelfTargetType(targeType))
-                        targetType = "1";
-                    else if (IsNonSelfTargetType(targeType))
-                        targetType = "2";
-                    else
+                        if (effectIds.Count != 0)
+                        {
+                            uint targeType = 0;
+
+                            foreach (var effectId in effectIds)
+                            {
+                                targeType = DBC.SpellEffectlegion[Convert.ToInt32(effectId)].ImplicitTarget[0] > 0 ? DBC.SpellEffectlegion[Convert.ToInt32(effectId)].ImplicitTarget[0] : DBC.SpellEffectlegion[Convert.ToInt32(effectId)].ImplicitTarget[1];
+                            }
+
+                            if (IsSelfTargetType(targeType))
+                                targetType = "1";
+                            else if (IsNonSelfTargetType(targeType))
+                                targetType = "2";
+                            else
+                                targetType = "99";
+                        }
+                        else
+                        {
+                            targetType = "99";
+                        }
+
+                        break;
+                    }
+                    case Expansions.BattleForAzeroth:
+                    {
+                        foreach (var effectId in DBC.SpellEffectBfa)
+                        {
+                            if (effectId.Value.SpellID == spellId)
+                                effectIds.Add((uint)effectId.Key);
+                        }
+                        
+                        if (effectIds.Count != 0)
+                        {
+                            short targeType = 0;
+                        
+                            foreach (var effectId in effectIds)
+                            {
+                                targeType = DBC.SpellEffectBfa[Convert.ToInt32(effectId)].ImplicitTarget[0] > 0 ? DBC.SpellEffectBfa[Convert.ToInt32(effectId)].ImplicitTarget[0] : DBC.SpellEffectBfa[Convert.ToInt32(effectId)].ImplicitTarget[1];
+                            }
+                        
+                            if (IsSelfTargetType((uint)targeType))
+                                targetType = "1";
+                            else if (IsNonSelfTargetType((uint)targeType))
+                                targetType = "2";
+                            else
+                                targetType = "99";
+                        }
+                        else
+                        {
+                            targetType = "99";
+                        }
+                        
+                        break;
+                    }
+                    default:
+                    {
                         targetType = "99";
-                }
-                else
-                {
-                    targetType = "99";
+                        break;
+                    }
                 }
 
                 SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(dataGrid[3, l].Value) + ", " + Convert.ToString(dataGrid[4, l].Value) + ", " + Convert.ToString(dataGrid[5, l].Value) + ", " + Convert.ToString(dataGrid[6, l].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, 0, 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";

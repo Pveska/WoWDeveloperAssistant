@@ -84,8 +84,10 @@
     <Compile Include="DBC\Misc\Configuration.cs" />
     <Compile Include="DBC\Misc\Settings.cs" />
     <Compile Include="DBC\Structures\DBFileAttribute.cs" />
-    <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
-    <Compile Include="DBC\Structures\SpellEntry.cs" />
+    <Compile Include="DBC\Structures\SpellEffectEntryBfa.cs" />
+    <Compile Include="DBC\Structures\SpellEffectEntryLegion.cs" />
+    <Compile Include="DBC\Structures\SpellEntryLegion.cs" />
+    <Compile Include="DBC\Structures\SpellNameEntryBfa.cs" />
     <Compile Include="DoubleSpawnRemover.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>

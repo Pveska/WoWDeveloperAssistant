@@ -8,8 +8,10 @@ namespace WoWDeveloperAssistant
 {
     public static class DBC
     {
-        public static Storage<SpellEntry> Spell = new Storage<SpellEntry>(GetPath("Spell.db2"));
-        public static Storage<SpellEffectEntry> SpellEffect = new Storage<SpellEffectEntry>(GetPath("SpellEffect.db2"));
+        public static Storage<SpellEntryLegion> SpellLegion = new Storage<SpellEntryLegion>(GetPath("SpellLegion.db2"));
+        public static Storage<SpellEffectEntryLegion> SpellEffectlegion = new Storage<SpellEffectEntryLegion>(GetPath("SpellEffectLegion.db2"));
+        public static Storage<SpellEffectEntryBfa> SpellEffectBfa = new Storage<SpellEffectEntryBfa>(GetPath("SpellEffectBfa.db2"));
+        public static Storage<SpellNameEntryBfa> SpellNameBfa = new Storage<SpellNameEntryBfa>(GetPath("SpellNameBfa.db2"));
 
         private static string GetPath()
         {

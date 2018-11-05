@@ -5,8 +5,15 @@ using WoWDeveloperAssistant.Database_Advisor;
 
 namespace WoWDeveloperAssistant
 {
+    public enum Expansions : uint
+    {
+        Legion = 1,
+        BattleForAzeroth = 2
+    };
+
     public partial class MainForm : Form
     {
+        private uint expansion;
         private DataSet tablesDataSet       = new DataSet();
         private DataTable combatDataTable   = new DataTable();
         private DataTable spellsDataTable   = new DataTable();
@@ -26,7 +33,7 @@ namespace WoWDeveloperAssistant
         {
             if (dataGridView_Spells.Rows.Count > 0)
             {
-                CreatureSpellsCreator.FillSQLOutput(guidsDataTable, dataGridView_Spells, textBox_SQLOutput, listBox_CreatureGuids.SelectedItem.ToString());
+                CreatureSpellsCreator.FillSQLOutput(guidsDataTable, dataGridView_Spells, textBox_SQLOutput, listBox_CreatureGuids.SelectedItem.ToString(), (Expansions)expansion);
             }
         }
 
@@ -77,7 +84,7 @@ namespace WoWDeveloperAssistant
 
         private void listBox_CreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CreatureSpellsCreator.FillSpellsGrid(guidsDataTable, combatDataTable, spellsDataTable, listBox_CreatureGuids, dataGridView_Spells, listBox_CreatureGuids.SelectedItem.ToString(), checkBox_OnlyCombatSpells.Checked);
+            CreatureSpellsCreator.FillSpellsGrid(guidsDataTable, combatDataTable, spellsDataTable, listBox_CreatureGuids, dataGridView_Spells, listBox_CreatureGuids.SelectedItem.ToString(), checkBox_OnlyCombatSpells.Checked, (Expansions)expansion);
         }
 
         private void ImportStarted()
@@ -98,6 +105,7 @@ namespace WoWDeveloperAssistant
 
         private void ImportSuccessful()
         {
+            expansion = CreatureSpellsCreator.GetExpansion(openFileDialog.FileName);
             combatDataTable = tablesDataSet.Tables[0];
             spellsDataTable = tablesDataSet.Tables[1];
             guidsDataTable = spellsDataTable.DefaultView.ToTable(true, "CreatureGuid", "CreatureEntry");
