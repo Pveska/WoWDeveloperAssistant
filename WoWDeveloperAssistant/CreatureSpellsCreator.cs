@@ -358,7 +358,7 @@ namespace WoWDeveloperAssistant
 
                         if (lines[i].Contains("UnitGUID: Full:"))
                         {
-                            if (lines[i].Contains("Creature/0"))
+                            if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
                             {
                                 string[] packetline = lines[i].Split(new char[] { ' ' });
                                 packet.creature_entry = packetline[8];
@@ -401,7 +401,7 @@ namespace WoWDeveloperAssistant
 
                         if (lines[i].Contains("CasterGUID: Full:"))
                         {
-                            if (lines[i].Contains("Creature/0"))
+                            if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
                             {
                                 string[] packetline = lines[i].Split(new char[] { ' ' });
                                 packet.creature_entry = packetline[9];
