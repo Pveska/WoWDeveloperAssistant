@@ -177,6 +177,17 @@ namespace WoWDeveloperAssistant
             openFileDialog.CheckFileExists = true;
         }
 
+        private void OpenFileDialogForAddons()
+        {
+            openFileDialog.Title = "Open File";
+            openFileDialog.Filter = "Parsed File (*.txt)|*.txt";
+            openFileDialog.FileName = "";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.ShowReadOnly = false;
+            openFileDialog.Multiselect = false;
+            openFileDialog.CheckFileExists = true;
+        }
+
         private void checkBox_CreaturesRemover_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_CreaturesRemover.Checked)
@@ -212,6 +223,24 @@ namespace WoWDeveloperAssistant
                     AreatriggerVerticesParser.GetVerticesForGuidFromSniff(textBox_AreatriggerVerticesParser.Text, openFileDialog.FileName, textBox_SQLOutput);
                 }
             }
+        }
+
+        private void button_CreatureAddonImportFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialogForAddons();
+
+            this.Cursor = Cursors.WaitCursor;
+            button_CreatureAddonImportFile.Enabled = false;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                CreatureParser.ParseCreatureAddon(openFileDialog.FileName);
+                button_CreatureAddonImportFile.Enabled = true;
+                this.Cursor = Cursors.Default;
+            }
+
+            button_CreatureAddonImportFile.Enabled = true;
+            this.Cursor = Cursors.Default;
         }
     }
 }

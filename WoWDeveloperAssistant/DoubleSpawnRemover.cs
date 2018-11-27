@@ -69,26 +69,7 @@ namespace WoWDeveloperAssistant
                 {
                     foreach (var entry in databaseCreatureEntries)
                     {
-                        string creaturesQuery = "SELECT `linked_id` FROM `creature` WHERE `id` = " + entry + ";";
-
-                        DataSet creaturesDs = new DataSet();
-                        creaturesDs = (DataSet)SQLModule.DatabaseSelectQuery(creaturesQuery);
-
-                        if (creaturesDs != null && creaturesDs.Tables["table"].Rows.Count > 0)
-                        {
-                            foreach (DataRow row in creaturesDs.Tables["table"].Rows)
-                            {
-                                databaseCreatureLinkedIds.Add(row[0].ToString().ToUpper());
-                            }
-                        }
-                    }
-                }
-
-                if (gameobjectsRemover)
-                {
-                    foreach (var entry in databaseGameobjectEntries)
-                    {
-                        string creaturesQuery = "SELECT `id`, `map`, `spawnMask`, `phaseMask`, `phaseID`, `position_x`, `position_y`, `position_z`  FROM `gameobject` WHERE `id` = " + entry + ";";
+                        string creaturesQuery = "SELECT `id`, `map`, `spawnMask`, `phaseMask`, `phaseID`, `position_x`, `position_y`, `position_z`  FROM `creature` WHERE `id` = " + entry + ";";
 
                         DataSet creaturesDs = new DataSet();
                         creaturesDs = (DataSet)SQLModule.DatabaseSelectQuery(creaturesQuery);
@@ -99,6 +80,37 @@ namespace WoWDeveloperAssistant
                             {
                                 string linkedId = "";
 
+                                string creatureEntry = row[0].ToString();
+                                string map = row[1].ToString();
+                                double posX = Convert.ToDouble(row[5].ToString());
+                                double posY = Convert.ToDouble(row[6].ToString());
+                                double posZ = Convert.ToDouble(row[7].ToString());
+
+                                linkedId = Convert.ToString(Math.Round(posX / 0.25)) + " " + Convert.ToString(Math.Round(posY / 0.25)) + " " + Convert.ToString(Math.Round(posZ / 0.25)) + " ";
+                                linkedId += creatureEntry + " " + map + " " + 0 + " " + 1 + " " + 1;
+                                linkedId = SHA1HashStringForUTF8String(linkedId).ToUpper();
+
+                                databaseCreatureLinkedIds.Add(linkedId);
+                            }
+                        }
+                    }
+                }
+
+                if (gameobjectsRemover)
+                {
+                    foreach (var entry in databaseGameobjectEntries)
+                    {
+                        string gameobjectsQuery = "SELECT `id`, `map`, `spawnMask`, `phaseMask`, `phaseID`, `position_x`, `position_y`, `position_z`  FROM `gameobject` WHERE `id` = " + entry + ";";
+
+                        DataSet gameobjectsDs = new DataSet();
+                        gameobjectsDs = (DataSet)SQLModule.DatabaseSelectQuery(gameobjectsQuery);
+
+                        if (gameobjectsDs != null && gameobjectsDs.Tables["table"].Rows.Count > 0)
+                        {
+                            foreach (DataRow row in gameobjectsDs.Tables["table"].Rows)
+                            {
+                                string linkedId = "";
+
                                 string gameobjectEntry = row[0].ToString();
                                 string map = row[1].ToString();
                                 double posX = Convert.ToDouble(row[5].ToString());
@@ -106,7 +118,7 @@ namespace WoWDeveloperAssistant
                                 double posZ = Convert.ToDouble(row[7].ToString());
 
                                 linkedId = Convert.ToString(Math.Round(posX / 0.25)) + " " + Convert.ToString(Math.Round(posY / 0.25)) + " " + Convert.ToString(Math.Round(posZ / 0.25)) + " ";
-                                linkedId += gameobjectEntry + " " + map + " " + row[4] + " " + row[3] + " " + row[2];
+                                linkedId += gameobjectEntry + " " + map + " " + 0 + " " + 1 + " " + 1;
                                 linkedId = SHA1HashStringForUTF8String(linkedId).ToUpper();
 
                                 databaseGameobjectLinkedIds.Add(linkedId);
@@ -214,7 +226,7 @@ namespace WoWDeveloperAssistant
             outputFile.Close();
         }
 
-        private static string SHA1HashStringForUTF8String(string s)
+        public static string SHA1HashStringForUTF8String(string s)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(s);
 
@@ -224,7 +236,7 @@ namespace WoWDeveloperAssistant
             return HexStringFromBytes(hashBytes);
         }
 
-        private static string HexStringFromBytes(byte[] bytes)
+        public static string HexStringFromBytes(byte[] bytes)
         {
             var sb = new StringBuilder();
             foreach (byte b in bytes)

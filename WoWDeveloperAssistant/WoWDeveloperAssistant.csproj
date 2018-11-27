@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreatureParser.cs" />
     <Compile Include="CreatureSpellsCreator.cs" />
     <Compile Include="Database Advisor\AreatriggerVerticesParser.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
