@@ -57,6 +57,9 @@ namespace WoWDeveloperAssistant
                     if (map == "")
                         continue;
 
+                    if (lines[i].StartsWith("-- ('"))
+                        continue;
+
                     switch (type)
                     {
                         case ObjectTypes.Creature:
@@ -229,7 +232,10 @@ namespace WoWDeveloperAssistant
                 }
                 else
                 {
-                    outputLines.Add(lines[i]);
+                    if (lines[i] != "")
+                    {
+                        outputLines.Add(lines[i]);
+                    }
                 }
             }
 
