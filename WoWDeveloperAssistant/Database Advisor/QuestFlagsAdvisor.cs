@@ -72,7 +72,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             QUEST_FLAGS_EX_CLEAR_PROGRESS_OF_CRITERIA_TREE_OBJECTIVES_ON_ACCEPT = 0x1000000
         };
 
-        enum QuestSpecialFlags
+        enum QuestSpecialFlags : long
         {
             QUEST_SPECIAL_FLAGS_REPEATABLE = 0x001,
             QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT = 0x002,

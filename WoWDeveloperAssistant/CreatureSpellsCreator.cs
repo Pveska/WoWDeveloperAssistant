@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant
@@ -77,9 +78,9 @@ namespace WoWDeveloperAssistant
         {
             foreach (DataRow dataRow in guidsDataTable.Rows)
             {
-                if (dataRow[0].ToString() == creatureGuid)
+                if (dataRow[1].ToString() == creatureGuid)
                 {
-                    return dataRow[1].ToString();
+                    return dataRow[0].ToString();
                 }
             }
 
@@ -330,12 +331,67 @@ namespace WoWDeveloperAssistant
         private static DataSet GetDataFromSniffFile(string fileName)
         {
             DataSet dataSet = new DataSet();
+            DataTable guidsDataTable = new DataTable();
             DataTable combatDataTable = new DataTable();
             DataTable spellsDataTable = new DataTable();
-            combatDataTable.Columns.AddRange(new DataColumn[3] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("CombatStartTime", typeof(string)) });
+            guidsDataTable.Columns.AddRange(new DataColumn[2] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)) });
+            guidsDataTable.PrimaryKey = new DataColumn[] { guidsDataTable.Columns["CreatureGuid"] };
+            combatDataTable.Columns.AddRange(new DataColumn[3] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("CombatStartTime", typeof(string)) });    
             spellsDataTable.Columns.AddRange(new DataColumn[4] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("SpellId", typeof(string)), new DataColumn("CastTime", typeof(string)) });
 
             var lines = File.ReadAllLines(fileName);
+
+            for (int i = 1; i < lines.Count(); i++)
+            {
+                if (lines[i].Contains("SMSG_UPDATE_OBJECT"))
+                {
+                    Packet packet;
+                    packet.creature_entry = "";
+                    packet.creature_guid = "";
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i].Contains("Object Guid: Full:"))
+                        {
+                            if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
+                            {
+                                packet.creature_entry = GetCreatureEntryFromLine(lines[i]); ;
+                                if (packet.creature_entry == "")
+                                {
+                                    int itr = i;
+                                    bool breakCycle = false;
+
+                                    do
+                                    {
+                                        if (lines[itr].Contains("OBJECT_FIELD_ENTRY"))
+                                        {
+                                            packet.creature_entry = GetCreatureEntryFromLine(lines[itr], true);
+                                            breakCycle = true;
+                                        }
+
+                                        itr++;
+                                    }
+                                    while (!breakCycle);
+                                }
+
+                                packet.creature_guid = GetGuidFromLine(lines[i]);
+                            }
+                        }
+                    } while (lines[i] != "");
+
+                    if (packet.creature_entry == "" || packet.creature_guid == "")
+                        continue;
+
+                    DataRow dataRow = guidsDataTable.NewRow();
+                    dataRow[0] = packet.creature_entry;
+                    dataRow[1] = packet.creature_guid;
+
+                    if (!guidsDataTable.Rows.Contains(packet.creature_guid))
+                        guidsDataTable.Rows.Add(dataRow);
+                }
+            }
 
             for (int i = 1; i < lines.Count(); i++)
             {
@@ -358,17 +414,8 @@ namespace WoWDeveloperAssistant
 
                         if (lines[i].Contains("UnitGUID: Full:"))
                         {
-                            if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
-                            {
-                                string[] packetline = lines[i].Split(new char[] { ' ' });
-                                packet.creature_entry = packetline[8];
-                                packet.creature_guid = packetline[2];
-
-                                if (packet.creature_entry == "Entry:")
-                                {
-                                    packet.creature_entry = packetline[9];
-                                }
-                            }
+                            packet.creature_guid = GetGuidFromLine(lines[i]);
+                            packet.creature_entry = GetCreatureEntryByGuid(guidsDataTable, packet.creature_guid);
                         }
 
                     } while (lines[i] != "");
@@ -403,14 +450,8 @@ namespace WoWDeveloperAssistant
                         {
                             if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
                             {
-                                string[] packetline = lines[i].Split(new char[] { ' ' });
-                                packet.creature_entry = packetline[9];
-                                packet.creature_guid = packetline[3];
-
-                                if (packet.creature_entry == "Entry:")
-                                {
-                                    packet.creature_entry = packetline[10];
-                                }
+                                packet.creature_guid = GetGuidFromLine(lines[i]);
+                                packet.creature_entry = GetCreatureEntryByGuid(guidsDataTable, packet.creature_guid); 
                             }
                         }
 
@@ -436,6 +477,7 @@ namespace WoWDeveloperAssistant
 
             dataSet.Tables.Add(combatDataTable);
             dataSet.Tables.Add(spellsDataTable);
+            dataSet.Tables.Add(guidsDataTable);
             return dataSet;
         }
 
@@ -575,6 +617,33 @@ namespace WoWDeveloperAssistant
             };
 
             return (nonSelfTargetTypesList.Contains(Target));
+        }
+
+        private static string GetCreatureEntryFromLine(string line, bool FromObjectField = false)
+        {
+            if (FromObjectField)
+            {
+                Regex entryRegexField = new Regex(@"OBJECT_FIELD_ENTRY:{1}\s*\d+");
+                if (entryRegexField.IsMatch(line.ToString()))
+                    return entryRegexField.Match(line.ToString()).ToString().Replace("OBJECT_FIELD_ENTRY: ", "");
+                else
+                    return "";
+            }
+
+            Regex entryRegex = new Regex(@"Entry:{1}\s*\d+");
+            if (entryRegex.IsMatch(line.ToString()))
+                return entryRegex.Match(line.ToString()).ToString().Replace("Entry: ", "");
+
+            return "";
+        }
+
+        private static string GetGuidFromLine(string line)
+        {
+            Regex guidRegex = new Regex(@"Full:{1}\s*\w+");
+            if (guidRegex.IsMatch(line.ToString()))
+                return guidRegex.Match(line.ToString()).ToString().Replace("Full: ", "");
+
+            return "";
         }
     }
 }

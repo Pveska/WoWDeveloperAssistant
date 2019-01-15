@@ -108,7 +108,7 @@ namespace WoWDeveloperAssistant
             expansion = CreatureSpellsCreator.GetExpansion(openFileDialog.FileName);
             combatDataTable = tablesDataSet.Tables[0];
             spellsDataTable = tablesDataSet.Tables[1];
-            guidsDataTable = spellsDataTable.DefaultView.ToTable(true, "CreatureGuid", "CreatureEntry");
+            guidsDataTable = tablesDataSet.Tables[2];
             toolStripButton_ImportSniff.Enabled = true;
             toolStripButton_Search.Enabled = true;
             toolStripTextBox_CreatureEntry.Enabled = true;
