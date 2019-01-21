@@ -5,23 +5,17 @@ using WoWDeveloperAssistant.Database_Advisor;
 
 namespace WoWDeveloperAssistant
 {
-    public enum Expansions : uint
-    {
-        Legion = 1,
-        BattleForAzeroth = 2
-    };
-
     public partial class MainForm : Form
     {
-        private uint expansion;
-        private DataSet tablesDataSet       = new DataSet();
-        private DataTable combatDataTable   = new DataTable();
-        private DataTable spellsDataTable   = new DataTable();
-        private DataTable guidsDataTable    = new DataTable();
+        public bool importSuccessful = false;
+
+        private CreatureSpellsCreator creatureSpellsCreator;
 
         public MainForm()
         {
             InitializeComponent();
+
+            creatureSpellsCreator = new CreatureSpellsCreator(this);
 
             if (Properties.Settings.Default.UsingDB != true)
             {
@@ -33,7 +27,7 @@ namespace WoWDeveloperAssistant
         {
             if (dataGridView_Spells.Rows.Count > 0)
             {
-                CreatureSpellsCreator.FillSQLOutput(guidsDataTable, dataGridView_Spells, textBox_SQLOutput, listBox_CreatureGuids.SelectedItem.ToString(), (Expansions)expansion);
+                creatureSpellsCreator.FillSQLOutput();
             }
         }
 
@@ -58,11 +52,11 @@ namespace WoWDeveloperAssistant
             {
                 ImportStarted();
 
-                tablesDataSet = CreatureSpellsCreator.LoadSniffFile(openFileDialog.FileName);
-                if (tablesDataSet != null)
+                creatureSpellsCreator.LoadSniffFile(openFileDialog.FileName);
+
+                if (importSuccessful)
                 {
                     ImportSuccessful();
-                    tablesDataSet.Tables.Clear();
                 }
                 else
                 {
@@ -79,20 +73,17 @@ namespace WoWDeveloperAssistant
 
         private void toolStripButton_Search_Click(object sender, EventArgs e)
         {
-            CreatureSpellsCreator.FillListBoxWithGuids(combatDataTable, guidsDataTable, listBox_CreatureGuids, toolStripTextBox_CreatureEntry.Text, checkBox_OnlyCombatSpells.Checked);
+            creatureSpellsCreator.FillListBoxWithGuids();
         }
 
         private void listBox_CreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CreatureSpellsCreator.FillSpellsGrid(guidsDataTable, combatDataTable, spellsDataTable, listBox_CreatureGuids, dataGridView_Spells, listBox_CreatureGuids.SelectedItem.ToString(), checkBox_OnlyCombatSpells.Checked, (Expansions)expansion);
+            creatureSpellsCreator.FillSpellsGrid();
         }
 
         private void ImportStarted()
         {
             this.Cursor = Cursors.WaitCursor;
-            combatDataTable = null;
-            spellsDataTable = null;
-            guidsDataTable = null;
             toolStripButton_ImportSniff.Enabled = false;
             toolStripButton_Search.Enabled = false;
             toolStripTextBox_CreatureEntry.Enabled = false;
@@ -105,10 +96,6 @@ namespace WoWDeveloperAssistant
 
         private void ImportSuccessful()
         {
-            expansion = CreatureSpellsCreator.GetExpansion(openFileDialog.FileName);
-            combatDataTable = tablesDataSet.Tables[0];
-            spellsDataTable = tablesDataSet.Tables[1];
-            guidsDataTable = tablesDataSet.Tables[2];
             toolStripButton_ImportSniff.Enabled = true;
             toolStripButton_Search.Enabled = true;
             toolStripTextBox_CreatureEntry.Enabled = true;
@@ -198,19 +185,6 @@ namespace WoWDeveloperAssistant
             else if (!checkBox_GameobjectsRemover.Checked && !checkBox_CreaturesRemover.Checked)
             {
                 button_ImportFileForRemoving.Enabled = false;
-            }
-        }
-
-        private void textBox_AreatriggerVerticesParser_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                OpenFileDialog();
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    AreatriggerVerticesParser.GetVerticesForGuidFromSniff(textBox_AreatriggerVerticesParser.Text, openFileDialog.FileName, textBox_SQLOutput);
-                }
             }
         }
     }

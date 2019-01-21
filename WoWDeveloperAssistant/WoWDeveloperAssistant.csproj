@@ -77,7 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreatureSpellsCreator.cs" />
-    <Compile Include="Database Advisor\AreatriggerVerticesParser.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
     <Compile Include="DBC\DBC.cs" />

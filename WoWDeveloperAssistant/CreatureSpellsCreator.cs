@@ -8,9 +8,41 @@ using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant
 {
-    public static class CreatureSpellsCreator
+    public class CreatureSpellsCreator
     {
-        struct Packet
+        private enum Expansions : uint
+        {
+            Unknown          = 0,
+            Legion           = 1,
+            BattleForAzeroth = 2
+        };
+
+        private MainForm mainForm;
+        private DataTable guidsDataTable = new DataTable();
+        private DataTable combatDataTable = new DataTable();
+        private DataTable spellsDataTable = new DataTable();
+        private DataTable textDataTable = new DataTable();
+        private DataTable deathDataTable = new DataTable();
+
+        Expansions expansion = Expansions.Unknown;
+
+        public CreatureSpellsCreator(MainForm mainForm)
+        {
+            this.mainForm = mainForm;
+
+            guidsDataTable.Columns.AddRange(new DataColumn[2] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)) });
+            guidsDataTable.PrimaryKey = new DataColumn[] { guidsDataTable.Columns["CreatureGuid"] };
+
+            combatDataTable.Columns.AddRange(new DataColumn[3] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("CombatStartTime", typeof(string)) });
+
+            spellsDataTable.Columns.AddRange(new DataColumn[4] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("SpellId", typeof(string)), new DataColumn("CastTime", typeof(string)) });
+
+            textDataTable.Columns.AddRange(new DataColumn[2] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("SayTime", typeof(string)) });
+
+            deathDataTable.Columns.AddRange(new DataColumn[2] { new DataColumn("CreatureGuid", typeof(string)), new DataColumn("DeathTime", typeof(string)) });
+        }
+
+        struct SpellCastPacket
         {
             public string creature_entry;
             public string creature_guid;
@@ -19,96 +51,48 @@ namespace WoWDeveloperAssistant
             public string combat_start_time;
         };
 
-        private static int GetCastStartTimeInSec(string castTime)
+        struct ChatPacket
         {
-            string[] castStartTimeStr = castTime.Split(new char[] { ':' });
-            return (Convert.ToInt32(castStartTimeStr[0]) * 3600) + (Convert.ToInt32(castStartTimeStr[1]) * 60) + Convert.ToInt32(castStartTimeStr[2]);
+            public string creature_entry;
+            public string say_time;
         }
 
-        private static bool IsGuidValidForCombatParse(DataTable combatDataTable, string creatureGuid)
+        struct TimePacket
         {
-            List<string> combatList = new List<string>();
-
-            foreach (DataRow dataRow in combatDataTable.Rows)
-            {
-                if (dataRow[1].ToString() == creatureGuid)
-                {
-                    combatList.Add(dataRow[2].ToString());
-                }
-            }
-
-            return combatList.Count == 1;
+            public string hours;
+            public string minutes;
+            public string seconds;
         }
 
-        private static int GetCreatureCombatStartTime(DataTable combatDataTable, string creatureGuid)
+        struct UpdatePacket
         {
-            int combatStartTime = 0;
-            List<string> combatList = new List<string>();
-
-            foreach (DataRow dataRow in combatDataTable.Rows)
-            {
-                if (dataRow[1].ToString() == creatureGuid)
-                {
-                    combatList.Add(dataRow[2].ToString());
-                }
-            }
-
-            if (combatList.Count > 1 || combatList.Count == 0)
-            {
-                return combatStartTime;
-            }
-
-            string[] combatStartTimeString = combatList[0].Split(new char[] { ':' });
-            combatStartTime = (Convert.ToInt32(combatStartTimeString[0]) * 3600) + (Convert.ToInt32(combatStartTimeString[1]) * 60) + Convert.ToInt32(combatStartTimeString[2]);
-            return combatStartTime;
+            public string creature_entry;
+            public string creature_guid;
+            public string send_time;
         }
 
-        private static bool GridContainSpell(DataTable Dt, string spell)
-        {
-            foreach (DataRow row in Dt.Rows)
-            {
-                if (row.Field<string>(2) == spell)
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static string GetCreatureEntryByGuid(DataTable guidsDataTable, string creatureGuid)
-        {
-            foreach (DataRow dataRow in guidsDataTable.Rows)
-            {
-                if (dataRow[1].ToString() == creatureGuid)
-                {
-                    return dataRow[0].ToString();
-                }
-            }
-
-            return "";
-        }
-
-        public static void FillSpellsGrid(DataTable guidsDataTable, DataTable combatDataTable, DataTable spellsDataTable, ListBox guidsListBox, DataGridView dataGrid, string creatureGuid, bool onlyCombatSpells, Expansions expansion)
+        public void FillSpellsGrid()
         {
             DataTable defaultDataTable = spellsDataTable.Clone();
             DataTable antiDoublesDataTable = spellsDataTable.Clone();
 
             foreach (DataRow row in spellsDataTable.Rows)
             {
-                if (row.Field<string>(1) == creatureGuid)
+                if (row["CreatureGuid"].ToString() == mainForm.listBox_CreatureGuids.SelectedItem.ToString())
                     defaultDataTable.ImportRow(row);
             }
 
             foreach (DataRow row in defaultDataTable.Rows)
             {
-                if (!GridContainSpell(antiDoublesDataTable, row.Field<string>(2)))
+                if (!GridContainsSpell(antiDoublesDataTable, row["SpellId"].ToString()))
                     antiDoublesDataTable.ImportRow(row);
             }
 
-            string creatureEntry = GetCreatureEntryByGuid(guidsDataTable, creatureGuid);
+            string creatureEntry = GetCreatureEntryByGuid(mainForm.listBox_CreatureGuids.SelectedItem.ToString());
 
-            dataGrid.Rows.Clear();
+            mainForm.dataGridView_Spells.Rows.Clear();
 
-            if (onlyCombatSpells)
+            if (mainForm.checkBox_OnlyCombatSpells.Checked)
             {
                 foreach (DataRow dataRow in antiDoublesDataTable.Rows)
                 {
@@ -116,24 +100,24 @@ namespace WoWDeveloperAssistant
                     List<uint> repeatCastTimesListForIter = new List<uint>();
                     List<uint> repeatCastTimesList = new List<uint>();
 
-                    int spellId = Convert.ToInt32(dataRow[2]);
+                    int spellId = Convert.ToInt32(dataRow["SpellId"].ToString());
                     string spellName = "Unknown";
-                    string castTime = dataRow[3].ToString();
+                    string castTime = dataRow["CastTime"].ToString();
                     int castTimeInSec = GetCastStartTimeInSec(castTime);
                     uint castsCount = 0;
-                    int combatStartTimeSec = GetCreatureCombatStartTime(combatDataTable, creatureGuid);
+                    int combatStartTimeSec = GetCreatureCombatStartTime(mainForm.listBox_CreatureGuids.SelectedItem.ToString());
                     if (combatStartTimeSec == 0 || castTimeInSec - combatStartTimeSec < 0)
                         continue;
 
                     // Get min-max cast time for spell
-                    foreach (string guid in guidsListBox.Items)
+                    foreach (string guid in mainForm.listBox_CreatureGuids.Items)
                     {
                         foreach (DataRow row in spellsDataTable.Rows)
                         {
-                            if (row.Field<string>(0) == creatureEntry && row.Field<string>(1) == guid && row.Field<string>(2) == spellId.ToString())
+                            if (row.Field<string>(0) == creatureEntry && row["CreatureGuid"].ToString() == guid && row["SpellId"].ToString() == spellId.ToString())
                             {
-                                int combatStartTime = GetCreatureCombatStartTime(combatDataTable, guid);
-                                int castStartTimeSec = GetCastStartTimeInSec(row.Field<string>(3));
+                                int combatStartTime = GetCreatureCombatStartTime(guid);
+                                int castStartTimeSec = GetCastStartTimeInSec(row["CastTime"].ToString());
 
                                 if (castStartTimeSec - combatStartTime >= 0)
                                 {
@@ -147,9 +131,9 @@ namespace WoWDeveloperAssistant
                     // Get min-max repeat cast time for spell
                     foreach (DataRow row in defaultDataTable.Rows)
                     {
-                        if (row.Field<string>(2) == spellId.ToString())
+                        if (row["SpellId"].ToString() == spellId.ToString())
                         {
-                            int castStartTimeSec = GetCastStartTimeInSec(row.Field<string>(3));
+                            int castStartTimeSec = GetCastStartTimeInSec(row["CastTime"].ToString());
 
                             if (castStartTimeSec - combatStartTimeSec >= 0)
                             {
@@ -169,9 +153,9 @@ namespace WoWDeveloperAssistant
                     // Get cast count
                     foreach (DataRow row in defaultDataTable.Rows)
                     {
-                        int castStartTimeSec = GetCastStartTimeInSec(row.Field<string>(3));
+                        int castStartTimeSec = GetCastStartTimeInSec(row["CastTime"].ToString());
 
-                        if (row.Field<string>(2) == spellId.ToString() && castStartTimeSec - combatStartTimeSec >= 0)
+                        if (row["SpellId"].ToString() == spellId.ToString() && castStartTimeSec - combatStartTimeSec >= 0)
                             castsCount++;
                     }
 
@@ -202,7 +186,7 @@ namespace WoWDeveloperAssistant
                         }
                     }
 
-                    dataGrid.Rows.Add(spellId, spellName, castTime, startCastTimesList.Count != 0 ? startCastTimesList.Min() : 0, startCastTimesList.Count != 0 ? startCastTimesList.Max() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Min() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Max() : 0, castsCount);
+                    mainForm.dataGridView_Spells.Rows.Add(spellId, spellName, castTime, startCastTimesList.Count != 0 ? startCastTimesList.Min() : 0, startCastTimesList.Count != 0 ? startCastTimesList.Max() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Min() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Max() : 0, castsCount);
                 }
             }
             else
@@ -243,54 +227,45 @@ namespace WoWDeveloperAssistant
 
                     foreach (DataRow row in defaultDataTable.Rows)
                     {
-                        if (row.Field<string>(2) == spellId.ToString())
+                        if (row["SpellId"].ToString() == spellId.ToString())
                             castsCount++;
                     }
 
-                    dataGrid.Rows.Add(spellId, spellName, castTime, 0, 0, 0, 0, castsCount);
+                    mainForm.dataGridView_Spells.Rows.Add(spellId, spellName, castTime, 0, 0, 0, 0, castsCount);
                 }
             }
 
-            dataGrid.Enabled = true;
+            mainForm.dataGridView_Spells.Enabled = true;
         }
 
-        public static void FillListBoxWithGuids(DataTable combatDataTable, DataTable guidsDataTable, ListBox listBox, string creatureEntry, bool onlyCombatSpells)
+        public void FillListBoxWithGuids()
         {
-            List<string> guidList = new List<string>();
-
             foreach (DataRow dataRow in guidsDataTable.Rows)
             {
-                if (creatureEntry != "" && creatureEntry != "0")
+                if (mainForm.checkBox_OnlyCombatSpells.Checked && !IsCreatureHasCombatSpells(dataRow["CreatureGuid"].ToString()))
+                    continue;
+
+                if (!IsCreatureHasAnySpell(dataRow["CreatureGuid"].ToString()))
+                    continue;
+
+                if (mainForm.toolStripTextBox_CreatureEntry.Text != "" && mainForm.toolStripTextBox_CreatureEntry.Text != "0")
                 {
-                    if (creatureEntry == dataRow["CreatureEntry"].ToString() && onlyCombatSpells &&
-                        IsGuidValidForCombatParse(combatDataTable, dataRow["CreatureGuid"].ToString()))
+                    if (mainForm.toolStripTextBox_CreatureEntry.Text == dataRow["CreatureEntry"].ToString())
                     {
-                        guidList.Add(dataRow["CreatureGuid"].ToString());
-                    }
-                    else if (creatureEntry == dataRow["CreatureEntry"].ToString() && !onlyCombatSpells)
-                    {
-                        guidList.Add(dataRow["CreatureGuid"].ToString());
+                        mainForm.listBox_CreatureGuids.Items.Add(dataRow["CreatureGuid"].ToString());
                     }
                 }
                 else
                 {
-                    if (onlyCombatSpells && IsGuidValidForCombatParse(combatDataTable, dataRow["CreatureGuid"].ToString()))
-                    {
-                        guidList.Add(dataRow["CreatureGuid"].ToString());
-                    }
-                    else if (!onlyCombatSpells)
-                    {
-                        guidList.Add(dataRow["CreatureGuid"].ToString());
-                    }
+                    mainForm.listBox_CreatureGuids.Items.Add(dataRow["CreatureGuid"].ToString());
                 }
             }
 
-            listBox.DataSource = guidList;
-            listBox.Refresh();
-            listBox.Enabled = true;
+            mainForm.listBox_CreatureGuids.Refresh();
+            mainForm.listBox_CreatureGuids.Enabled = true;
         }
 
-        public static DataSet LoadSniffFile(string fileName)
+        public void LoadSniffFile(string fileName)
         {
             System.IO.StreamReader file = new System.IO.StreamReader(fileName);
             var line = file.ReadLine();
@@ -298,54 +273,27 @@ namespace WoWDeveloperAssistant
 
             if (line == "# TrinityCore - WowPacketParser")
             {
-                return GetDataFromSniffFile(fileName);
+                GetDataFromSniffFile(fileName);
+                mainForm.importSuccessful = true;
             }
             else
             {
                 MessageBox.Show(fileName + " is is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                return null;
             }
         }
 
-        public static uint GetExpansion(string fileName)
+        private void GetDataFromSniffFile(string fileName)
         {
             var lines = File.ReadAllLines(fileName);
 
-            for (int i = 1; i < lines.Count(); i++)
-            {
-                if (lines[i].Contains("# Targeted database:"))
-                {
-                    string[] splittedLine = lines[i].Split(new char[] { ' ' });
-                    string expansion = splittedLine[3];
+            expansion = GetExpansion(lines);
 
-                    if (expansion == "Legion")
-                        return 1;
-                    else if (expansion == "BattleForAzeroth")
-                        return 2;
-                }
-            }
-
-            return 0;
-        }
-
-        private static DataSet GetDataFromSniffFile(string fileName)
-        {
-            DataSet dataSet = new DataSet();
-            DataTable guidsDataTable = new DataTable();
-            DataTable combatDataTable = new DataTable();
-            DataTable spellsDataTable = new DataTable();
-            guidsDataTable.Columns.AddRange(new DataColumn[2] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)) });
-            guidsDataTable.PrimaryKey = new DataColumn[] { guidsDataTable.Columns["CreatureGuid"] };
-            combatDataTable.Columns.AddRange(new DataColumn[3] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("CombatStartTime", typeof(string)) });    
-            spellsDataTable.Columns.AddRange(new DataColumn[4] { new DataColumn("CreatureEntry", typeof(string)), new DataColumn("CreatureGuid", typeof(string)), new DataColumn("SpellId", typeof(string)), new DataColumn("CastTime", typeof(string)) });
-
-            var lines = File.ReadAllLines(fileName);
-
+            // Parse guids and entries
             for (int i = 1; i < lines.Count(); i++)
             {
                 if (lines[i].Contains("SMSG_UPDATE_OBJECT"))
                 {
-                    Packet packet;
+                    UpdatePacket packet;
                     packet.creature_entry = "";
                     packet.creature_guid = "";
 
@@ -393,15 +341,14 @@ namespace WoWDeveloperAssistant
                 }
             }
 
+            // Parse combat start time, spell casts and chat
             for (int i = 1; i < lines.Count(); i++)
             {
                 if (lines[i].Contains("SMSG_AI_REACTION"))
                 {
-                    Packet packet;
+                    SpellCastPacket packet;
                     packet.creature_entry = "";
                     packet.creature_guid = "";
-                    packet.spell_id = "";
-                    packet.cast_time = "";
                     packet.combat_start_time = "";
 
                     string[] values = lines[i].Split(new char[] { ' ' });
@@ -415,7 +362,7 @@ namespace WoWDeveloperAssistant
                         if (lines[i].Contains("UnitGUID: Full:"))
                         {
                             packet.creature_guid = GetGuidFromLine(lines[i]);
-                            packet.creature_entry = GetCreatureEntryByGuid(guidsDataTable, packet.creature_guid);
+                            packet.creature_entry = GetCreatureEntryByGuid(packet.creature_guid);
                         }
 
                     } while (lines[i] != "");
@@ -432,7 +379,7 @@ namespace WoWDeveloperAssistant
 
                 if (lines[i].Contains("SMSG_SPELL_START"))
                 {
-                    Packet packet;
+                    SpellCastPacket packet;
                     packet.creature_entry = "";
                     packet.creature_guid = "";
                     packet.spell_id = "";
@@ -451,7 +398,7 @@ namespace WoWDeveloperAssistant
                             if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
                             {
                                 packet.creature_guid = GetGuidFromLine(lines[i]);
-                                packet.creature_entry = GetCreatureEntryByGuid(guidsDataTable, packet.creature_guid); 
+                                packet.creature_entry = GetCreatureEntryByGuid(packet.creature_guid); 
                             }
                         }
 
@@ -473,18 +420,99 @@ namespace WoWDeveloperAssistant
                     dataRow[3] = packet.cast_time;
                     spellsDataTable.Rows.Add(dataRow);
                 }
-            }
 
-            dataSet.Tables.Add(combatDataTable);
-            dataSet.Tables.Add(spellsDataTable);
-            dataSet.Tables.Add(guidsDataTable);
-            return dataSet;
+                if (lines[i].Contains("SMSG_CHAT"))
+                {
+                    ChatPacket packet;
+                    packet.creature_entry = "";
+                    packet.say_time = GetPacketTimeFromStringInSeconds(lines[i]);
+
+                    bool IsMonsterSay = false;
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i].Contains("SlashCmd: 12 (MonsterSay)"))
+                        {
+                            IsMonsterSay = true;
+                        }
+
+                        if (lines[i].Contains("SenderGUID: Full:"))
+                        {
+                            packet.creature_entry = GetCreatureEntryByGuid(GetGuidFromLine(lines[i]));
+                        }
+
+                    } while (lines[i] != "");
+
+                    if (packet.creature_entry != "" && packet.say_time != "" && IsMonsterSay)
+                    {
+                        DataRow dataRow = textDataTable.NewRow();
+                        dataRow[0] = packet.creature_entry;
+                        dataRow[1] = packet.say_time;
+                        textDataTable.Rows.Add(dataRow);
+                    }
+                }
+
+                // Parse death time
+                if (lines[i].Contains("SMSG_UPDATE_OBJECT"))
+                {
+                    UpdatePacket packet;
+                    packet.creature_guid = "";
+                    packet.send_time = GetPacketTimeFromStringInSeconds(lines[i]);
+
+                    bool IsDead = false;
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i].Contains("Object Guid: Full:"))
+                        {
+                            if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
+                            {
+                                packet.creature_guid = GetGuidFromLine(lines[i]);
+                            }
+                        }
+
+                        if (lines[i].Contains("UNIT_FIELD_HEALTH"))
+                        {
+                            string creatureHealth = GetHealthFromLine(lines[i]);
+
+                            if (creatureHealth != "" && creatureHealth == "0")
+                            {
+                                IsDead = true;
+                            }
+                        }
+
+                        if (packet.creature_guid != "" && packet.send_time != "" && IsDead)
+                        {
+                            DataRow dataRow = deathDataTable.NewRow();
+                            dataRow[0] = packet.creature_guid;
+                            dataRow[1] = packet.send_time;
+                            deathDataTable.Rows.Add(dataRow);
+
+                            packet.creature_guid = "";
+                            IsDead = false;
+                        }
+
+                        if (lines[i].Contains("UpdateType: Values"))
+                        {
+                            packet.creature_guid = "";
+                            IsDead = false;
+                        }
+
+                    } while (lines[i] != "");
+                }
+            }
         }
 
-        public static void FillSQLOutput(DataTable guidsDataTable, DataGridView dataGrid, TextBox textBox, string creatureGuid, Expansions expansion)
+        public void FillSQLOutput()
         {
             string SQLtext = "";
-            string creatureEntry = GetCreatureEntryByGuid(guidsDataTable, creatureGuid);
+            string creatureGuid = mainForm.listBox_CreatureGuids.SelectedItem.ToString();
+            string creatureEntry = GetCreatureEntryByGuid(mainForm.listBox_CreatureGuids.SelectedItem.ToString());
+            int scriptsCount = mainForm.dataGridView_Spells.RowCount + IsCreatureHasAggroText(creatureGuid) + IsCreatureHasDeathText(creatureGuid);
             string creatureName = "Unknown";
 
             if (Properties.Settings.Default.UsingDB == true)
@@ -501,10 +529,22 @@ namespace WoWDeveloperAssistant
             SQLtext = SQLtext + "DELETE FROM `smart_scripts` WHERE `entryorguid` = " + creatureEntry + ";\r\n";
             SQLtext = SQLtext + "INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_spawnMask`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\r\n";
 
-            for (var l = 0; l < dataGrid.RowCount; l++)
+            for (var l = 0; l < scriptsCount; l++)
             {
-                string spellName = Convert.ToString(dataGrid[1, l].Value);
-                int spellId = Convert.ToInt32(dataGrid[0, l].Value);
+                if (IsCreatureHasAggroText(creatureGuid) == 1 && l == 0)
+                {
+                    SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 4, 0, 50, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - On aggro - Say line 0'),\r\n";
+                    continue;
+                }
+
+                if (IsCreatureHasDeathText(creatureGuid) == 1 && l == (scriptsCount - 1))
+                {
+                    SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 6, 0, 50, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - On death - Say line 1');\r\n";
+                    continue;
+                }
+
+                string spellName = Convert.ToString(mainForm.dataGridView_Spells[1, l - IsCreatureHasAggroText(creatureGuid)].Value);
+                int spellId = Convert.ToInt32(mainForm.dataGridView_Spells[0, l - IsCreatureHasAggroText(creatureGuid)].Value);
                 string targetType = "";
 
                 List<uint> effectIds = new List<uint>();
@@ -580,9 +620,9 @@ namespace WoWDeveloperAssistant
                     }
                 }
 
-                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(dataGrid[3, l].Value) + ", " + Convert.ToString(dataGrid[4, l].Value) + ", " + Convert.ToString(dataGrid[5, l].Value) + ", " + Convert.ToString(dataGrid[6, l].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, 0, 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
+                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(mainForm.dataGridView_Spells[3, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[4, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[5, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[6, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, 0, 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
 
-                if (l < (dataGrid.RowCount - 1))
+                if (l < (scriptsCount - 1))
                 {
                     SQLtext = SQLtext + ",\r\n";
                 }
@@ -592,10 +632,10 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            textBox.Text = SQLtext;
+            mainForm.textBox_SQLOutput.Text = SQLtext;
         }
 
-        private static bool IsSelfTargetType(uint Target)
+        private bool IsSelfTargetType(uint Target)
         {
             List<uint> selfTargetTypesList = new List<uint>()
             {
@@ -609,7 +649,7 @@ namespace WoWDeveloperAssistant
             return (selfTargetTypesList.Contains(Target));
         }
 
-        private static bool IsNonSelfTargetType(uint Target)
+        private bool IsNonSelfTargetType(uint Target)
         {
             List<uint> nonSelfTargetTypesList = new List<uint>()
             {
@@ -619,7 +659,7 @@ namespace WoWDeveloperAssistant
             return (nonSelfTargetTypesList.Contains(Target));
         }
 
-        private static string GetCreatureEntryFromLine(string line, bool FromObjectField = false)
+        private string GetCreatureEntryFromLine(string line, bool FromObjectField = false)
         {
             if (FromObjectField)
             {
@@ -637,11 +677,182 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        private static string GetGuidFromLine(string line)
+        private string GetGuidFromLine(string line)
         {
             Regex guidRegex = new Regex(@"Full:{1}\s*\w+");
             if (guidRegex.IsMatch(line.ToString()))
                 return guidRegex.Match(line.ToString()).ToString().Replace("Full: ", "");
+
+            return "";
+        }
+
+        private bool IsCreatureHasCombatSpells(string creatureGuid)
+        {
+            foreach (DataRow row in spellsDataTable.Rows)
+            {
+                if (row["CreatureGuid"].ToString() == creatureGuid)
+                {
+                    int castTimeInSec = GetCastStartTimeInSec(row["CastTime"].ToString());
+                    int combatStartTimeSec = GetCreatureCombatStartTime(creatureGuid);
+
+                    if (combatStartTimeSec != 0 && castTimeInSec - combatStartTimeSec > 0)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsCreatureHasAnySpell(string creatureGuid)
+        {
+            foreach (DataRow row in spellsDataTable.Rows)
+            {
+                if (row["CreatureGuid"].ToString() == creatureGuid)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static int GetCastStartTimeInSec(string castTime)
+        {
+            string[] castStartTimeStr = castTime.Split(new char[] { ':' });
+            return (Convert.ToInt32(castStartTimeStr[0]) * 3600) + (Convert.ToInt32(castStartTimeStr[1]) * 60) + Convert.ToInt32(castStartTimeStr[2]);
+        }
+
+        private int GetCreatureCombatStartTime(string creatureGuid, bool firstMatch = false)
+        {
+            int combatStartTime = 0;
+            List<string> combatList = new List<string>();
+
+            foreach (DataRow dataRow in combatDataTable.Rows)
+            {
+                if (dataRow["CreatureGuid"].ToString() == creatureGuid)
+                {
+                    combatList.Add(dataRow["CombatStartTime"].ToString());
+                }
+            }
+
+            if (combatList.Count != 0 && firstMatch)
+            {
+                string[] splittedLine = combatList[0].Split(new char[] { ':' });
+                combatStartTime = (Convert.ToInt32(splittedLine[0]) * 3600) + (Convert.ToInt32(splittedLine[1]) * 60 + Convert.ToInt32(splittedLine[2]));
+                return combatStartTime;
+            }
+
+            if (combatList.Count > 1 || combatList.Count == 0)
+            {
+                return combatStartTime;
+            }
+
+            string[] combatStartTimeString = combatList[0].Split(new char[] { ':' });
+            combatStartTime = (Convert.ToInt32(combatStartTimeString[0]) * 3600) + (Convert.ToInt32(combatStartTimeString[1]) * 60) + Convert.ToInt32(combatStartTimeString[2]);
+            return combatStartTime;
+        }
+
+        private static bool GridContainsSpell(DataTable dataTable, string spell)
+        {
+            foreach (DataRow row in dataTable.Rows)
+            {
+                if (row["SpellId"].ToString() == spell)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private string GetCreatureEntryByGuid(string creatureGuid)
+        {
+            foreach (DataRow dataRow in guidsDataTable.Rows)
+            {
+                if (dataRow[1].ToString() == creatureGuid)
+                {
+                    return dataRow[0].ToString();
+                }
+            }
+
+            return "";
+        }
+
+        private Expansions GetExpansion(string[] lines)
+        {
+            for (int i = 1; i < lines.Count(); i++)
+            {
+                if (lines[i].Contains("# Targeted database:"))
+                {
+                    string[] splittedLine = lines[i].Split(new char[] { ' ' });
+                    string expansion = splittedLine[3];
+
+                    if (expansion == "Legion")
+                        return Expansions.Legion;
+                    else if (expansion == "BattleForAzeroth")
+                        return Expansions.BattleForAzeroth;
+                }
+            }
+
+            return Expansions.Unknown;
+        }
+
+        private string GetPacketTimeFromStringInSeconds(string line)
+        {
+            Regex timeRegex = timeRegex = new Regex(@"\d+:+\d+:+\d+");
+
+            if (timeRegex.IsMatch(line))
+            {
+                TimePacket packet;
+                string[] splittedLine = timeRegex.Match(line).ToString().Split(':');
+
+                packet.hours = splittedLine[0];
+                packet.minutes = splittedLine[1];
+                packet.seconds = splittedLine[2];
+
+                return ((Convert.ToUInt64(packet.hours) * 3600) + (Convert.ToUInt64(packet.minutes) * 60) + Convert.ToUInt64(packet.seconds)).ToString();
+            }
+
+            return "";
+        }
+
+        private int IsCreatureHasAggroText(string creatureEntry)
+        {
+            foreach (DataRow textRow in textDataTable.Rows)
+            {
+                foreach (DataRow combatRow in combatDataTable.Rows)
+                {
+                    int combatStartTime = GetCreatureCombatStartTime(combatRow["CreatureGuid"].ToString(), true);
+
+                    if (combatStartTime == Convert.ToInt32(textRow["SayTime"].ToString()))
+                    {
+                        return 1;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        private int IsCreatureHasDeathText(string creatureEntry)
+        {
+            foreach (DataRow textRow in textDataTable.Rows)
+            {
+                foreach (DataRow deathRow in deathDataTable.Rows)
+                {
+                    int combatStartTime = GetCreatureCombatStartTime(deathRow["CreatureGuid"].ToString(), true);
+
+                    if (combatStartTime == Convert.ToInt32(textRow["SayTime"].ToString()))
+                    {
+                        return 1;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        private string GetHealthFromLine(string line)
+        {
+            Regex guidRegex = new Regex(@"UNIT_FIELD_HEALTH:{1}\s+\d+");
+            if (guidRegex.IsMatch(line.ToString()))
+                return guidRegex.Match(line.ToString()).ToString().Replace("UNIT_FIELD_HEALTH: ", "");
 
             return "";
         }

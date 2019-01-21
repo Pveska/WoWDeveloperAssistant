@@ -73,8 +73,6 @@
             this.statusStrip_LoadedFile = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label_AreatriggerVerticesParser = new System.Windows.Forms.Label();
-            this.textBox_AreatriggerVerticesParser = new System.Windows.Forms.TextBox();
             this.tabControl_DoubleSpawnsRemover.SuspendLayout();
             this.tabPage_CreatureSpellsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
@@ -344,8 +342,6 @@
             // 
             // tabPage_DatabaseAdvisor
             // 
-            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_AreatriggerVerticesParser);
-            this.tabPage_DatabaseAdvisor.Controls.Add(this.label_AreatriggerVerticesParser);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_QuestFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_QuestFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_CreatureFlags);
@@ -515,25 +511,6 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
-            // label_AreatriggerVerticesParser
-            // 
-            this.label_AreatriggerVerticesParser.AutoSize = true;
-            this.label_AreatriggerVerticesParser.Location = new System.Drawing.Point(1038, 2);
-            this.label_AreatriggerVerticesParser.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label_AreatriggerVerticesParser.Name = "label_AreatriggerVerticesParser";
-            this.label_AreatriggerVerticesParser.Size = new System.Drawing.Size(132, 13);
-            this.label_AreatriggerVerticesParser.TabIndex = 4;
-            this.label_AreatriggerVerticesParser.Text = "Areatrigger Vertices Parser";
-            // 
-            // textBox_AreatriggerVerticesParser
-            // 
-            this.textBox_AreatriggerVerticesParser.Location = new System.Drawing.Point(1041, 18);
-            this.textBox_AreatriggerVerticesParser.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_AreatriggerVerticesParser.Name = "textBox_AreatriggerVerticesParser";
-            this.textBox_AreatriggerVerticesParser.Size = new System.Drawing.Size(126, 20);
-            this.textBox_AreatriggerVerticesParser.TabIndex = 5;
-            this.textBox_AreatriggerVerticesParser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_AreatriggerVerticesParser_KeyDown);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -577,12 +554,12 @@
         private System.Windows.Forms.TabPage tabPage_Output;
         private System.Windows.Forms.StatusStrip statusStrip_LoadedFile;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_FileStatus;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_CreatureEntry;
+        public System.Windows.Forms.ToolStripTextBox toolStripTextBox_CreatureEntry;
         private System.Windows.Forms.ToolStripLabel toolStripLabel_CreatureEntry;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.DataGridView dataGridView_Spells;
-        private System.Windows.Forms.ListBox listBox_CreatureGuids;
-        private System.Windows.Forms.CheckBox checkBox_OnlyCombatSpells;
+        public System.Windows.Forms.DataGridView dataGridView_Spells;
+        public System.Windows.Forms.ListBox listBox_CreatureGuids;
+        public System.Windows.Forms.CheckBox checkBox_OnlyCombatSpells;
         private System.Windows.Forms.DataGridViewTextBoxColumn Spell_Id;
         private System.Windows.Forms.DataGridViewTextBoxColumn Spell_Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn Cast_Time;
@@ -595,7 +572,7 @@
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem createSQLToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBox_SQLOutput;
+        public System.Windows.Forms.TextBox textBox_SQLOutput;
         private System.Windows.Forms.TabPage tabPage_DatabaseAdvisor;
         private System.Windows.Forms.TextBox textBox_CreatureFlags;
         private System.Windows.Forms.Label label_CreatureFlags;
@@ -608,8 +585,6 @@
         private System.Windows.Forms.CheckBox checkBox_CreaturesRemover;
         private System.Windows.Forms.Label label_GameobjectsRemoved;
         private System.Windows.Forms.CheckBox checkBox_DatabaseConsidering;
-        private System.Windows.Forms.TextBox textBox_AreatriggerVerticesParser;
-        private System.Windows.Forms.Label label_AreatriggerVerticesParser;
     }
 }
 
