@@ -10,21 +10,14 @@ namespace WoWDeveloperAssistant
 {
     public class CreatureSpellsCreator
     {
-        private enum Expansions : uint
-        {
-            Unknown          = 0,
-            Legion           = 1,
-            BattleForAzeroth = 2
-        };
-
         private MainForm mainForm;
         private DataTable guidsDataTable = new DataTable();
         private DataTable combatDataTable = new DataTable();
         private DataTable spellsDataTable = new DataTable();
         private DataTable textDataTable = new DataTable();
         private DataTable deathDataTable = new DataTable();
-
-        Expansions expansion = Expansions.Unknown;
+        private Dictionary<string, string> facingDictionary = new Dictionary<string, string>();
+        private Dictionary<string, string> stopAttackDictionary = new Dictionary<string, string>();
 
         public CreatureSpellsCreator(MainForm mainForm)
         {
@@ -68,6 +61,20 @@ namespace WoWDeveloperAssistant
         {
             public string creature_entry;
             public string creature_guid;
+            public string send_time;
+        }
+
+        struct MovePacket
+        {
+            public string creature_guid;
+            public string orientation;
+            public string send_time;
+        }
+
+        struct AttackStopPacket
+        {
+            public string creature_guid;
+            public bool now_dead;
             public string send_time;
         }
 
@@ -159,31 +166,9 @@ namespace WoWDeveloperAssistant
                             castsCount++;
                     }
 
-                    switch (expansion)
+                    if (DBC.SpellName.ContainsKey(spellId))
                     {
-                        case Expansions.Legion:
-                        {
-                            if (DBC.SpellLegion.ContainsKey(spellId))
-                            {
-                                spellName = DBC.SpellLegion[spellId].Name;
-                            }
-
-                            break;
-                        }
-                        case Expansions.BattleForAzeroth:
-                        {
-                            if (DBC.SpellNameBfa.ContainsKey(spellId))
-                            {
-                                spellName = DBC.SpellNameBfa[spellId].Name;
-                            }
-
-                            break;
-                        }
-                        default:
-                        {
-                            spellName = "Unknown";
-                            break;
-                        }
+                        spellName = DBC.SpellName[spellId].Name;
                     }
 
                     mainForm.dataGridView_Spells.Rows.Add(spellId, spellName, castTime, startCastTimesList.Count != 0 ? startCastTimesList.Min() : 0, startCastTimesList.Count != 0 ? startCastTimesList.Max() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Min() : 0, repeatCastTimesList.Count != 0 ? repeatCastTimesList.Max() : 0, castsCount);
@@ -198,31 +183,9 @@ namespace WoWDeveloperAssistant
                     string castTime = dataRow[3].ToString();
                     uint castsCount = 0;
 
-                    switch (expansion)
+                    if (DBC.SpellName.ContainsKey(spellId))
                     {
-                        case Expansions.Legion:
-                        {
-                            if (DBC.SpellLegion.ContainsKey(spellId))
-                            {
-                                spellName = DBC.SpellLegion[spellId].Name;
-                            }
-
-                            break;
-                        }
-                        case Expansions.BattleForAzeroth:
-                        {
-                            if (DBC.SpellNameBfa.ContainsKey(spellId))
-                            {
-                                spellName = DBC.SpellNameBfa[spellId].Name;
-                            }
-
-                            break;
-                        }
-                        default:
-                        {
-                            spellName = "Unknown";
-                            break;
-                        }
+                        spellName = DBC.SpellName[spellId].Name;
                     }
 
                     foreach (DataRow row in defaultDataTable.Rows)
@@ -240,6 +203,9 @@ namespace WoWDeveloperAssistant
 
         public void FillListBoxWithGuids()
         {
+            mainForm.listBox_CreatureGuids.Items.Clear();
+            mainForm.dataGridView_Spells.Rows.Clear();
+
             foreach (DataRow dataRow in guidsDataTable.Rows)
             {
                 if (mainForm.checkBox_OnlyCombatSpells.Checked && !IsCreatureHasCombatSpells(dataRow["CreatureGuid"].ToString()))
@@ -273,6 +239,14 @@ namespace WoWDeveloperAssistant
 
             if (line == "# TrinityCore - WowPacketParser")
             {
+                guidsDataTable.Clear();
+                combatDataTable.Clear();
+                spellsDataTable.Clear();
+                textDataTable.Clear();
+                deathDataTable.Clear();
+                facingDictionary.Clear();
+                stopAttackDictionary.Clear();
+
                 GetDataFromSniffFile(fileName);
                 mainForm.importSuccessful = true;
             }
@@ -286,9 +260,6 @@ namespace WoWDeveloperAssistant
         {
             var lines = File.ReadAllLines(fileName);
 
-            expansion = GetExpansion(lines);
-
-            // Parse guids and entries
             for (int i = 1; i < lines.Count(); i++)
             {
                 if (lines[i].Contains("SMSG_UPDATE_OBJECT"))
@@ -341,7 +312,6 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            // Parse combat start time, spell casts and chat
             for (int i = 1; i < lines.Count(); i++)
             {
                 if (lines[i].Contains("SMSG_AI_REACTION"))
@@ -398,7 +368,7 @@ namespace WoWDeveloperAssistant
                             if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
                             {
                                 packet.creature_guid = GetGuidFromLine(lines[i]);
-                                packet.creature_entry = GetCreatureEntryByGuid(packet.creature_guid); 
+                                packet.creature_entry = GetCreatureEntryByGuid(packet.creature_guid);
                             }
                         }
 
@@ -454,7 +424,6 @@ namespace WoWDeveloperAssistant
                     }
                 }
 
-                // Parse death time
                 if (lines[i].Contains("SMSG_UPDATE_OBJECT"))
                 {
                     UpdatePacket packet;
@@ -467,12 +436,10 @@ namespace WoWDeveloperAssistant
                     {
                         i++;
 
-                        if (lines[i].Contains("Object Guid: Full:"))
+                        if (lines[i].Contains("Object Guid: Full:") &&
+                            (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0")))
                         {
-                            if (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0"))
-                            {
-                                packet.creature_guid = GetGuidFromLine(lines[i]);
-                            }
+                            packet.creature_guid = GetGuidFromLine(lines[i]);
                         }
 
                         if (lines[i].Contains("UNIT_FIELD_HEALTH"))
@@ -503,6 +470,77 @@ namespace WoWDeveloperAssistant
                         }
 
                     } while (lines[i] != "");
+                }
+
+                if (lines[i].Contains("SMSG_ON_MONSTER_MOVE"))
+                {
+                    MovePacket packet;
+                    packet.creature_guid = "";
+                    packet.orientation = "";
+                    packet.send_time = GetPacketTimeFromStringInSeconds(lines[i]);
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i].Contains("MoverGUID: Full:") &&
+                            (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0")))
+                        {
+                            packet.creature_guid = GetGuidFromLine(lines[i]);
+                        }
+
+                        if (lines[i].Contains("FaceDirection:"))
+                        {
+                            packet.orientation = GetFaceDirectionFromLine(lines[i]);
+                        }
+
+                    } while (lines[i] != "");
+
+                    if (packet.creature_guid != "" && packet.orientation != "" && packet.send_time != "")
+                    {
+                        if (!facingDictionary.ContainsKey(packet.creature_guid))
+                        {
+                            facingDictionary.Add(packet.creature_guid, packet.send_time);
+                        }
+                    }
+                }
+
+                if (lines[i].Contains("SMSG_ATTACK_STOP"))
+                {
+                    AttackStopPacket packet;
+                    packet.creature_guid = "";
+                    packet.now_dead = true;
+                    packet.send_time = GetPacketTimeFromStringInSeconds(lines[i]);
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i].Contains("Attacker Guid: Full:") &&
+                            (lines[i].Contains("Creature/0") || lines[i].Contains("Vehicle/0")))
+                        {
+                            packet.creature_guid = GetGuidFromLine(lines[i]);
+                        }
+
+                        if (lines[i].Contains("NowDead:"))
+                        {
+                            string[] splittedLine = lines[i].Split(':');
+
+                            if (splittedLine[1] == " False")
+                            {
+                                packet.now_dead = false;
+                            }
+                        }
+
+                    } while (lines[i] != "");
+
+                    if (packet.creature_guid != "" && packet.now_dead == false && packet.send_time != "")
+                    {
+                        if (!stopAttackDictionary.ContainsKey(packet.creature_guid))
+                        {
+                            stopAttackDictionary.Add(packet.creature_guid, packet.send_time);
+                        }
+                    }
                 }
             }
         }
@@ -549,78 +587,34 @@ namespace WoWDeveloperAssistant
 
                 List<uint> effectIds = new List<uint>();
 
-                switch (expansion)
+                foreach (var effectId in DBC.SpellEffect)
                 {
-                    case Expansions.Legion:
-                    {
-                        foreach (var effectId in DBC.SpellEffectlegion.Values)
-                        {
-                            if (effectId.SpellID == spellId)
-                                effectIds.Add(effectId.ID);
-                        }
-
-                        if (effectIds.Count != 0)
-                        {
-                            uint targeType = 0;
-
-                            foreach (var effectId in effectIds)
-                            {
-                                targeType = DBC.SpellEffectlegion[Convert.ToInt32(effectId)].ImplicitTarget[0] > 0 ? DBC.SpellEffectlegion[Convert.ToInt32(effectId)].ImplicitTarget[0] : DBC.SpellEffectlegion[Convert.ToInt32(effectId)].ImplicitTarget[1];
-                            }
-
-                            if (IsSelfTargetType(targeType))
-                                targetType = "1";
-                            else if (IsNonSelfTargetType(targeType))
-                                targetType = "2";
-                            else
-                                targetType = "99";
-                        }
-                        else
-                        {
-                            targetType = "99";
-                        }
-
-                        break;
-                    }
-                    case Expansions.BattleForAzeroth:
-                    {
-                        foreach (var effectId in DBC.SpellEffectBfa)
-                        {
-                            if (effectId.Value.SpellID == spellId)
-                                effectIds.Add((uint)effectId.Key);
-                        }
-                        
-                        if (effectIds.Count != 0)
-                        {
-                            short targeType = 0;
-                        
-                            foreach (var effectId in effectIds)
-                            {
-                                targeType = DBC.SpellEffectBfa[Convert.ToInt32(effectId)].ImplicitTarget[0] > 0 ? DBC.SpellEffectBfa[Convert.ToInt32(effectId)].ImplicitTarget[0] : DBC.SpellEffectBfa[Convert.ToInt32(effectId)].ImplicitTarget[1];
-                            }
-                        
-                            if (IsSelfTargetType((uint)targeType))
-                                targetType = "1";
-                            else if (IsNonSelfTargetType((uint)targeType))
-                                targetType = "2";
-                            else
-                                targetType = "99";
-                        }
-                        else
-                        {
-                            targetType = "99";
-                        }
-                        
-                        break;
-                    }
-                    default:
-                    {
-                        targetType = "99";
-                        break;
-                    }
+                    if (effectId.Value.SpellID == spellId)
+                        effectIds.Add((uint)effectId.Key);
                 }
 
-                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(mainForm.dataGridView_Spells[3, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[4, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[5, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[6, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, 0, 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
+                if (effectIds.Count != 0)
+                {
+                    short targeType = 0;
+
+                    foreach (var effectId in effectIds)
+                    {
+                        targeType = DBC.SpellEffect[Convert.ToInt32(effectId)].ImplicitTarget[0] > 0 ? DBC.SpellEffect[Convert.ToInt32(effectId)].ImplicitTarget[0] : DBC.SpellEffect[Convert.ToInt32(effectId)].ImplicitTarget[1];
+                    }
+
+                    if (IsSelfTargetType((uint)targeType))
+                        targetType = "1";
+                    else if (IsNonSelfTargetType((uint)targeType))
+                        targetType = "2";
+                    else
+                        targetType = "99";
+                }
+                else
+                {
+                    targetType = "99";
+                }
+
+                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(mainForm.dataGridView_Spells[3, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[4, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[5, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[6, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, " + IsSetFacingNeededForSpell(spellId, creatureGuid) + ", 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
 
                 if (l < (scriptsCount - 1))
                 {
@@ -774,25 +768,6 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        private Expansions GetExpansion(string[] lines)
-        {
-            for (int i = 1; i < lines.Count(); i++)
-            {
-                if (lines[i].Contains("# Targeted database:"))
-                {
-                    string[] splittedLine = lines[i].Split(new char[] { ' ' });
-                    string expansion = splittedLine[3];
-
-                    if (expansion == "Legion")
-                        return Expansions.Legion;
-                    else if (expansion == "BattleForAzeroth")
-                        return Expansions.BattleForAzeroth;
-                }
-            }
-
-            return Expansions.Unknown;
-        }
-
         private string GetPacketTimeFromStringInSeconds(string line)
         {
             Regex timeRegex = timeRegex = new Regex(@"\d+:+\d+:+\d+");
@@ -850,11 +825,58 @@ namespace WoWDeveloperAssistant
 
         private string GetHealthFromLine(string line)
         {
-            Regex guidRegex = new Regex(@"UNIT_FIELD_HEALTH:{1}\s+\d+");
-            if (guidRegex.IsMatch(line.ToString()))
-                return guidRegex.Match(line.ToString()).ToString().Replace("UNIT_FIELD_HEALTH: ", "");
+            Regex healthRegex = new Regex(@"UNIT_FIELD_HEALTH:{1}\s+\d+");
+            if (healthRegex.IsMatch(line.ToString()))
+                return healthRegex.Match(line.ToString()).ToString().Replace("UNIT_FIELD_HEALTH: ", "");
 
             return "";
+        }
+
+        private string GetFaceDirectionFromLine(string line)
+        {
+            Regex facingRegex = new Regex(@"FaceDirection:{1}\s+\d+\.+\d+");
+            if (facingRegex.IsMatch(line.ToString()))
+                return facingRegex.Match(line.ToString()).ToString().Replace("FaceDirection: ", "");
+
+            return "";
+        }
+
+        private string IsSetFacingNeededForSpell(int spellId, string creatureGuid)
+        {
+            string castTime = "";
+
+            if (DBC.SpellMisc.ContainsKey(spellId))
+            {
+                if (DBC.SpellCastTimes.ContainsKey(DBC.SpellMisc[spellId].CastingTimeIndex))
+                {
+                    castTime = DBC.SpellCastTimes[DBC.SpellMisc[spellId].CastingTimeIndex].Minimum.ToString();
+                }
+            }
+
+            bool isConeTypeSpell = false;
+
+            for (int i = 0; i < 32; i++)
+            {
+                var spellEffectTuple = Tuple.Create(spellId, i);
+
+                if (DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                {
+                    var spellEffect = DBC.SpellEffectStores[spellEffectTuple];
+
+                    if ((spellEffect.ImplicitTarget[0] == 129 || spellEffect.ImplicitTarget[1] == 129) ||
+                        (spellEffect.ImplicitTarget[0] == 130 || spellEffect.ImplicitTarget[1] == 130) ||
+                        (spellEffect.ImplicitTarget[0] == 54 || spellEffect.ImplicitTarget[1] == 54) ||
+                        (spellEffect.ImplicitTarget[0] == 110 || spellEffect.ImplicitTarget[1] == 110))
+                    {
+                        isConeTypeSpell = true;
+                    }
+                }
+            }
+
+            if (facingDictionary.ContainsKey(creatureGuid) && stopAttackDictionary.ContainsKey(creatureGuid) && castTime != "" && isConeTypeSpell)
+                return (Convert.ToUInt32(castTime) + 1000).ToString();
+
+            return "0";
         }
     }
 }

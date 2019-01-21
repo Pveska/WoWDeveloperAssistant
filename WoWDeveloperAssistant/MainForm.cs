@@ -88,6 +88,7 @@ namespace WoWDeveloperAssistant
             toolStripButton_Search.Enabled = false;
             toolStripTextBox_CreatureEntry.Enabled = false;
             listBox_CreatureGuids.Enabled = false;
+            listBox_CreatureGuids.Items.Clear();
             listBox_CreatureGuids.DataSource = null;
             dataGridView_Spells.Enabled = false;
             dataGridView_Spells.Rows.Clear();

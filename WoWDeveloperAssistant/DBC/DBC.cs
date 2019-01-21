@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using CascStorageLib;
 using WoWDeveloperAssistant.Misc;
@@ -8,10 +10,10 @@ namespace WoWDeveloperAssistant
 {
     public static class DBC
     {
-        public static Storage<SpellEntryLegion> SpellLegion = new Storage<SpellEntryLegion>(GetPath("SpellLegion.db2"));
-        public static Storage<SpellEffectEntryLegion> SpellEffectlegion = new Storage<SpellEffectEntryLegion>(GetPath("SpellEffectLegion.db2"));
-        public static Storage<SpellEffectEntryBfa> SpellEffectBfa = new Storage<SpellEffectEntryBfa>(GetPath("SpellEffectBfa.db2"));
-        public static Storage<SpellNameEntryBfa> SpellNameBfa = new Storage<SpellNameEntryBfa>(GetPath("SpellNameBfa.db2"));
+        public static Storage<SpellEffectEntry> SpellEffect = new Storage<SpellEffectEntry>(GetPath("SpellEffect.db2"));
+        public static Storage<SpellNameEntry> SpellName = new Storage<SpellNameEntry>(GetPath("SpellName.db2"));
+        public static Storage<SpellMiscEntry> SpellMisc = new Storage<SpellMiscEntry>(GetPath("SpellMisc.db2"));
+        public static Storage<SpellCastTimesEntry> SpellCastTimes = new Storage<SpellCastTimesEntry>(GetPath("SpellCastTimes.db2"));
 
         private static string GetPath()
         {
@@ -22,5 +24,7 @@ namespace WoWDeveloperAssistant
         {
             return Path.Combine(GetPath(), fileName);
         }
+
+        public static readonly Dictionary<Tuple<int, int>, SpellEffectEntry> SpellEffectStores = new Dictionary<Tuple<int, int>, SpellEffectEntry>();
     }
 }
