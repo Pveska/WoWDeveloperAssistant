@@ -550,7 +550,7 @@ namespace WoWDeveloperAssistant
             string SQLtext = "";
             string creatureGuid = mainForm.listBox_CreatureGuids.SelectedItem.ToString();
             string creatureEntry = GetCreatureEntryByGuid(mainForm.listBox_CreatureGuids.SelectedItem.ToString());
-            int scriptsCount = mainForm.dataGridView_Spells.RowCount + IsCreatureHasAggroText(creatureGuid) + IsCreatureHasDeathText(creatureGuid);
+            int scriptsCount = mainForm.dataGridView_Spells.RowCount + IsCreatureHasAggroText(creatureEntry) + IsCreatureHasDeathText(creatureEntry);
             string creatureName = "Unknown";
 
             if (Properties.Settings.Default.UsingDB == true)
@@ -569,20 +569,20 @@ namespace WoWDeveloperAssistant
 
             for (var l = 0; l < scriptsCount; l++)
             {
-                if (IsCreatureHasAggroText(creatureGuid) == 1 && l == 0)
+                if (IsCreatureHasAggroText(creatureEntry) == 1 && l == 0)
                 {
                     SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 4, 0, 50, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - On aggro - Say line 0'),\r\n";
                     continue;
                 }
 
-                if (IsCreatureHasDeathText(creatureGuid) == 1 && l == (scriptsCount - 1))
+                if (IsCreatureHasDeathText(creatureEntry) == 1 && l == (scriptsCount - 1))
                 {
                     SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 6, 0, 50, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - On death - Say line 1');\r\n";
                     continue;
                 }
 
-                string spellName = Convert.ToString(mainForm.dataGridView_Spells[1, l - IsCreatureHasAggroText(creatureGuid)].Value);
-                int spellId = Convert.ToInt32(mainForm.dataGridView_Spells[0, l - IsCreatureHasAggroText(creatureGuid)].Value);
+                string spellName = Convert.ToString(mainForm.dataGridView_Spells[1, l - IsCreatureHasAggroText(creatureEntry)].Value);
+                int spellId = Convert.ToInt32(mainForm.dataGridView_Spells[0, l - IsCreatureHasAggroText(creatureEntry)].Value);
                 string targetType = "";
 
                 List<uint> effectIds = new List<uint>();
@@ -614,7 +614,7 @@ namespace WoWDeveloperAssistant
                     targetType = "99";
                 }
 
-                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(mainForm.dataGridView_Spells[3, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[4, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[5, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[6, l - IsCreatureHasAggroText(creatureGuid)].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, " + IsSetFacingNeededForSpell(spellId, creatureGuid) + ", 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
+                SQLtext = SQLtext + "(" + creatureEntry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + Convert.ToString(mainForm.dataGridView_Spells[3, l - IsCreatureHasAggroText(creatureEntry)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[4, l - IsCreatureHasAggroText(creatureEntry)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[5, l - IsCreatureHasAggroText(creatureEntry)].Value) + ", " + Convert.ToString(mainForm.dataGridView_Spells[6, l - IsCreatureHasAggroText(creatureEntry)].Value) + ", 11, " + Convert.ToString(spellId) + ", 0, " + IsSetFacingNeededForSpell(spellId, creatureGuid) + ", 0, 0, 0, " + targetType + ", 0, 0, 0, 0, 0, 0, 0, '" + creatureName + " - IC - Cast " + spellName + "')";
 
                 if (l < (scriptsCount - 1))
                 {
@@ -793,11 +793,14 @@ namespace WoWDeveloperAssistant
             {
                 foreach (DataRow combatRow in combatDataTable.Rows)
                 {
-                    int combatStartTime = GetCreatureCombatStartTime(combatRow["CreatureGuid"].ToString(), true);
-
-                    if (combatStartTime == Convert.ToInt32(textRow["SayTime"].ToString()))
+                    if (textRow["CreatureEntry"].ToString() == creatureEntry)
                     {
-                        return 1;
+                        int combatStartTime = GetCreatureCombatStartTime(combatRow["CreatureGuid"].ToString(), true);
+
+                        if (combatStartTime == Convert.ToInt32(textRow["SayTime"].ToString()))
+                        {
+                            return 1;
+                        }
                     }
                 }
             }
@@ -811,11 +814,14 @@ namespace WoWDeveloperAssistant
             {
                 foreach (DataRow deathRow in deathDataTable.Rows)
                 {
-                    int combatStartTime = GetCreatureCombatStartTime(deathRow["CreatureGuid"].ToString(), true);
-
-                    if (combatStartTime == Convert.ToInt32(textRow["SayTime"].ToString()))
+                    if (textRow["CreatureEntry"].ToString() == creatureEntry)
                     {
-                        return 1;
+                        int combatStartTime = GetCreatureCombatStartTime(deathRow["CreatureGuid"].ToString(), true);
+
+                        if (combatStartTime == Convert.ToInt32(textRow["SayTime"].ToString()))
+                        {
+                            return 1;
+                        }
                     }
                 }
             }
