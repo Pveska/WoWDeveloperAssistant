@@ -33,25 +33,30 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl_DoubleSpawnsRemover = new System.Windows.Forms.TabControl();
-            this.tabPage_CreatureSpellsCreator = new System.Windows.Forms.TabPage();
+            this.tabPage_CreatureScriptsCreator = new System.Windows.Forms.TabPage();
             this.checkBox_OnlyCombatSpells = new System.Windows.Forms.CheckBox();
             this.dataGridView_Spells = new System.Windows.Forms.DataGridView();
-            this.Spell_Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Spell_Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Cast_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Min_Cast_Start_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Max_Cast_Start_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Min_Cast_Repeat_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Max_Cast_Repeat_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Casts_Count = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SpellId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SpellName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CastTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MinCastStartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaxCastStartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MinCastRepeatTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaxCastRepeatTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CastsCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SourceSpell = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.createSQLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox_CreatureGuids = new System.Windows.Forms.ListBox();
-            this.toolStrip_CreatureSpellsCreator = new System.Windows.Forms.ToolStrip();
+            this.toolStrip_CreatureScriptsCreator = new System.Windows.Forms.ToolStrip();
             this.toolStripButton_ImportSniff = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton_Search = new System.Windows.Forms.ToolStripButton();
             this.toolStripTextBox_CreatureEntry = new System.Windows.Forms.ToolStripTextBox();
@@ -74,10 +79,10 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.tabControl_DoubleSpawnsRemover.SuspendLayout();
-            this.tabPage_CreatureSpellsCreator.SuspendLayout();
+            this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
-            this.toolStrip_CreatureSpellsCreator.SuspendLayout();
+            this.toolStrip_CreatureScriptsCreator.SuspendLayout();
             this.tabPage_Output.SuspendLayout();
             this.tabPage_DatabaseAdvisor.SuspendLayout();
             this.tabPage_DoubleSpawnsRemover.SuspendLayout();
@@ -86,41 +91,38 @@
             // 
             // tabControl_DoubleSpawnsRemover
             // 
-            this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_CreatureSpellsCreator);
+            this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_CreatureScriptsCreator);
             this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_Output);
             this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_DatabaseAdvisor);
             this.tabControl_DoubleSpawnsRemover.Controls.Add(this.tabPage_DoubleSpawnsRemover);
-            this.tabControl_DoubleSpawnsRemover.Location = new System.Drawing.Point(2, 2);
-            this.tabControl_DoubleSpawnsRemover.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabControl_DoubleSpawnsRemover.Location = new System.Drawing.Point(3, 3);
             this.tabControl_DoubleSpawnsRemover.Name = "tabControl_DoubleSpawnsRemover";
             this.tabControl_DoubleSpawnsRemover.SelectedIndex = 0;
-            this.tabControl_DoubleSpawnsRemover.Size = new System.Drawing.Size(1182, 645);
+            this.tabControl_DoubleSpawnsRemover.Size = new System.Drawing.Size(1773, 992);
             this.tabControl_DoubleSpawnsRemover.TabIndex = 1;
             // 
-            // tabPage_CreatureSpellsCreator
+            // tabPage_CreatureScriptsCreator
             // 
-            this.tabPage_CreatureSpellsCreator.Controls.Add(this.checkBox_OnlyCombatSpells);
-            this.tabPage_CreatureSpellsCreator.Controls.Add(this.dataGridView_Spells);
-            this.tabPage_CreatureSpellsCreator.Controls.Add(this.listBox_CreatureGuids);
-            this.tabPage_CreatureSpellsCreator.Controls.Add(this.toolStrip_CreatureSpellsCreator);
-            this.tabPage_CreatureSpellsCreator.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_CreatureSpellsCreator.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_CreatureSpellsCreator.Name = "tabPage_CreatureSpellsCreator";
-            this.tabPage_CreatureSpellsCreator.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_CreatureSpellsCreator.Size = new System.Drawing.Size(1174, 619);
-            this.tabPage_CreatureSpellsCreator.TabIndex = 0;
-            this.tabPage_CreatureSpellsCreator.Text = "Creature Spells Creator";
-            this.tabPage_CreatureSpellsCreator.UseVisualStyleBackColor = true;
+            this.tabPage_CreatureScriptsCreator.Controls.Add(this.checkBox_OnlyCombatSpells);
+            this.tabPage_CreatureScriptsCreator.Controls.Add(this.dataGridView_Spells);
+            this.tabPage_CreatureScriptsCreator.Controls.Add(this.listBox_CreatureGuids);
+            this.tabPage_CreatureScriptsCreator.Controls.Add(this.toolStrip_CreatureScriptsCreator);
+            this.tabPage_CreatureScriptsCreator.Location = new System.Drawing.Point(4, 29);
+            this.tabPage_CreatureScriptsCreator.Name = "tabPage_CreatureScriptsCreator";
+            this.tabPage_CreatureScriptsCreator.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_CreatureScriptsCreator.Size = new System.Drawing.Size(1765, 959);
+            this.tabPage_CreatureScriptsCreator.TabIndex = 0;
+            this.tabPage_CreatureScriptsCreator.Text = "Creature Spells Creator";
+            this.tabPage_CreatureScriptsCreator.UseVisualStyleBackColor = true;
             // 
             // checkBox_OnlyCombatSpells
             // 
             this.checkBox_OnlyCombatSpells.AutoSize = true;
             this.checkBox_OnlyCombatSpells.Checked = true;
             this.checkBox_OnlyCombatSpells.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_OnlyCombatSpells.Location = new System.Drawing.Point(834, 6);
-            this.checkBox_OnlyCombatSpells.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox_OnlyCombatSpells.Location = new System.Drawing.Point(1251, 9);
             this.checkBox_OnlyCombatSpells.Name = "checkBox_OnlyCombatSpells";
-            this.checkBox_OnlyCombatSpells.Size = new System.Drawing.Size(117, 17);
+            this.checkBox_OnlyCombatSpells.Size = new System.Drawing.Size(173, 24);
             this.checkBox_OnlyCombatSpells.TabIndex = 4;
             this.checkBox_OnlyCombatSpells.Text = "Only Combat Spells";
             this.checkBox_OnlyCombatSpells.UseVisualStyleBackColor = true;
@@ -135,97 +137,118 @@
             this.dataGridView_Spells.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView_Spells.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_Spells.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Spell_Id,
-            this.Spell_Name,
-            this.Cast_Time,
-            this.Min_Cast_Start_Time,
-            this.Max_Cast_Start_Time,
-            this.Min_Cast_Repeat_Time,
-            this.Max_Cast_Repeat_Time,
-            this.Casts_Count});
+            this.SpellId,
+            this.SpellName,
+            this.CastTime,
+            this.MinCastStartTime,
+            this.MaxCastStartTime,
+            this.MinCastRepeatTime,
+            this.MaxCastRepeatTime,
+            this.CastsCount,
+            this.SourceSpell});
             this.dataGridView_Spells.ContextMenuStrip = this.contextMenuStrip;
             this.dataGridView_Spells.Enabled = false;
-            this.dataGridView_Spells.Location = new System.Drawing.Point(253, 29);
-            this.dataGridView_Spells.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridView_Spells.Location = new System.Drawing.Point(392, 45);
             this.dataGridView_Spells.Name = "dataGridView_Spells";
             this.dataGridView_Spells.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridView_Spells.RowTemplate.Height = 28;
             this.dataGridView_Spells.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_Spells.Size = new System.Drawing.Size(919, 588);
+            this.dataGridView_Spells.Size = new System.Drawing.Size(1378, 905);
             this.dataGridView_Spells.TabIndex = 3;
             // 
-            // Spell_Id
+            // SpellId
             // 
-            this.Spell_Id.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.SpellId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Spell_Id.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Spell_Id.HeaderText = "Spell_Id";
-            this.Spell_Id.MaxInputLength = 10;
-            this.Spell_Id.Name = "Spell_Id";
-            this.Spell_Id.ReadOnly = true;
-            this.Spell_Id.Width = 70;
+            this.SpellId.DefaultCellStyle = dataGridViewCellStyle1;
+            this.SpellId.HeaderText = "SpellId";
+            this.SpellId.MaxInputLength = 10;
+            this.SpellId.Name = "SpellId";
+            this.SpellId.ReadOnly = true;
+            this.SpellId.Width = 94;
             // 
-            // Spell_Name
+            // SpellName
             // 
-            this.Spell_Name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.SpellName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Spell_Name.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Spell_Name.HeaderText = "Spell_Name";
-            this.Spell_Name.Name = "Spell_Name";
-            this.Spell_Name.ReadOnly = true;
-            this.Spell_Name.Width = 89;
+            this.SpellName.DefaultCellStyle = dataGridViewCellStyle2;
+            this.SpellName.HeaderText = "SpellName";
+            this.SpellName.MaxInputLength = 50;
+            this.SpellName.Name = "SpellName";
+            this.SpellName.ReadOnly = true;
+            this.SpellName.Width = 122;
             // 
-            // Cast_Time
+            // CastTime
             // 
-            this.Cast_Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.CastTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Cast_Time.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Cast_Time.HeaderText = "Cast_Time";
-            this.Cast_Time.Name = "Cast_Time";
-            this.Cast_Time.ReadOnly = true;
-            this.Cast_Time.Width = 82;
+            this.CastTime.DefaultCellStyle = dataGridViewCellStyle3;
+            this.CastTime.HeaderText = "CastTime";
+            this.CastTime.MaxInputLength = 10;
+            this.CastTime.Name = "CastTime";
+            this.CastTime.ReadOnly = true;
+            this.CastTime.Width = 112;
             // 
-            // Min_Cast_Start_Time
+            // MinCastStartTime
             // 
-            this.Min_Cast_Start_Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Min_Cast_Start_Time.HeaderText = "Min_Cast_Start_Time";
-            this.Min_Cast_Start_Time.Name = "Min_Cast_Start_Time";
-            this.Min_Cast_Start_Time.ReadOnly = true;
-            this.Min_Cast_Start_Time.Width = 133;
-            // 
-            // Max_Cast_Start_Time
-            // 
-            this.Max_Cast_Start_Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Max_Cast_Start_Time.HeaderText = "Max_Cast_Start_Time";
-            this.Max_Cast_Start_Time.Name = "Max_Cast_Start_Time";
-            this.Max_Cast_Start_Time.ReadOnly = true;
-            this.Max_Cast_Start_Time.Width = 136;
-            // 
-            // Min_Cast_Repeat_Time
-            // 
-            this.Min_Cast_Repeat_Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Min_Cast_Repeat_Time.HeaderText = "Min_Cast_Repeat_Time";
-            this.Min_Cast_Repeat_Time.Name = "Min_Cast_Repeat_Time";
-            this.Min_Cast_Repeat_Time.ReadOnly = true;
-            this.Min_Cast_Repeat_Time.Width = 146;
-            // 
-            // Max_Cast_Repeat_Time
-            // 
-            this.Max_Cast_Repeat_Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Max_Cast_Repeat_Time.HeaderText = "Max_Cast_Repeat_Time";
-            this.Max_Cast_Repeat_Time.Name = "Max_Cast_Repeat_Time";
-            this.Max_Cast_Repeat_Time.ReadOnly = true;
-            this.Max_Cast_Repeat_Time.Width = 149;
-            // 
-            // Casts_Count
-            // 
-            this.Casts_Count.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.MinCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Casts_Count.DefaultCellStyle = dataGridViewCellStyle4;
-            this.Casts_Count.HeaderText = "Casts_Count";
-            this.Casts_Count.Name = "Casts_Count";
-            this.Casts_Count.ReadOnly = true;
-            this.Casts_Count.Width = 92;
+            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle4;
+            this.MinCastStartTime.HeaderText = "MinCastStartTime";
+            this.MinCastStartTime.MaxInputLength = 10;
+            this.MinCastStartTime.Name = "MinCastStartTime";
+            this.MinCastStartTime.ReadOnly = true;
+            this.MinCastStartTime.Width = 172;
+            // 
+            // MaxCastStartTime
+            // 
+            this.MaxCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle5;
+            this.MaxCastStartTime.HeaderText = "MaxCastStartTime";
+            this.MaxCastStartTime.MaxInputLength = 10;
+            this.MaxCastStartTime.Name = "MaxCastStartTime";
+            this.MaxCastStartTime.ReadOnly = true;
+            this.MaxCastStartTime.Width = 176;
+            // 
+            // MinCastRepeatTime
+            // 
+            this.MinCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle6;
+            this.MinCastRepeatTime.HeaderText = "MinCastRepeatTime";
+            this.MinCastRepeatTime.MaxInputLength = 10;
+            this.MinCastRepeatTime.Name = "MinCastRepeatTime";
+            this.MinCastRepeatTime.ReadOnly = true;
+            this.MinCastRepeatTime.Width = 190;
+            // 
+            // MaxCastRepeatTime
+            // 
+            this.MaxCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle7;
+            this.MaxCastRepeatTime.HeaderText = "MaxCastRepeatTime";
+            this.MaxCastRepeatTime.MaxInputLength = 10;
+            this.MaxCastRepeatTime.Name = "MaxCastRepeatTime";
+            this.MaxCastRepeatTime.ReadOnly = true;
+            this.MaxCastRepeatTime.Width = 194;
+            // 
+            // CastsCount
+            // 
+            this.CastsCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle8;
+            this.CastsCount.HeaderText = "CastsCount";
+            this.CastsCount.MaxInputLength = 4;
+            this.CastsCount.Name = "CastsCount";
+            this.CastsCount.ReadOnly = true;
+            this.CastsCount.Width = 129;
+            // 
+            // SourceSpell
+            // 
+            this.SourceSpell.HeaderText = "SourceSpell";
+            this.SourceSpell.Name = "SourceSpell";
+            this.SourceSpell.Visible = false;
             // 
             // contextMenuStrip
             // 
@@ -235,24 +258,24 @@
             this.toolStripSeparator,
             this.createSQLToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(133, 54);
+            this.contextMenuStrip.Size = new System.Drawing.Size(172, 70);
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(171, 30);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(129, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(168, 6);
             // 
             // createSQLToolStripMenuItem
             // 
             this.createSQLToolStripMenuItem.Name = "createSQLToolStripMenuItem";
-            this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(171, 30);
             this.createSQLToolStripMenuItem.Text = "Create SQL";
             this.createSQLToolStripMenuItem.Click += new System.EventHandler(this.createSQLToolStripMenuItem_Click);
             // 
@@ -260,32 +283,33 @@
             // 
             this.listBox_CreatureGuids.Enabled = false;
             this.listBox_CreatureGuids.FormattingEnabled = true;
-            this.listBox_CreatureGuids.Location = new System.Drawing.Point(4, 29);
-            this.listBox_CreatureGuids.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.listBox_CreatureGuids.ItemHeight = 20;
+            this.listBox_CreatureGuids.Location = new System.Drawing.Point(6, 45);
             this.listBox_CreatureGuids.Name = "listBox_CreatureGuids";
-            this.listBox_CreatureGuids.Size = new System.Drawing.Size(239, 589);
+            this.listBox_CreatureGuids.Size = new System.Drawing.Size(356, 904);
             this.listBox_CreatureGuids.TabIndex = 2;
             this.listBox_CreatureGuids.SelectedIndexChanged += new System.EventHandler(this.listBox_CreatureGuids_SelectedIndexChanged);
             // 
-            // toolStrip_CreatureSpellsCreator
+            // toolStrip_CreatureScriptsCreator
             // 
-            this.toolStrip_CreatureSpellsCreator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStrip_CreatureScriptsCreator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_ImportSniff,
             this.toolStripButton_Search,
             this.toolStripTextBox_CreatureEntry,
             this.toolStripLabel_CreatureEntry});
-            this.toolStrip_CreatureSpellsCreator.Location = new System.Drawing.Point(2, 2);
-            this.toolStrip_CreatureSpellsCreator.Name = "toolStrip_CreatureSpellsCreator";
-            this.toolStrip_CreatureSpellsCreator.Size = new System.Drawing.Size(1170, 25);
-            this.toolStrip_CreatureSpellsCreator.TabIndex = 1;
-            this.toolStrip_CreatureSpellsCreator.Text = "toolStrip_CreatureSpellsCreator";
+            this.toolStrip_CreatureScriptsCreator.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip_CreatureScriptsCreator.Name = "toolStrip_CreatureScriptsCreator";
+            this.toolStrip_CreatureScriptsCreator.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(1759, 32);
+            this.toolStrip_CreatureScriptsCreator.TabIndex = 1;
+            this.toolStrip_CreatureScriptsCreator.Text = "toolStrip_CreatureScriptsCreator";
             // 
             // toolStripButton_ImportSniff
             // 
             this.toolStripButton_ImportSniff.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Import;
             this.toolStripButton_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_ImportSniff.Name = "toolStripButton_ImportSniff";
-            this.toolStripButton_ImportSniff.Size = new System.Drawing.Size(90, 22);
+            this.toolStripButton_ImportSniff.Size = new System.Drawing.Size(136, 29);
             this.toolStripButton_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
             // 
@@ -296,7 +320,7 @@
             this.toolStripButton_Search.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Search;
             this.toolStripButton_Search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_Search.Name = "toolStripButton_Search";
-            this.toolStripButton_Search.Size = new System.Drawing.Size(62, 22);
+            this.toolStripButton_Search.Size = new System.Drawing.Size(92, 29);
             this.toolStripButton_Search.Text = "Search";
             this.toolStripButton_Search.Click += new System.EventHandler(this.toolStripButton_Search_Click);
             // 
@@ -306,23 +330,22 @@
             this.toolStripTextBox_CreatureEntry.Enabled = false;
             this.toolStripTextBox_CreatureEntry.MaxLength = 10;
             this.toolStripTextBox_CreatureEntry.Name = "toolStripTextBox_CreatureEntry";
-            this.toolStripTextBox_CreatureEntry.Size = new System.Drawing.Size(68, 25);
+            this.toolStripTextBox_CreatureEntry.Size = new System.Drawing.Size(100, 32);
             // 
             // toolStripLabel_CreatureEntry
             // 
             this.toolStripLabel_CreatureEntry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel_CreatureEntry.Name = "toolStripLabel_CreatureEntry";
-            this.toolStripLabel_CreatureEntry.Size = new System.Drawing.Size(85, 22);
+            this.toolStripLabel_CreatureEntry.Size = new System.Drawing.Size(127, 29);
             this.toolStripLabel_CreatureEntry.Text = "Creature Entry:";
             // 
             // tabPage_Output
             // 
             this.tabPage_Output.Controls.Add(this.textBox_SQLOutput);
-            this.tabPage_Output.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_Output.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_Output.Location = new System.Drawing.Point(4, 29);
             this.tabPage_Output.Name = "tabPage_Output";
-            this.tabPage_Output.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_Output.Size = new System.Drawing.Size(1174, 619);
+            this.tabPage_Output.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Output.Size = new System.Drawing.Size(1765, 959);
             this.tabPage_Output.TabIndex = 1;
             this.tabPage_Output.Text = "SQL Output";
             this.tabPage_Output.UseVisualStyleBackColor = true;
@@ -331,12 +354,11 @@
             // 
             this.textBox_SQLOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox_SQLOutput.Font = new System.Drawing.Font("Courier New", 9.75F);
-            this.textBox_SQLOutput.Location = new System.Drawing.Point(2, 2);
-            this.textBox_SQLOutput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_SQLOutput.Location = new System.Drawing.Point(3, 3);
             this.textBox_SQLOutput.Multiline = true;
             this.textBox_SQLOutput.Name = "textBox_SQLOutput";
             this.textBox_SQLOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_SQLOutput.Size = new System.Drawing.Size(1170, 615);
+            this.textBox_SQLOutput.Size = new System.Drawing.Size(1759, 953);
             this.textBox_SQLOutput.TabIndex = 0;
             this.textBox_SQLOutput.WordWrap = false;
             // 
@@ -346,50 +368,45 @@
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_QuestFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_CreatureFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_CreatureFlags);
-            this.tabPage_DatabaseAdvisor.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_DatabaseAdvisor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_DatabaseAdvisor.Location = new System.Drawing.Point(4, 29);
             this.tabPage_DatabaseAdvisor.Name = "tabPage_DatabaseAdvisor";
-            this.tabPage_DatabaseAdvisor.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_DatabaseAdvisor.Size = new System.Drawing.Size(1174, 619);
+            this.tabPage_DatabaseAdvisor.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_DatabaseAdvisor.Size = new System.Drawing.Size(1753, 959);
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
             // 
             // textBox_QuestFlags
             // 
-            this.textBox_QuestFlags.Location = new System.Drawing.Point(5, 54);
-            this.textBox_QuestFlags.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_QuestFlags.Location = new System.Drawing.Point(8, 83);
             this.textBox_QuestFlags.Name = "textBox_QuestFlags";
-            this.textBox_QuestFlags.Size = new System.Drawing.Size(76, 20);
+            this.textBox_QuestFlags.Size = new System.Drawing.Size(112, 26);
             this.textBox_QuestFlags.TabIndex = 3;
             this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
             // 
             // label_QuestFlags
             // 
             this.label_QuestFlags.AutoSize = true;
-            this.label_QuestFlags.Location = new System.Drawing.Point(4, 39);
-            this.label_QuestFlags.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_QuestFlags.Location = new System.Drawing.Point(6, 60);
             this.label_QuestFlags.Name = "label_QuestFlags";
-            this.label_QuestFlags.Size = new System.Drawing.Size(63, 13);
+            this.label_QuestFlags.Size = new System.Drawing.Size(95, 20);
             this.label_QuestFlags.TabIndex = 2;
             this.label_QuestFlags.Text = "Quest Flags";
             // 
             // textBox_CreatureFlags
             // 
-            this.textBox_CreatureFlags.Location = new System.Drawing.Point(5, 18);
-            this.textBox_CreatureFlags.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_CreatureFlags.Location = new System.Drawing.Point(8, 28);
             this.textBox_CreatureFlags.Name = "textBox_CreatureFlags";
-            this.textBox_CreatureFlags.Size = new System.Drawing.Size(76, 20);
+            this.textBox_CreatureFlags.Size = new System.Drawing.Size(112, 26);
             this.textBox_CreatureFlags.TabIndex = 1;
             this.textBox_CreatureFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_CreatureFlags_KeyDown);
             // 
             // label_CreatureFlags
             // 
             this.label_CreatureFlags.AutoSize = true;
-            this.label_CreatureFlags.Location = new System.Drawing.Point(3, 2);
-            this.label_CreatureFlags.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_CreatureFlags.Location = new System.Drawing.Point(4, 3);
             this.label_CreatureFlags.Name = "label_CreatureFlags";
-            this.label_CreatureFlags.Size = new System.Drawing.Size(75, 13);
+            this.label_CreatureFlags.Size = new System.Drawing.Size(114, 20);
             this.label_CreatureFlags.TabIndex = 0;
             this.label_CreatureFlags.Text = "Creature Flags";
             // 
@@ -401,11 +418,10 @@
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_CreaturesRemover);
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.label_CreaturesRemoved);
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.button_ImportFileForRemoving);
-            this.tabPage_DoubleSpawnsRemover.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_DoubleSpawnsRemover.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_DoubleSpawnsRemover.Location = new System.Drawing.Point(4, 29);
             this.tabPage_DoubleSpawnsRemover.Name = "tabPage_DoubleSpawnsRemover";
-            this.tabPage_DoubleSpawnsRemover.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_DoubleSpawnsRemover.Size = new System.Drawing.Size(1174, 619);
+            this.tabPage_DoubleSpawnsRemover.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_DoubleSpawnsRemover.Size = new System.Drawing.Size(1753, 959);
             this.tabPage_DoubleSpawnsRemover.TabIndex = 3;
             this.tabPage_DoubleSpawnsRemover.Text = "Double-Spawns Remover";
             this.tabPage_DoubleSpawnsRemover.UseVisualStyleBackColor = true;
@@ -415,10 +431,9 @@
             this.checkBox_DatabaseConsidering.AutoSize = true;
             this.checkBox_DatabaseConsidering.Checked = true;
             this.checkBox_DatabaseConsidering.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_DatabaseConsidering.Location = new System.Drawing.Point(482, 51);
-            this.checkBox_DatabaseConsidering.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox_DatabaseConsidering.Location = new System.Drawing.Point(723, 78);
             this.checkBox_DatabaseConsidering.Name = "checkBox_DatabaseConsidering";
-            this.checkBox_DatabaseConsidering.Size = new System.Drawing.Size(128, 17);
+            this.checkBox_DatabaseConsidering.Size = new System.Drawing.Size(190, 24);
             this.checkBox_DatabaseConsidering.TabIndex = 5;
             this.checkBox_DatabaseConsidering.Text = "Considering database";
             this.checkBox_DatabaseConsidering.UseVisualStyleBackColor = true;
@@ -426,10 +441,9 @@
             // label_GameobjectsRemoved
             // 
             this.label_GameobjectsRemoved.AutoSize = true;
-            this.label_GameobjectsRemoved.Location = new System.Drawing.Point(329, 86);
-            this.label_GameobjectsRemoved.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_GameobjectsRemoved.Location = new System.Drawing.Point(494, 132);
             this.label_GameobjectsRemoved.Name = "label_GameobjectsRemoved";
-            this.label_GameobjectsRemoved.Size = new System.Drawing.Size(128, 13);
+            this.label_GameobjectsRemoved.Size = new System.Drawing.Size(189, 20);
             this.label_GameobjectsRemoved.TabIndex = 4;
             this.label_GameobjectsRemoved.Text = "No gameobjects removed";
             this.label_GameobjectsRemoved.Visible = false;
@@ -439,10 +453,9 @@
             this.checkBox_GameobjectsRemover.AutoSize = true;
             this.checkBox_GameobjectsRemover.Checked = true;
             this.checkBox_GameobjectsRemover.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_GameobjectsRemover.Location = new System.Drawing.Point(535, 3);
-            this.checkBox_GameobjectsRemover.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox_GameobjectsRemover.Location = new System.Drawing.Point(802, 5);
             this.checkBox_GameobjectsRemover.Name = "checkBox_GameobjectsRemover";
-            this.checkBox_GameobjectsRemover.Size = new System.Drawing.Size(88, 17);
+            this.checkBox_GameobjectsRemover.Size = new System.Drawing.Size(130, 24);
             this.checkBox_GameobjectsRemover.TabIndex = 3;
             this.checkBox_GameobjectsRemover.Text = "Gameobjects";
             this.checkBox_GameobjectsRemover.UseVisualStyleBackColor = true;
@@ -453,10 +466,9 @@
             this.checkBox_CreaturesRemover.AutoSize = true;
             this.checkBox_CreaturesRemover.Checked = true;
             this.checkBox_CreaturesRemover.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_CreaturesRemover.Location = new System.Drawing.Point(467, 3);
-            this.checkBox_CreaturesRemover.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox_CreaturesRemover.Location = new System.Drawing.Point(700, 5);
             this.checkBox_CreaturesRemover.Name = "checkBox_CreaturesRemover";
-            this.checkBox_CreaturesRemover.Size = new System.Drawing.Size(71, 17);
+            this.checkBox_CreaturesRemover.Size = new System.Drawing.Size(105, 24);
             this.checkBox_CreaturesRemover.TabIndex = 2;
             this.checkBox_CreaturesRemover.Text = "Creatures";
             this.checkBox_CreaturesRemover.UseVisualStyleBackColor = true;
@@ -465,10 +477,9 @@
             // label_CreaturesRemoved
             // 
             this.label_CreaturesRemoved.AutoSize = true;
-            this.label_CreaturesRemoved.Location = new System.Drawing.Point(329, 73);
-            this.label_CreaturesRemoved.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_CreaturesRemoved.Location = new System.Drawing.Point(494, 112);
             this.label_CreaturesRemoved.Name = "label_CreaturesRemoved";
-            this.label_CreaturesRemoved.Size = new System.Drawing.Size(112, 13);
+            this.label_CreaturesRemoved.Size = new System.Drawing.Size(165, 20);
             this.label_CreaturesRemoved.TabIndex = 1;
             this.label_CreaturesRemoved.Text = "No creatures removed";
             this.label_CreaturesRemoved.Visible = false;
@@ -480,10 +491,9 @@
             this.button_ImportFileForRemoving.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.button_ImportFileForRemoving.FlatAppearance.BorderSize = 5;
             this.button_ImportFileForRemoving.Font = new System.Drawing.Font("Sitka Small", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_ImportFileForRemoving.Location = new System.Drawing.Point(467, 19);
-            this.button_ImportFileForRemoving.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button_ImportFileForRemoving.Location = new System.Drawing.Point(700, 29);
             this.button_ImportFileForRemoving.Name = "button_ImportFileForRemoving";
-            this.button_ImportFileForRemoving.Size = new System.Drawing.Size(155, 27);
+            this.button_ImportFileForRemoving.Size = new System.Drawing.Size(220, 42);
             this.button_ImportFileForRemoving.TabIndex = 0;
             this.button_ImportFileForRemoving.Text = "Import File";
             this.button_ImportFileForRemoving.UseVisualStyleBackColor = true;
@@ -494,17 +504,17 @@
             this.statusStrip_LoadedFile.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip_LoadedFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel_FileStatus});
-            this.statusStrip_LoadedFile.Location = new System.Drawing.Point(0, 646);
+            this.statusStrip_LoadedFile.Location = new System.Drawing.Point(0, 998);
             this.statusStrip_LoadedFile.Name = "statusStrip_LoadedFile";
-            this.statusStrip_LoadedFile.Padding = new System.Windows.Forms.Padding(1, 0, 9, 0);
-            this.statusStrip_LoadedFile.Size = new System.Drawing.Size(1184, 22);
+            this.statusStrip_LoadedFile.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
+            this.statusStrip_LoadedFile.Size = new System.Drawing.Size(1776, 30);
             this.statusStrip_LoadedFile.TabIndex = 2;
             this.statusStrip_LoadedFile.Text = "statusStrip";
             // 
             // toolStripStatusLabel_FileStatus
             // 
             this.toolStripStatusLabel_FileStatus.Name = "toolStripStatusLabel_FileStatus";
-            this.toolStripStatusLabel_FileStatus.Size = new System.Drawing.Size(86, 17);
+            this.toolStripStatusLabel_FileStatus.Size = new System.Drawing.Size(131, 25);
             this.toolStripStatusLabel_FileStatus.Text = "No File Loaded";
             // 
             // openFileDialog
@@ -513,24 +523,23 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 668);
+            this.ClientSize = new System.Drawing.Size(1776, 1028);
             this.Controls.Add(this.statusStrip_LoadedFile);
             this.Controls.Add(this.tabControl_DoubleSpawnsRemover);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "MainForm";
             this.Text = "Wow Developer Assistant";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.tabControl_DoubleSpawnsRemover.ResumeLayout(false);
-            this.tabPage_CreatureSpellsCreator.ResumeLayout(false);
-            this.tabPage_CreatureSpellsCreator.PerformLayout();
+            this.tabPage_CreatureScriptsCreator.ResumeLayout(false);
+            this.tabPage_CreatureScriptsCreator.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).EndInit();
             this.contextMenuStrip.ResumeLayout(false);
-            this.toolStrip_CreatureSpellsCreator.ResumeLayout(false);
-            this.toolStrip_CreatureSpellsCreator.PerformLayout();
+            this.toolStrip_CreatureScriptsCreator.ResumeLayout(false);
+            this.toolStrip_CreatureScriptsCreator.PerformLayout();
             this.tabPage_Output.ResumeLayout(false);
             this.tabPage_Output.PerformLayout();
             this.tabPage_DatabaseAdvisor.ResumeLayout(false);
@@ -547,8 +556,8 @@
         #endregion
 
         private System.Windows.Forms.TabControl tabControl_DoubleSpawnsRemover;
-        private System.Windows.Forms.TabPage tabPage_CreatureSpellsCreator;
-        private System.Windows.Forms.ToolStrip toolStrip_CreatureSpellsCreator;
+        private System.Windows.Forms.TabPage tabPage_CreatureScriptsCreator;
+        private System.Windows.Forms.ToolStrip toolStrip_CreatureScriptsCreator;
         private System.Windows.Forms.ToolStripButton toolStripButton_ImportSniff;
         private System.Windows.Forms.ToolStripButton toolStripButton_Search;
         private System.Windows.Forms.TabPage tabPage_Output;
@@ -560,14 +569,6 @@
         public System.Windows.Forms.DataGridView dataGridView_Spells;
         public System.Windows.Forms.ListBox listBox_CreatureGuids;
         public System.Windows.Forms.CheckBox checkBox_OnlyCombatSpells;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Spell_Id;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Spell_Name;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Cast_Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Min_Cast_Start_Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Max_Cast_Start_Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Min_Cast_Repeat_Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Max_Cast_Repeat_Time;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Casts_Count;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
@@ -585,6 +586,15 @@
         private System.Windows.Forms.CheckBox checkBox_CreaturesRemover;
         private System.Windows.Forms.Label label_GameobjectsRemoved;
         private System.Windows.Forms.CheckBox checkBox_DatabaseConsidering;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SpellId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SpellName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CastTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MinCastStartTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaxCastStartTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MinCastRepeatTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaxCastRepeatTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CastsCount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SourceSpell;
     }
 }
 

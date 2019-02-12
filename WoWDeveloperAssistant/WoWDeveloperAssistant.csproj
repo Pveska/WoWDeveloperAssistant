@@ -76,7 +76,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreatureSpellsCreator.cs" />
+    <Compile Include="CreatureScriptsCreator\Creature.cs" />
+    <Compile Include="CreatureScriptsCreator\CreatureScriptsCreator.cs" />
+    <Compile Include="CreatureScriptsCreator\LineGetters.cs" />
+    <Compile Include="CreatureScriptsCreator\Packets.cs" />
+    <Compile Include="CreatureScriptsCreator\Spell.cs" />
+    <Compile Include="CreatureScriptsCreator\Text.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
     <Compile Include="DBC\DBC.cs" />
@@ -100,6 +105,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Misc\Utils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLModule.cs" />

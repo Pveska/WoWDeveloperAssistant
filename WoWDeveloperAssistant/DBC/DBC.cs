@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using CascStorageLib;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Structures;
@@ -25,6 +26,22 @@ namespace WoWDeveloperAssistant
             return Path.Combine(GetPath(), fileName);
         }
 
-        public static readonly Dictionary<Tuple<int, int>, SpellEffectEntry> SpellEffectStores = new Dictionary<Tuple<int, int>, SpellEffectEntry>();
+        public static void Load()
+        {
+            if (SpellEffect != null)
+            {
+                Parallel.ForEach(SpellEffect, effect =>
+                {
+                    var tuple = Tuple.Create((uint)effect.Value.SpellID, (uint)effect.Value.EffectIndex);
+
+                    lock (SpellEffectStores)
+                    {
+                        SpellEffectStores[tuple] = effect.Value;
+                    }
+                });
+            }
+        }
+
+        public static readonly Dictionary<Tuple<uint, uint>, SpellEffectEntry> SpellEffectStores = new Dictionary<Tuple<uint, uint>, SpellEffectEntry>();
     }
 }

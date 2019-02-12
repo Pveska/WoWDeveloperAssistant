@@ -47,9 +47,10 @@ namespace WoWDeveloperAssistant
 
         private void LoadMain()
         {
-            System.Windows.Forms.Form MainForm = new MainForm();
+            Form MainForm = new MainForm();
             MainForm.Show();
-            this.Hide();
+            Hide();
+            DBC.Load();
         }
     }
 }

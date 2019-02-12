@@ -9,13 +9,13 @@ namespace WoWDeveloperAssistant
     {
         public bool importSuccessful = false;
 
-        private CreatureSpellsCreator creatureSpellsCreator;
+        private CreatureScriptsCreator CreatureScriptsCreator;
 
         public MainForm()
         {
             InitializeComponent();
 
-            creatureSpellsCreator = new CreatureSpellsCreator(this);
+            CreatureScriptsCreator = new CreatureScriptsCreator(this);
 
             if (Properties.Settings.Default.UsingDB != true)
             {
@@ -27,7 +27,7 @@ namespace WoWDeveloperAssistant
         {
             if (dataGridView_Spells.Rows.Count > 0)
             {
-                creatureSpellsCreator.FillSQLOutput();
+                CreatureScriptsCreator.FillSQLOutput();
             }
         }
 
@@ -52,7 +52,7 @@ namespace WoWDeveloperAssistant
             {
                 ImportStarted();
 
-                creatureSpellsCreator.LoadSniffFile(openFileDialog.FileName);
+                CreatureScriptsCreator.LoadSniffFile(openFileDialog.FileName);
 
                 if (importSuccessful)
                 {
@@ -73,12 +73,12 @@ namespace WoWDeveloperAssistant
 
         private void toolStripButton_Search_Click(object sender, EventArgs e)
         {
-            creatureSpellsCreator.FillListBoxWithGuids();
+            CreatureScriptsCreator.FillListBoxWithGuids();
         }
 
         private void listBox_CreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
-            creatureSpellsCreator.FillSpellsGrid();
+            CreatureScriptsCreator.FillSpellsGrid();
         }
 
         private void ImportStarted()
