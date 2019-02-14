@@ -97,7 +97,7 @@ namespace WoWDeveloperAssistant
             if (line == "# TrinityCore - WowPacketParser")
             {
                 creaturesDict.Clear();
-
+                DBC.Load();
                 if (GetDataFromSniffFile(fileName))
                     mainForm.importSuccessful = true;
             }

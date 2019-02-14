@@ -50,7 +50,6 @@ namespace WoWDeveloperAssistant
             Form MainForm = new MainForm();
             MainForm.Show();
             Hide();
-            DBC.Load();
         }
     }
 }

@@ -28,7 +28,7 @@ namespace WoWDeveloperAssistant
 
         public static void Load()
         {
-            if (SpellEffect != null)
+            if (SpellEffect != null && SpellEffectStores.Count == 0)
             {
                 Parallel.ForEach(SpellEffect, effect =>
                 {
