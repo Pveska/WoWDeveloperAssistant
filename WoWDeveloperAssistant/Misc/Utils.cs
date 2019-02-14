@@ -7,6 +7,12 @@ namespace WoWDeveloperAssistant.Misc
 {
     public static class Utils
     {
+        public enum BuildVersions : uint
+        {
+            BUILD_8_0_1 = 1,
+            BUILD_8_1_0 = 2
+        };
+
         public static string ToFormattedString(this TimeSpan span)
         {
             return $"{span.Hours:00}:{span.Minutes:00}:{span.Seconds:00}";

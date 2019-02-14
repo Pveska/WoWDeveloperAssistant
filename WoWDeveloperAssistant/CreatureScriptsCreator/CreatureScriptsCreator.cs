@@ -15,6 +15,7 @@ namespace WoWDeveloperAssistant
         private MainForm mainForm;
         public static Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
         private static Dictionary<uint, string> creatureNames = new Dictionary<uint, string>();
+        public static Utils.BuildVersions buildVersion = 0;
 
         public CreatureScriptsCreator(MainForm mainForm)
         {
@@ -89,27 +90,35 @@ namespace WoWDeveloperAssistant
 
         public void LoadSniffFile(string fileName)
         {
-            System.IO.StreamReader file = new System.IO.StreamReader(fileName);
+            StreamReader file = new StreamReader(fileName);
             var line = file.ReadLine();
             file.Close();
 
             if (line == "# TrinityCore - WowPacketParser")
             {
                 creaturesDict.Clear();
-                GetDataFromSniffFile(fileName);
-                mainForm.importSuccessful = true;
+
+                if (GetDataFromSniffFile(fileName))
+                    mainForm.importSuccessful = true;
             }
             else
             {
-                MessageBox.Show(fileName + " is is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
         }
 
-        private void GetDataFromSniffFile(string fileName)
+        private bool GetDataFromSniffFile(string fileName)
         {
             var lines = File.ReadAllLines(fileName);
 
             Dictionary<long, Packets.PacketTypes> packetIndexes = new Dictionary<long, Packets.PacketTypes>();
+
+            buildVersion = LineGetters.GetBuildVersion(lines);
+            if (buildVersion == 0)
+            {
+                MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                return false;
+            }
 
             Parallel.For(0, lines.Length, index =>
             {
@@ -203,6 +212,8 @@ namespace WoWDeveloperAssistant
             {
                 creature.Value.CreateCombatCastTimings();
             });
+
+            return true;
         }
 
         public void FillSQLOutput()
