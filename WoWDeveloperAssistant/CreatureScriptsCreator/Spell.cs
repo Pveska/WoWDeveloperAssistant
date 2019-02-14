@@ -166,14 +166,6 @@ namespace WoWDeveloperAssistant
 
             spellStartCastTimes = new List<TimeSpan>(from time in spellStartCastTimes orderby time.TotalSeconds ascending select time);
 
-            if (spellStartCastTimes.Count == 1)
-            {
-                combatCastTimings.minCastTime = spellStartCastTimes[0] - currentCreature.combatStartTime;
-                return;
-            }
-
-            castTimings.minRepeatTime = spellStartCastTimes[1] - spellStartCastTimes[0];
-
             Parallel.ForEach(CreatureScriptsCreator.creaturesDict, creature =>
             {
                 if (creature.Value.entry == currentCreature.entry)
@@ -195,6 +187,14 @@ namespace WoWDeveloperAssistant
             castTimings.maxCastTime = Utils.GetAverageTimeSpanFromList(maxCastTimesList);
             maxCastTimesList.Clear();
 
+            if (spellStartCastTimes.Count == 1)
+            {
+                combatCastTimings = castTimings;
+                return;
+            }
+
+            castTimings.minRepeatTime = spellStartCastTimes[1] - spellStartCastTimes[0];
+
             for(int i = 0; i < spellStartCastTimes.Count; i++)
             {
                 if (i + 1 < spellStartCastTimes.Count)
@@ -205,7 +205,6 @@ namespace WoWDeveloperAssistant
 
             castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList);
 
-            combatCastTimings = castTimings;
         }
 
         public uint GetTargetType()
