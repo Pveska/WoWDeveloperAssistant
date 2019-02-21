@@ -120,7 +120,7 @@ namespace WoWDeveloperAssistant
             });
         }
 
-        public bool IsCreatureHasCombatSpells()
+        public bool HasCombatSpells()
         {
             foreach (Spell spell in castedSpells.Values)
             {
@@ -151,6 +151,11 @@ namespace WoWDeveloperAssistant
             }
 
             return null;
+        }
+
+        public bool HasAnyText()
+        {
+            return saidTexts.Count != 0;
         }
     }
 }

@@ -7,6 +7,7 @@ namespace WoWDeveloperAssistant
         public string creatureText;
         public bool isAggroText;
         public bool isDeadText;
+        public bool isHealthPctText;
         public TimeSpan sayTime;
 
         public CreatureText(Packets.ChatPacket chatPacket)
@@ -15,6 +16,7 @@ namespace WoWDeveloperAssistant
             sayTime = chatPacket.packetSendTime;
             isAggroText = false;
             isDeadText = false;
+            isHealthPctText = false;
         }
     }
 }

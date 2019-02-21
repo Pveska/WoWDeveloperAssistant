@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace WoWDeveloperAssistant
 {
@@ -47,11 +48,12 @@ namespace WoWDeveloperAssistant
         public struct ChatPacket
         {
             public string creatureGuid;
+            public uint creatureEntry;
             public string creatureText;
             public TimeSpan packetSendTime;
 
-            public ChatPacket(string guid, string text, TimeSpan time)
-            { creatureGuid = guid; creatureText = text; packetSendTime = time; }
+            public ChatPacket(string guid, uint entry, string text, TimeSpan time)
+            { creatureGuid = guid; creatureEntry = entry; creatureText = text; packetSendTime = time; }
 
             public static bool IsCreatureText(string line)
             {
@@ -115,7 +117,14 @@ namespace WoWDeveloperAssistant
             {
                 Regex healthRegex = new Regex(@"UNIT_FIELD_HEALTH:{1}\s+\d+");
                 if (healthRegex.IsMatch(line))
-                    return Convert.ToInt32(healthRegex.Match(line).ToString().Replace("UNIT_FIELD_HEALTH: ", ""));
+                    try
+                    {
+                        return Convert.ToInt32(healthRegex.Match(line).ToString().Replace("UNIT_FIELD_HEALTH: ", ""));
+                    }
+                    catch
+                    {
+                        return -1;
+                    }
 
                 return -1;
             }
@@ -178,10 +187,11 @@ namespace WoWDeveloperAssistant
         public struct AIReactionPacket
         {
             public string creatureGuid;
+            public uint creatureEntry;
             public TimeSpan packetSendTime;
 
-            public AIReactionPacket(string guid, TimeSpan time)
-            { creatureGuid = guid; packetSendTime = time; }
+            public AIReactionPacket(string guid, uint entry, TimeSpan time)
+            { creatureGuid = guid; creatureEntry = entry; packetSendTime = time; }
         }
 
         public enum PacketTypes : byte
@@ -279,7 +289,7 @@ namespace WoWDeveloperAssistant
 
         public static void ParseAIReactionPacket(string[] lines, long index)
         {
-            AIReactionPacket reactionPacket = new AIReactionPacket("", LineGetters.GetTimeSpanFromLine(lines[index]));
+            AIReactionPacket reactionPacket = new AIReactionPacket("", 0, LineGetters.GetTimeSpanFromLine(lines[index]));
 
             do
             {
@@ -295,8 +305,18 @@ namespace WoWDeveloperAssistant
             if (reactionPacket.creatureGuid == "")
                 return;
 
+            reactionPacket.creatureEntry = CreatureScriptsCreator.GetCreatureEntryByGuid(reactionPacket.creatureGuid);
+
             lock (CreatureScriptsCreator.creaturesDict)
             {
+                Parallel.ForEach(CreatureScriptsCreator.creaturesDict, value =>
+                {
+                    if (value.Value.entry == reactionPacket.creatureEntry)
+                    {
+                        CreatureScriptsCreator.creaturesDict[reactionPacket.creatureGuid].UpdateTexts(reactionPacket);
+                    }
+                });
+
                 if (CreatureScriptsCreator.creaturesDict.ContainsKey(reactionPacket.creatureGuid))
                 {
                     if (CreatureScriptsCreator.creaturesDict[reactionPacket.creatureGuid].combatStartTime == TimeSpan.Zero ||
@@ -306,7 +326,6 @@ namespace WoWDeveloperAssistant
                     }
 
                     CreatureScriptsCreator.creaturesDict[reactionPacket.creatureGuid].UpdateCombatSpells(reactionPacket);
-                    CreatureScriptsCreator.creaturesDict[reactionPacket.creatureGuid].UpdateTexts(reactionPacket);
                 }
             }
         }
@@ -350,7 +369,7 @@ namespace WoWDeveloperAssistant
 
         public static void ParseChatPacket(string[] lines, long index)
         {
-            ChatPacket chatPacket = new ChatPacket("", "", LineGetters.GetTimeSpanFromLine(lines[index]));
+            ChatPacket chatPacket = new ChatPacket("", 0, "", LineGetters.GetTimeSpanFromLine(lines[index]));
 
             if (ChatPacket.IsCreatureText(lines[index + 1]))
             {
@@ -370,12 +389,17 @@ namespace WoWDeveloperAssistant
                 if (chatPacket.creatureGuid == "")
                     return;
 
+                chatPacket.creatureEntry = CreatureScriptsCreator.GetCreatureEntryByGuid(chatPacket.creatureGuid);
+
                 lock (CreatureScriptsCreator.creaturesDict)
                 {
-                    if (CreatureScriptsCreator.creaturesDict.ContainsKey(chatPacket.creatureGuid))
+                    Parallel.ForEach(CreatureScriptsCreator.creaturesDict, value =>
                     {
-                        CreatureScriptsCreator.creaturesDict[chatPacket.creatureGuid].saidTexts.Add(new CreatureText(chatPacket));
-                    }
+                        if (value.Value.entry == chatPacket.creatureEntry)
+                        {
+                            value.Value.saidTexts.Add(new CreatureText(chatPacket));
+                        }
+                    });
                 }
             }
         }

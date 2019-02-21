@@ -184,7 +184,7 @@ namespace WoWDeveloperAssistant
             });
 
             castTimings.minCastTime = maxCastTimesList.Min();
-            castTimings.maxCastTime = Utils.GetAverageTimeSpanFromList(maxCastTimesList);
+            castTimings.maxCastTime = Utils.GetAverageTimeSpanFromList(maxCastTimesList) >= castTimings.minCastTime ? Utils.GetAverageTimeSpanFromList(maxCastTimesList) : castTimings.minCastTime;
             maxCastTimesList.Clear();
 
             if (spellStartCastTimes.Count == 1)
@@ -203,8 +203,9 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList);
+            castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) >= castTimings.minRepeatTime ? Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) : Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList);
 
+            combatCastTimings = castTimings;
         }
 
         public uint GetTargetType()

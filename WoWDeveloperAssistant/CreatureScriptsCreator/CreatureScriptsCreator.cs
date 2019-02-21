@@ -65,7 +65,7 @@ namespace WoWDeveloperAssistant
 
             foreach (Creature creature in creaturesDict.Values)
             {
-                if (mainForm.checkBox_OnlyCombatSpells.Checked && !creature.IsCreatureHasCombatSpells())
+                if (mainForm.checkBox_OnlyCombatSpells.Checked && !creature.HasCombatSpells())
                     continue;
 
                 if (creature.castedSpells.Count == 0)
@@ -172,17 +172,17 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packets.PacketTypes.SMSG_SPELL_START)
+                if (value.Value == Packets.PacketTypes.SMSG_CHAT)
                 {
-                    Packets.ParseSpellStartPacket(lines, value.Key);
+                    Packets.ParseChatPacket(lines, value.Key);
                 }
             });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packets.PacketTypes.SMSG_CHAT)
+                if (value.Value == Packets.PacketTypes.SMSG_SPELL_START)
                 {
-                    Packets.ParseChatPacket(lines, value.Key);
+                    Packets.ParseSpellStartPacket(lines, value.Key);
                 }
             });
 
@@ -231,23 +231,23 @@ namespace WoWDeveloperAssistant
 
             if (aggroText != null)
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 50, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.entry + " - On aggro - Say line 0'), -- " + aggroText.creatureText + "\r\n";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 50, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
                 i++;
             }
 
             if (deathText != null)
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 50, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.entry + " - On aggro - Say line 0'), -- " + aggroText.creatureText + "\r\n";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 50, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
                 i++;
             }
 
-            for (int l = i; l < i + mainForm.dataGridView_Spells.RowCount; l++)
+            for (int l = 0; l < mainForm.dataGridView_Spells.RowCount; l++, i++)
             {
                 Spell spell = (Spell) mainForm.dataGridView_Spells[8, l].Value;
 
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + l + ", 0, 0, 0, 100, 0, 0, " + spell.combatCastTimings.minCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.minRepeatTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxRepeatTime.TotalMilliseconds + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? spell.spellCastTime.TotalMilliseconds + 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, 0, " + spell.combatCastTimings.minCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.minRepeatTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxRepeatTime.TotalMilliseconds + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? spell.spellCastTime.TotalMilliseconds + 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
 
-                if (l < (i + mainForm.dataGridView_Spells.RowCount - 1))
+                if (l < mainForm.dataGridView_Spells.RowCount - 1)
                 {
                     SQLtext = SQLtext + ",\r\n";
                 }
