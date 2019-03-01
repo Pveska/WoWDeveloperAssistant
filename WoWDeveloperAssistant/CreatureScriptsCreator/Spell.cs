@@ -203,7 +203,7 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) >= castTimings.minRepeatTime ? Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) : Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList);
+            castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) >= castTimings.minRepeatTime ? Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) : castTimings.minRepeatTime;
 
             combatCastTimings = castTimings;
         }

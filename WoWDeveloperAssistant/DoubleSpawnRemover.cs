@@ -22,7 +22,6 @@ namespace WoWDeveloperAssistant
 
         public static void RemoveDoubleSpawnsFromFile(string fileName, Label labelCreatures, Label labelGameobjects, bool creaturesRemover, bool gameobjectsRemover, bool consideringDB)
         {
-
             StreamWriter outputFile = new StreamWriter(fileName + "_without_duplicates.sql");
 
             List<string> allowedCreatureLinkedIds = new List<string>();
@@ -130,7 +129,7 @@ namespace WoWDeveloperAssistant
                                 double posZ = Convert.ToDouble(row[3].ToString());
 
                                 linkedId = Convert.ToString(Math.Round(posX / 0.25)) + " " + Convert.ToString(Math.Round(posY / 0.25)) + " " + Convert.ToString(Math.Round(posZ / 0.25)) + " ";
-                                linkedId += creatureEntry + " " + map + " 0 1 1";
+                                linkedId += creatureEntry + " " + map + " 0 1 0";
                                 linkedId = SHA1HashStringForUTF8String(linkedId).ToUpper();
 
                                 if (allowedCreatureLinkedIds.Contains(linkedId))
@@ -165,7 +164,7 @@ namespace WoWDeveloperAssistant
                                 double posZ = Convert.ToDouble(row[3].ToString());
 
                                 linkedId = Convert.ToString(Math.Round(posX / 0.25)) + " " + Convert.ToString(Math.Round(posY / 0.25)) + " " + Convert.ToString(Math.Round(posZ / 0.25)) + " ";
-                                linkedId += gameobjectEntry + " " + map + " 0 1 1";
+                                linkedId += gameobjectEntry + " " + map + " 0 1 0";
                                 linkedId = SHA1HashStringForUTF8String(linkedId).ToUpper();
 
                                 if (allowedGameobjectLinkedIds.Contains(linkedId))

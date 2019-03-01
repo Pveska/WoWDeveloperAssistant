@@ -168,8 +168,6 @@ namespace WoWDeveloperAssistant
                 }
             });
 
-            creatureNames.Clear();
-
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
                 if (value.Value == Packets.PacketTypes.SMSG_CHAT)
@@ -224,20 +222,20 @@ namespace WoWDeveloperAssistant
 
             SQLtext = "UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` = " + creature.entry + ";\r\n";
             SQLtext = SQLtext + "DELETE FROM `smart_scripts` WHERE `entryorguid` = " + creature.entry + ";\r\n";
-            SQLtext = SQLtext + "INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_spawnMask`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\r\n";
+            SQLtext = SQLtext + "INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_difficulties`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\r\n";
 
             CreatureText aggroText = creature.GetAggroText();
             CreatureText deathText = creature.GetDeathText();
 
             if (aggroText != null)
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 50, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 50, 0, '', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
                 i++;
             }
 
             if (deathText != null)
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 50, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 50, 0, '', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
                 i++;
             }
 
@@ -245,7 +243,7 @@ namespace WoWDeveloperAssistant
             {
                 Spell spell = (Spell) mainForm.dataGridView_Spells[8, l].Value;
 
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, 0, " + spell.combatCastTimings.minCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.minRepeatTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxRepeatTime.TotalMilliseconds + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? spell.spellCastTime.TotalMilliseconds + 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + spell.combatCastTimings.minCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.minRepeatTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxRepeatTime.TotalMilliseconds + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? spell.spellCastTime.TotalMilliseconds + 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
 
                 if (l < mainForm.dataGridView_Spells.RowCount - 1)
                 {
@@ -273,7 +271,7 @@ namespace WoWDeveloperAssistant
             Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
 
             DataSet creatureNameDs = new DataSet();
-            string creatureNameQuery = "SELECT `entry`, `name1` FROM `creature_template_wdb`;";
+            string creatureNameQuery = "SELECT `entry`, `Name1` FROM `creature_template_wdb`;";
             creatureNameDs = (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery);
 
             if (creatureNameDs != null)
