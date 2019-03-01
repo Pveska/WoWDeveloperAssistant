@@ -188,5 +188,18 @@ namespace WoWDeveloperAssistant
                 button_ImportFileForRemoving.Enabled = false;
             }
         }
+
+        private void textBoxAreatriggerSplines_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                OpenFileDialog();
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    AreatriggerSplineCreator.ParseSplinesForAreatrigger(openFileDialog.FileName, textBoxAreatriggerSplines.Text);
+                }
+            }
+        }
     }
 }

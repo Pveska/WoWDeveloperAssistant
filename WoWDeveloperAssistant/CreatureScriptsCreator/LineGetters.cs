@@ -119,5 +119,17 @@ namespace WoWDeveloperAssistant
 
             return 0;
         }
+
+        public static string GetAreatriggerEntryFromLine(string line)
+        {
+            Regex entryRegex = new Regex(@"Entry:{1}\s*\d+");
+
+            if (entryRegex.IsMatch(line))
+            {
+                return entryRegex.Match(line).ToString().Replace("Entry: ", "");
+            }
+
+            return "";
+        }
     }
 }

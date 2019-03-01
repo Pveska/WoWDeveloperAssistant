@@ -82,6 +82,7 @@
     <Compile Include="CreatureScriptsCreator\Packets.cs" />
     <Compile Include="CreatureScriptsCreator\Spell.cs" />
     <Compile Include="CreatureScriptsCreator\Text.cs" />
+    <Compile Include="Database Advisor\AreatriggerSplineCreator.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
     <Compile Include="DBC\DBC.cs" />

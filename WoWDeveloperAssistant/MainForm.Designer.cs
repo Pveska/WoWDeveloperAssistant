@@ -64,6 +64,8 @@
             this.tabPage_Output = new System.Windows.Forms.TabPage();
             this.textBox_SQLOutput = new System.Windows.Forms.TextBox();
             this.tabPage_DatabaseAdvisor = new System.Windows.Forms.TabPage();
+            this.textBoxAreatriggerSplines = new System.Windows.Forms.TextBox();
+            this.label_AreatriggerSplines = new System.Windows.Forms.Label();
             this.textBox_QuestFlags = new System.Windows.Forms.TextBox();
             this.label_QuestFlags = new System.Windows.Forms.Label();
             this.textBox_CreatureFlags = new System.Windows.Forms.TextBox();
@@ -364,6 +366,8 @@
             // 
             // tabPage_DatabaseAdvisor
             // 
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBoxAreatriggerSplines);
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.label_AreatriggerSplines);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_QuestFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_QuestFlags);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_CreatureFlags);
@@ -371,16 +375,33 @@
             this.tabPage_DatabaseAdvisor.Location = new System.Drawing.Point(4, 29);
             this.tabPage_DatabaseAdvisor.Name = "tabPage_DatabaseAdvisor";
             this.tabPage_DatabaseAdvisor.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_DatabaseAdvisor.Size = new System.Drawing.Size(1753, 959);
+            this.tabPage_DatabaseAdvisor.Size = new System.Drawing.Size(1765, 959);
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
             // 
+            // textBoxAreatriggerSplines
+            // 
+            this.textBoxAreatriggerSplines.Location = new System.Drawing.Point(8, 140);
+            this.textBoxAreatriggerSplines.Name = "textBoxAreatriggerSplines";
+            this.textBoxAreatriggerSplines.Size = new System.Drawing.Size(139, 26);
+            this.textBoxAreatriggerSplines.TabIndex = 5;
+            this.textBoxAreatriggerSplines.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxAreatriggerSplines_KeyDown);
+            // 
+            // label_AreatriggerSplines
+            // 
+            this.label_AreatriggerSplines.AutoSize = true;
+            this.label_AreatriggerSplines.Location = new System.Drawing.Point(3, 115);
+            this.label_AreatriggerSplines.Name = "label_AreatriggerSplines";
+            this.label_AreatriggerSplines.Size = new System.Drawing.Size(144, 20);
+            this.label_AreatriggerSplines.TabIndex = 4;
+            this.label_AreatriggerSplines.Text = "Areatrigger Splines";
+            // 
             // textBox_QuestFlags
             // 
-            this.textBox_QuestFlags.Location = new System.Drawing.Point(8, 83);
+            this.textBox_QuestFlags.Location = new System.Drawing.Point(8, 84);
             this.textBox_QuestFlags.Name = "textBox_QuestFlags";
-            this.textBox_QuestFlags.Size = new System.Drawing.Size(112, 26);
+            this.textBox_QuestFlags.Size = new System.Drawing.Size(93, 26);
             this.textBox_QuestFlags.TabIndex = 3;
             this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
             // 
@@ -421,7 +442,7 @@
             this.tabPage_DoubleSpawnsRemover.Location = new System.Drawing.Point(4, 29);
             this.tabPage_DoubleSpawnsRemover.Name = "tabPage_DoubleSpawnsRemover";
             this.tabPage_DoubleSpawnsRemover.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_DoubleSpawnsRemover.Size = new System.Drawing.Size(1753, 959);
+            this.tabPage_DoubleSpawnsRemover.Size = new System.Drawing.Size(1765, 959);
             this.tabPage_DoubleSpawnsRemover.TabIndex = 3;
             this.tabPage_DoubleSpawnsRemover.Text = "Double-Spawns Remover";
             this.tabPage_DoubleSpawnsRemover.UseVisualStyleBackColor = true;
@@ -595,6 +616,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn MaxCastRepeatTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn CastsCount;
         private System.Windows.Forms.DataGridViewTextBoxColumn SourceSpell;
+        private System.Windows.Forms.TextBox textBoxAreatriggerSplines;
+        private System.Windows.Forms.Label label_AreatriggerSplines;
     }
 }
 
