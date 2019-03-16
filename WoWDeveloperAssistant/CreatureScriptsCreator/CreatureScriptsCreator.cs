@@ -172,6 +172,14 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
+                if (value.Value == PacketTypes.SMSG_SPELL_START)
+                {
+                    ParseSpellStartPacket(lines, value.Key);
+                }
+            });
+
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
                 if (value.Value == PacketTypes.SMSG_AI_REACTION)
                 {
                     ParseAIReactionPacket(lines, value.Key);
@@ -183,14 +191,6 @@ namespace WoWDeveloperAssistant
                 if (value.Value == PacketTypes.SMSG_CHAT)
                 {
                     ParseChatPacket(lines, value.Key);
-                }
-            });
-
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                if (value.Value == PacketTypes.SMSG_SPELL_START)
-                {
-                    ParseSpellStartPacket(lines, value.Key);
                 }
             });
 
