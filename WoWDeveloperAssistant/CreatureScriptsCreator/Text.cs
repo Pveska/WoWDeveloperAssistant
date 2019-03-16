@@ -6,17 +6,15 @@ namespace WoWDeveloperAssistant
     {
         public string creatureText;
         public bool isAggroText;
-        public bool isDeadText;
-        public bool isHealthPctText;
+        public bool isDeathText;
         public TimeSpan sayTime;
 
-        public CreatureText(Packets.ChatPacket chatPacket)
+        public CreatureText(Packets.ChatPacket chatPacket, bool isAggroText = false, bool isDeathText = false)
         {
             creatureText = chatPacket.creatureText;
             sayTime = chatPacket.packetSendTime;
-            isAggroText = false;
-            isDeadText = false;
-            isHealthPctText = false;
+            this.isAggroText = isAggroText;
+            this.isDeathText = isDeathText;
         }
     }
 }

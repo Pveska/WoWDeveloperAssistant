@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -194,6 +195,25 @@ namespace WoWDeveloperAssistant
             { creatureGuid = guid; creatureEntry = entry; packetSendTime = time; }
         }
 
+        public class Position
+        {
+            public float x;
+            public float y;
+            public float z;
+
+            public Position(float x, float y, float z)
+            { this.x = x; this.y = y; this.z = z; }
+
+            public static Position operator -(Position firstPos, Position secondPos)
+            {
+                float x = firstPos.x - secondPos.x;
+                float y = firstPos.y - secondPos.y;
+                float z = firstPos.z - secondPos.z;
+
+                return new Position(x, y, z);
+            }
+        }
+
         public enum PacketTypes : byte
         {
             SMSG_UPDATE_OBJECT   = 1,
@@ -309,14 +329,6 @@ namespace WoWDeveloperAssistant
 
             lock (CreatureScriptsCreator.creaturesDict)
             {
-                Parallel.ForEach(CreatureScriptsCreator.creaturesDict, value =>
-                {
-                    if (value.Value.entry == reactionPacket.creatureEntry)
-                    {
-                        CreatureScriptsCreator.creaturesDict[reactionPacket.creatureGuid].UpdateTexts(reactionPacket);
-                    }
-                });
-
                 if (CreatureScriptsCreator.creaturesDict.ContainsKey(reactionPacket.creatureGuid))
                 {
                     if (CreatureScriptsCreator.creaturesDict[reactionPacket.creatureGuid].combatStartTime == TimeSpan.Zero ||
@@ -397,7 +409,53 @@ namespace WoWDeveloperAssistant
                     {
                         if (value.Value.entry == chatPacket.creatureEntry)
                         {
-                            value.Value.saidTexts.Add(new CreatureText(chatPacket));
+                            if (value.Value.combatStartTime == chatPacket.packetSendTime ||
+                            value.Value.combatStartTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds + 1 ||
+                            value.Value.combatStartTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds - 1)
+                            {
+                                if (CreatureScriptsCreator.creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                {
+                                    if (!CreatureScriptsCreator.IsCreatureHasAggroText(chatPacket.creatureEntry))
+                                    {
+                                        lock (CreatureScriptsCreator.creatureTextsDict)
+                                        {
+                                            CreatureScriptsCreator.creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    lock (CreatureScriptsCreator.creatureTextsDict)
+                                    {
+                                        CreatureScriptsCreator.creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                        CreatureScriptsCreator.creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                                    }
+                                }
+                            }
+
+                            if (value.Value.deathTime == chatPacket.packetSendTime ||
+                            value.Value.deathTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds + 1 ||
+                            value.Value.deathTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds - 1)
+                            {
+                                if (CreatureScriptsCreator.creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                {
+                                    if (!CreatureScriptsCreator.IsCreatureHasDeathText(chatPacket.creatureEntry))
+                                    {
+                                        lock (CreatureScriptsCreator.creatureTextsDict)
+                                        {
+                                            CreatureScriptsCreator.creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    lock (CreatureScriptsCreator.creatureTextsDict)
+                                    {
+                                        CreatureScriptsCreator.creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                        CreatureScriptsCreator.creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                                    }
+                                }
+                            }
                         }
                     });
                 }

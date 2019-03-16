@@ -14,7 +14,6 @@ namespace WoWDeveloperAssistant
         public TimeSpan deathTime;
 
         public Dictionary<uint, Spell> castedSpells;
-        public List<CreatureText> saidTexts;
 
         public Creature(Packets.UpdateObjectPacket updatePacket)
         {
@@ -25,7 +24,6 @@ namespace WoWDeveloperAssistant
             deathTime = updatePacket.creatureCurrentHealth == 0 ? updatePacket.packetSendTime : new TimeSpan();
             castedSpells = new Dictionary<uint, Spell>();
             combatStartTime = new TimeSpan();
-            saidTexts = new List<CreatureText>();
         }
 
         public void UpdateCreature(Packets.UpdateObjectPacket updatePacket)
@@ -78,32 +76,6 @@ namespace WoWDeveloperAssistant
             });
         }
 
-        public void UpdateTexts()
-        {
-            Parallel.ForEach(saidTexts, text =>
-            {
-                if (text.sayTime == deathTime)
-                {
-                    text.isDeadText = true;
-                }
-            });
-        }
-
-        public void UpdateTexts(Packets.AIReactionPacket reactionPacket)
-        {
-            Parallel.ForEach(saidTexts, text =>
-            {
-                if (text.sayTime == reactionPacket.packetSendTime)
-                {
-                    text.isAggroText = true;
-                }
-                else if (text.sayTime == deathTime)
-                {
-                    text.isDeadText = true;
-                }
-            });
-        }
-
         public void RemoveNonCombatCastTimes()
         {
             Parallel.ForEach(castedSpells, spell =>
@@ -129,33 +101,6 @@ namespace WoWDeveloperAssistant
             }
 
             return false;
-        }
-
-        public CreatureText GetAggroText()
-        {
-            foreach (CreatureText text in saidTexts)
-            {
-                if (text.isAggroText)
-                    return text;
-            }
-
-            return null;
-        }
-
-        public CreatureText GetDeathText()
-        {
-            foreach (CreatureText text in saidTexts)
-            {
-                if (text.isDeadText)
-                    return text;
-            }
-
-            return null;
-        }
-
-        public bool HasAnyText()
-        {
-            return saidTexts.Count != 0;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using WoWDeveloperAssistant.Misc;
+using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant
 {
@@ -8,7 +9,7 @@ namespace WoWDeveloperAssistant
     {
         public static string GetGuidFromLine(string line, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false)
         {
-            if (objectFieldGuid && CreatureScriptsCreator.buildVersion == Utils.BuildVersions.BUILD_8_0_1)
+            if (objectFieldGuid && CreatureScriptsCreator.buildVersion == BuildVersions.BUILD_8_0_1)
             {
                 Regex guidRegex = new Regex(@"OBJECT_FIELD_GUID: Full:{1}\s*\w{20,}");
                 if (guidRegex.IsMatch(line))
@@ -90,7 +91,7 @@ namespace WoWDeveloperAssistant
 
             if (timeRegex.IsMatch(line))
             {
-                Packets.TimePacket packet;
+                TimePacket packet;
                 string[] splittedLine = timeRegex.Match(line).ToString().Split(':');
 
                 packet.hours = splittedLine[0];
@@ -103,16 +104,16 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        public static Utils.BuildVersions GetBuildVersion(string[] lines)
+        public static BuildVersions GetBuildVersion(string[] lines)
         {
             foreach (var line in lines)
             {
                 if (line.Contains("Detected build:"))
                 {
                     if (line.Contains("V8_0_1"))
-                        return Utils.BuildVersions.BUILD_8_0_1;
+                        return BuildVersions.BUILD_8_0_1;
                     else if (line.Contains("V8_1_0"))
-                        return Utils.BuildVersions.BUILD_8_1_0;
+                        return BuildVersions.BUILD_8_1_0;
                     else return 0;
                 }
             }

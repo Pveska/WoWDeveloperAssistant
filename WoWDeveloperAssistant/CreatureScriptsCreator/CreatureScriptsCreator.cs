@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
+using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant
 {
@@ -14,8 +15,9 @@ namespace WoWDeveloperAssistant
     {
         private MainForm mainForm;
         public static Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
-        private static Dictionary<uint, string> creatureNames = new Dictionary<uint, string>();
-        public static Utils.BuildVersions buildVersion = 0;
+        private static Dictionary<uint, string> creatureNamesDict = new Dictionary<uint, string>();
+        public static Dictionary<uint, List<CreatureText>> creatureTextsDict = new Dictionary<uint, List<CreatureText>>();
+        public static BuildVersions buildVersion = BuildVersions.BUILD_UNKNOWN;
 
         public CreatureScriptsCreator(MainForm mainForm)
         {
@@ -23,7 +25,7 @@ namespace WoWDeveloperAssistant
 
             if (Properties.Settings.Default.UsingDB == true)
             {
-                creatureNames = GetCreatureNamesFromDB();
+                creatureNamesDict = GetCreatureNamesFromDB();
             }
         }
 
@@ -111,7 +113,7 @@ namespace WoWDeveloperAssistant
         {
             var lines = File.ReadAllLines(fileName);
 
-            Dictionary<long, Packets.PacketTypes> packetIndexes = new Dictionary<long, Packets.PacketTypes>();
+            Dictionary<long, PacketTypes> packetIndexes = new Dictionary<long, PacketTypes>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == 0)
@@ -126,84 +128,87 @@ namespace WoWDeveloperAssistant
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packets.PacketTypes.SMSG_UPDATE_OBJECT);
+                        packetIndexes.Add(index, PacketTypes.SMSG_UPDATE_OBJECT);
                 }
                 else if (lines[index].Contains("SMSG_AI_REACTION") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packets.PacketTypes.SMSG_AI_REACTION);
+                        packetIndexes.Add(index, PacketTypes.SMSG_AI_REACTION);
                 }
                 else if (lines[index].Contains("SMSG_SPELL_START") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packets.PacketTypes.SMSG_SPELL_START);
+                        packetIndexes.Add(index, PacketTypes.SMSG_SPELL_START);
                 }
                 else if (lines[index].Contains("SMSG_CHAT") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packets.PacketTypes.SMSG_CHAT);
+                        packetIndexes.Add(index, PacketTypes.SMSG_CHAT);
                 }
                 else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packets.PacketTypes.SMSG_ON_MONSTER_MOVE);
+                        packetIndexes.Add(index, PacketTypes.SMSG_ON_MONSTER_MOVE);
                 }
                 else if (lines[index].Contains("SMSG_ATTACK_STOP") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packets.PacketTypes.SMSG_ATTACK_STOP);
+                        packetIndexes.Add(index, PacketTypes.SMSG_ATTACK_STOP);
                 }
             });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packets.PacketTypes.SMSG_UPDATE_OBJECT)
+                if (value.Value == PacketTypes.SMSG_UPDATE_OBJECT)
                 {
-                    Packets.ParseObjectUpdatePacket(lines, value.Key);
+                    ParseObjectUpdatePacket(lines, value.Key);
                 }
             });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packets.PacketTypes.SMSG_CHAT)
+                if (value.Value == PacketTypes.SMSG_AI_REACTION)
                 {
-                    Packets.ParseChatPacket(lines, value.Key);
+                    ParseAIReactionPacket(lines, value.Key);
                 }
             });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packets.PacketTypes.SMSG_SPELL_START)
+                if (value.Value == PacketTypes.SMSG_CHAT)
                 {
-                    Packets.ParseSpellStartPacket(lines, value.Key);
+                    ParseChatPacket(lines, value.Key);
                 }
             });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packets.PacketTypes.SMSG_AI_REACTION)
+                if (value.Value == PacketTypes.SMSG_SPELL_START)
                 {
-                    Packets.ParseAIReactionPacket(lines, value.Key);
+                    ParseSpellStartPacket(lines, value.Key);
                 }
-                else if (value.Value == Packets.PacketTypes.SMSG_ON_MONSTER_MOVE)
+            });
+
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
+                if (value.Value == PacketTypes.SMSG_ON_MONSTER_MOVE)
                 {
-                    Packets.ParseMovementPacket(lines, value.Key);
+                    ParseMovementPacket(lines, value.Key);
                 }
-                else if (value.Value == Packets.PacketTypes.SMSG_ATTACK_STOP)
+                else if (value.Value == PacketTypes.SMSG_ATTACK_STOP)
                 {
-                    Packets.ParseAttackStopkPacket(lines, value.Key);
+                    ParseAttackStopkPacket(lines, value.Key);
                 }
             });
 
             Parallel.ForEach(creaturesDict, creature =>
             {
                 creature.Value.RemoveNonCombatCastTimes();
-                creature.Value.UpdateTexts();
             });
 
             Parallel.ForEach(creaturesDict, creature =>
@@ -224,18 +229,15 @@ namespace WoWDeveloperAssistant
             SQLtext = SQLtext + "DELETE FROM `smart_scripts` WHERE `entryorguid` = " + creature.entry + ";\r\n";
             SQLtext = SQLtext + "INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_difficulties`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\r\n";
 
-            CreatureText aggroText = creature.GetAggroText();
-            CreatureText deathText = creature.GetDeathText();
-
-            if (aggroText != null)
+            if (IsCreatureHasAggroText(creature.entry))
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 50, 0, '', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 100, 0, '', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
                 i++;
             }
 
-            if (deathText != null)
+            if (IsCreatureHasDeathText(creature.entry))
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 50, 0, '', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
                 i++;
             }
 
@@ -287,10 +289,38 @@ namespace WoWDeveloperAssistant
 
         public static string GetCreatureNameByEntry(uint creatureEntry)
         {
-            if (creatureNames.ContainsKey(creatureEntry))
-                return creatureNames[creatureEntry];
+            if (creatureNamesDict.ContainsKey(creatureEntry))
+                return creatureNamesDict[creatureEntry];
 
             return "Unknown";
+        }
+
+        public static bool IsCreatureHasAggroText(uint creatureEntry)
+        {
+            if (creatureTextsDict.ContainsKey(creatureEntry))
+            {
+                foreach (CreatureText text in creatureTextsDict[creatureEntry])
+                {
+                    if (text.isAggroText)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsCreatureHasDeathText(uint creatureEntry)
+        {
+            if (creatureTextsDict.ContainsKey(creatureEntry))
+            {
+                foreach (CreatureText text in creatureTextsDict[creatureEntry])
+                {
+                    if (text.isDeathText)
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }

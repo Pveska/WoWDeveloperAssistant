@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using static WoWDeveloperAssistant.Packets;
 
 namespace WoWDeveloperAssistant.Database_Advisor
 {
@@ -67,25 +68,6 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             Clipboard.SetText(outputLine);
             MessageBox.Show("Splines has been successfully parsed and copied on your clipboard!");
-        }
-
-        public class Position
-        {
-            public float x;
-            public float y;
-            public float z;
-
-            public Position(float x, float y, float z)
-            { this.x = x; this.y = y; this.z = z; }
-
-            public static Position operator - (Position firstPos, Position secondPos)
-            {
-                float x = firstPos.x - secondPos.x;
-                float y = firstPos.y - secondPos.y;
-                float z = firstPos.z - secondPos.z;
-
-                return new Position(x, y, z);
-            }
         }
     }
 }

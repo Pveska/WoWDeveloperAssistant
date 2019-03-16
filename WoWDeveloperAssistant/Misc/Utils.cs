@@ -9,8 +9,10 @@ namespace WoWDeveloperAssistant.Misc
     {
         public enum BuildVersions : uint
         {
-            BUILD_8_0_1 = 1,
-            BUILD_8_1_0 = 2
+            BUILD_UNKNOWN = 0,
+            BUILD_8_0_1   = 1,
+            BUILD_8_1_0   = 2,
+            BUILD_8_1_5   = 3
         };
 
         public static string ToFormattedString(this TimeSpan span)
