@@ -114,11 +114,13 @@ namespace WoWDeveloperAssistant
                         return BuildVersions.BUILD_8_0_1;
                     else if (line.Contains("V8_1_0"))
                         return BuildVersions.BUILD_8_1_0;
-                    else return 0;
+                    else if (line.Contains("V8_1_5"))
+                        return BuildVersions.BUILD_8_1_5;
+                    return BuildVersions.BUILD_UNKNOWN;
                 }
             }
 
-            return 0;
+            return BuildVersions.BUILD_UNKNOWN;
         }
 
         public static string GetAreatriggerEntryFromLine(string line)
