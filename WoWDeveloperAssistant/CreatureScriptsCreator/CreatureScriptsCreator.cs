@@ -116,7 +116,7 @@ namespace WoWDeveloperAssistant
             Dictionary<long, PacketTypes> packetIndexes = new Dictionary<long, PacketTypes>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
-            if (buildVersion == 0)
+            if (buildVersion == BuildVersions.BUILD_UNKNOWN)
             {
                 MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return false;
