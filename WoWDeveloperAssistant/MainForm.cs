@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Database_Advisor;
+using WoWDeveloperAssistant.Waypoints_Creator;
 
 namespace WoWDeveloperAssistant
 {
@@ -9,25 +12,77 @@ namespace WoWDeveloperAssistant
     {
         public bool importSuccessful = false;
 
-        private CreatureScriptsCreator CreatureScriptsCreator;
+        private CreatureScriptsCreator creatureScriptsCreator;
+        private WaypointsCreator waypointsCreator;
+        private static Dictionary<uint, string> creatureNamesDict;
 
         public MainForm()
         {
             InitializeComponent();
 
-            CreatureScriptsCreator = new CreatureScriptsCreator(this);
+            creatureScriptsCreator = new CreatureScriptsCreator(this);
+            waypointsCreator = new WaypointsCreator(this);
 
-            if (Properties.Settings.Default.UsingDB != true)
+            if (Properties.Settings.Default.UsingDB == true)
+            {
+                creatureNamesDict = GetCreatureNamesFromDB();
+            }
+            else
             {
                 checkBox_DatabaseConsidering.Enabled = false;
             }
+        }
+
+        private Dictionary<uint, string> GetCreatureNamesFromDB()
+        {
+            Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
+
+            DataSet creatureNameDs = new DataSet();
+            string creatureNameQuery = "SELECT `entry`, `Name1` FROM `creature_template_wdb`;";
+            creatureNameDs = (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery);
+
+            if (creatureNameDs != null)
+            {
+                foreach (DataRow row in creatureNameDs.Tables["table"].Rows)
+                {
+                    namesDict.Add((uint)row[0], row[1].ToString());
+                }
+            }
+
+            return namesDict;
+        }
+
+        public static string GetCreatureNameByEntry(uint creatureEntry)
+        {
+            if (creatureNamesDict.ContainsKey(creatureEntry))
+                return creatureNamesDict[creatureEntry];
+
+            return "Unknown";
+        }
+
+        private bool IsTxtFileValidForParse(string fileName)
+        {
+            StreamReader file = new StreamReader(fileName);
+            var line = file.ReadLine();
+            file.Close();
+
+            if (line == "# TrinityCore - WowPacketParser")
+            {
+                return true;
+            }
+            else
+            {
+                MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+            }
+
+            return false;
         }
 
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView_Spells.Rows.Count > 0)
             {
-                CreatureScriptsCreator.FillSQLOutput();
+                creatureScriptsCreator.FillSQLOutput();
             }
         }
 
@@ -46,22 +101,21 @@ namespace WoWDeveloperAssistant
 
         private void toolStripButton_ImportSniff_Click(object sender, EventArgs e)
         {
-            OpenFileDialog();
+            creatureScriptsCreator.OpenFileDialog();
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                ImportStarted();
+                creatureScriptsCreator.ImportStarted();
 
-                CreatureScriptsCreator.LoadSniffFile(openFileDialog.FileName);
-
-                if (importSuccessful)
+                if (IsTxtFileValidForParse(openFileDialog.FileName) && 
+                    creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileName))
                 {
-                    ImportSuccessful();
+                    creatureScriptsCreator.ImportSuccessful();
                 }
                 else
                 {
                     toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_ImportSniff.Enabled = true;
+                    toolStripButton_CSC_ImportSniff.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }
             }
@@ -73,46 +127,12 @@ namespace WoWDeveloperAssistant
 
         private void toolStripButton_Search_Click(object sender, EventArgs e)
         {
-            CreatureScriptsCreator.FillListBoxWithGuids();
+            creatureScriptsCreator.FillListBoxWithGuids();
         }
 
         private void listBox_CreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CreatureScriptsCreator.FillSpellsGrid();
-        }
-
-        private void ImportStarted()
-        {
-            this.Cursor = Cursors.WaitCursor;
-            toolStripButton_ImportSniff.Enabled = false;
-            toolStripButton_Search.Enabled = false;
-            toolStripTextBox_CreatureEntry.Enabled = false;
-            listBox_CreatureGuids.Enabled = false;
-            listBox_CreatureGuids.Items.Clear();
-            listBox_CreatureGuids.DataSource = null;
-            dataGridView_Spells.Enabled = false;
-            dataGridView_Spells.Rows.Clear();
-            toolStripStatusLabel_FileStatus.Text = "Loading File...";
-        }
-
-        private void ImportSuccessful()
-        {
-            toolStripButton_ImportSniff.Enabled = true;
-            toolStripButton_Search.Enabled = true;
-            toolStripTextBox_CreatureEntry.Enabled = true;
-            toolStripStatusLabel_FileStatus.Text = openFileDialog.FileName + " is selected for input.";
-            this.Cursor = Cursors.Default;
-        }
-
-        private void OpenFileDialog()
-        {
-            openFileDialog.Title = "Open File";
-            openFileDialog.Filter = "Parsed Sniff File (*.txt)|*.txt";
-            openFileDialog.FileName = "*.txt";
-            openFileDialog.FilterIndex = 1;
-            openFileDialog.ShowReadOnly = false;
-            openFileDialog.Multiselect = false;
-            openFileDialog.CheckFileExists = true;
+            creatureScriptsCreator.FillSpellsGrid();
         }
 
         private void textBox_CreatureFlags_KeyDown(object sender, KeyEventArgs e)
@@ -133,7 +153,7 @@ namespace WoWDeveloperAssistant
 
         private void button_ImportFile_Click(object sender, EventArgs e)
         {
-            OpenFileDialogForRemoving();
+            DoubleSpawnsRemover.OpenFileDialog(openFileDialog);
 
             this.Cursor = Cursors.WaitCursor;
             button_ImportFileForRemoving.Enabled = false;
@@ -152,17 +172,6 @@ namespace WoWDeveloperAssistant
 
             button_ImportFileForRemoving.Enabled = true;
             this.Cursor = Cursors.Default;
-        }
-
-        private void OpenFileDialogForRemoving()
-        {
-            openFileDialog.Title = "Open File";
-            openFileDialog.Filter = "SQL File (*.sql)|*.sql";
-            openFileDialog.FileName = "";
-            openFileDialog.FilterIndex = 1;
-            openFileDialog.ShowReadOnly = false;
-            openFileDialog.Multiselect = false;
-            openFileDialog.CheckFileExists = true;
         }
 
         private void checkBox_CreaturesRemover_CheckedChanged(object sender, EventArgs e)
@@ -193,13 +202,80 @@ namespace WoWDeveloperAssistant
         {
             if (e.KeyCode == Keys.Enter)
             {
-                OpenFileDialog();
+                AreatriggerSplineCreator.OpenFileDialog(openFileDialog);
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     AreatriggerSplineCreator.ParseSplinesForAreatrigger(openFileDialog.FileName, textBoxAreatriggerSplines.Text);
                 }
             }
+        }
+
+        private void toolStripButton_WCLoadSniff_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                waypointsCreator.ImportStarted();
+
+                if (IsTxtFileValidForParse(openFileDialog.FileName) &&
+                    waypointsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                {
+                    waypointsCreator.ImportSuccessful();
+                }
+                else
+                {
+                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                    toolStripButton_CSC_ImportSniff.Enabled = true;
+                    this.Cursor = Cursors.Default;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void toolStripButton_WCSettings_Click(object sender, EventArgs e)
+        {
+            Form settingsForm = new SettingsForm();
+            settingsForm.ShowDialog();
+        }
+
+        private void toolStripButton_WCSearch_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.FillListBoxWithGuids();
+        }
+
+        private void listBox_WCCreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            waypointsCreator.FillWaypointsGrid();
+        }
+
+        private void createSQLToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.CreateSQL();
+        }
+
+        private void removeExcessPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.RemoveNearestPoints();
+        }
+
+        private void cutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.CutFromGrid();
+        }
+
+        private void removeDuplicatePointsToolStripMenuItem_WC_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.RemoveDuplicatePoints();
+        }
+
+        private void createReturnPathToolStripMenuItem_WC_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.CreateReturnPath();
         }
     }
 }

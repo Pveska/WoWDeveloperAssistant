@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.Structures
 {
     [DBFile("SpellCastTimesEntry")]
 

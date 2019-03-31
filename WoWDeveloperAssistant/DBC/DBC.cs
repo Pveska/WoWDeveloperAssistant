@@ -15,6 +15,7 @@ namespace WoWDeveloperAssistant
         public static Storage<SpellNameEntry> SpellName = new Storage<SpellNameEntry>(GetPath("SpellName.db2"));
         public static Storage<SpellMiscEntry> SpellMisc = new Storage<SpellMiscEntry>(GetPath("SpellMisc.db2"));
         public static Storage<SpellCastTimesEntry> SpellCastTimes = new Storage<SpellCastTimesEntry>(GetPath("SpellCastTimes.db2"));
+        public static Storage<MapEntry> Map = new Storage<MapEntry>(GetPath("Map.db2"));
 
         private static string GetPath()
         {

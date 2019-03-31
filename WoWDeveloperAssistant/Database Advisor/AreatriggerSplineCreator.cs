@@ -69,5 +69,16 @@ namespace WoWDeveloperAssistant.Database_Advisor
             Clipboard.SetText(outputLine);
             MessageBox.Show("Splines has been successfully parsed and copied on your clipboard!");
         }
+
+        public static void OpenFileDialog(OpenFileDialog fileDialog)
+        {
+            fileDialog.Title = "Open File";
+            fileDialog.Filter = "SQL File (*.sql)|*.sql";
+            fileDialog.FileName = "";
+            fileDialog.FilterIndex = 1;
+            fileDialog.ShowReadOnly = false;
+            fileDialog.Multiselect = false;
+            fileDialog.CheckFileExists = true;
+        }
     }
 }

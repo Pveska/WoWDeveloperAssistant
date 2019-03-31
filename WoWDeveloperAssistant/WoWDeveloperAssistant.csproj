@@ -58,6 +58,18 @@
     <Reference Include="CascStorageLib">
       <HintPath>Packages\CascStorageLib\CascStorageLib.dll</HintPath>
     </Reference>
+    <Reference Include="MetroFramework">
+      <HintPath>..\Packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Design">
+      <HintPath>..\Packages\MetroFramework.Design.1.2.0.3\lib\net40\MetroFramework.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts">
+      <HintPath>..\Packages\MetroFramework.Fonts.1.2.0.3\lib\net40\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="MSChartWrapper">
+      <HintPath>..\Packages\MSChartWrapper.1.0.0.1\Lib\MSChartWrapper.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=6.10.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
@@ -65,6 +77,22 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.DataVisualization" />
+    <Reference Include="System.Web.DataVisualization.Design" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit">
+      <HintPath>..\Packages\System.Windows.Controls.DataVisualization.Toolkit.4.0.0.0\lib\net40-Client\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Input.Toolkit">
+      <HintPath>..\Packages\WPFToolkit.3.5.50211.1\lib\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit">
+      <HintPath>..\Packages\WPFToolkit.3.5.50211.1\lib\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Windows.Forms.DataVisualization.Design" />
+    <Reference Include="System.Windows.Forms.DataVisualization.MSChartExtension">
+      <HintPath>..\Packages\MSChartExtension.2.1.0\lib\System.Windows.Forms.DataVisualization.MSChartExtension.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -74,14 +102,17 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WPFToolkit">
+      <HintPath>..\Packages\WPFToolkit.3.5.50211.1\lib\WPFToolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreatureScriptsCreator\Creature.cs" />
-    <Compile Include="CreatureScriptsCreator\CreatureScriptsCreator.cs" />
-    <Compile Include="CreatureScriptsCreator\LineGetters.cs" />
-    <Compile Include="CreatureScriptsCreator\Packets.cs" />
-    <Compile Include="CreatureScriptsCreator\Spell.cs" />
-    <Compile Include="CreatureScriptsCreator\Text.cs" />
+    <Compile Include="Creature Scripts Creator\Creature.cs" />
+    <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />
+    <Compile Include="Creature Scripts Creator\LineGetters.cs" />
+    <Compile Include="Creature Scripts Creator\Packets.cs" />
+    <Compile Include="Creature Scripts Creator\Spell.cs" />
+    <Compile Include="Creature Scripts Creator\Text.cs" />
     <Compile Include="Database Advisor\AreatriggerSplineCreator.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
@@ -89,6 +120,7 @@
     <Compile Include="DBC\Misc\Configuration.cs" />
     <Compile Include="DBC\Misc\Settings.cs" />
     <Compile Include="DBC\Structures\DBFileAttribute.cs" />
+    <Compile Include="DBC\Structures\MapEntry.cs" />
     <Compile Include="DBC\Structures\SpellCastTimes.cs" />
     <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
     <Compile Include="DBC\Structures\SpellMiscEntry.cs" />
@@ -110,6 +142,14 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLModule.cs" />
+    <Compile Include="Waypoints Creator\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Waypoints Creator\SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Waypoints Creator\Waypoint.cs" />
+    <Compile Include="Waypoints Creator\WaypointsCreator.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -126,6 +166,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Waypoints Creator\SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

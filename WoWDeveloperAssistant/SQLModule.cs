@@ -7,7 +7,7 @@ namespace WoWDeveloperAssistant
 {
     public static class SQLModule
     {
-        public static object DatabaseSelectQuery(string query)
+        public static DataSet DatabaseSelectQuery(string query)
         {
             DataSet dataSet = new DataSet();
             MySqlConnection sqlConnection = new MySqlConnection();

@@ -180,7 +180,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(314, 428);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(314, 402);
             this.ControlBox = false;
             this.Controls.Add(this.button_CancelLogin);
             this.Controls.Add(this.button_Login);
@@ -195,7 +196,7 @@
             this.Controls.Add(this.label_UserName);
             this.Controls.Add(this.textBox_Host);
             this.Controls.Add(this.label_Host);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoginForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
