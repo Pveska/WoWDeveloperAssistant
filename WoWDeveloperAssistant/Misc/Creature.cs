@@ -157,10 +157,10 @@ namespace WoWDeveloperAssistant
                     waypoint.orientation = 0.0f;
                 }
 
-                script.id = id;
+                script.SetId(id);
                 int tempDelay = (int)Math.Floor((script.scriptTime.TotalMilliseconds - (firstMovePacket.packetSendTime.TotalMilliseconds + firstMovePacket.moveTime)) / 1000);
-                script.delay = tempDelay < 0 ? 0 : (uint)tempDelay;
-                script.guid = guid;
+                script.SetDelay(tempDelay < 0 ? 0 : (uint)tempDelay);
+                script.SetGuid(guid);
                 guid++;
 
                 waypoint.scripts.Add(script);

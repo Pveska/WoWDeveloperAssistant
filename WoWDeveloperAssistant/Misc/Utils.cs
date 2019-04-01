@@ -35,8 +35,8 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     foreach (WaypointScript script in waypoint.scripts)
                     {
-                        script.id = id;
-                        script.guid = guid;
+                        script.SetId(id);
+                        script.SetGuid(guid);
                         guid++;
                     }
 

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using static WoWDeveloperAssistant.Packets;
+using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Database_Advisor
 {

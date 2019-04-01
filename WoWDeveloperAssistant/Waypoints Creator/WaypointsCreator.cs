@@ -153,14 +153,14 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         }
                         else if (creature.HasWaypoints() && movePacket.HasOrientation())
                         {
-                            creature.waypoints.Last().orientation = movePacket.creatureOrientation;
-                            creature.waypoints.Last().orientationSetTime = movePacket.packetSendTime;
+                            creature.waypoints.Last().SetOrientation(movePacket.creatureOrientation);
+                            creature.waypoints.Last().SetOrientationSetTime(movePacket.packetSendTime);
                         }
                         else if (creature.HasWaypoints() && movePacket.HasWaypoints())
                         {
                             if (creature.waypoints.Last().HasOrientation())
                             {
-                                creature.waypoints.Last().delay = (uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds);
+                                creature.waypoints.Last().SetDelay((uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds));
                             }
 
                             foreach (Waypoint wp in movePacket.waypoints)

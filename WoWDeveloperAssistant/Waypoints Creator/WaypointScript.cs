@@ -7,7 +7,7 @@ using static WoWDeveloperAssistant.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
-    public class WaypointScript : ICloneable
+    public struct WaypointScript : ICloneable
     {
         public enum ScriptType : byte
         {
@@ -35,9 +35,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public float o;
         public uint guid;
         public TimeSpan scriptTime;
-
-        WaypointScript()
-        { id = 0; delay = 0; type = ScriptType.Unknown; dataLong = 0; dataLongSecond = 0; dataInt = 0; x = 0.0f; y = 0.0f; z = 0.0f; o = 0.0f; guid = 0; scriptTime = new TimeSpan(); }
 
         WaypointScript(uint id, uint delay, ScriptType type, uint dataLong, uint dataLongSecond, uint dataInt, float x, float y, float z, float o, uint guid, TimeSpan time)
         { this.id = id; this.delay = delay; this.type = type; this.dataLong = dataLong; this.dataLongSecond = dataLongSecond; this.dataInt = dataInt; this.x = x; this.y = y; this.z = z; this.o = o; this.guid = guid; this.scriptTime = time; }
@@ -73,6 +70,21 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public void SetId(uint id)
+        {
+            this.id = id;
+        }
+
+        public void SetGuid(uint guid)
+        {
+            this.guid = guid;
+        }
+
+        public void SetDelay(uint delay)
+        {
+            this.delay = delay;
         }
     }
 }

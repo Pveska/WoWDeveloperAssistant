@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static WoWDeveloperAssistant.Packets;
+using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
-    public class Waypoint : ICloneable
+    public struct Waypoint : ICloneable
     {
         public Position movePosition;
         public float orientation;
@@ -15,9 +15,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public TimeSpan moveStartTime;
         public TimeSpan orientationSetTime;
         public List<WaypointScript> scripts;
-
-        public Waypoint()
-        { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); }
 
         public Waypoint(Position movePos, float ori, uint delay, Position startPos, uint moveTime, TimeSpan moveStartTime, TimeSpan oriTime, List<WaypointScript> scripts)
         { movePosition = movePos; orientation = ori; this.delay = delay; startPosition = startPos; this.moveTime = moveTime; this.moveStartTime = moveStartTime; orientationSetTime = oriTime; this.scripts = scripts; }
@@ -58,13 +55,29 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             waypoint.moveTime = moveTime;
             waypoint.moveStartTime = moveStartTime;
             waypoint.orientationSetTime = orientationSetTime;
-            
+            waypoint.scripts = new List<WaypointScript>();
+
             foreach (WaypointScript script in scripts)
             {
                 waypoint.scripts.Add((WaypointScript)script.Clone());
             }
 
             return waypoint;
+        }
+
+        public void SetOrientation(float orientation)
+        {
+            this.orientation = orientation;
+        }
+
+        public void SetOrientationSetTime(TimeSpan time)
+        {
+            orientationSetTime = time;
+        }
+
+        public void SetDelay(uint delay)
+        {
+            this.delay = delay;
         }
     }
 }
