@@ -5,7 +5,7 @@ using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
-    public struct Waypoint : ICloneable
+    public class Waypoint : ICloneable
     {
         public Position movePosition;
         public float orientation;
@@ -15,6 +15,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public TimeSpan moveStartTime;
         public TimeSpan orientationSetTime;
         public List<WaypointScript> scripts;
+
+        public Waypoint() {}
 
         public Waypoint(Position movePos, float ori, uint delay, Position startPos, uint moveTime, TimeSpan moveStartTime, TimeSpan oriTime, List<WaypointScript> scripts)
         { movePosition = movePos; orientation = ori; this.delay = delay; startPosition = startPos; this.moveTime = moveTime; this.moveStartTime = moveStartTime; orientationSetTime = oriTime; this.scripts = scripts; }

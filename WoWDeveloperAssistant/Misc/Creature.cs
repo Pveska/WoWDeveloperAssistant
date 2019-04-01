@@ -152,13 +152,15 @@ namespace WoWDeveloperAssistant
 
             foreach (WaypointScript script in scriptsList)
             {
-                if (script.type == WaypointScript.ScriptType.SetOrientation && waypoint.HasOrientation())
+                int tempDelay = (int)Math.Floor((script.scriptTime.TotalMilliseconds - (firstMovePacket.packetSendTime.TotalMilliseconds + firstMovePacket.moveTime)) / 1000);
+
+                if (script.type == WaypointScript.ScriptType.SetOrientation && tempDelay <= 1)
                 {
-                    waypoint.orientation = 0.0f;
+                    waypoint.SetOrientation(script.o);
+                    continue;
                 }
 
                 script.SetId(id);
-                int tempDelay = (int)Math.Floor((script.scriptTime.TotalMilliseconds - (firstMovePacket.packetSendTime.TotalMilliseconds + firstMovePacket.moveTime)) / 1000);
                 script.SetDelay(tempDelay < 0 ? 0 : (uint)tempDelay);
                 script.SetGuid(guid);
                 guid++;
