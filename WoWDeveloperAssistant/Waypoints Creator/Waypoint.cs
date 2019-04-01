@@ -16,7 +16,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public TimeSpan orientationSetTime;
         public List<WaypointScript> scripts;
 
-        public Waypoint() {}
+        public Waypoint()
+        { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); }
 
         public Waypoint(Position movePos, float ori, uint delay, Position startPos, uint moveTime, TimeSpan moveStartTime, TimeSpan oriTime, List<WaypointScript> scripts)
         { movePosition = movePos; orientation = ori; this.delay = delay; startPosition = startPos; this.moveTime = moveTime; this.moveStartTime = moveStartTime; orientationSetTime = oriTime; this.scripts = scripts; }
