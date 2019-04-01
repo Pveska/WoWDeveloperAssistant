@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Utils;
