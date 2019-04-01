@@ -11,6 +11,54 @@ namespace WoWDeveloperAssistant
 {
     public static class Packets
     {
+        public class Packet
+        {
+            public PacketTypes packetType;
+            public TimeSpan sendTime;
+            public List<string> creatureGuidsList;
+            public long index;
+            public List<object> parsedPacketsList;
+
+            public Packet(PacketTypes type, TimeSpan time, List<string> guids, long index, List<object> parsedList)
+            { packetType = type; sendTime = time; creatureGuidsList = guids; this.index = index; parsedPacketsList = parsedList; }
+
+            public static PacketTypes GetPacketTypeFromLine(string line)
+            {
+                PacketTypes packetType = PacketTypes.UNKNOWN_PACKET;
+
+                if (line.Contains("SMSG_UPDATE_OBJECT"))
+                    packetType = PacketTypes.SMSG_UPDATE_OBJECT;
+                else if (line.Contains("SMSG_SPELL_START"))
+                    packetType = PacketTypes.SMSG_SPELL_START;
+                else if (line.Contains("SMSG_ON_MONSTER_MOVE"))
+                    packetType = PacketTypes.SMSG_ON_MONSTER_MOVE;
+                else if (line.Contains("SMSG_AURA_UPDATE"))
+                    packetType = PacketTypes.SMSG_AURA_UPDATE;
+
+                return packetType;
+            }
+
+            public bool HasCreatureWithGuid(string guid)
+            {
+                if (creatureGuidsList.Contains(guid))
+                    return true;
+
+                return false;
+            }
+
+            public bool IsScriptPacket()
+            {
+                switch (packetType)
+                {
+                    case PacketTypes.SMSG_UPDATE_OBJECT:
+                    case PacketTypes.SMSG_SPELL_START:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
         public struct SpellStartPacket
         {
             public string casterGuid;
@@ -87,9 +135,11 @@ namespace WoWDeveloperAssistant
             public Position spawnPosition;
             public uint mapId;
             public List<Waypoint> waypoints;
+            public uint? emoteStateId;
+            public uint? sheatheState;
 
-            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint mapId, List<Waypoint> waypoints)
-            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; }
+            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState)
+            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; }
 
             public static bool IsLineValidForObjectParse(string line)
             {
@@ -190,6 +240,46 @@ namespace WoWDeveloperAssistant
             public bool HasWaypoints()
             {
                 return waypoints.Count != 0;
+            }
+
+            public static List<string> GetGuidsFromUpdatePacket(string[] lines, long index, BuildVersions build)
+            {
+                List<string> guidsList = new List<string>();
+
+                do
+                {
+                    string guid = LineGetters.GetGuidFromLine(lines[index], build);
+                    if (guid != "")
+                    {
+                        if (!guidsList.Contains(guid))
+                        {
+                            guidsList.Add(guid);
+                        }
+                    }
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return guidsList;
+            }
+
+            public static uint? GetEmoteStateFromLine(string line)
+            {
+                Regex emoteRegex = new Regex(@"UNIT_NPC_EMOTESTATE:{1}\s{1}\w + ");
+                if (emoteRegex.IsMatch(line.ToString()))
+                    return Convert.ToUInt32(emoteRegex.Match(line.ToString()).ToString().Replace("UNIT_NPC_EMOTESTATE: ", ""));
+
+                return null;
+            }
+
+            public static uint? GetSheatheStateFromLine(string line)
+            {
+                Regex sheatheStateRegex = new Regex(@"SheatheState:{1}\s{1}\w + ");
+                if (sheatheStateRegex.IsMatch(line.ToString()))
+                    return Convert.ToUInt32(sheatheStateRegex.Match(line.ToString()).ToString().Replace("SheatheState: ", ""));
+
+                return null;
             }
         }
 
@@ -304,9 +394,9 @@ namespace WoWDeveloperAssistant
 
             public static bool GetNowDeadFromLine(string line)
             {
-                Regex noewDeadRegex = new Regex(@"NowDead:{1}\s+\w+");
-                if (noewDeadRegex.IsMatch(line))
-                    return noewDeadRegex.Match(line).ToString().Replace("NowDead: ", "") == "True";
+                Regex nowDeadRegex = new Regex(@"NowDead:{1}\s+\w+");
+                if (nowDeadRegex.IsMatch(line))
+                    return nowDeadRegex.Match(line).ToString().Replace("NowDead: ", "") == "True";
 
                 return false;
             }
@@ -327,6 +417,69 @@ namespace WoWDeveloperAssistant
 
             public AIReactionPacket(string guid, uint entry, TimeSpan time)
             { creatureGuid = guid; creatureEntry = entry; packetSendTime = time; }
+        }
+
+        public struct AuraUpdatePacket
+        {
+            public string unitGuid;
+            public uint? slot;
+            public uint spellId;
+            public bool? HasAura;
+            public TimeSpan packetSendTime;
+
+            public AuraUpdatePacket(string guid, uint? slot, uint spellId, bool? hasAUra, TimeSpan time)
+            { unitGuid = guid; this.slot = slot; this.spellId = spellId; this.HasAura = hasAUra; packetSendTime = time; }
+
+            public static uint? GetAuraSlotFromLine(string line)
+            {
+                Regex slotRegex = new Regex(@"Slot:{1}\s{1}\d+");
+                if (slotRegex.IsMatch(line))
+                    return Convert.ToUInt32(slotRegex.Match(line).ToString().Replace("Slot: ", ""));
+
+                return null;
+            }
+
+            public static bool? GetHasAuraFromLine(string line)
+            {
+                Regex applyRegex = new Regex(@"HasAura:{1}\s{1}\w+");
+                if (applyRegex.IsMatch(line))
+                    return applyRegex.Match(line).ToString().Replace("HasAura: ", "") == "True";
+
+                return null;
+            }
+
+            public static bool IsLineValidForAuraUpdateParsing(string line)
+            {
+                if (line == null)
+                    return false;
+
+                if (line == "")
+                    return false;
+
+                if (line.Contains("Slot:"))
+                    return false;
+
+                return true;
+            }
+
+            public bool IsValid()
+            {
+                return unitGuid != "" && slot != null && HasAura != null && packetSendTime != TimeSpan.Zero;
+            }
+
+            public static string GetUnitGuidFromAuraUpdatePacket(string[] lines, long index, BuildVersions build)
+            {
+                do
+                {
+                    if (LineGetters.GetGuidFromLine(lines[index], build, unitGuid: true) != "")
+                        return LineGetters.GetGuidFromLine(lines[index], build, unitGuid: true);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return "";
+            }
         }
 
         public class Position
@@ -383,12 +536,14 @@ namespace WoWDeveloperAssistant
 
         public enum PacketTypes : byte
         {
+            UNKNOWN_PACKET       = 0,
             SMSG_UPDATE_OBJECT   = 1,
             SMSG_AI_REACTION     = 2,
             SMSG_SPELL_START     = 3,
             SMSG_CHAT            = 4,
             SMSG_ON_MONSTER_MOVE = 5,
-            SMSG_ATTACK_STOP     = 6
+            SMSG_ATTACK_STOP     = 6,
+            SMSG_AURA_UPDATE     = 7
         }
 
         public static List<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
@@ -400,7 +555,7 @@ namespace WoWDeveloperAssistant
             {
                 if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && LineGetters.IsCreatureLine(lines[index + 1]))
                 {
-                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), 0, new List<Waypoint>());
+                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), 0, new List<Waypoint>(), null, null);
 
                     do
                     {
@@ -408,7 +563,7 @@ namespace WoWDeveloperAssistant
                         {
                             do
                             {
-                                updatePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan()));
+                                updatePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>()));
                                 index++;
                             }
                             while (lines[index].Contains("Points:"));
@@ -444,7 +599,7 @@ namespace WoWDeveloperAssistant
                 }
                 else if (lines[index].Contains("UpdateType: Values") && LineGetters.IsCreatureLine(lines[index + 1]))
                 {
-                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), 0, new List<Waypoint>());
+                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), 0, new List<Waypoint>(), null, null);
 
                     do
                     {
@@ -453,6 +608,12 @@ namespace WoWDeveloperAssistant
 
                         if (UpdateObjectPacket.GetHealthFromLine(lines[index]) == 0)
                             updatePacket.creatureCurrentHealth = UpdateObjectPacket.GetHealthFromLine(lines[index]);
+
+                        if (UpdateObjectPacket.GetEmoteStateFromLine(lines[index]) != null)
+                            updatePacket.emoteStateId = UpdateObjectPacket.GetEmoteStateFromLine(lines[index]);
+
+                        if (UpdateObjectPacket.GetSheatheStateFromLine(lines[index]) != null)
+                            updatePacket.sheatheState = UpdateObjectPacket.GetSheatheStateFromLine(lines[index]);
 
                         index++;
                     }
@@ -573,7 +734,7 @@ namespace WoWDeveloperAssistant
                             do
                             {
                                 if (MonsterMovePacket.GetPointPositionFromLine(lines[index]).IsValid())
-                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, movePacket.packetSendTime, new TimeSpan()));
+                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>()));
 
                                 index++;
                             }
@@ -587,7 +748,7 @@ namespace WoWDeveloperAssistant
                             do
                             {
                                 if (MonsterMovePacket.GetWayPointPositionFromLine(lines[index]).IsValid())
-                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetWayPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, movePacket.packetSendTime, new TimeSpan()));
+                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>()));
 
                                 index++;
                             }
@@ -596,7 +757,7 @@ namespace WoWDeveloperAssistant
 
                         if (lastPosition.IsValid())
                         {
-                            movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, new Position(), 0, movePacket.packetSendTime, new TimeSpan()));
+                            movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>()));
                         }
 
                         break;
@@ -630,6 +791,50 @@ namespace WoWDeveloperAssistant
             }
 
             return attackPacket;
+        }
+
+        public static List<AuraUpdatePacket> ParseAuraUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
+        {
+            TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+            List<AuraUpdatePacket> aurasList = new List<AuraUpdatePacket>();
+
+            do
+            {
+                if (lines[index].Contains("Slot:"))
+                {
+                    AuraUpdatePacket auraUpdatePacket = new AuraUpdatePacket("", null, 0, null, packetSendTime);
+
+                    do
+                    {
+                        if (AuraUpdatePacket.GetAuraSlotFromLine(lines[index]) != null)
+                            auraUpdatePacket.slot = AuraUpdatePacket.GetAuraSlotFromLine(lines[index]);
+
+                        if (AuraUpdatePacket.GetHasAuraFromLine(lines[index]) != null)
+                            auraUpdatePacket.HasAura = AuraUpdatePacket.GetHasAuraFromLine(lines[index]);
+
+                        if (SpellStartPacket.GetSpellIdFromLine(lines[index]) != 0)
+                            auraUpdatePacket.spellId = SpellStartPacket.GetSpellIdFromLine(lines[index]);
+
+                        if (LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true) != "")
+                            auraUpdatePacket.unitGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true);
+
+                        index++;
+                    }
+                    while (AuraUpdatePacket.IsLineValidForAuraUpdateParsing(lines[index]));
+
+                    if (!auraUpdatePacket.IsValid())
+                        continue;
+
+                    aurasList.Add(auraUpdatePacket);
+
+                    index--;
+                }
+
+                index++;
+            }
+            while (lines[index] != "");
+
+            return aurasList;
         }
     }
 }

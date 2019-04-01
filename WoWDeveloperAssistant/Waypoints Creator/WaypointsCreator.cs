@@ -5,9 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI.DataVisualization.Charting;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
@@ -29,7 +27,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public bool GetDataFromSniffFile(string fileName)
         {
             var lines = File.ReadAllLines(fileName);
-            Dictionary<long, PacketTypes> packetIndexes = new Dictionary<long, PacketTypes>();
+            List<Packet> packetsList = new List<Packet>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -38,58 +36,109 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 return false;
             }
 
+            packetsList.Clear();
+
             Parallel.For(0, lines.Length, index =>
             {
-                if (lines[index].Contains("SMSG_UPDATE_OBJECT") &&
-                !packetIndexes.ContainsKey(index))
+                if (lines[index].Contains("SMSG_UPDATE_OBJECT"))
                 {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_UPDATE_OBJECT);
+                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    List<string> guidsList = UpdateObjectPacket.GetGuidsFromUpdatePacket(lines, index, buildVersion);
+                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    {
+                        lock (packetsList)
+                        {
+                            if (!packetsList.ContainPacketWithIndex(index))
+                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                        }
+                    }
                 }
-                else if (lines[index].Contains("SMSG_SPELL_START") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE"))
                 {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_SPELL_START);
+                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    List<string> guidsList = new List<string>();
+                    guidsList.Add(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true));
+                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    {
+                        lock (packetsList)
+                        {
+                            if (!packetsList.ContainPacketWithIndex(index))
+                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                        }
+                    }
                 }
-                else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_SPELL_START"))
                 {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_ON_MONSTER_MOVE);
+                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    List<string> guidsList = new List<string>();
+                    guidsList.Add(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, casterGuid: true));
+                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    {
+                        lock (packetsList)
+                        {
+                            if (!packetsList.ContainPacketWithIndex(index))
+                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                        }
+                    }
+                }
+                else if (lines[index].Contains("SMSG_AURA_UPDATE"))
+                {
+                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    List<string> guidsList = new List<string>();
+                    guidsList.Add(AuraUpdatePacket.GetUnitGuidFromAuraUpdatePacket(lines, index, buildVersion));
+                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    {
+                        lock (packetsList)
+                        {
+                            if (!packetsList.ContainPacketWithIndex(index))
+                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                        }
+                    }
                 }
             });
 
             creaturesDict.Clear();
+            packetsList = new List<Packet>(from packet in packetsList orderby packet.sendTime select packet);
 
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            Parallel.ForEach(packetsList.AsEnumerable(), packet =>
             {
-                if (value.Value == PacketTypes.SMSG_UPDATE_OBJECT)
+                if (packet.packetType == PacketTypes.SMSG_UPDATE_OBJECT)
                 {
-                    Parallel.ForEach(ParseObjectUpdatePacket(lines, value.Key, buildVersion).AsEnumerable(), packet =>
+                    Parallel.ForEach(ParseObjectUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), updatePacket =>
                     {
+                        lock (packetsList)
+                        {
+                            packetsList.AddSourceFromUpdatePacket(updatePacket, packet.index);
+                        }
+
                         lock (creaturesDict)
                         {
-                            if (!creaturesDict.ContainsKey(packet.creatureGuid))
+                            if (!creaturesDict.ContainsKey(updatePacket.creatureGuid))
                             {
-                                creaturesDict.Add(packet.creatureGuid, new Creature(packet));
+                                creaturesDict.Add(updatePacket.creatureGuid, new Creature(updatePacket));
                             }
                             else
                             {
-                                creaturesDict[packet.creatureGuid].UpdateCreature(packet);
+                                creaturesDict[updatePacket.creatureGuid].UpdateCreature(updatePacket);
                             }
                         }
                     });
                 }
             });
 
-            foreach (var index in packetIndexes)
+            foreach (var packet in packetsList)
             {
-                if (index.Value == PacketTypes.SMSG_ON_MONSTER_MOVE)
+                if (packet.packetType == PacketTypes.SMSG_ON_MONSTER_MOVE)
                 {
-                    MonsterMovePacket movePacket = ParseMovementPacket(lines, index.Key, buildVersion);
+                    MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion);
                     if (movePacket.creatureGuid == "")
                         continue;
+
+                    packetsList.AddSourceFromMovementPacket(movePacket, packet.index);
 
                     if (creaturesDict.ContainsKey(movePacket.creatureGuid))
                     {
@@ -118,6 +167,134 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             {
                                 creature.waypoints.Add(wp);
                             }
+                        }
+                    }
+                }
+            }
+
+            Parallel.ForEach(packetsList.AsEnumerable(), packet =>
+            {
+                if (packet.packetType == PacketTypes.SMSG_SPELL_START)
+                {
+                    SpellStartPacket spellPacket = ParseSpellStartPacket(lines, packet.index, buildVersion);
+                    if (spellPacket.spellId == 0)
+                        return;
+
+                    lock (packetsList)
+                    {
+                        packetsList.AddSourceFromSpellPacket(spellPacket, packet.index);
+                    }
+                }
+            });
+
+            Parallel.ForEach(packetsList.AsEnumerable(), packet =>
+            {
+                if (packet.packetType == PacketTypes.SMSG_AURA_UPDATE)
+                {
+                    Parallel.ForEach(ParseAuraUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), auraPacket =>
+                    {
+                        lock (packetsList)
+                        {
+                            packetsList.AddSourceFromAuraUpdatePacket(auraPacket, packet.index);
+                        }
+
+                        lock (creaturesDict)
+                        {
+                            if (creaturesDict.ContainsKey(auraPacket.unitGuid))
+                            {
+                                Creature creature = creaturesDict[auraPacket.unitGuid];
+
+                                creature.auras.Add(new Aura((uint)auraPacket.slot, (bool)auraPacket.HasAura, auraPacket.packetSendTime, auraPacket.spellId));
+                            }
+                        }
+                    });
+                }
+            });
+
+            foreach (Creature creature in creaturesDict.Values)
+            {
+                if (creature.HasWaypoints())
+                {
+                    List<Packet> creaturePacketsList = packetsList.GetPacketsForCreatureWithGuid(creature.guid);
+                    List<WaypointScript> scriptsList = new List<WaypointScript>();
+                    MonsterMovePacket startMovePacket = new MonsterMovePacket();
+                    bool scriptsParsingStarted = false;
+
+                    foreach (Packet packet in creaturePacketsList)
+                    {
+                        switch (packet.packetType)
+                        {
+                            case PacketTypes.SMSG_ON_MONSTER_MOVE:
+                                {
+                                    MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
+                                    if (movePacket.HasWaypoints() && !scriptsParsingStarted)
+                                    {
+                                        startMovePacket = movePacket;
+                                        scriptsParsingStarted = true;
+                                    }
+                                    else if (movePacket.HasWaypoints() && scriptsParsingStarted)
+                                    {
+                                        if (scriptsList.Count != 0)
+                                        {
+                                            creature.AddScriptsForWaypoints(scriptsList, startMovePacket, movePacket);
+                                            scriptsList.Clear();
+                                        }
+
+                                        startMovePacket = movePacket;
+                                    }
+                                    else if (movePacket.HasOrientation() && scriptsParsingStarted)
+                                    {
+                                        scriptsList.Add(WaypointScript.GetScriptsFromMovementPacket(movePacket));
+                                    }
+
+                                    break;
+                                }
+                            case PacketTypes.SMSG_UPDATE_OBJECT:
+                                {
+                                    if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
+                                    {
+                                        if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid) != null)
+                                        {
+                                            UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
+
+                                            List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
+                                            if (updateScriptsList.Count != 0)
+                                            {
+                                                foreach (WaypointScript script in updateScriptsList)
+                                                {
+                                                    scriptsList.Add(script);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                }
+                            case PacketTypes.SMSG_SPELL_START:
+                                {
+                                    if (scriptsParsingStarted)
+                                    {
+                                        SpellStartPacket spellPacket = (SpellStartPacket)packet.parsedPacketsList.First();
+                                        scriptsList.Add(WaypointScript.GetScriptsFromSpellPacket(spellPacket));
+                                    }
+
+                                    break;
+                                }
+                            case PacketTypes.SMSG_AURA_UPDATE:
+                                {
+                                    if (scriptsParsingStarted)
+                                    {
+                                        AuraUpdatePacket auraPacket = (AuraUpdatePacket)packet.parsedPacketsList.First();
+                                        if (auraPacket.HasAura == false)
+                                        {
+                                            scriptsList.Add(WaypointScript.GetScriptsFromAuraUpdatePacket(auraPacket, creature));
+                                        }
+                                    }
+
+                                    break;
+                                }
+                            default:
+                                break;
                         }
                     }
                 }
@@ -167,7 +344,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in creature.waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, false, wp);
+                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, wp.HasScripts(), wp.Clone());
                 index++;
             }
 
@@ -245,6 +422,21 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 creatureAddon = "('" + creature.GetLinkedId() + "', @PATH, 0, 0, 1, 0, 0, 0, 0, '', -1); " + "\r\n";
             }
 
+            if (Properties.Settings.Default.Scripts)
+            {
+                List<Waypoint> waypoints = new List<Waypoint>();
+                foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
+                {
+                    Waypoint waypoint = (Waypoint)row.Cells[8].Value;
+                    waypoints.Add(waypoint);
+                }
+
+                if (creature.waypoints.Count != waypoints.Count)
+                {
+                    waypoints.RecalculateIdsAndGuids(creature.entry);
+                }
+            }
+
             string SQLtext = "-- Pathing for " + creature.name + " Entry: " + creature.entry + "\r\n";
             SQLtext = SQLtext + "SET @GUID := (SELECT `guid` FROM `creature` WHERE `linked_id` = " + "'" + creature.GetLinkedId() + "'" + ");" + "\r\n";
             SQLtext = SQLtext + "SET @PATH := @GUID * 10;" + "\r\n";
@@ -266,33 +458,78 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             for (int i = 0; i < mainForm.grid_WC_Waypoints.RowCount; i++)
             {
+                Waypoint waypoint = (Waypoint)mainForm.grid_WC_Waypoints[8, i].Value;
+
                 if (i < (mainForm.grid_WC_Waypoints.RowCount - 1))
                 {
-                    SQLtext = SQLtext + "(@PATH, " + (i + 1) + ", " + mainForm.grid_WC_Waypoints[1, i].Value + ", " + mainForm.grid_WC_Waypoints[2, i].Value + ", " + mainForm.grid_WC_Waypoints[3, i].Value + ", " + mainForm.grid_WC_Waypoints[4, i].Value + ", " + mainForm.grid_WC_Waypoints[6, i].Value + ", 0" + ", 0" + ", 100" + ", 0" + "),\r\n";
+                    SQLtext = SQLtext + "(@PATH, " + (i + 1) + ", " + waypoint.movePosition.x.GetValueWithoutComma() + ", " + waypoint.movePosition.y.GetValueWithoutComma() + ", " + waypoint.movePosition.z.GetValueWithoutComma() + ", " + waypoint.orientation.GetValueWithoutComma() + ", " + waypoint.delay + ", 0" + ", " + waypoint.GetScriptId() + ", 100" + ", 0" + "),\r\n";
                 }
                 else
                 {
-                    SQLtext = SQLtext + "(@PATH, " + (i + 1) + ", " + mainForm.grid_WC_Waypoints[1, i].Value + ", " + mainForm.grid_WC_Waypoints[2, i].Value + ", " + mainForm.grid_WC_Waypoints[3, i].Value + ", " + mainForm.grid_WC_Waypoints[4, i].Value + ", " + mainForm.grid_WC_Waypoints[6, i].Value + ", 0" + ", 0" + ", 100" + ", 0" + ");\r\n";
+                    SQLtext = SQLtext + "(@PATH, " + (i + 1) + ", " + waypoint.movePosition.x.GetValueWithoutComma() + ", " + waypoint.movePosition.y.GetValueWithoutComma() + ", " + waypoint.movePosition.z.GetValueWithoutComma() + ", " + waypoint.orientation.GetValueWithoutComma() + ", " + waypoint.delay + ", 0" + ", " + waypoint.GetScriptId() + ", 100" + ", 0" + ");\r\n";
                 }
             }
 
-            SQLtext = SQLtext + "-- " + creature.guid + " .go " + creature.spawnPosition.x + " " + creature.spawnPosition.y + " " + creature.spawnPosition.z + "\r\n";
+            SQLtext = SQLtext + "-- " + creature.guid + " .go " + creature.spawnPosition.x.GetValueWithoutComma() + " " + creature.spawnPosition.y.GetValueWithoutComma() + " " + creature.spawnPosition.z.GetValueWithoutComma() + "\r\n";
+
+            if (Properties.Settings.Default.Scripts)
+            {
+                List<Waypoint> waypoints = new List<Waypoint>();
+                foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
+                {
+                    Waypoint waypoint = (Waypoint)row.Cells[8].Value;
+                    waypoints.Add(waypoint);
+                }
+
+                if (creature.waypoints.Count != waypoints.Count)
+                {
+                    waypoints.RecalculateIdsAndGuids(creature.entry);
+                }
+
+                SQLtext += "\r\n";
+                SQLtext += "-- Waypoint scripts for " + creature.name + " Entry: " + creature.entry + "\r\n";
+                SQLtext = SQLtext + "DELETE FROM `waypoint_scripts` WHERE `id` IN (" + waypoints.GetScriptIds() + ");\r\n";
+                SQLtext = SQLtext + "INSERT INTO `waypoint_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid`) VALUES" + "\r\n";
+
+                uint scriptsCount = waypoints.GetScriptsCount() - 1;
+
+                for (int i = 0; i < mainForm.grid_WC_Waypoints.RowCount; i++)
+                {
+                    Waypoint waypoint = (Waypoint)mainForm.grid_WC_Waypoints[8, i].Value;
+
+                    foreach (WaypointScript script in waypoint.scripts)
+                    {
+                        if (scriptsCount != 0)
+                        {
+                            SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + "),\r\n";
+                            scriptsCount--;
+                        }
+                        else
+                        {
+                            SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");\r\n";
+                        }
+                    }
+                }
+            }
 
             if (Properties.Settings.Default.Vector)
             {
                 SQLtext += "\r\n";
+                SQLtext += "-- Vector3 for movement in core for " + creature.name + " Entry: " + creature.entry + "\r\n";
                 SQLtext = SQLtext + "G3D::Vector3 const Path_XXX[" + mainForm.grid_WC_Waypoints.RowCount + "] =" + "\r\n";
                 SQLtext = SQLtext + "{" + "\r\n";
 
                 for (var i = 0; i < mainForm.grid_WC_Waypoints.RowCount; i++)
                 {
+                    Waypoint waypoint = (Waypoint)mainForm.grid_WC_Waypoints[8, i].Value;
+
                     if (i < (mainForm.grid_WC_Waypoints.RowCount - 1))
                     {
-                        SQLtext = SQLtext + "{ " + mainForm.grid_WC_Waypoints[1, i].Value + "f, " + mainForm.grid_WC_Waypoints[2, i].Value + "f, " + mainForm.grid_WC_Waypoints[3, i].Value + "f },\r\n";
+                        SQLtext = SQLtext + "{ " + waypoint.movePosition.x.GetValueWithoutComma() + "f, " + waypoint.movePosition.y.GetValueWithoutComma() + "f, " + waypoint.movePosition.z.GetValueWithoutComma() + "f },\r\n";
                     }
                     else
                     {
-                        SQLtext = SQLtext + "{ " + mainForm.grid_WC_Waypoints[1, i].Value + "f, " + mainForm.grid_WC_Waypoints[2, i].Value + "f, " + mainForm.grid_WC_Waypoints[3, i].Value + "f };\r\n";
+                        SQLtext = SQLtext + "{ " + waypoint.movePosition.x.GetValueWithoutComma() + "f, " + waypoint.movePosition.y.GetValueWithoutComma() + "f, " + waypoint.movePosition.z.GetValueWithoutComma() + "f };\r\n";
                     }
                 }
 
@@ -363,7 +600,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, false, wp);
+                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, wp.HasScripts(), wp);
                 index++;
             }
 
@@ -388,7 +625,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, false, wp);
+                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, wp.HasScripts(), wp);
                 index++;
             }
 

@@ -107,10 +107,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Creature Scripts Creator\Creature.cs" />
+    <Compile Include="Misc\Aura.cs" />
+    <Compile Include="Misc\Creature.cs" />
     <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />
-    <Compile Include="Creature Scripts Creator\LineGetters.cs" />
-    <Compile Include="Creature Scripts Creator\Packets.cs" />
+    <Compile Include="Misc\LineGetters.cs" />
+    <Compile Include="Misc\Packets.cs" />
     <Compile Include="Creature Scripts Creator\Spell.cs" />
     <Compile Include="Creature Scripts Creator\Text.cs" />
     <Compile Include="Database Advisor\AreatriggerSplineCreator.cs" />
@@ -150,6 +151,7 @@
     </Compile>
     <Compile Include="Waypoints Creator\Waypoint.cs" />
     <Compile Include="Waypoints Creator\WaypointsCreator.cs" />
+    <Compile Include="Waypoints Creator\WaypointScript.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>

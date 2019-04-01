@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Waypoints_Creator;
@@ -19,7 +20,7 @@ namespace WoWDeveloperAssistant
         public Position spawnPosition;
         public uint mapId;
         public List<Waypoint> waypoints;
-
+        public List<Aura> auras;
         public Dictionary<uint, Spell> castedSpells;
 
         public Creature(UpdateObjectPacket updatePacket)
@@ -34,6 +35,7 @@ namespace WoWDeveloperAssistant
             spawnPosition = updatePacket.spawnPosition;
             mapId = updatePacket.mapId;
             waypoints = updatePacket.waypoints;
+            auras = new List<Aura>();
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -139,6 +141,60 @@ namespace WoWDeveloperAssistant
         public bool HasWaypoints()
         {
             return waypoints.Count > 1;
+        }
+
+        public void AddScriptsForWaypoints(List<WaypointScript> scriptsList, MonsterMovePacket firstMovePacket, MonsterMovePacket lastMovePacket)
+        {
+            Waypoint waypoint = waypoints.GetLastWaypointWithTime(firstMovePacket.packetSendTime);
+
+            uint id = (entry * 100) + waypoints.GetPointsWithScriptsCount();
+            uint guid = id + waypoints.GetScriptsCount() == id ? id + waypoints.GetScriptsCount() : id + waypoints.GetScriptsCount() - 1;
+
+            foreach (WaypointScript script in scriptsList)
+            {
+                if (script.type == WaypointScript.ScriptType.SetOrientation && waypoint.HasOrientation())
+                {
+                    waypoint.orientation = 0.0f;
+                }
+
+                script.id = id;
+                int tempDelay = (int)Math.Floor((script.scriptTime.TotalMilliseconds - (firstMovePacket.packetSendTime.TotalMilliseconds + firstMovePacket.moveTime)) / 1000);
+                script.delay = tempDelay < 0 ? 0 : (uint)tempDelay;
+                script.guid = guid;
+                guid++;
+
+                waypoint.scripts.Add(script);
+            }
+
+            waypoint.delay = (uint)(lastMovePacket.packetSendTime.TotalMilliseconds - scriptsList.First().scriptTime.TotalMilliseconds);
+        }
+
+        public uint GetSpellIdForAuraSlot(AuraUpdatePacket auraPacket)
+        {
+            uint spellId = 0;
+            int auraIndex = 0;
+
+            auras = new List<Aura>(from aura in auras orderby aura.time select aura);
+
+            for (int i = 0; i < auras.Count; i++)
+            {
+                if (auras[i].HasAura == false && auras[i].time == auraPacket.packetSendTime && auras[i].slot == auraPacket.slot)
+                {
+                    auraIndex = i;
+                    break;
+                }
+            }
+
+            if (auraIndex != 0)
+            {
+                for (int i = auraIndex; i >= 0; i--)
+                {
+                    if (auras[i].HasAura == true && auras[i].slot == auraPacket.slot)
+                        spellId = auras[i].spellId;
+                }
+            }
+
+            return spellId;
         }
     }
 }

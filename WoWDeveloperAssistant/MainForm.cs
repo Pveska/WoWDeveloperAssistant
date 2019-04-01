@@ -73,9 +73,8 @@ namespace WoWDeveloperAssistant
             else
             {
                 MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                return false;
             }
-
-            return false;
         }
 
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
@@ -227,8 +226,8 @@ namespace WoWDeveloperAssistant
                 else
                 {
                     toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_CSC_ImportSniff.Enabled = true;
-                    this.Cursor = Cursors.Default;
+                    toolStripButton_WC_LoadSniff.Enabled = true;
+                    Cursor = Cursors.Default;
                 }
             }
             else

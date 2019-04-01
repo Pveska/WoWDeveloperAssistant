@@ -7,7 +7,7 @@ namespace WoWDeveloperAssistant
 {
     public static class LineGetters
     {
-        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false)
+        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool updateAuraGuid = false)
         {
             if (objectFieldGuid && buidVersion == BuildVersions.BUILD_8_0_1)
             {
@@ -48,8 +48,12 @@ namespace WoWDeveloperAssistant
             else
             {
                 Regex guidRegex = new Regex(@"Object Guid: Full:{1}\s*\w{20,}");
+                Regex guidRegexSecond = new Regex(@"Object GUID: Full:{1}\s*\w{20,}");
                 if (guidRegex.IsMatch(line))
                     return guidRegex.Match(line).ToString().Replace("Object Guid: Full: ", "");
+                else if (guidRegexSecond.IsMatch(line))
+                    return guidRegexSecond.Match(line).ToString().Replace("Object GUID: Full: ", "");
+
             }
 
             return "";
