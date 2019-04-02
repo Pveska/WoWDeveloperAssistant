@@ -57,7 +57,7 @@ namespace WoWDeveloperAssistant
             if (maxhealth == 0 && updatePacket.creatureMaxHealth != 0)
                 maxhealth = updatePacket.creatureMaxHealth;
 
-            if (!spawnPosition.IsValid() && lastUpdatePacketTime > updatePacket.packetSendTime)
+            if (lastUpdatePacketTime > updatePacket.packetSendTime)
             {
                 spawnPosition = updatePacket.spawnPosition;
                 lastUpdatePacketTime = updatePacket.packetSendTime;
