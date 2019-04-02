@@ -152,10 +152,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             creature.waypoints.Last().SetDelay((uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds));
                         }
 
-                        foreach (Waypoint wp in movePacket.waypoints)
-                        {
-                            creature.AddWaypointsFromMovementPacket(movePacket);
-                        }
+                        creature.AddWaypointsFromMovementPacket(movePacket);
                     }
                 }
             }
