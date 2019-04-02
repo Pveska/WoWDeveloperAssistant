@@ -708,6 +708,12 @@ namespace WoWDeveloperAssistant
 
                 do
                 {
+                    if (lines[index].Contains("FacingGUID: Full:"))
+                    {
+                        movePacket.creatureGuid = "";
+                        break;
+                    }
+
                     if (LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true) != "")
                         movePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
 
