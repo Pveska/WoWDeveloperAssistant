@@ -367,6 +367,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             uint index = 1;
 
+            if (creature.waypoints.Count >= 1000)
+                RemoveDuplicatePoints(creature.waypoints);
+
             foreach (Waypoint wp in creature.waypoints)
             {
                 mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, wp.HasScripts(), wp.Clone());
@@ -630,6 +633,30 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             GraphPath();
+        }
+
+        public void RemoveDuplicatePoints(List<Waypoint> waypoints)
+        {
+            List<Waypoint> waypointList = new List<Waypoint>();
+            List<string> hashList = new List<string>();
+
+            foreach (Waypoint waypoint in waypoints)
+            {
+                string hash = SHA1HashStringForUTF8String(Convert.ToString(Math.Round(waypoint.movePosition.x / 0.25)) + " " + Convert.ToString(Math.Round(waypoint.movePosition.y / 0.25)) + " " + Convert.ToString(Math.Round(waypoint.movePosition.z / 0.25)));
+
+                if (!hashList.Contains(hash) || waypoint.HasOrientation())
+                {
+                    hashList.Add(hash);
+                    waypointList.Add(waypoint);
+                }
+            }
+
+            waypoints.Clear();
+
+            foreach (Waypoint wp in waypointList)
+            {
+                waypoints.Add(wp);
+            }
         }
 
         public void CreateReturnPath()
