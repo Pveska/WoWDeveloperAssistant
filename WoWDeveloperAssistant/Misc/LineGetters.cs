@@ -9,6 +9,9 @@ namespace WoWDeveloperAssistant
     {
         public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool updateAuraGuid = false)
         {
+            if (!line.Contains("Creature/0") && !line.Contains("Vehicle/0"))
+                return "";
+
             if (objectFieldGuid && buidVersion == BuildVersions.BUILD_8_0_1)
             {
                 Regex guidRegex = new Regex(@"OBJECT_FIELD_GUID: Full:{1}\s*\w{20,}");

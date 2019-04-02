@@ -26,8 +26,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public bool GetDataFromSniffFile(string fileName)
         {
+            mainForm.SetCurrentStatus("Getting lines...");
+
             var lines = File.ReadAllLines(fileName);
-            List<Packet> packetsList = new List<Packet>();
+            SortedDictionary<long, Packet> updateObjectPacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> movementPacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> spellPacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> auraPacketsDict = new SortedDictionary<long, Packet>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -36,137 +41,120 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 return false;
             }
 
-            packetsList.Clear();
+            mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
 
             Parallel.For(0, lines.Length, index =>
             {
-                if (lines[index].Contains("SMSG_UPDATE_OBJECT"))
+                if (Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_UPDATE_OBJECT)
                 {
-                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
-                    List<string> guidsList = UpdateObjectPacket.GetGuidsFromUpdatePacket(lines, index, buildVersion);
-                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    if (sendTime != TimeSpan.Zero)
                     {
-                        lock (packetsList)
+                        lock (updateObjectPacketsDict)
                         {
-                            if (!packetsList.ContainPacketWithIndex(index))
-                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                            if (!updateObjectPacketsDict.ContainsKey(index))
+                                updateObjectPacketsDict.Add(index, new Packet(PacketTypes.SMSG_UPDATE_OBJECT, sendTime, index, new List<object>()));
                         }
                     }
                 }
-                else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE"))
+                else if (Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_ON_MONSTER_MOVE)
                 {
-                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
-                    List<string> guidsList = new List<string>();
-                    guidsList.Add(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true));
-                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    if (sendTime != TimeSpan.Zero)
                     {
-                        lock (packetsList)
+                        lock (movementPacketsDict)
                         {
-                            if (!packetsList.ContainPacketWithIndex(index))
-                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                            if (!movementPacketsDict.ContainsKey(index))
+                                movementPacketsDict.Add(index, new Packet(PacketTypes.SMSG_ON_MONSTER_MOVE, sendTime, index, new List<object>()));
                         }
                     }
                 }
-                else if (Properties.Settings.Default.Scripts && lines[index].Contains("SMSG_SPELL_START"))
+                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_SPELL_START)
                 {
-                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
-                    List<string> guidsList = new List<string>();
-                    guidsList.Add(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, casterGuid: true));
-                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    if (sendTime != TimeSpan.Zero)
                     {
-                        lock (packetsList)
+                        lock (spellPacketsDict)
                         {
-                            if (!packetsList.ContainPacketWithIndex(index))
-                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                            if (!spellPacketsDict.ContainsKey(index))
+                                spellPacketsDict.Add(index, new Packet(PacketTypes.SMSG_SPELL_START, sendTime, index, new List<object>()));
                         }
                     }
                 }
-                else if (Properties.Settings.Default.Scripts && lines[index].Contains("SMSG_AURA_UPDATE"))
+                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_AURA_UPDATE)
                 {
-                    PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
-                    List<string> guidsList = new List<string>();
-                    guidsList.Add(AuraUpdatePacket.GetUnitGuidFromAuraUpdatePacket(lines, index, buildVersion));
-                    if (packetType != PacketTypes.UNKNOWN_PACKET && sendTime != TimeSpan.Zero && guidsList.Count != 0)
+                    if (sendTime != TimeSpan.Zero)
                     {
-                        lock (packetsList)
+                        lock (auraPacketsDict)
                         {
-                            if (!packetsList.ContainPacketWithIndex(index))
-                                packetsList.Add(new Packet(packetType, sendTime, guidsList, index, new List<object>()));
+                            if (!auraPacketsDict.ContainsKey(index))
+                                auraPacketsDict.Add(index, new Packet(PacketTypes.SMSG_AURA_UPDATE, sendTime, index, new List<object>()));
                         }
                     }
                 }
             });
 
             creaturesDict.Clear();
-            packetsList = new List<Packet>(from packet in packetsList orderby packet.sendTime select packet);
 
-            Parallel.ForEach(packetsList.AsEnumerable(), packet =>
+            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
+
+            Parallel.ForEach(updateObjectPacketsDict.Values.AsEnumerable(), packet =>
             {
-                if (packet.packetType == PacketTypes.SMSG_UPDATE_OBJECT)
+                Parallel.ForEach(ParseObjectUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), updatePacket =>
                 {
-                    Parallel.ForEach(ParseObjectUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), updatePacket =>
+                    lock (updateObjectPacketsDict)
                     {
-                        lock (packetsList)
-                        {
-                            packetsList.AddSourceFromUpdatePacket(updatePacket, packet.index);
-                        }
+                        updateObjectPacketsDict.AddSourceFromUpdatePacket(updatePacket, packet.index);
+                    }
 
-                        lock (creaturesDict)
+                    lock (creaturesDict)
+                    {
+                        if (!creaturesDict.ContainsKey(updatePacket.creatureGuid))
                         {
-                            if (!creaturesDict.ContainsKey(updatePacket.creatureGuid))
-                            {
-                                creaturesDict.Add(updatePacket.creatureGuid, new Creature(updatePacket));
-                            }
-                            else
-                            {
-                                creaturesDict[updatePacket.creatureGuid].UpdateCreature(updatePacket);
-                            }
+                            creaturesDict.Add(updatePacket.creatureGuid, new Creature(updatePacket));
                         }
-                    });
-                }
+                        else
+                        {
+                            creaturesDict[updatePacket.creatureGuid].UpdateCreature(updatePacket);
+                        }
+                    }
+                });
             });
 
-            foreach (var packet in packetsList)
+            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE packets...");
+
+            foreach (var packet in movementPacketsDict.Values)
             {
-                if (packet.packetType == PacketTypes.SMSG_ON_MONSTER_MOVE)
+                MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion);
+                if (movePacket.creatureGuid == "")
+                    continue;
+
+                movementPacketsDict.AddSourceFromMovementPacket(movePacket, packet.index);
+
+                if (creaturesDict.ContainsKey(movePacket.creatureGuid))
                 {
-                    MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion);
-                    if (movePacket.creatureGuid == "")
-                        continue;
+                    Creature creature = creaturesDict[movePacket.creatureGuid];
 
-                    packetsList.AddSourceFromMovementPacket(movePacket, packet.index);
-
-                    if (creaturesDict.ContainsKey(movePacket.creatureGuid))
+                    if (!creature.HasWaypoints() && movePacket.HasWaypoints())
                     {
-                        Creature creature = creaturesDict[movePacket.creatureGuid];
-
-                        if (!creature.HasWaypoints() && movePacket.HasWaypoints())
+                        creature.AddWaypointsFromMovementPacket(movePacket);
+                    }
+                    else if (creature.HasWaypoints() && movePacket.HasOrientation())
+                    {
+                        creature.waypoints.Last().SetOrientation(movePacket.creatureOrientation);
+                        creature.waypoints.Last().SetOrientationSetTime(movePacket.packetSendTime);
+                    }
+                    else if (creature.HasWaypoints() && movePacket.HasWaypoints())
+                    {
+                        if (creature.waypoints.Last().HasOrientation())
                         {
-                            foreach (Waypoint wp in movePacket.waypoints)
-                            {
-                                creature.waypoints.Add(wp);
-                            }
+                            creature.waypoints.Last().SetDelay((uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds));
                         }
-                        else if (creature.HasWaypoints() && movePacket.HasOrientation())
-                        {
-                            creature.waypoints.Last().SetOrientation(movePacket.creatureOrientation);
-                            creature.waypoints.Last().SetOrientationSetTime(movePacket.packetSendTime);
-                        }
-                        else if (creature.HasWaypoints() && movePacket.HasWaypoints())
-                        {
-                            if (creature.waypoints.Last().HasOrientation())
-                            {
-                                creature.waypoints.Last().SetDelay((uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds));
-                            }
 
-                            foreach (Waypoint wp in movePacket.waypoints)
-                            {
-                                creature.waypoints.Add(wp);
-                            }
+                        foreach (Waypoint wp in movePacket.waypoints)
+                        {
+                            creature.AddWaypointsFromMovementPacket(movePacket);
                         }
                     }
                 }
@@ -174,135 +162,169 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (Properties.Settings.Default.Scripts)
             {
-                Parallel.ForEach(packetsList.AsEnumerable(), packet =>
-                {
-                    if (packet.packetType == PacketTypes.SMSG_SPELL_START)
-                    {
-                        SpellStartPacket spellPacket = ParseSpellStartPacket(lines, packet.index, buildVersion);
-                        if (spellPacket.spellId == 0)
-                            return;
+                mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
 
-                        lock (packetsList)
+                Parallel.ForEach(spellPacketsDict.Values.AsEnumerable(), packet =>
+                {
+                    SpellStartPacket spellPacket = ParseSpellStartPacket(lines, packet.index, buildVersion);
+                    if (spellPacket.spellId == 0)
+                        return;
+
+                    lock (movementPacketsDict)
+                    {
+                        spellPacketsDict.AddSourceFromSpellPacket(spellPacket, packet.index);
+                    }
+                });
+
+                mainForm.SetCurrentStatus("Parsing SMSG_AURA_UPDATE packets...");
+
+                Parallel.ForEach(auraPacketsDict.Values.AsEnumerable(), packet =>
+                {
+                    Parallel.ForEach(ParseAuraUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), auraPacket =>
+                    {
+                        lock (auraPacketsDict)
                         {
-                            packetsList.AddSourceFromSpellPacket(spellPacket, packet.index);
+                            auraPacketsDict.AddSourceFromAuraUpdatePacket(auraPacket, packet.index);
                         }
-                    }
-                });
 
-                Parallel.ForEach(packetsList.AsEnumerable(), packet =>
-                {
-                    if (packet.packetType == PacketTypes.SMSG_AURA_UPDATE)
-                    {
-                        Parallel.ForEach(ParseAuraUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), auraPacket =>
+                        lock (creaturesDict)
                         {
-                            lock (packetsList)
+                            if (creaturesDict.ContainsKey(auraPacket.unitGuid))
                             {
-                                packetsList.AddSourceFromAuraUpdatePacket(auraPacket, packet.index);
-                            }
+                                Creature creature = creaturesDict[auraPacket.unitGuid];
 
-                            lock (creaturesDict)
-                            {
-                                if (creaturesDict.ContainsKey(auraPacket.unitGuid))
-                                {
-                                    Creature creature = creaturesDict[auraPacket.unitGuid];
-
-                                    creature.auras.Add(new Aura((uint)auraPacket.slot, (bool)auraPacket.HasAura, auraPacket.packetSendTime, auraPacket.spellId));
-                                }
+                                creature.auras.Add(new Aura((uint)auraPacket.slot, (bool)auraPacket.HasAura, auraPacket.packetSendTime, auraPacket.spellId));
                             }
-                        });
-                    }
+                        }
+                    });
                 });
 
-                foreach (Creature creature in creaturesDict.Values)
+                mainForm.SetCurrentStatus("Creating waypoint scripts for creatures...");
+
+                Parallel.ForEach(creaturesDict.Values.AsEnumerable(), creature =>
                 {
                     if (creature.HasWaypoints())
                     {
-                        List<Packet> creaturePacketsList = packetsList.GetPacketsForCreatureWithGuid(creature.guid);
+                        SortedDictionary<long, Packet> creaturePacketsDict = new SortedDictionary<long, Packet>();
+
+                        foreach (Packet packet in updateObjectPacketsDict.Values)
+                        {
+                            if (packet.HasCreatureWithGuid(creature.guid))
+                            {
+                                creaturePacketsDict.Add(packet.index, packet);
+                            }
+                        }
+
+                        foreach (Packet packet in movementPacketsDict.Values)
+                        {
+                            if (packet.HasCreatureWithGuid(creature.guid))
+                            {
+                                creaturePacketsDict.Add(packet.index, packet);
+                            }
+                        }
+
+                        foreach (Packet packet in spellPacketsDict.Values)
+                        {
+                            if (packet.HasCreatureWithGuid(creature.guid))
+                            {
+                                creaturePacketsDict.Add(packet.index, packet);
+                            }
+                        }
+
+                        foreach (Packet packet in auraPacketsDict.Values)
+                        {
+                            if (packet.HasCreatureWithGuid(creature.guid))
+                            {
+                                creaturePacketsDict.Add(packet.index, packet);
+                            }
+                        }
+
                         List<WaypointScript> scriptsList = new List<WaypointScript>();
                         MonsterMovePacket startMovePacket = new MonsterMovePacket();
                         bool scriptsParsingStarted = false;
 
-                        foreach (Packet packet in creaturePacketsList)
+                        foreach (Packet packet in creaturePacketsDict.Values)
                         {
                             switch (packet.packetType)
                             {
                                 case PacketTypes.SMSG_ON_MONSTER_MOVE:
-                                {
-                                    MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
-                                    if (movePacket.HasWaypoints() && !scriptsParsingStarted)
                                     {
-                                        startMovePacket = movePacket;
-                                        scriptsParsingStarted = true;
-                                    }
-                                    else if (movePacket.HasWaypoints() && scriptsParsingStarted)
-                                    {
-                                        if (scriptsList.Count != 0)
+                                        MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
+                                        if (movePacket.HasWaypoints() && !scriptsParsingStarted)
                                         {
-                                            creature.AddScriptsForWaypoints(scriptsList, startMovePacket, movePacket);
-                                            scriptsList.Clear();
+                                            startMovePacket = movePacket;
+                                            scriptsParsingStarted = true;
+                                        }
+                                        else if (movePacket.HasWaypoints() && scriptsParsingStarted)
+                                        {
+                                            if (scriptsList.Count != 0)
+                                            {
+                                                creature.AddScriptsForWaypoints(scriptsList, startMovePacket, movePacket);
+                                                scriptsList.Clear();
+                                            }
+
+                                            startMovePacket = movePacket;
+                                        }
+                                        else if (movePacket.HasOrientation() && scriptsParsingStarted)
+                                        {
+                                            scriptsList.Add(WaypointScript.GetScriptsFromMovementPacket(movePacket));
                                         }
 
-                                        startMovePacket = movePacket;
+                                        break;
                                     }
-                                    else if (movePacket.HasOrientation() && scriptsParsingStarted)
-                                    {
-                                        scriptsList.Add(WaypointScript.GetScriptsFromMovementPacket(movePacket));
-                                    }
-
-                                    break;
-                                }
                                 case PacketTypes.SMSG_UPDATE_OBJECT:
-                                {
-                                    if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
                                     {
-                                        if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid) != null)
+                                        if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
                                         {
-                                            UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
-
-                                            List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
-                                            if (updateScriptsList.Count != 0)
+                                            if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid) != null)
                                             {
-                                                foreach (WaypointScript script in updateScriptsList)
+                                                UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
+
+                                                List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
+                                                if (updateScriptsList.Count != 0)
                                                 {
-                                                    scriptsList.Add(script);
+                                                    foreach (WaypointScript script in updateScriptsList)
+                                                    {
+                                                        scriptsList.Add(script);
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    break;
-                                }
+                                        break;
+                                    }
                                 case PacketTypes.SMSG_SPELL_START:
-                                {
-                                    if (scriptsParsingStarted)
                                     {
-                                        SpellStartPacket spellPacket = (SpellStartPacket)packet.parsedPacketsList.First();
-                                        scriptsList.Add(WaypointScript.GetScriptsFromSpellPacket(spellPacket));
-                                    }
-
-                                    break;
-                                }
-                                case PacketTypes.SMSG_AURA_UPDATE:
-                                {
-                                    if (scriptsParsingStarted)
-                                    {
-                                        AuraUpdatePacket auraPacket = (AuraUpdatePacket)packet.parsedPacketsList.First();
-                                        if (auraPacket.HasAura == false)
+                                        if (scriptsParsingStarted)
                                         {
-                                            scriptsList.Add(WaypointScript.GetScriptsFromAuraUpdatePacket(auraPacket, creature));
+                                            SpellStartPacket spellPacket = (SpellStartPacket)packet.parsedPacketsList.First();
+                                            scriptsList.Add(WaypointScript.GetScriptsFromSpellPacket(spellPacket));
                                         }
-                                    }
 
-                                    break;
-                                }
+                                        break;
+                                    }
+                                case PacketTypes.SMSG_AURA_UPDATE:
+                                    {
+                                        if (scriptsParsingStarted)
+                                        {
+                                            AuraUpdatePacket auraPacket = (AuraUpdatePacket)packet.parsedPacketsList.First();
+                                            if (auraPacket.HasAura == false)
+                                            {
+                                                scriptsList.Add(WaypointScript.GetScriptsFromAuraUpdatePacket(auraPacket, creature));
+                                            }
+                                        }
+
+                                        break;
+                                    }
                                 default:
                                     break;
                             }
                         }
                     }
-                }
+                });
             }
 
+            mainForm.SetCurrentStatus("");
             return true;
         }
 
@@ -670,6 +692,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void ImportSuccessful()
         {
+            mainForm.toolStripStatusLabel_CurrentAction.Text = "";
             mainForm.toolStripButton_WC_LoadSniff.Enabled = true;
             mainForm.toolStripButton_WC_Search.Enabled = true;
             mainForm.toolStripTextBox_WC_Entry.Enabled = true;

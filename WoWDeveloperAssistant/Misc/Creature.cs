@@ -198,5 +198,13 @@ namespace WoWDeveloperAssistant
 
             return spellId;
         }
+
+        public void AddWaypointsFromMovementPacket(MonsterMovePacket movePacket)
+        {
+            foreach (Waypoint wp in movePacket.waypoints)
+            {
+                waypoints.Add(wp);
+            }
+        }
     }
 }

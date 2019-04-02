@@ -87,7 +87,11 @@ namespace WoWDeveloperAssistant
 
         public bool GetDataFromSniffFile(string fileName)
         {
+            mainForm.SetCurrentStatus("Loading DBC...");
+
             DBC.Load();
+
+            mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
             Dictionary<long, PacketTypes> packetIndexes = new Dictionary<long, PacketTypes>();
@@ -100,6 +104,8 @@ namespace WoWDeveloperAssistant
             }
 
             creaturesDict.Clear();
+
+            mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
 
             Parallel.For(0, lines.Length, index =>
             {
@@ -141,6 +147,8 @@ namespace WoWDeveloperAssistant
                 }
             });
 
+            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
+
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
                 if (value.Value == PacketTypes.SMSG_UPDATE_OBJECT)
@@ -162,6 +170,8 @@ namespace WoWDeveloperAssistant
                 }
             });
 
+            mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
+
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
                 if (value.Value == PacketTypes.SMSG_SPELL_START)
@@ -182,6 +192,8 @@ namespace WoWDeveloperAssistant
                     }
                 }
             });
+
+            mainForm.SetCurrentStatus("Parsing SMSG_AI_REACTION packets...");
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
@@ -206,6 +218,8 @@ namespace WoWDeveloperAssistant
                     }
                 }
             });
+
+            mainForm.SetCurrentStatus("Parsing SMSG_CHAT packets...");
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
@@ -274,6 +288,8 @@ namespace WoWDeveloperAssistant
                 }
             });
 
+            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE and SMSG_ATTACK_STOP packets...");
+
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
                 if (value.Value == PacketTypes.SMSG_ON_MONSTER_MOVE)
@@ -321,6 +337,7 @@ namespace WoWDeveloperAssistant
                 creature.Value.CreateCombatCastTimings();
             });
 
+            mainForm.SetCurrentStatus("");
             return true;
         }
 
@@ -428,6 +445,7 @@ namespace WoWDeveloperAssistant
 
         public void ImportSuccessful()
         {
+            mainForm.toolStripStatusLabel_CurrentAction.Text = "";
             mainForm.toolStripButton_CSC_ImportSniff.Enabled = true;
             mainForm.toolStripButton_CSC_Search.Enabled = true;
             mainForm.toolStripTextBox_CSC_CreatureEntry.Enabled = true;

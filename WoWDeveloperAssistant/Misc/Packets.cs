@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Waypoints_Creator;
@@ -14,12 +15,11 @@ namespace WoWDeveloperAssistant
         {
             public PacketTypes packetType;
             public TimeSpan sendTime;
-            public List<string> creatureGuidsList;
             public long index;
             public List<object> parsedPacketsList;
 
-            public Packet(PacketTypes type, TimeSpan time, List<string> guids, long index, List<object> parsedList)
-            { packetType = type; sendTime = time; creatureGuidsList = guids; this.index = index; parsedPacketsList = parsedList; }
+            public Packet(PacketTypes type, TimeSpan time, long index, List<object> parsedList)
+            { packetType = type; sendTime = time; this.index = index; parsedPacketsList = parsedList; }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
             {
@@ -39,8 +39,54 @@ namespace WoWDeveloperAssistant
 
             public bool HasCreatureWithGuid(string guid)
             {
-                if (creatureGuidsList.Contains(guid))
-                    return true;
+                if (parsedPacketsList.Count == 0)
+                    return false;
+
+                switch (packetType)
+                {
+                    case PacketTypes.SMSG_UPDATE_OBJECT:
+                    {
+                        foreach (UpdateObjectPacket updatePacket in parsedPacketsList)
+                        {
+                            if (updatePacket.creatureGuid == guid)
+                                return true;
+                        }
+
+                        break;
+                    }
+                    case PacketTypes.SMSG_ON_MONSTER_MOVE:
+                    {
+                        foreach (MonsterMovePacket movementPacket in parsedPacketsList)
+                        {
+                            if (movementPacket.creatureGuid == guid)
+                                return true;
+                        }
+
+                        break;
+                    }
+                    case PacketTypes.SMSG_SPELL_START:
+                    {
+                        foreach (SpellStartPacket spellPacket in parsedPacketsList)
+                        {
+                            if (spellPacket.casterGuid == guid)
+                                return true;
+                        }
+
+                        break;
+                    }
+                    case PacketTypes.SMSG_AURA_UPDATE:
+                    {
+                        foreach (AuraUpdatePacket auraPacket in parsedPacketsList)
+                        {
+                            if (auraPacket.unitGuid == guid)
+                                return true;
+                        }
+
+                        break;
+                    }
+                    default:
+                        break;
+                }
 
                 return false;
             }

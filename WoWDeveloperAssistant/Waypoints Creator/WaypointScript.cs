@@ -4,7 +4,7 @@ using static WoWDeveloperAssistant.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
-    public struct WaypointScript : ICloneable
+    public class WaypointScript : ICloneable
     {
         public enum ScriptType : byte
         {

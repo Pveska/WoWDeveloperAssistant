@@ -144,9 +144,24 @@ namespace WoWDeveloperAssistant.Misc
             return null;
         }
 
-        public static void AddSourceFromAuraUpdatePacket(this List<Packet> list, AuraUpdatePacket auraPacket, long index)
+        public static uint GetObjectstWithTypeCount(this List<Packet> list, PacketTypes type)
         {
+            uint packetsCount = 0;
+
             foreach (Packet packet in list)
+            {
+                if (packet.packetType == type)
+                {
+                    packetsCount++;
+                }
+            }
+
+            return packetsCount;
+        }
+
+        public static void AddSourceFromAuraUpdatePacket(this SortedDictionary<long, Packet> dict, AuraUpdatePacket auraPacket, long index)
+        {
+            foreach (Packet packet in dict.Values)
             {
                 if (packet.packetType == PacketTypes.SMSG_AURA_UPDATE && packet.index == index)
                 {
@@ -156,9 +171,9 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        public static void AddSourceFromSpellPacket(this List<Packet> list, SpellStartPacket spellPacket, long index)
+        public static void AddSourceFromSpellPacket(this SortedDictionary<long, Packet> dict, SpellStartPacket spellPacket, long index)
         {
-            foreach (Packet packet in list)
+            foreach (Packet packet in dict.Values)
             {
                 if (packet.packetType == PacketTypes.SMSG_SPELL_START && packet.index == index)
                 {
@@ -168,9 +183,9 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        public static void AddSourceFromMovementPacket(this List<Packet> list, MonsterMovePacket movementPacket, long index)
+        public static void AddSourceFromMovementPacket(this SortedDictionary<long, Packet> dict, MonsterMovePacket movementPacket, long index)
         {
-            foreach (Packet packet in list)
+            foreach (Packet packet in dict.Values)
             {
                 if (packet.packetType == PacketTypes.SMSG_ON_MONSTER_MOVE && packet.index == index)
                 {
@@ -180,9 +195,9 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        public static void AddSourceFromUpdatePacket(this List<Packet> list, UpdateObjectPacket updatePacket, long index)
+        public static void AddSourceFromUpdatePacket(this SortedDictionary<long, Packet> dict, UpdateObjectPacket updatePacket, long index)
         {
-            foreach (Packet packet in list)
+            foreach (Packet packet in dict.Values)
             {
                 if (packet.packetType == PacketTypes.SMSG_UPDATE_OBJECT && packet.index == index)
                 {
@@ -194,9 +209,9 @@ namespace WoWDeveloperAssistant.Misc
 
         public static bool ContainPacketWithIndex(this List<Packet> list, long index)
         {
-            foreach (Packet listPacket in list)
+            foreach (Packet packet in list)
             {
-                if (listPacket.index == index)
+                if (packet.index == index)
                     return true;
             }
 

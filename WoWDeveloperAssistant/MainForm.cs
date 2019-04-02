@@ -113,6 +113,7 @@ namespace WoWDeveloperAssistant
                 }
                 else
                 {
+                    toolStripStatusLabel_CurrentAction.Text = "";
                     toolStripStatusLabel_FileStatus.Text = "No File Loaded";
                     toolStripButton_CSC_ImportSniff.Enabled = true;
                     this.Cursor = Cursors.Default;
@@ -225,6 +226,7 @@ namespace WoWDeveloperAssistant
                 }
                 else
                 {
+                    toolStripStatusLabel_CurrentAction.Text = "";
                     toolStripStatusLabel_FileStatus.Text = "No File Loaded";
                     toolStripButton_WC_LoadSniff.Enabled = true;
                     Cursor = Cursors.Default;
@@ -275,6 +277,12 @@ namespace WoWDeveloperAssistant
         private void createReturnPathToolStripMenuItem_WC_Click(object sender, EventArgs e)
         {
             waypointsCreator.CreateReturnPath();
+        }
+
+        public void SetCurrentStatus(string status)
+        {
+            toolStripStatusLabel_CurrentAction.Text = "Current Status: " + status;
+            Update();
         }
     }
 }
