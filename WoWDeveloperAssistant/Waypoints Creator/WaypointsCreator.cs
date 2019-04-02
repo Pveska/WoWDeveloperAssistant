@@ -170,7 +170,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     if (spellPacket.spellId == 0)
                         return;
 
-                    lock (movementPacketsDict)
+                    lock (spellPacketsDict)
                     {
                         spellPacketsDict.AddSourceFromSpellPacket(spellPacket, packet.index);
                     }
