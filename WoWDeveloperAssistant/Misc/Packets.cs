@@ -424,7 +424,7 @@ namespace WoWDeveloperAssistant
 
             public bool HasWaypoints()
             {
-                return waypoints.Count != 0;
+                return waypoints.Count > 1;
             }
         }
 

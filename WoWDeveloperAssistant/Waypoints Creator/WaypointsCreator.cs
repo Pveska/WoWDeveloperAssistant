@@ -127,7 +127,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             foreach (var packet in movementPacketsDict.Values)
             {
                 MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion);
-                if (movePacket.creatureGuid == "")
+                if (movePacket.creatureGuid == "" || (!movePacket.HasWaypoints() && !movePacket.HasOrientation()))
                     continue;
 
                 movementPacketsDict.AddSourceFromMovementPacket(movePacket, packet.index);
