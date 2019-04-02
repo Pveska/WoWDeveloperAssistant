@@ -18,10 +18,11 @@ namespace WoWDeveloperAssistant
         public TimeSpan combatStartTime;
         public TimeSpan deathTime;
         public Position spawnPosition;
-        public uint mapId;
+        public uint? mapId;
         public List<Waypoint> waypoints;
         public List<Aura> auras;
         public Dictionary<uint, Spell> castedSpells;
+        private TimeSpan lastUpdatePacketTime;
 
         public Creature(UpdateObjectPacket updatePacket)
         {
@@ -36,6 +37,7 @@ namespace WoWDeveloperAssistant
             mapId = updatePacket.mapId;
             waypoints = updatePacket.waypoints;
             auras = new List<Aura>();
+            lastUpdatePacketTime = updatePacket.packetSendTime;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -55,10 +57,13 @@ namespace WoWDeveloperAssistant
             if (maxhealth == 0 && updatePacket.creatureMaxHealth != 0)
                 maxhealth = updatePacket.creatureMaxHealth;
 
-            if (spawnPosition != updatePacket.spawnPosition)
+            if (!spawnPosition.IsValid() && lastUpdatePacketTime > updatePacket.packetSendTime)
+            {
                 spawnPosition = updatePacket.spawnPosition;
+                lastUpdatePacketTime = updatePacket.packetSendTime;
+            }
 
-            if (mapId == 0 && updatePacket.mapId != 0)
+            if (mapId == null && updatePacket.mapId != null)
                 mapId = updatePacket.mapId;
 
             if (updatePacket.HasWaypoints())
@@ -132,10 +137,9 @@ namespace WoWDeveloperAssistant
         public string GetLinkedId()
         {
             string linkedId = "";
-            linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25), CultureInfo.InvariantCulture) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25), CultureInfo.InvariantCulture) + " " + Convert.ToString(Math.Round(spawnPosition.z / 0.25), CultureInfo.InvariantCulture) + " ";
+            linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.z / 0.25)) + " ";
             linkedId += Convert.ToString(entry) + " " + Convert.ToString(mapId) + " 0 1 0";
-            linkedId = Utils.SHA1HashStringForUTF8String(linkedId).ToUpper();
-            return linkedId;
+            return Utils.SHA1HashStringForUTF8String(linkedId).ToUpper();
         }
 
         public bool HasWaypoints()
@@ -205,6 +209,13 @@ namespace WoWDeveloperAssistant
             {
                 waypoints.Add(wp);
             }
+
+            SortWaypoints();
+        }
+
+        public void SortWaypoints()
+        {
+            waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.moveStartTime select waypoint);
         }
     }
 }

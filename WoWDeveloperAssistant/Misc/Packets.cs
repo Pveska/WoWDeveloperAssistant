@@ -178,13 +178,14 @@ namespace WoWDeveloperAssistant
             public uint creatureMaxHealth;
             public TimeSpan packetSendTime;
             public Position spawnPosition;
-            public uint mapId;
+            public uint? mapId;
             public List<Waypoint> waypoints;
             public uint? emoteStateId;
             public uint? sheatheState;
+            public uint? standState;
 
-            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState)
-            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; }
+            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState)
+            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; }
 
             public static bool IsLineValidForObjectParse(string line)
             {
@@ -265,21 +266,24 @@ namespace WoWDeveloperAssistant
                 return spawnPosition;
             }
 
-            public static uint GetMapIdFromLine(string line)
+            public static uint? GetMapIdFromLine(string line)
             {
                 string map = "";
 
                 Regex mapRegex = new Regex(@"Map:{1}.+Entry:{1}");
-                if (mapRegex.IsMatch(line.ToString()))
-                    map = mapRegex.Match(line.ToString()).ToString().Replace("Map: ", "").Replace(" Entry:", "");
+                if (mapRegex.IsMatch(line))
+                    map = mapRegex.Match(line).ToString().Replace("Map: ", "").Replace(" Entry:", "");
+
+                if (map == "")
+                    return null;
 
                 foreach (var row in DBC.Map)
                 {
                     if (map == row.Value.MapName)
-                        return (uint)row.Key;
+                        return (uint?)row.Key;
                 }
 
-                return 0;
+                return null;
             }
 
             public bool HasWaypoints()
@@ -311,7 +315,7 @@ namespace WoWDeveloperAssistant
 
             public static uint? GetEmoteStateFromLine(string line)
             {
-                Regex emoteRegex = new Regex(@"UNIT_NPC_EMOTESTATE:{1}\s{1}\w + ");
+                Regex emoteRegex = new Regex(@"UNIT_NPC_EMOTESTATE:{1}\s{1}\w+");
                 if (emoteRegex.IsMatch(line.ToString()))
                     return Convert.ToUInt32(emoteRegex.Match(line.ToString()).ToString().Replace("UNIT_NPC_EMOTESTATE: ", ""));
 
@@ -320,9 +324,18 @@ namespace WoWDeveloperAssistant
 
             public static uint? GetSheatheStateFromLine(string line)
             {
-                Regex sheatheStateRegex = new Regex(@"SheatheState:{1}\s{1}\w + ");
+                Regex sheatheStateRegex = new Regex(@"SheatheState:{1}\s{1}\w+");
                 if (sheatheStateRegex.IsMatch(line.ToString()))
                     return Convert.ToUInt32(sheatheStateRegex.Match(line.ToString()).ToString().Replace("SheatheState: ", ""));
+
+                return null;
+            }
+
+            public static uint? GetStandStateFromLine(string line)
+            {
+                Regex standstateRegex = new Regex(@"StandState:{1}\s{1}\w+");
+                if (standstateRegex.IsMatch(line.ToString()))
+                    return Convert.ToUInt32(standstateRegex.Match(line.ToString()).ToString().Replace("StandState: ", ""));
 
                 return null;
             }
@@ -548,21 +561,24 @@ namespace WoWDeveloperAssistant
             {
                 if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && LineGetters.IsCreatureLine(lines[index + 1]))
                 {
-                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), 0, new List<Waypoint>(), null, null);
+                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null);
 
                     do
                     {
                         if (MonsterMovePacket.GetPointPositionFromLine(lines[index]).IsValid())
                         {
+                            uint pointId = 1;
+
                             do
                             {
-                                updatePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>()));
+                                updatePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId));
+                                pointId++;
                                 index++;
                             }
                             while (lines[index].Contains("Points:"));
                         }
 
-                        if (UpdateObjectPacket.GetMapIdFromLine(lines[index]) != 0)
+                        if (UpdateObjectPacket.GetMapIdFromLine(lines[index]) != null)
                             updatePacket.mapId = UpdateObjectPacket.GetMapIdFromLine(lines[index]);
 
                         if (UpdateObjectPacket.GetSpawnPositionFromLine(lines[index], lines[index + 1]).IsValid())
@@ -592,7 +608,7 @@ namespace WoWDeveloperAssistant
                 }
                 else if (lines[index].Contains("UpdateType: Values") && LineGetters.IsCreatureLine(lines[index + 1]))
                 {
-                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), 0, new List<Waypoint>(), null, null);
+                    UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null);
 
                     do
                     {
@@ -608,13 +624,16 @@ namespace WoWDeveloperAssistant
                         if (UpdateObjectPacket.GetSheatheStateFromLine(lines[index]) != null)
                             updatePacket.sheatheState = UpdateObjectPacket.GetSheatheStateFromLine(lines[index]);
 
+                        if (UpdateObjectPacket.GetStandStateFromLine(lines[index]) != null)
+                            updatePacket.standState = UpdateObjectPacket.GetStandStateFromLine(lines[index]);
+
                         index++;
                     }
                     while (UpdateObjectPacket.IsLineValidForObjectParse(lines[index]));
 
                     updatePacket.creatureName = MainForm.GetCreatureNameByEntry(updatePacket.creatureEntry);
 
-                    if (updatePacket.creatureEntry == 0 || updatePacket.creatureGuid == "")
+                    if (updatePacket.creatureGuid == "")
                         continue;
 
                     updatePacketsList.Add(updatePacket);
@@ -730,10 +749,14 @@ namespace WoWDeveloperAssistant
                     {
                         if (MonsterMovePacket.ConsistsOfPoints(lines[index], lines[index + 1]))
                         {
+                            uint pointId = 1;
                             do
                             {
                                 if (MonsterMovePacket.GetPointPositionFromLine(lines[index]).IsValid())
-                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>()));
+                                {
+                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId));
+                                    pointId++;
+                                }
 
                                 index++;
                             }
@@ -744,10 +767,15 @@ namespace WoWDeveloperAssistant
                             if (MonsterMovePacket.GetPointPositionFromLine(lines[index]).IsValid())
                                 lastPosition = MonsterMovePacket.GetPointPositionFromLine(lines[index]);
 
+                            uint pointId = 1;
+
                             do
                             {
                                 if (MonsterMovePacket.GetWayPointPositionFromLine(lines[index]).IsValid())
-                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>()));
+                                {
+                                    movePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId));
+                                    pointId++;
+                                }
 
                                 index++;
                             }
@@ -756,7 +784,7 @@ namespace WoWDeveloperAssistant
 
                         if (lastPosition.IsValid())
                         {
-                            movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>()));
+                            movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1)));
                         }
 
                         break;

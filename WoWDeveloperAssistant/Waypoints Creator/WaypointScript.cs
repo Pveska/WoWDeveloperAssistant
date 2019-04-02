@@ -44,7 +44,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 waypointScripts.Add(new WaypointScript(0, 0, ScriptType.Emote, (uint)updatePacket.emoteStateId, 1, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, updatePacket.packetSendTime));
 
             if (updatePacket.sheatheState != null)
-                waypointScripts.Add(new WaypointScript(0, 0, ScriptType.SetField, 117, (uint)updatePacket.sheatheState, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, updatePacket.packetSendTime));
+                waypointScripts.Add(new WaypointScript(0, 0, ScriptType.SetField, 160, (uint)updatePacket.sheatheState, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, updatePacket.packetSendTime));
+
+            if (updatePacket.standState != null)
+                waypointScripts.Add(new WaypointScript(0, 0, ScriptType.SetField, 117, (uint)updatePacket.standState, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, updatePacket.packetSendTime));
 
             return waypointScripts;
         }

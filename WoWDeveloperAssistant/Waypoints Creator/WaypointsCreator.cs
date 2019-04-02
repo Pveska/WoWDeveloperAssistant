@@ -124,38 +124,46 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE packets...");
 
-            foreach (var packet in movementPacketsDict.Values)
+            Parallel.ForEach(movementPacketsDict.Values.AsEnumerable(), packet =>
             {
                 MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion);
-                if (movePacket.creatureGuid == "" || (!movePacket.HasWaypoints() && !movePacket.HasOrientation()))
-                    continue;
-
-                movementPacketsDict.AddSourceFromMovementPacket(movePacket, packet.index);
-
-                if (creaturesDict.ContainsKey(movePacket.creatureGuid))
+                if (movePacket.creatureGuid != "" && (movePacket.HasWaypoints() || movePacket.HasOrientation()))
                 {
-                    Creature creature = creaturesDict[movePacket.creatureGuid];
 
-                    if (!creature.HasWaypoints() && movePacket.HasWaypoints())
+                    lock (movementPacketsDict)
                     {
-                        creature.AddWaypointsFromMovementPacket(movePacket);
+                        movementPacketsDict.AddSourceFromMovementPacket(movePacket, packet.index);
                     }
-                    else if (creature.HasWaypoints() && movePacket.HasOrientation())
+
+                    lock (creaturesDict)
                     {
-                        creature.waypoints.Last().SetOrientation(movePacket.creatureOrientation);
-                        creature.waypoints.Last().SetOrientationSetTime(movePacket.packetSendTime);
-                    }
-                    else if (creature.HasWaypoints() && movePacket.HasWaypoints())
-                    {
-                        if (creature.waypoints.Last().HasOrientation())
+                        if (creaturesDict.ContainsKey(movePacket.creatureGuid))
                         {
-                            creature.waypoints.Last().SetDelay((uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds));
-                        }
+                            Creature creature = creaturesDict[movePacket.creatureGuid];
 
-                        creature.AddWaypointsFromMovementPacket(movePacket);
+                            if (!creature.HasWaypoints() && movePacket.HasWaypoints())
+                            {
+                                creature.AddWaypointsFromMovementPacket(movePacket);
+                            }
+                            else if (creature.HasWaypoints() && movePacket.HasOrientation())
+                            {
+                                creature.SortWaypoints();
+                                creature.waypoints.Last().SetOrientation(movePacket.creatureOrientation);
+                                creature.waypoints.Last().SetOrientationSetTime(movePacket.packetSendTime);
+                            }
+                            else if (creature.HasWaypoints() && movePacket.HasWaypoints())
+                            {
+                                if (creature.waypoints.Last().HasOrientation())
+                                {
+                                    creature.waypoints.Last().SetDelay((uint)((movePacket.packetSendTime - creature.waypoints.Last().orientationSetTime).TotalMilliseconds));
+                                }
+
+                                creature.AddWaypointsFromMovementPacket(movePacket);
+                            }
+                        }
                     }
                 }
-            }
+            });
 
             if (Properties.Settings.Default.Scripts)
             {
@@ -585,7 +593,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
 
                     if (currentWaypoint.movePosition.GetExactDist2d(nextWaypoint.movePosition) <= 5.0f &&
-                        !nextWaypoint.HasOrientation())
+                        !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
                     {
                         mainForm.grid_WC_Waypoints.Rows.RemoveAt(row.Index + 1);
                         break;
@@ -612,7 +620,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 Waypoint waypoint = (Waypoint)row.Cells[8].Value;
                 string hash = SHA1HashStringForUTF8String(Convert.ToString(Math.Round(float.Parse(row.Cells[1].Value.ToString()) / 0.25), CultureInfo.InvariantCulture) + " " + Convert.ToString(Math.Round(float.Parse(row.Cells[2].Value.ToString()) / 0.25), CultureInfo.InvariantCulture) + " " + Convert.ToString(Math.Round(float.Parse(row.Cells[3].Value.ToString()) / 0.25), CultureInfo.InvariantCulture));
 
-                if (!hashList.Contains(hash) || waypoint.HasOrientation())
+                if (!hashList.Contains(hash) || waypoint.HasOrientation() || waypoint.HasScripts())
                 {
                     hashList.Add(hash);
                     waypoints.Add(waypoint);
