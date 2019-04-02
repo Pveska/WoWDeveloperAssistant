@@ -245,74 +245,74 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             switch (packet.packetType)
                             {
                                 case PacketTypes.SMSG_ON_MONSTER_MOVE:
+                                {
+                                    MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
+                                    if (movePacket.HasWaypoints() && !scriptsParsingStarted)
                                     {
-                                        MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
-                                        if (movePacket.HasWaypoints() && !scriptsParsingStarted)
-                                        {
-                                            startMovePacket = movePacket;
-                                            scriptsParsingStarted = true;
-                                        }
-                                        else if (movePacket.HasWaypoints() && scriptsParsingStarted)
-                                        {
-                                            if (scriptsList.Count != 0)
-                                            {
-                                                creature.AddScriptsForWaypoints(scriptsList, startMovePacket, movePacket);
-                                                scriptsList.Clear();
-                                            }
-
-                                            startMovePacket = movePacket;
-                                        }
-                                        else if (movePacket.HasOrientation() && scriptsParsingStarted)
-                                        {
-                                            scriptsList.Add(WaypointScript.GetScriptsFromMovementPacket(movePacket));
-                                        }
-
-                                        break;
+                                        startMovePacket = movePacket;
+                                        scriptsParsingStarted = true;
                                     }
-                                case PacketTypes.SMSG_UPDATE_OBJECT:
+                                    else if (movePacket.HasWaypoints() && scriptsParsingStarted)
                                     {
-                                        if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
+                                        if (scriptsList.Count != 0)
                                         {
-                                            if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid) != null)
-                                            {
-                                                UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
+                                            creature.AddScriptsForWaypoints(scriptsList, startMovePacket, movePacket);
+                                            scriptsList.Clear();
+                                        }
 
-                                                List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
-                                                if (updateScriptsList.Count != 0)
+                                        startMovePacket = movePacket;
+                                    }
+                                    else if (movePacket.HasOrientation() && scriptsParsingStarted)
+                                    {
+                                        scriptsList.Add(WaypointScript.GetScriptsFromMovementPacket(movePacket));
+                                    }
+
+                                    break;
+                                }
+                                case PacketTypes.SMSG_UPDATE_OBJECT:
+                                {
+                                    if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
+                                    {
+                                        if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid) != null)
+                                        {
+                                            UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
+
+                                            List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
+                                            if (updateScriptsList.Count != 0)
+                                            {
+                                                foreach (WaypointScript script in updateScriptsList)
                                                 {
-                                                    foreach (WaypointScript script in updateScriptsList)
-                                                    {
-                                                        scriptsList.Add(script);
-                                                    }
+                                                    scriptsList.Add(script);
                                                 }
                                             }
                                         }
-
-                                        break;
                                     }
+
+                                    break;
+                                }
                                 case PacketTypes.SMSG_SPELL_START:
+                                {
+                                    if (scriptsParsingStarted)
                                     {
-                                        if (scriptsParsingStarted)
-                                        {
-                                            SpellStartPacket spellPacket = (SpellStartPacket)packet.parsedPacketsList.First();
-                                            scriptsList.Add(WaypointScript.GetScriptsFromSpellPacket(spellPacket));
-                                        }
-
-                                        break;
+                                        SpellStartPacket spellPacket = (SpellStartPacket)packet.parsedPacketsList.First();
+                                        scriptsList.Add(WaypointScript.GetScriptsFromSpellPacket(spellPacket));
                                     }
+
+                                    break;
+                                }
                                 case PacketTypes.SMSG_AURA_UPDATE:
+                                {
+                                    if (scriptsParsingStarted)
                                     {
-                                        if (scriptsParsingStarted)
+                                        AuraUpdatePacket auraPacket = (AuraUpdatePacket)packet.parsedPacketsList.First();
+                                        if (auraPacket.HasAura == false)
                                         {
-                                            AuraUpdatePacket auraPacket = (AuraUpdatePacket)packet.parsedPacketsList.First();
-                                            if (auraPacket.HasAura == false)
-                                            {
-                                                scriptsList.Add(WaypointScript.GetScriptsFromAuraUpdatePacket(auraPacket, creature));
-                                            }
+                                            scriptsList.Add(WaypointScript.GetScriptsFromAuraUpdatePacket(auraPacket, creature));
                                         }
-
-                                        break;
                                     }
+
+                                    break;
+                                }
                                 default:
                                     break;
                             }
