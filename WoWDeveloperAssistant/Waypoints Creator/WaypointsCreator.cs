@@ -447,7 +447,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 creatureAddon = "('" + creature.GetLinkedId() + "', @PATH, 0, 0, 1, 0, 0, 0, 0, '', -1); " + "\r\n";
             }
 
-            if (Properties.Settings.Default.Scripts)
+            if (Properties.Settings.Default.Scripts && creature.waypoints.GetScriptsCount() != 0)
             {
                 List<Waypoint> waypoints = new List<Waypoint>();
                 foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
@@ -497,7 +497,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             SQLtext = SQLtext + "-- " + creature.guid + " .go " + creature.spawnPosition.x.GetValueWithoutComma() + " " + creature.spawnPosition.y.GetValueWithoutComma() + " " + creature.spawnPosition.z.GetValueWithoutComma() + "\r\n";
 
-            if (Properties.Settings.Default.Scripts)
+            if (Properties.Settings.Default.Scripts && creature.waypoints.GetScriptsCount() != 0)
             {
                 List<Waypoint> waypoints = new List<Waypoint>();
                 foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
