@@ -377,7 +377,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in creature.waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, wp.HasScripts(), wp.Clone());
+                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.GetTimeWithoutMilliseconds(), wp.delay, wp.HasScripts(), wp.Clone());
                 index++;
             }
 

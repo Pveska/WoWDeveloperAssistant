@@ -64,17 +64,27 @@ namespace WoWDeveloperAssistant
 
         public static TimeSpan GetTimeSpanFromLine(string dateLine)
         {
-            string[] time;
+            int hours = 0;
+            int minutes = 0;
+            int seconds = 0;
+            int milliseconds = 0;
 
-            Regex timeRegex = new Regex(@"\d+:+\d+:+\d+");
+            Regex timeRegex = new Regex(@"\d+:+\d+:+.+\s{1}Number");
             if (timeRegex.IsMatch(dateLine))
             {
-                time = timeRegex.Match(dateLine).ToString().Split(':');
-            }
-            else
-                return new TimeSpan();
+                string[] time = timeRegex.Match(dateLine).ToString().Replace(" Number", "").Split(':');
 
-            return new TimeSpan(Convert.ToInt32(time[0]), Convert.ToInt32(time[1]), Convert.ToInt32(time[2]));
+                hours = Convert.ToInt32(time[0]);
+                minutes = Convert.ToInt32(time[1]);
+
+                string tempTime = time[2];
+                string[] splittedTime = tempTime.Split('.');
+
+                seconds = Convert.ToInt32(splittedTime[0]);
+                milliseconds = Convert.ToInt32(splittedTime[1]);
+            }
+
+            return new TimeSpan(0, hours, minutes, seconds, milliseconds);
         }
 
         public static bool IsCreatureLine(string updateTypeLine)

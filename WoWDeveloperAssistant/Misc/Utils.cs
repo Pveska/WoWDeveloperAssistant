@@ -233,6 +233,11 @@ namespace WoWDeveloperAssistant.Misc
             return packets;
         }
 
+        public static string GetTimeWithoutMilliseconds(this TimeSpan span)
+        {
+            return $"{span.Hours}:{span.Minutes}:{span.Seconds}";
+        }
+
         public static string ToFormattedString(this TimeSpan span)
         {
             return $"{span.Hours:00}:{span.Minutes:00}:{span.Seconds:00}";
