@@ -492,8 +492,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             for (int i = 0; i < waypoints.Count; i++)
             {
                 Waypoint waypoint = waypoints[i];
-                float orientation = waypoint.HasOrientation() ? waypoint.orientation : (float)mainForm.grid_WC_Waypoints[4, i].Value;
-                uint delay = waypoint.delay > 0 ? waypoint.delay : (uint)mainForm.grid_WC_Waypoints[6, i].Value;
+                float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WC_Waypoints[4, i].Value.ToString());
+                uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WC_Waypoints[6, i].Value.ToString());
 
                 if (i < (waypoints.Count - 1))
                 {
@@ -677,7 +677,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime, wp.delay, wp.HasScripts(), wp);
+                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
                 index++;
             }
 
