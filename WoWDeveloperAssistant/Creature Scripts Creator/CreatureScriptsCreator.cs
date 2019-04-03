@@ -235,9 +235,9 @@ namespace WoWDeveloperAssistant
                         {
                             if (creature.Value.entry == chatPacket.creatureEntry)
                             {
-                                if (creature.Value.combatStartTime == chatPacket.packetSendTime ||
-                                creature.Value.combatStartTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds + 1 ||
-                                creature.Value.combatStartTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds - 1)
+                                if (Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                                 {
                                     if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
                                     {
@@ -259,9 +259,9 @@ namespace WoWDeveloperAssistant
                                     }
                                 }
 
-                                if (creature.Value.deathTime == chatPacket.packetSendTime ||
-                                creature.Value.deathTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds + 1 ||
-                                creature.Value.deathTime.TotalSeconds == chatPacket.packetSendTime.TotalSeconds - 1)
+                                if (Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                                 {
                                     if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
                                     {
@@ -367,7 +367,7 @@ namespace WoWDeveloperAssistant
             {
                 Spell spell = (Spell) mainForm.dataGridView_Spells[8, l].Value;
 
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + spell.combatCastTimings.minCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxCastTime.TotalMilliseconds + ", " + spell.combatCastTimings.minRepeatTime.TotalMilliseconds + ", " + spell.combatCastTimings.maxRepeatTime.TotalMilliseconds + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? spell.spellCastTime.TotalMilliseconds + 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
+                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000 + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? (Math.Floor(spell.spellCastTime.TotalSeconds) + 1) * 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
 
                 if (l < mainForm.dataGridView_Spells.RowCount - 1)
                 {
