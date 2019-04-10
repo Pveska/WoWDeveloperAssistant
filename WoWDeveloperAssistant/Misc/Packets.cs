@@ -364,7 +364,7 @@ namespace WoWDeveloperAssistant
 
             public static bool ConsistsOfPoints(string pointLine, string nextLine)
             {
-                if (pointLine.Contains("[0] Points: X:") && pointLine.Contains("[1] Points: X:"))
+                if (pointLine.Contains("[0] Points: X:") && nextLine.Contains("[1] Points: X:"))
                     return true;
 
                 return false;
@@ -750,6 +750,7 @@ namespace WoWDeveloperAssistant
                         if (MonsterMovePacket.ConsistsOfPoints(lines[index], lines[index + 1]))
                         {
                             uint pointId = 1;
+
                             do
                             {
                                 if (MonsterMovePacket.GetPointPositionFromLine(lines[index]).IsValid())
