@@ -607,18 +607,32 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void RemoveDuplicatePoints()
         {
-            List<Waypoint> waypoints = new List<Waypoint>();
-            List<string> hashList = new List<string>();
+            List<Waypoint> waypointsList = new List<Waypoint>();
 
             foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
             {
                 Waypoint waypoint = (Waypoint)row.Cells[8].Value;
-                string hash = SHA1HashStringForUTF8String(Convert.ToString(Math.Round(float.Parse(row.Cells[1].Value.ToString()) / 0.25), CultureInfo.InvariantCulture) + " " + Convert.ToString(Math.Round(float.Parse(row.Cells[2].Value.ToString()) / 0.25), CultureInfo.InvariantCulture) + " " + Convert.ToString(Math.Round(float.Parse(row.Cells[3].Value.ToString()) / 0.25), CultureInfo.InvariantCulture));
 
-                if (!hashList.Contains(hash) || waypoint.HasOrientation() || waypoint.HasScripts())
+                bool waypointIsValid = true;
+
+                if (waypoint.HasOrientation() || waypoint.HasScripts())
                 {
-                    hashList.Add(hash);
-                    waypoints.Add(waypoint);
+                    waypointsList.Add(waypoint);
+                    continue;
+                }
+
+                foreach (Waypoint compareWaypoint in waypointsList)
+                {
+                    if (waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f)
+                    {
+                        waypointIsValid = false;
+                        break;
+                    }
+                }
+
+                if (waypointIsValid)
+                {
+                    waypointsList.Add(waypoint);
                 }
             }
 
@@ -626,7 +640,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             uint index = 1;
 
-            foreach (Waypoint wp in waypoints)
+            foreach (Waypoint wp in waypointsList)
             {
                 mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
                 index++;
@@ -637,23 +651,36 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void RemoveDuplicatePoints(List<Waypoint> waypoints)
         {
-            List<Waypoint> waypointList = new List<Waypoint>();
-            List<string> hashList = new List<string>();
+            List<Waypoint> waypointsList = new List<Waypoint>();
 
             foreach (Waypoint waypoint in waypoints)
             {
-                string hash = SHA1HashStringForUTF8String(Convert.ToString(Math.Round(waypoint.movePosition.x / 0.25)) + " " + Convert.ToString(Math.Round(waypoint.movePosition.y / 0.25)) + " " + Convert.ToString(Math.Round(waypoint.movePosition.z / 0.25)));
+                bool waypointIsValid = true;
 
-                if (!hashList.Contains(hash) || waypoint.HasOrientation())
+                if (waypoint.HasOrientation() || waypoint.HasScripts())
                 {
-                    hashList.Add(hash);
-                    waypointList.Add(waypoint);
+                    waypointsList.Add(waypoint);
+                    continue;
+                }
+
+                foreach (Waypoint compareWaypoint in waypointsList)
+                {
+                    if (waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f)
+                    {
+                        waypointIsValid = false;
+                        break;
+                    }
+                }
+
+                if (waypointIsValid)
+                {
+                    waypointsList.Add(waypoint);
                 }
             }
 
             waypoints.Clear();
 
-            foreach (Waypoint wp in waypointList)
+            foreach (Waypoint wp in waypointsList)
             {
                 waypoints.Add(wp);
             }
