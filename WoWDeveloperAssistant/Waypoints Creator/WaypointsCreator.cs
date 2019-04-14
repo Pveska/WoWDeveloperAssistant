@@ -33,6 +33,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> movementPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> spellPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> auraPacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> emotePacketsDict = new SortedDictionary<long, Packet>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -45,7 +46,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             Parallel.For(0, lines.Length, index =>
             {
-                if (Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_UPDATE_OBJECT)
+                if (Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -53,11 +54,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (updateObjectPacketsDict)
                         {
                             if (!updateObjectPacketsDict.ContainsKey(index))
-                                updateObjectPacketsDict.Add(index, new Packet(PacketTypes.SMSG_UPDATE_OBJECT, sendTime, index, new List<object>()));
+                                updateObjectPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_UPDATE_OBJECT, sendTime, index, new List<object>()));
                         }
                     }
                 }
-                else if (Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_ON_MONSTER_MOVE)
+                else if (Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -65,11 +66,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (movementPacketsDict)
                         {
                             if (!movementPacketsDict.ContainsKey(index))
-                                movementPacketsDict.Add(index, new Packet(PacketTypes.SMSG_ON_MONSTER_MOVE, sendTime, index, new List<object>()));
+                                movementPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_ON_MONSTER_MOVE, sendTime, index, new List<object>()));
                         }
                     }
                 }
-                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_SPELL_START)
+                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_SPELL_START)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -77,11 +78,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (spellPacketsDict)
                         {
                             if (!spellPacketsDict.ContainsKey(index))
-                                spellPacketsDict.Add(index, new Packet(PacketTypes.SMSG_SPELL_START, sendTime, index, new List<object>()));
+                                spellPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_SPELL_START, sendTime, index, new List<object>()));
                         }
                     }
                 }
-                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == PacketTypes.SMSG_AURA_UPDATE)
+                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_AURA_UPDATE)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -89,7 +90,19 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (auraPacketsDict)
                         {
                             if (!auraPacketsDict.ContainsKey(index))
-                                auraPacketsDict.Add(index, new Packet(PacketTypes.SMSG_AURA_UPDATE, sendTime, index, new List<object>()));
+                                auraPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_AURA_UPDATE, sendTime, index, new List<object>()));
+                        }
+                    }
+                }
+                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_EMOTE)
+                {
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    if (sendTime != TimeSpan.Zero)
+                    {
+                        lock (emotePacketsDict)
+                        {
+                            if (!emotePacketsDict.ContainsKey(index))
+                                emotePacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_EMOTE, sendTime, index, new List<object>()));
                         }
                     }
                 }
@@ -101,7 +114,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             Parallel.ForEach(updateObjectPacketsDict.Values.AsEnumerable(), packet =>
             {
-                Parallel.ForEach(ParseObjectUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), updatePacket =>
+                Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), updatePacket =>
                 {
                     lock (updateObjectPacketsDict)
                     {
@@ -126,8 +139,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             Parallel.ForEach(movementPacketsDict.Values.AsEnumerable(), packet =>
             {
-                MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion);
-                if (movePacket.creatureGuid != "" && (movePacket.HasWaypoints() || movePacket.HasOrientation()))
+                MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, packet.index, buildVersion);
+                if (movePacket.creatureGuid != "" && (movePacket.HasWaypoints() || movePacket.HasOrientation() || movePacket.HasJump()))
                 {
 
                     lock (movementPacketsDict)
@@ -171,7 +184,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Parallel.ForEach(spellPacketsDict.Values.AsEnumerable(), packet =>
                 {
-                    SpellStartPacket spellPacket = ParseSpellStartPacket(lines, packet.index, buildVersion);
+                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, packet.index, buildVersion);
                     if (spellPacket.spellId == 0)
                         return;
 
@@ -185,7 +198,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Parallel.ForEach(auraPacketsDict.Values.AsEnumerable(), packet =>
                 {
-                    Parallel.ForEach(ParseAuraUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), auraPacket =>
+                    Parallel.ForEach(AuraUpdatePacket.ParseAuraUpdatePacket(lines, packet.index, buildVersion).AsEnumerable(), auraPacket =>
                     {
                         lock (auraPacketsDict)
                         {
@@ -202,6 +215,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             }
                         }
                     });
+                });
+
+                mainForm.SetCurrentStatus("Parsing SMSG_EMOTE packets...");
+
+                Parallel.ForEach(emotePacketsDict.Values.AsEnumerable(), packet =>
+                {
+                    EmotePacket emotePacket = EmotePacket.ParseEmotePacket(lines, packet.index, buildVersion);
+                    if (emotePacket.guid == "" || emotePacket.emoteId == 0)
+                        return;
+
+                    lock (emotePacketsDict)
+                    {
+                        emotePacketsDict.AddSourceFromEmotePacket(emotePacket, packet.index);
+                    }
                 });
 
                 mainForm.SetCurrentStatus("Creating waypoint scripts for creatures...");
@@ -244,6 +271,14 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             }
                         }
 
+                        foreach (Packet packet in emotePacketsDict.Values)
+                        {
+                            if (packet.HasCreatureWithGuid(creature.guid))
+                            {
+                                creaturePacketsDict.Add(packet.index, packet);
+                            }
+                        }
+
                         List<WaypointScript> scriptsList = new List<WaypointScript>();
                         MonsterMovePacket startMovePacket = new MonsterMovePacket();
                         bool scriptsParsingStarted = false;
@@ -252,7 +287,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         {
                             switch (packet.packetType)
                             {
-                                case PacketTypes.SMSG_ON_MONSTER_MOVE:
+                                case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
                                 {
                                     MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
                                     if (movePacket.HasWaypoints() && !scriptsParsingStarted)
@@ -270,14 +305,14 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                         startMovePacket = movePacket;
                                     }
-                                    else if (movePacket.HasOrientation() && scriptsParsingStarted)
+                                    else if ((movePacket.HasOrientation() || movePacket.HasJump()) && scriptsParsingStarted)
                                     {
                                         scriptsList.Add(WaypointScript.GetScriptsFromMovementPacket(movePacket));
                                     }
 
                                     break;
                                 }
-                                case PacketTypes.SMSG_UPDATE_OBJECT:
+                                case Packet.PacketTypes.SMSG_UPDATE_OBJECT:
                                 {
                                     if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
                                     {
@@ -298,7 +333,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case PacketTypes.SMSG_SPELL_START:
+                                case Packet.PacketTypes.SMSG_SPELL_START:
                                 {
                                     if (scriptsParsingStarted)
                                     {
@@ -308,7 +343,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case PacketTypes.SMSG_AURA_UPDATE:
+                                case Packet.PacketTypes.SMSG_AURA_UPDATE:
                                 {
                                     if (scriptsParsingStarted)
                                     {
@@ -317,6 +352,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                                         {
                                             scriptsList.Add(WaypointScript.GetScriptsFromAuraUpdatePacket(auraPacket, creature));
                                         }
+                                    }
+
+                                    break;
+                                }
+                                case Packet.PacketTypes.SMSG_EMOTE:
+                                {
+                                    if (scriptsParsingStarted)
+                                    {
+                                        EmotePacket emotePacket = (EmotePacket)packet.parsedPacketsList.First();
+                                        scriptsList.Add(WaypointScript.GetScriptsFromEmotePacket(emotePacket));
                                     }
 
                                     break;

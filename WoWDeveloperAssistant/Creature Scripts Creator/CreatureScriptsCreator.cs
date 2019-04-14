@@ -94,7 +94,7 @@ namespace WoWDeveloperAssistant
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
-            Dictionary<long, PacketTypes> packetIndexes = new Dictionary<long, PacketTypes>();
+            Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -113,37 +113,37 @@ namespace WoWDeveloperAssistant
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_UPDATE_OBJECT);
+                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
                 }
                 else if (lines[index].Contains("SMSG_AI_REACTION") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_AI_REACTION);
+                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_AI_REACTION);
                 }
                 else if (lines[index].Contains("SMSG_SPELL_START") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_SPELL_START);
+                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
                 }
                 else if (lines[index].Contains("SMSG_CHAT") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_CHAT);
+                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
                 }
                 else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_ON_MONSTER_MOVE);
+                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_ON_MONSTER_MOVE);
                 }
                 else if (lines[index].Contains("SMSG_ATTACK_STOP") &&
                 !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, PacketTypes.SMSG_ATTACK_STOP);
+                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_ATTACK_STOP);
                 }
             });
 
@@ -151,9 +151,9 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == PacketTypes.SMSG_UPDATE_OBJECT)
+                if (value.Value == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
                 {
-                    Parallel.ForEach(ParseObjectUpdatePacket(lines, value.Key, buildVersion).AsEnumerable(), packet =>
+                    Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion).AsEnumerable(), packet =>
                     {
                         lock (creaturesDict)
                         {
@@ -174,9 +174,9 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == PacketTypes.SMSG_SPELL_START)
+                if (value.Value == Packet.PacketTypes.SMSG_SPELL_START)
                 {
-                    SpellStartPacket spellPacket = ParseSpellStartPacket(lines, value.Key, buildVersion);
+                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, value.Key, buildVersion);
                     if (spellPacket.spellId == 0)
                         return;
 
@@ -197,9 +197,9 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == PacketTypes.SMSG_AI_REACTION)
+                if (value.Value == Packet.PacketTypes.SMSG_AI_REACTION)
                 {
-                    AIReactionPacket reactionPacket = ParseAIReactionPacket(lines, value.Key, buildVersion);
+                    AIReactionPacket reactionPacket = AIReactionPacket.ParseAIReactionPacket(lines, value.Key, buildVersion);
                     if (reactionPacket.creatureGuid == "")
                         return;
 
@@ -223,9 +223,9 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == PacketTypes.SMSG_CHAT)
+                if (value.Value == Packet.PacketTypes.SMSG_CHAT)
                 {
-                    ChatPacket chatPacket = ParseChatPacket(lines, value.Key, buildVersion);
+                    ChatPacket chatPacket = ChatPacket.ParseChatPacket(lines, value.Key, buildVersion);
                     if (chatPacket.creatureGuid == "")
                         return;
 
@@ -292,9 +292,9 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == PacketTypes.SMSG_ON_MONSTER_MOVE)
+                if (value.Value == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE)
                 {
-                    MonsterMovePacket movePacket = ParseMovementPacket(lines, value.Key, buildVersion);
+                    MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion);
                     if (movePacket.creatureGuid == "")
                         return;
 
@@ -306,9 +306,9 @@ namespace WoWDeveloperAssistant
                         }
                     }
                 }
-                else if (value.Value == PacketTypes.SMSG_ATTACK_STOP)
+                else if (value.Value == Packet.PacketTypes.SMSG_ATTACK_STOP)
                 {
-                    AttackStopPacket attackStopPacket = ParseAttackStopkPacket(lines, value.Key, buildVersion);
+                    AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
                     if (attackStopPacket.creatureGuid == "")
                         return;
 

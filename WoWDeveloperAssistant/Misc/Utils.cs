@@ -144,7 +144,7 @@ namespace WoWDeveloperAssistant.Misc
             return null;
         }
 
-        public static uint GetObjectstWithTypeCount(this List<Packet> list, PacketTypes type)
+        public static uint GetObjectstWithTypeCount(this List<Packet> list, Packet.PacketTypes type)
         {
             uint packetsCount = 0;
 
@@ -159,11 +159,23 @@ namespace WoWDeveloperAssistant.Misc
             return packetsCount;
         }
 
+        public static void AddSourceFromEmotePacket(this SortedDictionary<long, Packet> dict, EmotePacket emotePacket, long index)
+        {
+            foreach (Packet packet in dict.Values)
+            {
+                if (packet.packetType == Packet.PacketTypes.SMSG_EMOTE && packet.index == index)
+                {
+                    packet.parsedPacketsList.Add(emotePacket);
+                    return;
+                }
+            }
+        }
+
         public static void AddSourceFromAuraUpdatePacket(this SortedDictionary<long, Packet> dict, AuraUpdatePacket auraPacket, long index)
         {
             foreach (Packet packet in dict.Values)
             {
-                if (packet.packetType == PacketTypes.SMSG_AURA_UPDATE && packet.index == index)
+                if (packet.packetType == Packet.PacketTypes.SMSG_AURA_UPDATE && packet.index == index)
                 {
                     packet.parsedPacketsList.Add(auraPacket);
                     return;
@@ -175,7 +187,7 @@ namespace WoWDeveloperAssistant.Misc
         {
             foreach (Packet packet in dict.Values)
             {
-                if (packet.packetType == PacketTypes.SMSG_SPELL_START && packet.index == index)
+                if (packet.packetType == Packet.PacketTypes.SMSG_SPELL_START && packet.index == index)
                 {
                     packet.parsedPacketsList.Add(spellPacket);
                     return;
@@ -187,7 +199,7 @@ namespace WoWDeveloperAssistant.Misc
         {
             foreach (Packet packet in dict.Values)
             {
-                if (packet.packetType == PacketTypes.SMSG_ON_MONSTER_MOVE && packet.index == index)
+                if (packet.packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && packet.index == index)
                 {
                     packet.parsedPacketsList.Add(movementPacket);
                     return;
@@ -199,7 +211,7 @@ namespace WoWDeveloperAssistant.Misc
         {
             foreach (Packet packet in dict.Values)
             {
-                if (packet.packetType == PacketTypes.SMSG_UPDATE_OBJECT && packet.index == index)
+                if (packet.packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && packet.index == index)
                 {
                     packet.parsedPacketsList.Add(updatePacket);
                     return;
