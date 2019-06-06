@@ -388,6 +388,23 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 if (!creature.HasWaypoints())
                     continue;
 
+                DataSet creatureAddonDs;
+                string sqlQuery = "SELECT * FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';";
+                bool alreadyHaveWaypointsInDb = false;
+                creatureAddonDs = SQLModule.DatabaseSelectQuery(sqlQuery);
+
+                if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
+                {
+                    foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
+                    {
+                        if (Convert.ToInt32(row.ItemArray[1]) > 0)
+                            alreadyHaveWaypointsInDb = true;
+                    }
+                }
+
+                if (alreadyHaveWaypointsInDb)
+                    continue;
+
                 if (mainForm.toolStripTextBox_WC_Entry.Text != "" && mainForm.toolStripTextBox_WC_Entry.Text != "0")
                 {
                     if (mainForm.toolStripTextBox_WC_Entry.Text == creature.entry.ToString() ||
