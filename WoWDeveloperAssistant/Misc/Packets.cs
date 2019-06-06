@@ -283,20 +283,20 @@ namespace WoWDeveloperAssistant
 
             public static uint GetEntryFromLine(string line)
             {
-                Regex entryRegexField = new Regex(@"OBJECT_FIELD_ENTRY:{1}\s*\d+");
+                Regex entryRegexField = new Regex(@"EntryID:{1}\s*\d+");
                 if (entryRegexField.IsMatch(line))
-                    return Convert.ToUInt32(entryRegexField.Match(line).ToString().Replace("OBJECT_FIELD_ENTRY: ", ""));
+                    return Convert.ToUInt32(entryRegexField.Match(line).ToString().Replace("EntryID: ", ""));
                 else
                     return 0;
             }
 
             public static int GetHealthFromLine(string line)
             {
-                Regex healthRegex = new Regex(@"UNIT_FIELD_HEALTH:{1}\s+\d+");
+                Regex healthRegex = new Regex(@"Health:{1}\s+\d+");
                 if (healthRegex.IsMatch(line))
                     try
                     {
-                        return Convert.ToInt32(healthRegex.Match(line).ToString().Replace("UNIT_FIELD_HEALTH: ", ""));
+                        return Convert.ToInt32(healthRegex.Match(line).ToString().Replace("Health: ", ""));
                     }
                     catch
                     {
@@ -308,9 +308,9 @@ namespace WoWDeveloperAssistant
 
             public static uint GetMaxHealthFromLine(string line)
             {
-                Regex maxHealthRegex = new Regex(@"UNIT_FIELD_MAXHEALTH:{1}\s+\d+");
+                Regex maxHealthRegex = new Regex(@"MaxHealth:{1}\s+\d+");
                 if (maxHealthRegex.IsMatch(line))
-                    return Convert.ToUInt32(maxHealthRegex.Match(line).ToString().Replace("UNIT_FIELD_MAXHEALTH: ", ""));
+                    return Convert.ToUInt32(maxHealthRegex.Match(line).ToString().Replace("MaxHealth: ", ""));
 
                 return 0;
             }
@@ -389,9 +389,9 @@ namespace WoWDeveloperAssistant
 
             public static uint? GetEmoteStateFromLine(string line)
             {
-                Regex emoteRegex = new Regex(@"UNIT_NPC_EMOTESTATE:{1}\s{1}\w+");
+                Regex emoteRegex = new Regex(@"EmoteState:{1}\s{1}\w+");
                 if (emoteRegex.IsMatch(line.ToString()))
-                    return Convert.ToUInt32(emoteRegex.Match(line.ToString()).ToString().Replace("UNIT_NPC_EMOTESTATE: ", ""));
+                    return Convert.ToUInt32(emoteRegex.Match(line.ToString()).ToString().Replace("EmoteState: ", ""));
 
                 return null;
             }

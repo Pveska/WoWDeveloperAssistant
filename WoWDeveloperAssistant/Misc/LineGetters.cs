@@ -50,10 +50,10 @@ namespace WoWDeveloperAssistant
             }
             else
             {
-                Regex guidRegex = new Regex(@"Object Guid: Full:{1}\s*\w{20,}");
+                Regex guidRegex = new Regex(@"ObjectGuid: Full:{1}\s*\w{20,}");
                 Regex guidRegexSecond = new Regex(@"Object GUID: Full:{1}\s*\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("Object Guid: Full: ", "");
+                    return guidRegex.Match(line).ToString().Replace("ObjectGuid: Full: ", "");
                 else if (guidRegexSecond.IsMatch(line))
                     return guidRegexSecond.Match(line).ToString().Replace("Object GUID: Full: ", "");
 
@@ -94,12 +94,12 @@ namespace WoWDeveloperAssistant
                 milliseconds = Convert.ToInt32(splittedTime[1]);
             }
 
-            return new TimeSpan(0, hours, minutes, seconds, milliseconds);
+            return new TimeSpan(days, hours, minutes, seconds, milliseconds);
         }
 
         public static bool IsCreatureLine(string updateTypeLine)
         {
-            if (updateTypeLine.Contains("Object Guid: Full:") &&
+            if (updateTypeLine.Contains("ObjectGuid: Full:") &&
                 (updateTypeLine.Contains("Creature/0") || updateTypeLine.Contains("Vehicle/0")))
                 return true;
 
