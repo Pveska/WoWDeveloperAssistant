@@ -62,17 +62,27 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        public static TimeSpan GetTimeSpanFromLine(string dateLine)
+        public static TimeSpan GetTimeSpanFromLine(string timeSpanLine)
         {
+            int days = 0;
             int hours = 0;
             int minutes = 0;
             int seconds = 0;
             int milliseconds = 0;
 
+            Regex dateRegex = new Regex(@"Time:{1}\s+\d+/+\d+/+\d+");
             Regex timeRegex = new Regex(@"\d+:+\d+:+.+\s{1}Number");
-            if (timeRegex.IsMatch(dateLine))
+
+            if (dateRegex.IsMatch(timeSpanLine))
             {
-                string[] time = timeRegex.Match(dateLine).ToString().Replace(" Number", "").Split(':');
+                string[] date = dateRegex.Match(timeSpanLine).ToString().Replace("Time: ", "").Split('/');
+
+                days = Convert.ToInt32(date[1]);
+            }
+
+            if (timeRegex.IsMatch(timeSpanLine))
+            {
+                string[] time = timeRegex.Match(timeSpanLine).ToString().Replace(" Number", "").Split(':');
 
                 hours = Convert.ToInt32(time[0]);
                 minutes = Convert.ToInt32(time[1]);
