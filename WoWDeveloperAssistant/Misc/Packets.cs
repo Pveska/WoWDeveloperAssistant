@@ -257,9 +257,10 @@ namespace WoWDeveloperAssistant
             public uint? emoteStateId;
             public uint? sheatheState;
             public uint? standState;
+            public bool hasDisableGravity;
 
-            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState)
-            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; }
+            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity)
+            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; }
 
             public static bool IsLineValidForObjectParse(string line)
             {
@@ -360,6 +361,14 @@ namespace WoWDeveloperAssistant
                 return null;
             }
 
+            public static bool GetDisableGravityFromLine(string line)
+            {
+                if (line.Contains("Movement Flags:") && line.Contains("DisableGravity"))
+                    return true;
+
+                return false;
+            }
+
             public bool HasWaypoints()
             {
                 return waypoints.Count != 0;
@@ -423,7 +432,7 @@ namespace WoWDeveloperAssistant
                 {
                     if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null);
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false);
 
                         do
                         {
@@ -455,6 +464,9 @@ namespace WoWDeveloperAssistant
                             if (GetMaxHealthFromLine(lines[index]) != 0)
                                 updatePacket.creatureMaxHealth = GetMaxHealthFromLine(lines[index]);
 
+                            if (GetDisableGravityFromLine(lines[index]))
+                                updatePacket.hasDisableGravity = true;
+
                             index++;
                         }
                         while (IsLineValidForObjectParse(lines[index]));
@@ -470,7 +482,7 @@ namespace WoWDeveloperAssistant
                     }
                     else if (lines[index].Contains("UpdateType: Values") && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null);
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false);
 
                         do
                         {
@@ -488,6 +500,9 @@ namespace WoWDeveloperAssistant
 
                             if (GetStandStateFromLine(lines[index]) != null)
                                 updatePacket.standState = GetStandStateFromLine(lines[index]);
+
+                            if (GetDisableGravityFromLine(lines[index]))
+                                updatePacket.hasDisableGravity = true;
 
                             index++;
                         }

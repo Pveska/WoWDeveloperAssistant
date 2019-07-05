@@ -23,6 +23,7 @@ namespace WoWDeveloperAssistant
         public List<Aura> auras;
         public Dictionary<uint, Spell> castedSpells;
         private TimeSpan lastUpdatePacketTime;
+        public bool IsFlying;
 
         public Creature(UpdateObjectPacket updatePacket)
         {
@@ -38,6 +39,7 @@ namespace WoWDeveloperAssistant
             waypoints = updatePacket.waypoints;
             auras = new List<Aura>();
             lastUpdatePacketTime = updatePacket.packetSendTime;
+            IsFlying = updatePacket.hasDisableGravity;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -73,6 +75,9 @@ namespace WoWDeveloperAssistant
                     waypoints.Add(wp);
                 }
             }
+
+            if (!IsFlying && updatePacket.hasDisableGravity)
+                IsFlying = updatePacket.hasDisableGravity;
         }
 
         public void UpdateSpells(SpellStartPacket spellPacket)
