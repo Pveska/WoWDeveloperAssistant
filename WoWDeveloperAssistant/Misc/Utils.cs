@@ -16,7 +16,8 @@ namespace WoWDeveloperAssistant.Misc
             BUILD_UNKNOWN = 0,
             BUILD_8_0_1   = 1,
             BUILD_8_1_0   = 2,
-            BUILD_8_1_5   = 3
+            BUILD_8_1_5   = 3,
+            BUILD_8_2_0   = 4
         };
 
         public static string GetValueWithoutComma(this float value)
