@@ -16,9 +16,18 @@ namespace WoWDeveloperAssistant
     {
         private enum ObjectTypes
         {
+            Unknown    = 0,
             Creature   = 1,
             GameObject = 2
         };
+
+        private enum LinkedIdType
+        {
+            Creature        = 1,
+            CreatureAddon   = 2,
+            GameObject      = 3,
+            GameObjectAddon = 4
+        }
 
         public static void RemoveDoubleSpawnsFromFile(string fileName, Label labelCreatures, Label labelGameobjects, bool creaturesRemover, bool gameobjectsRemover, bool consideringDB)
         {
@@ -27,14 +36,11 @@ namespace WoWDeveloperAssistant
             List<string> allowedCreatureLinkedIds = new List<string>();
             List<string> allowedGameobjectLinkedIds = new List<string>();
 
+            List<string> creatureLinkedIds;
+            List<string> gameobjectLinkedIds;
+
             List<string> creatureAddonLinkedIds;
             List<string> gameobjectAddonLinkedIds;
-
-            Dictionary<string, string> creatureEntries = new Dictionary<string, string>();
-            Dictionary<string, string> gameobjectEntries = new Dictionary<string, string>();
-
-            List<string> creaturesLinkedIds = new List<string>();
-            List<string> gameobjectsLinkedIds = new List<string>();
 
             var lines = File.ReadAllLines(fileName);
             List<string> outputLines = new List<string>();
@@ -46,72 +52,80 @@ namespace WoWDeveloperAssistant
 
             for (int i = 0; i < lines.Count(); i++)
             {
-                if (IsSpawnLine(lines[i]))
+                if (IsInsertLine(lines[i]))
                 {
-                    string linkedId = GetLinkedIdFromLine(lines[i]);
-                    string entry = GetEntryFromLine(lines[i]);
-                    string map = GetMapFromLine(lines[i]);
-                    ObjectTypes type = GetStingObjectType(lines[i]);
+                    ObjectTypes type = GetObjectTypeFromLine(lines[i]);
 
-                    if (map == "")
-                        continue;
-
-                    if (lines[i].StartsWith("-- ('"))
-                        continue;
-
-                    switch (type)
+                    do
                     {
-                        case ObjectTypes.Creature:
+                        i++;
+
+                        if (IsCreatureAddonDeleteLine(lines[i]) || IsGameObjectAddonDeleteLine(lines[i]))
                         {
-                            if (creaturesRemover)
-                            {
-                                if (!allowedCreatureLinkedIds.Contains(linkedId))
-                                {
-                                    allowedCreatureLinkedIds.Add(linkedId);
-
-                                    if (!creatureEntries.ContainsKey(entry))
-                                        creatureEntries.Add(entry, map);
-                                }
-                                else
-                                {
-                                    creatureRowsRemoved++;
-                                }
-                            }
-
+                            i--;
                             break;
                         }
-                        case ObjectTypes.GameObject:
+
+                        if (lines[i].StartsWith("-- (") || lines[i] == "")
+                            continue;
+
+                        string linkedId = GetLinkedIdFromLine(lines[i]);
+                        uint entry = GetEntryFromLine(lines[i]);
+                        if (linkedId == "" || entry == 0)
+                            continue;
+
+                        switch (type)
                         {
-                            if (gameobjectsRemover)
+                            case ObjectTypes.Creature:
                             {
-                                if (!allowedGameobjectLinkedIds.Contains(linkedId))
+                                if (creaturesRemover)
                                 {
-                                    allowedGameobjectLinkedIds.Add(linkedId);
+                                    if (!allowedCreatureLinkedIds.Contains(linkedId))
+                                    {
+                                        allowedCreatureLinkedIds.Add(linkedId);
+                                    }
+                                    else
+                                    {
+                                        creatureRowsRemoved++;
+                                    }
+                                }
 
-                                    if (!gameobjectEntries.ContainsKey(entry))
-                                        gameobjectEntries.Add(entry, map);
-                                }
-                                else
-                                {
-                                    gameobjectRowsRemoved++;
-                                }
+                                break;
                             }
+                            case ObjectTypes.GameObject:
+                            {
+                                if (gameobjectsRemover)
+                                {
+                                    if (!allowedGameobjectLinkedIds.Contains(linkedId))
+                                    {
+                                        allowedGameobjectLinkedIds.Add(linkedId);
+                                    }
+                                    else
+                                    {
+                                        gameobjectRowsRemoved++;
+                                    }
+                                }
 
-                            break;
+                                break;
+                            }
+                            default:
+                                break;
                         }
-                        default:
-                            break;
                     }
+                    while (lines[i] != "" && GetLinkedIdFromLine(lines[i]) != "" && !IsCreatureAddonDeleteLine(lines[i]) && !IsGameObjectAddonDeleteLine(lines[i]));
                 }
             }
+
+            creatureLinkedIds = new List<string>(allowedCreatureLinkedIds);
+            gameobjectLinkedIds = new List<string>(allowedGameobjectLinkedIds);
 
             if (consideringDB)
             {
                 if (creaturesRemover)
                 {
-                    foreach (var entry in creatureEntries)
+                    foreach (var linkedId in allowedCreatureLinkedIds)
                     {
-                        string creaturesQuery = "SELECT `id`, `position_x`, `position_y`, `position_z`  FROM `creature` WHERE `id` = " + entry.Key + " AND `map` = " + entry.Value + ";";
+                        string creaturesQuery = "SELECT `linked_id` FROM `creature` WHERE `linked_id` = '" + linkedId + "'";
 
                         DataSet creaturesDs = new DataSet();
                         creaturesDs = (DataSet)SQLModule.DatabaseSelectQuery(creaturesQuery);
@@ -120,21 +134,11 @@ namespace WoWDeveloperAssistant
                         {
                             foreach (DataRow row in creaturesDs.Tables["table"].Rows)
                             {
-                                string linkedId = "";
+                                string dbLinkedId = row[0].ToString();
 
-                                string creatureEntry = row[0].ToString();
-                                string map = entry.Value;
-                                double posX = Convert.ToDouble(row[1].ToString());
-                                double posY = Convert.ToDouble(row[2].ToString());
-                                double posZ = Convert.ToDouble(row[3].ToString());
-
-                                linkedId = Convert.ToString(Math.Round(posX / 0.25)) + " " + Convert.ToString(Math.Round(posY / 0.25)) + " " + Convert.ToString(Math.Round(posZ / 0.25)) + " ";
-                                linkedId += creatureEntry + " " + map + " 0 1 0";
-                                linkedId = SHA1HashStringForUTF8String(linkedId).ToUpper();
-
-                                if (allowedCreatureLinkedIds.Contains(linkedId))
+                                if (creatureLinkedIds.Contains(dbLinkedId))
                                 {
-                                    allowedCreatureLinkedIds.Remove(linkedId);
+                                    creatureLinkedIds.Remove(dbLinkedId);
                                     dbCreatureRowsRemoved++;
                                 }
                             }
@@ -144,9 +148,9 @@ namespace WoWDeveloperAssistant
 
                 if (gameobjectsRemover)
                 {
-                    foreach (var entry in gameobjectEntries)
+                    foreach (var linkedId in allowedGameobjectLinkedIds)
                     {
-                        string gameobjectsQuery = "SELECT `id`, `position_x`, `position_y`, `position_z`  FROM `gameobject` WHERE `id` = " + entry.Key + " AND `map` = " + entry.Value + ";";
+                        string gameobjectsQuery = "SELECT `linked_id` FROM `gameobject` WHERE `linked_id` = '" + linkedId + "'";
 
                         DataSet gameobjectsDs = new DataSet();
                         gameobjectsDs = (DataSet)SQLModule.DatabaseSelectQuery(gameobjectsQuery);
@@ -155,21 +159,11 @@ namespace WoWDeveloperAssistant
                         {
                             foreach (DataRow row in gameobjectsDs.Tables["table"].Rows)
                             {
-                                string linkedId = "";
+                                string dbLinkedId = row[0].ToString();
 
-                                string gameobjectEntry = row[0].ToString();
-                                string map = entry.Value;
-                                double posX = Convert.ToDouble(row[1].ToString());
-                                double posY = Convert.ToDouble(row[2].ToString());
-                                double posZ = Convert.ToDouble(row[3].ToString());
-
-                                linkedId = Convert.ToString(Math.Round(posX / 0.25)) + " " + Convert.ToString(Math.Round(posY / 0.25)) + " " + Convert.ToString(Math.Round(posZ / 0.25)) + " ";
-                                linkedId += gameobjectEntry + " " + map + " 0 1 0";
-                                linkedId = SHA1HashStringForUTF8String(linkedId).ToUpper();
-
-                                if (allowedGameobjectLinkedIds.Contains(linkedId))
+                                if (gameobjectLinkedIds.Contains(dbLinkedId))
                                 {
-                                    allowedGameobjectLinkedIds.Remove(linkedId);
+                                    gameobjectLinkedIds.Remove(dbLinkedId);
                                     dbGameobjectRowsRemoved++;
                                 }
                             }
@@ -178,56 +172,193 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            creatureAddonLinkedIds = new List<string>(allowedCreatureLinkedIds);
-            gameobjectAddonLinkedIds = new List<string>(allowedGameobjectLinkedIds);
+            creatureAddonLinkedIds = new List<string>(creatureLinkedIds);
+            gameobjectAddonLinkedIds = new List<string>(gameobjectLinkedIds);
 
             for (int i = 0; i < lines.Count(); i++)
             {
-                if (IsSpawnLine(lines[i]))
+                if (IsDeleteLine(lines[i]))
                 {
-                    string linkedId = GetLinkedIdFromLine(lines[i]);
+                    string deleteQuery = "";
+                    uint linkedIdsCount = 0;
 
-                    if (creaturesRemover)
+                    switch (GetObjectTypeFromLine(lines[i]))
                     {
-                        if (allowedCreatureLinkedIds.Contains(linkedId))
+                        case ObjectTypes.Creature:
+                        {
+                            if (creaturesRemover)
+                            {
+                                deleteQuery = "DELETE FROM `creature` WHERE `linked_id` IN (";
+
+                                foreach (string linkedId in creatureLinkedIds)
+                                {
+                                    linkedIdsCount++;
+                                    deleteQuery += "'" + linkedId + "'";
+
+                                    if (creatureLinkedIds.Count > linkedIdsCount)
+                                        deleteQuery += ", ";
+                                    else
+                                        deleteQuery += ");";
+                                }
+
+                                outputLines.Add(deleteQuery);
+                            }
+
+                            break;
+                        }
+                        case ObjectTypes.GameObject:
+                        {
+                            if (gameobjectsRemover)
+                            {
+                                deleteQuery = "DELETE FROM `gameobject` WHERE `linked_id` IN (";
+
+                                foreach (string linkedId in gameobjectLinkedIds)
+                                {
+                                    linkedIdsCount++;
+                                    deleteQuery += "'" + linkedId + "'";
+
+                                    if (gameobjectLinkedIds.Count > linkedIdsCount)
+                                        deleteQuery += ", ";
+                                    else
+                                        deleteQuery += ");";
+                                }
+
+                                outputLines.Add(deleteQuery);
+                            }
+
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                }
+                else if (IsInsertLine(lines[i]))
+                {
+                    outputLines.Add(lines[i]);
+
+                    do
+                    {
+                        i++;
+
+                        if (IsCreatureAddonDeleteLine(lines[i]) || IsGameObjectAddonDeleteLine(lines[i]))
+                        {
+                            i--;
+                            break;
+                        }
+
+                        if (lines[i].StartsWith("-- (") || lines[i] == "")
+                            continue;
+
+                        string linkedId = GetLinkedIdFromLine(lines[i]);
+                        uint entry = GetEntryFromLine(lines[i]);
+                        if (linkedId == "" || entry == 0)
+                            continue;
+
+                        if (creaturesRemover)
+                        {
+                            if (creatureLinkedIds.Contains(linkedId))
+                            {
+                                outputLines.Add(lines[i]);
+                                creatureLinkedIds.Remove(linkedId);
+                                continue;
+                            }
+                        }
+
+                        if (gameobjectsRemover)
+                        {
+                            if (gameobjectLinkedIds.Contains(linkedId))
+                            {
+                                outputLines.Add(lines[i]);
+                                gameobjectLinkedIds.Remove(linkedId);
+                                continue;
+                            }
+                        }
+                    }
+                    while (lines[i] != "" && GetLinkedIdFromLine(lines[i]) != "" && !IsCreatureAddonDeleteLine(lines[i]) && !IsGameObjectAddonDeleteLine(lines[i]));
+                }
+                else if (IsCreatureAddonDeleteLine(lines[i]) && creaturesRemover)
+                {
+                    string deleteQuery = "DELETE FROM `creature_addon` WHERE `linked_id` IN (";
+                    uint linkedIdsCount = 0;
+
+                    foreach (string linkedId in creatureAddonLinkedIds)
+                    {
+                        linkedIdsCount++;
+                        deleteQuery += "'" + linkedId + "'";
+
+                        if (creatureAddonLinkedIds.Count > linkedIdsCount)
+                            deleteQuery += ", ";
+                        else
+                            deleteQuery += ");";
+                    }
+
+                    outputLines.Add(deleteQuery);
+                }
+                else if (IsCreatureAddonInsertLine(lines[i]) && creaturesRemover)
+                {
+                    outputLines.Add(lines[i]);
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i] == "")
+                            continue;
+
+                        string linkedId = GetLinkedIdFromLine(lines[i]);
+                        if (linkedId == "")
+                            continue;
+
+                        if (creatureAddonLinkedIds.Contains(linkedId))
                         {
                             outputLines.Add(lines[i]);
-                            allowedCreatureLinkedIds.Remove(linkedId);
+                            creatureAddonLinkedIds.Remove(linkedId);
                             continue;
                         }
                     }
+                    while (lines[i] != "" && GetLinkedIdFromLine(lines[i]) != "");
+                }
+                else if (IsGameObjectAddonDeleteLine(lines[i]) && gameobjectsRemover)
+                {
+                    string deleteQuery = "DELETE FROM `gameobject_addon` WHERE `linked_id` IN (";
+                    uint linkedIdsCount = 0;
 
-                    if (gameobjectsRemover)
+                    foreach (string linkedId in gameobjectAddonLinkedIds)
                     {
-                        if (allowedGameobjectLinkedIds.Contains(linkedId))
+                        linkedIdsCount++;
+                        deleteQuery += "'" + linkedId + "'";
+
+                        if (gameobjectAddonLinkedIds.Count > linkedIdsCount)
+                            deleteQuery += ", ";
+                        else
+                            deleteQuery += ");";
+                    }
+
+                    outputLines.Add(deleteQuery);
+                }
+                else if (IsGameObjectAddonInsertLine(lines[i]) && gameobjectsRemover)
+                {
+                    outputLines.Add(lines[i]);
+
+                    do
+                    {
+                        i++;
+
+                        if (lines[i] == "")
+                            continue;
+
+                        string linkedId = GetLinkedIdFromLine(lines[i]);
+                        if (linkedId == "")
+                            continue;
+
+                        if (gameobjectAddonLinkedIds.Contains(linkedId))
                         {
                             outputLines.Add(lines[i]);
-                            allowedGameobjectLinkedIds.Remove(linkedId);
+                            gameobjectAddonLinkedIds.Remove(linkedId);
                             continue;
                         }
                     }
-                }
-                else if (IsCreatureAddonLine(lines[i]) && creaturesRemover)
-                {
-                    string linkedId = GetLinkedIdFromLine(lines[i]);
-
-                    if (creatureAddonLinkedIds.Contains(linkedId))
-                    {
-                        outputLines.Add(lines[i]);
-                        creatureAddonLinkedIds.Remove(linkedId);
-                        continue;
-                    }
-                }
-                else if (IsGameObjectAddonLine(lines[i]) && gameobjectsRemover)
-                {
-                    string linkedId = GetLinkedIdFromLine(lines[i]);
-
-                    if (gameobjectAddonLinkedIds.Contains(linkedId))
-                    {
-                        outputLines.Add(lines[i]);
-                        gameobjectAddonLinkedIds.Remove(linkedId);
-                        continue;
-                    }
+                    while (lines[i] != "" && GetLinkedIdFromLine(lines[i]) != "");
                 }
                 else
                 {
@@ -256,50 +387,15 @@ namespace WoWDeveloperAssistant
             outputFile.Close();
         }
 
-        private static string SHA1HashStringForUTF8String(string s)
+        private static string GetLinkedIdFromLine(string line)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(s);
-
-            var sha1 = SHA1.Create();
-            byte[] hashBytes = sha1.ComputeHash(bytes);
-
-            return HexStringFromBytes(hashBytes);
-        }
-
-        private static string HexStringFromBytes(byte[] bytes)
-        {
-            var sb = new StringBuilder();
-            foreach (byte b in bytes)
-            {
-                var hex = b.ToString("x2");
-                sb.Append(hex);
-            }
-            return sb.ToString();
-        }
-
-        private static string GetLinkedIdFromLine(string line, bool forced = false)
-        {
-            Regex linkedIdRegex;
-
-            if (forced)
-            {
-                linkedIdRegex = new Regex(@"'+\S+'+");
-            }
-            else
-            {
-                linkedIdRegex = new Regex(@"\(+'+\S+'+");
-            }
+            Regex linkedIdRegex = new Regex(@"'+\S+'+");
 
             if (linkedIdRegex.IsMatch(line))
             {
-                if (forced)
                 {
                     return linkedIdRegex.Match(line).ToString().Replace("'", "");
                 }
-                else
-                {
-                    return linkedIdRegex.Match(line).ToString().Replace("(", "").Replace("'", "");
-                }
             }
             else
             {
@@ -307,76 +403,68 @@ namespace WoWDeveloperAssistant
             }
         }
 
-        private static string GetEntryFromLine(string line)
+        private static uint GetEntryFromLine(string line)
         {
             var splittedLine = line.Split(',');
 
-            return splittedLine[1];
+            return Convert.ToUInt32(splittedLine[1]);
         }
 
-        private static string GetMapFromLine(string line)
+        private static bool IsDeleteLine(string line)
         {
-            var splittedLine = line.Split(',');
-            var splittedMap = splittedLine[2].Split(' ');
-
-            try
-            {
-                Convert.ToUInt32(splittedMap[1]);
-                return splittedMap[1];
-            }
-            catch
-            {
-                return "";
-            }
+            if (line.Contains("DELETE FROM `creature`") ||
+                line.Contains("DELETE FROM `gameobject`"))
+                return true;
+            else
+                return false;
         }
 
-        private static bool IsSpawnLine(string line)
+        private static bool IsInsertLine(string line)
         {
-            if (line.Contains("DELETE FROM `creature` WHERE `linked_id` IN") ||
-                line.Contains("DELETE FROM `gameobject` WHERE `linked_id` IN"))
+            if (line.Contains("INSERT INTO `creature`") ||
+                line.Contains("INSERT INTO `gameobject`"))
+                return true;
+            else
                 return false;
-
-            if (GetLinkedIdFromLine(line) == "")
-                return false;
-
-            if (GetEntryFromLine(line) == "")
-                return false;
-
-            if (GetStingObjectType(line) == 0)
-                return false;
-
-            return true;
         }
 
-        private static ObjectTypes GetStingObjectType(string line)
+        private static ObjectTypes GetObjectTypeFromLine(string line)
         {
-            if (line.Contains("Creature"))
-            {
+            if (line.Contains("INSERT INTO `creature`") || line.Contains("DELETE FROM `creature`"))
                 return ObjectTypes.Creature;
-            }
-            else if (line.Contains("GameObject"))
-            {
+            else if (line.Contains("INSERT INTO `gameobject`") || line.Contains("DELETE FROM `gameobject`"))
                 return ObjectTypes.GameObject;
-            }
             else
-            {
-                return 0;
-            }
+                return ObjectTypes.Unknown;
         }
 
-        private static bool IsCreatureAddonLine(string line)
+        private static bool IsCreatureAddonDeleteLine(string line)
         {
-            if (line.Contains("creature_addon") && GetLinkedIdFromLine(line) != "" &&
-                !line.Contains("DELETE FROM `creature_addon` WHERE `linked_id` IN"))
+            if (line.Contains("DELETE FROM `creature_addon`"))
                 return true;
 
             return false;
         }
 
-        private static bool IsGameObjectAddonLine(string line)
+        private static bool IsCreatureAddonInsertLine(string line)
         {
-            if (line.Contains("gameobject_addon") && GetLinkedIdFromLine(line) != "" &&
-                !line.Contains("DELETE FROM `gameobject_addon` WHERE `linked_id` IN"))
+            if (line.Contains("INSERT INTO `creature_addon`"))
+                return true;
+
+            return false;
+        }
+
+        private static bool IsGameObjectAddonDeleteLine(string line)
+        {
+            if (line.Contains("DELETE FROM `gameobject_addon`"))
+                return true;
+
+            return false;
+        }
+
+        private static bool IsGameObjectAddonInsertLine(string line)
+        {
+            if (line.Contains("INSERT INTO `gameobject_addon`"))
                 return true;
 
             return false;
