@@ -132,6 +132,14 @@ namespace WoWDeveloperAssistant
             creatureScriptsCreator.FillListBoxWithGuids();
         }
 
+        private void toolStripTextBox_CSC_CreatureEntrySearch_Enter(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            creatureScriptsCreator.FillListBoxWithGuids();
+        }
+
         private void listBox_CreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
             creatureScriptsCreator.FillSpellsGrid();
@@ -248,6 +256,14 @@ namespace WoWDeveloperAssistant
 
         private void toolStripButton_WCSearch_Click(object sender, EventArgs e)
         {
+            waypointsCreator.FillListBoxWithGuids();
+        }
+
+        private void toolStripTextBox_WCSearch_Enter(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
             waypointsCreator.FillListBoxWithGuids();
         }
 

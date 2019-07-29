@@ -140,9 +140,9 @@
             this.tabPage_DoubleSpawnsRemover.SuspendLayout();
             this.statusStrip_LoadedFile.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // tabControl
-            // 
+            //
             this.tabControl.Controls.Add(this.tabPage_CreatureScriptsCreator);
             this.tabControl.Controls.Add(this.tabPage_WaypointsCreator);
             this.tabControl.Controls.Add(this.tabPage_Output);
@@ -153,9 +153,9 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(2048, 988);
             this.tabControl.TabIndex = 1;
-            // 
+            //
             // tabPage_CreatureScriptsCreator
-            // 
+            //
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.checkBox_OnlyCombatSpells);
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.dataGridView_Spells);
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.listBox_CreatureGuids);
@@ -167,9 +167,9 @@
             this.tabPage_CreatureScriptsCreator.TabIndex = 0;
             this.tabPage_CreatureScriptsCreator.Text = "Creature Scripts Creator";
             this.tabPage_CreatureScriptsCreator.UseVisualStyleBackColor = true;
-            // 
+            //
             // checkBox_OnlyCombatSpells
-            // 
+            //
             this.checkBox_OnlyCombatSpells.AutoSize = true;
             this.checkBox_OnlyCombatSpells.BackColor = System.Drawing.Color.LightGray;
             this.checkBox_OnlyCombatSpells.Checked = true;
@@ -181,9 +181,9 @@
             this.checkBox_OnlyCombatSpells.TabIndex = 4;
             this.checkBox_OnlyCombatSpells.Text = "Only Combat Spells";
             this.checkBox_OnlyCombatSpells.UseVisualStyleBackColor = false;
-            // 
+            //
             // dataGridView_Spells
-            // 
+            //
             this.dataGridView_Spells.AllowUserToAddRows = false;
             this.dataGridView_Spells.AllowUserToDeleteRows = false;
             this.dataGridView_Spells.AllowUserToOrderColumns = true;
@@ -210,9 +210,9 @@
             this.dataGridView_Spells.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_Spells.Size = new System.Drawing.Size(1269, 886);
             this.dataGridView_Spells.TabIndex = 3;
-            // 
+            //
             // SpellId
-            // 
+            //
             this.SpellId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.SpellId.DefaultCellStyle = dataGridViewCellStyle21;
@@ -221,9 +221,9 @@
             this.SpellId.Name = "SpellId";
             this.SpellId.ReadOnly = true;
             this.SpellId.Width = 94;
-            // 
+            //
             // SpellName
-            // 
+            //
             this.SpellName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.SpellName.DefaultCellStyle = dataGridViewCellStyle22;
@@ -232,9 +232,9 @@
             this.SpellName.Name = "SpellName";
             this.SpellName.ReadOnly = true;
             this.SpellName.Width = 122;
-            // 
+            //
             // CastTime
-            // 
+            //
             this.CastTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.CastTime.DefaultCellStyle = dataGridViewCellStyle23;
@@ -243,9 +243,9 @@
             this.CastTime.Name = "CastTime";
             this.CastTime.ReadOnly = true;
             this.CastTime.Width = 112;
-            // 
+            //
             // MinCastStartTime
-            // 
+            //
             this.MinCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle24;
@@ -254,9 +254,9 @@
             this.MinCastStartTime.Name = "MinCastStartTime";
             this.MinCastStartTime.ReadOnly = true;
             this.MinCastStartTime.Width = 172;
-            // 
+            //
             // MaxCastStartTime
-            // 
+            //
             this.MaxCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle25;
@@ -265,9 +265,9 @@
             this.MaxCastStartTime.Name = "MaxCastStartTime";
             this.MaxCastStartTime.ReadOnly = true;
             this.MaxCastStartTime.Width = 176;
-            // 
+            //
             // MinCastRepeatTime
-            // 
+            //
             this.MinCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle26;
@@ -276,9 +276,9 @@
             this.MinCastRepeatTime.Name = "MinCastRepeatTime";
             this.MinCastRepeatTime.ReadOnly = true;
             this.MinCastRepeatTime.Width = 190;
-            // 
+            //
             // MaxCastRepeatTime
-            // 
+            //
             this.MaxCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle27;
@@ -287,9 +287,9 @@
             this.MaxCastRepeatTime.Name = "MaxCastRepeatTime";
             this.MaxCastRepeatTime.ReadOnly = true;
             this.MaxCastRepeatTime.Width = 194;
-            // 
+            //
             // CastsCount
-            // 
+            //
             this.CastsCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.CastsCount.DefaultCellStyle = dataGridViewCellStyle28;
@@ -298,15 +298,15 @@
             this.CastsCount.Name = "CastsCount";
             this.CastsCount.ReadOnly = true;
             this.CastsCount.Width = 129;
-            // 
+            //
             // SourceSpell
-            // 
+            //
             this.SourceSpell.HeaderText = "SourceSpell";
             this.SourceSpell.Name = "SourceSpell";
             this.SourceSpell.Visible = false;
-            // 
+            //
             // contextMenuStrip_CSC
-            // 
+            //
             this.contextMenuStrip_CSC.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip_CSC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cutToolStripMenuItem,
@@ -314,28 +314,28 @@
             this.createSQLToolStripMenuItem});
             this.contextMenuStrip_CSC.Name = "contextMenuStrip1";
             this.contextMenuStrip_CSC.Size = new System.Drawing.Size(172, 70);
-            // 
+            //
             // cutToolStripMenuItem
-            // 
+            //
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.Size = new System.Drawing.Size(171, 30);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
-            // 
+            //
             // toolStripSeparator
-            // 
+            //
             this.toolStripSeparator.Name = "toolStripSeparator";
             this.toolStripSeparator.Size = new System.Drawing.Size(168, 6);
-            // 
+            //
             // createSQLToolStripMenuItem
-            // 
+            //
             this.createSQLToolStripMenuItem.Name = "createSQLToolStripMenuItem";
             this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(171, 30);
             this.createSQLToolStripMenuItem.Text = "Create SQL";
             this.createSQLToolStripMenuItem.Click += new System.EventHandler(this.createSQLToolStripMenuItem_Click);
-            // 
+            //
             // listBox_CreatureGuids
-            // 
+            //
             this.listBox_CreatureGuids.BackColor = System.Drawing.SystemColors.Control;
             this.listBox_CreatureGuids.Enabled = false;
             this.listBox_CreatureGuids.FormattingEnabled = true;
@@ -345,9 +345,9 @@
             this.listBox_CreatureGuids.Size = new System.Drawing.Size(726, 884);
             this.listBox_CreatureGuids.TabIndex = 2;
             this.listBox_CreatureGuids.SelectedIndexChanged += new System.EventHandler(this.listBox_CreatureGuids_SelectedIndexChanged);
-            // 
+            //
             // toolStrip_CSC
-            // 
+            //
             this.toolStrip_CSC.BackColor = System.Drawing.Color.LightGray;
             this.toolStrip_CSC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_CSC_ImportSniff,
@@ -361,18 +361,18 @@
             this.toolStrip_CSC.Size = new System.Drawing.Size(2034, 32);
             this.toolStrip_CSC.TabIndex = 1;
             this.toolStrip_CSC.Text = "toolStrip_CreatureScriptsCreator";
-            // 
+            //
             // toolStripButton_CSC_ImportSniff
-            // 
+            //
             this.toolStripButton_CSC_ImportSniff.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Import;
             this.toolStripButton_CSC_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_ImportSniff.Name = "toolStripButton_CSC_ImportSniff";
             this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(136, 29);
             this.toolStripButton_CSC_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_CSC_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
-            // 
+            //
             // toolStripButton_CSC_Search
-            // 
+            //
             this.toolStripButton_CSC_Search.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton_CSC_Search.Enabled = false;
             this.toolStripButton_CSC_Search.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Search;
@@ -381,31 +381,32 @@
             this.toolStripButton_CSC_Search.Size = new System.Drawing.Size(92, 29);
             this.toolStripButton_CSC_Search.Text = "Search";
             this.toolStripButton_CSC_Search.Click += new System.EventHandler(this.toolStripButton_Search_Click);
-            // 
+            //
             // toolStripTextBox_CSC_CreatureEntry
-            // 
+            //
             this.toolStripTextBox_CSC_CreatureEntry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripTextBox_CSC_CreatureEntry.Enabled = false;
             this.toolStripTextBox_CSC_CreatureEntry.MaxLength = 40;
             this.toolStripTextBox_CSC_CreatureEntry.Name = "toolStripTextBox_CSC_CreatureEntry";
             this.toolStripTextBox_CSC_CreatureEntry.Size = new System.Drawing.Size(100, 32);
-            // 
+            this.toolStripTextBox_CSC_CreatureEntry.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox_CSC_CreatureEntrySearch_Enter);
+            //
             // toolStripLabel_CSC_CreatureEntry
-            // 
+            //
             this.toolStripLabel_CSC_CreatureEntry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel_CSC_CreatureEntry.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.toolStripLabel_CSC_CreatureEntry.Name = "toolStripLabel_CSC_CreatureEntry";
             this.toolStripLabel_CSC_CreatureEntry.Size = new System.Drawing.Size(184, 29);
             this.toolStripLabel_CSC_CreatureEntry.Text = "Creature EntryOrGuid:";
-            // 
+            //
             // toolStripSeparator_CSC
-            // 
+            //
             this.toolStripSeparator_CSC.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator_CSC.Name = "toolStripSeparator_CSC";
             this.toolStripSeparator_CSC.Size = new System.Drawing.Size(6, 32);
-            // 
+            //
             // tabPage_WaypointsCreator
-            // 
+            //
             this.tabPage_WaypointsCreator.Controls.Add(this.grid_WC_Waypoints);
             this.tabPage_WaypointsCreator.Controls.Add(this.listBox_WC_CreatureGuids);
             this.tabPage_WaypointsCreator.Controls.Add(this.chart_WC);
@@ -417,9 +418,9 @@
             this.tabPage_WaypointsCreator.TabIndex = 4;
             this.tabPage_WaypointsCreator.Text = "Waypoints Creator";
             this.tabPage_WaypointsCreator.UseVisualStyleBackColor = true;
-            // 
+            //
             // grid_WC_Waypoints
-            // 
+            //
             this.grid_WC_Waypoints.AllowUserToAddRows = false;
             this.grid_WC_Waypoints.AllowUserToDeleteRows = false;
             this.grid_WC_Waypoints.AllowUserToResizeColumns = false;
@@ -469,9 +470,9 @@
             this.grid_WC_Waypoints.Size = new System.Drawing.Size(758, 886);
             this.grid_WC_Waypoints.TabIndex = 28;
             this.grid_WC_Waypoints.TabStop = false;
-            // 
+            //
             // gridColumn_Id
-            // 
+            //
             dataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle31;
             this.gridColumn_Id.HeaderText = "Id";
@@ -479,9 +480,9 @@
             this.gridColumn_Id.ReadOnly = true;
             this.gridColumn_Id.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             this.gridColumn_Id.Width = 35;
-            // 
+            //
             // gridColumn_PosX
-            // 
+            //
             dataGridViewCellStyle32.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             dataGridViewCellStyle32.NullValue = null;
             this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle32;
@@ -490,9 +491,9 @@
             this.gridColumn_PosX.ReadOnly = true;
             this.gridColumn_PosX.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_PosX.Width = 60;
-            // 
+            //
             // gridColumn_PosY
-            // 
+            //
             dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             dataGridViewCellStyle33.NullValue = null;
             this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle33;
@@ -501,9 +502,9 @@
             this.gridColumn_PosY.ReadOnly = true;
             this.gridColumn_PosY.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_PosY.Width = 60;
-            // 
+            //
             // gridColumn_PosZ
-            // 
+            //
             dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle34;
             this.gridColumn_PosZ.HeaderText = "PosZ";
@@ -511,50 +512,50 @@
             this.gridColumn_PosZ.ReadOnly = true;
             this.gridColumn_PosZ.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_PosZ.Width = 60;
-            // 
+            //
             // gridColumn_Orientation
-            // 
+            //
             dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle35;
             this.gridColumn_Orientation.HeaderText = "Orientation";
             this.gridColumn_Orientation.Name = "gridColumn_Orientation";
             this.gridColumn_Orientation.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_Orientation.Width = 65;
-            // 
+            //
             // gridColumn_WCTime
-            // 
+            //
             dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle36;
             this.gridColumn_WCTime.HeaderText = "Time";
             this.gridColumn_WCTime.Name = "gridColumn_WCTime";
             this.gridColumn_WCTime.ReadOnly = true;
             this.gridColumn_WCTime.Width = 60;
-            // 
+            //
             // gridColumn_WCDelay
-            // 
+            //
             dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle37;
             this.gridColumn_WCDelay.HeaderText = "Delay";
             this.gridColumn_WCDelay.Name = "gridColumn_WCDelay";
             this.gridColumn_WCDelay.Width = 50;
-            // 
+            //
             // gridColumn_HasScript
-            // 
+            //
             dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle38;
             this.gridColumn_HasScript.HeaderText = "HasScript";
             this.gridColumn_HasScript.Name = "gridColumn_HasScript";
             this.gridColumn_HasScript.ReadOnly = true;
             this.gridColumn_HasScript.Width = 60;
-            // 
+            //
             // WaypointSource
-            // 
+            //
             this.WaypointSource.HeaderText = "WaypointSource";
             this.WaypointSource.Name = "WaypointSource";
             this.WaypointSource.Visible = false;
-            // 
+            //
             // contextMenuStrip_WC
-            // 
+            //
             this.contextMenuStrip_WC.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip_WC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cutToolStripMenuItem_WC,
@@ -565,49 +566,49 @@
             this.createSQLToolStripMenuItem_WC});
             this.contextMenuStrip_WC.Name = "contextMenuStrip_WC";
             this.contextMenuStrip_WC.Size = new System.Drawing.Size(281, 160);
-            // 
+            //
             // cutToolStripMenuItem_WC
-            // 
+            //
             this.cutToolStripMenuItem_WC.Name = "cutToolStripMenuItem_WC";
             this.cutToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
             this.cutToolStripMenuItem_WC.Text = "Cut";
             this.cutToolStripMenuItem_WC.Click += new System.EventHandler(this.cutToolStripMenuItem1_Click);
-            // 
+            //
             // removeNearestPointsToolStripMenuItem_WC
-            // 
+            //
             this.removeNearestPointsToolStripMenuItem_WC.Name = "removeNearestPointsToolStripMenuItem_WC";
             this.removeNearestPointsToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
             this.removeNearestPointsToolStripMenuItem_WC.Text = "Remove nearest points";
             this.removeNearestPointsToolStripMenuItem_WC.Click += new System.EventHandler(this.removeExcessPointsToolStripMenuItem_Click);
-            // 
+            //
             // removeDuplicatePointsToolStripMenuItem_WC
-            // 
+            //
             this.removeDuplicatePointsToolStripMenuItem_WC.Name = "removeDuplicatePointsToolStripMenuItem_WC";
             this.removeDuplicatePointsToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
             this.removeDuplicatePointsToolStripMenuItem_WC.Text = "Remove duplicate points";
             this.removeDuplicatePointsToolStripMenuItem_WC.Click += new System.EventHandler(this.removeDuplicatePointsToolStripMenuItem_WC_Click);
-            // 
+            //
             // createReturnPathToolStripMenuItem_WC
-            // 
+            //
             this.createReturnPathToolStripMenuItem_WC.Name = "createReturnPathToolStripMenuItem_WC";
             this.createReturnPathToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
             this.createReturnPathToolStripMenuItem_WC.Text = "Create return path";
             this.createReturnPathToolStripMenuItem_WC.Click += new System.EventHandler(this.createReturnPathToolStripMenuItem_WC_Click);
-            // 
+            //
             // toolStripSeparator_WC
-            // 
+            //
             this.toolStripSeparator_WC.Name = "toolStripSeparator_WC";
             this.toolStripSeparator_WC.Size = new System.Drawing.Size(277, 6);
-            // 
+            //
             // createSQLToolStripMenuItem_WC
-            // 
+            //
             this.createSQLToolStripMenuItem_WC.Name = "createSQLToolStripMenuItem_WC";
             this.createSQLToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
             this.createSQLToolStripMenuItem_WC.Text = "Create SQL";
             this.createSQLToolStripMenuItem_WC.Click += new System.EventHandler(this.createSQLToolStripMenuItem1_Click);
-            // 
+            //
             // listBox_WC_CreatureGuids
-            // 
+            //
             this.listBox_WC_CreatureGuids.BackColor = System.Drawing.SystemColors.Control;
             this.listBox_WC_CreatureGuids.Enabled = false;
             this.listBox_WC_CreatureGuids.FormattingEnabled = true;
@@ -618,9 +619,9 @@
             this.listBox_WC_CreatureGuids.Size = new System.Drawing.Size(356, 884);
             this.listBox_WC_CreatureGuids.TabIndex = 27;
             this.listBox_WC_CreatureGuids.SelectedIndexChanged += new System.EventHandler(this.listBox_WCCreatureGuids_SelectedIndexChanged);
-            // 
+            //
             // chart_WC
-            // 
+            //
             this.chart_WC.BorderlineWidth = 0;
             this.chart_WC.BorderSkin.BackColor = System.Drawing.Color.Transparent;
             this.chart_WC.BorderSkin.BorderColor = System.Drawing.Color.Transparent;
@@ -707,9 +708,9 @@
             title2.Name = "Path";
             title2.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
             this.chart_WC.Titles.Add(title2);
-            // 
+            //
             // toolStrip_WC
-            // 
+            //
             this.toolStrip_WC.BackColor = System.Drawing.Color.LightGray;
             this.toolStrip_WC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_WC_Search,
@@ -724,9 +725,9 @@
             this.toolStrip_WC.Size = new System.Drawing.Size(2034, 32);
             this.toolStrip_WC.TabIndex = 24;
             this.toolStrip_WC.Text = "toolStrip_WC";
-            // 
+            //
             // toolStripButton_WC_Search
-            // 
+            //
             this.toolStripButton_WC_Search.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton_WC_Search.Enabled = false;
             this.toolStripButton_WC_Search.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WC_Search.Image")));
@@ -736,9 +737,9 @@
             this.toolStripButton_WC_Search.Text = "Search";
             this.toolStripButton_WC_Search.ToolTipText = "Fill listbox with guids of\r\nselected entry or all entries.";
             this.toolStripButton_WC_Search.Click += new System.EventHandler(this.toolStripButton_WCSearch_Click);
-            // 
+            //
             // toolStripTextBox_WC_Entry
-            // 
+            //
             this.toolStripTextBox_WC_Entry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripTextBox_WC_Entry.Enabled = false;
             this.toolStripTextBox_WC_Entry.MaxLength = 40;
@@ -746,24 +747,25 @@
             this.toolStripTextBox_WC_Entry.Size = new System.Drawing.Size(103, 32);
             this.toolStripTextBox_WC_Entry.Tag = "";
             this.toolStripTextBox_WC_Entry.ToolTipText = "Input entry of creature or leave\r\nblank to fill listbox will all in sniff.";
-            // 
+            this.toolStripTextBox_WC_Entry.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox_WCSearch_Enter);
+            //
             // toolStripLabel_WC_Entry
-            // 
+            //
             this.toolStripLabel_WC_Entry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel_WC_Entry.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.toolStripLabel_WC_Entry.Name = "toolStripLabel_WC_Entry";
             this.toolStripLabel_WC_Entry.Size = new System.Drawing.Size(184, 29);
             this.toolStripLabel_WC_Entry.Text = "Creature EntryOrGuid:";
             this.toolStripLabel_WC_Entry.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
+            //
             // toolStripSeparator1
-            // 
+            //
             this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 32);
-            // 
+            //
             // toolStripButton_WC_Settings
-            // 
+            //
             this.toolStripButton_WC_Settings.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton_WC_Settings.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WC_Settings.Image")));
             this.toolStripButton_WC_Settings.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -772,9 +774,9 @@
             this.toolStripButton_WC_Settings.Text = "Settings";
             this.toolStripButton_WC_Settings.ToolTipText = "Setup chart and output SQL.";
             this.toolStripButton_WC_Settings.Click += new System.EventHandler(this.toolStripButton_WCSettings_Click);
-            // 
+            //
             // toolStripButton_WC_LoadSniff
-            // 
+            //
             this.toolStripButton_WC_LoadSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WC_LoadSniff.Image")));
             this.toolStripButton_WC_LoadSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_WC_LoadSniff.Name = "toolStripButton_WC_LoadSniff";
@@ -782,9 +784,9 @@
             this.toolStripButton_WC_LoadSniff.Text = "Import Sniff";
             this.toolStripButton_WC_LoadSniff.ToolTipText = "Import a parsed wpp sniff file.";
             this.toolStripButton_WC_LoadSniff.Click += new System.EventHandler(this.toolStripButton_WCLoadSniff_Click);
-            // 
+            //
             // tabPage_Output
-            // 
+            //
             this.tabPage_Output.Controls.Add(this.textBox_SQLOutput);
             this.tabPage_Output.Location = new System.Drawing.Point(4, 29);
             this.tabPage_Output.Name = "tabPage_Output";
@@ -793,9 +795,9 @@
             this.tabPage_Output.TabIndex = 1;
             this.tabPage_Output.Text = "SQL Output";
             this.tabPage_Output.UseVisualStyleBackColor = true;
-            // 
+            //
             // textBox_SQLOutput
-            // 
+            //
             this.textBox_SQLOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox_SQLOutput.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.textBox_SQLOutput.Location = new System.Drawing.Point(3, 3);
@@ -805,9 +807,9 @@
             this.textBox_SQLOutput.Size = new System.Drawing.Size(2034, 949);
             this.textBox_SQLOutput.TabIndex = 0;
             this.textBox_SQLOutput.WordWrap = false;
-            // 
+            //
             // tabPage_DatabaseAdvisor
-            // 
+            //
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBoxAreatriggerSplines);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_AreatriggerSplines);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_QuestFlags);
@@ -821,60 +823,60 @@
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
-            // 
+            //
             // textBoxAreatriggerSplines
-            // 
+            //
             this.textBoxAreatriggerSplines.Location = new System.Drawing.Point(8, 142);
             this.textBoxAreatriggerSplines.Name = "textBoxAreatriggerSplines";
             this.textBoxAreatriggerSplines.Size = new System.Drawing.Size(139, 26);
             this.textBoxAreatriggerSplines.TabIndex = 5;
             this.textBoxAreatriggerSplines.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxAreatriggerSplines_KeyDown);
-            // 
+            //
             // label_AreatriggerSplines
-            // 
+            //
             this.label_AreatriggerSplines.AutoSize = true;
             this.label_AreatriggerSplines.Location = new System.Drawing.Point(3, 117);
             this.label_AreatriggerSplines.Name = "label_AreatriggerSplines";
             this.label_AreatriggerSplines.Size = new System.Drawing.Size(144, 20);
             this.label_AreatriggerSplines.TabIndex = 4;
             this.label_AreatriggerSplines.Text = "Areatrigger Splines";
-            // 
+            //
             // textBox_QuestFlags
-            // 
+            //
             this.textBox_QuestFlags.Location = new System.Drawing.Point(8, 85);
             this.textBox_QuestFlags.Name = "textBox_QuestFlags";
             this.textBox_QuestFlags.Size = new System.Drawing.Size(92, 26);
             this.textBox_QuestFlags.TabIndex = 3;
             this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
-            // 
+            //
             // label_QuestFlags
-            // 
+            //
             this.label_QuestFlags.AutoSize = true;
             this.label_QuestFlags.Location = new System.Drawing.Point(6, 60);
             this.label_QuestFlags.Name = "label_QuestFlags";
             this.label_QuestFlags.Size = new System.Drawing.Size(95, 20);
             this.label_QuestFlags.TabIndex = 2;
             this.label_QuestFlags.Text = "Quest Flags";
-            // 
+            //
             // textBox_CreatureFlags
-            // 
+            //
             this.textBox_CreatureFlags.Location = new System.Drawing.Point(8, 28);
             this.textBox_CreatureFlags.Name = "textBox_CreatureFlags";
             this.textBox_CreatureFlags.Size = new System.Drawing.Size(112, 26);
             this.textBox_CreatureFlags.TabIndex = 1;
             this.textBox_CreatureFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_CreatureFlags_KeyDown);
-            // 
+            //
             // label_CreatureFlags
-            // 
+            //
             this.label_CreatureFlags.AutoSize = true;
             this.label_CreatureFlags.Location = new System.Drawing.Point(4, 3);
             this.label_CreatureFlags.Name = "label_CreatureFlags";
             this.label_CreatureFlags.Size = new System.Drawing.Size(114, 20);
             this.label_CreatureFlags.TabIndex = 0;
             this.label_CreatureFlags.Text = "Creature Flags";
-            // 
+            //
             // tabPage_DoubleSpawnsRemover
-            // 
+            //
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_DatabaseConsidering);
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.label_GameobjectsRemoved);
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_GameobjectsRemover);
@@ -888,9 +890,9 @@
             this.tabPage_DoubleSpawnsRemover.TabIndex = 3;
             this.tabPage_DoubleSpawnsRemover.Text = "Double-Spawns Remover";
             this.tabPage_DoubleSpawnsRemover.UseVisualStyleBackColor = true;
-            // 
+            //
             // checkBox_DatabaseConsidering
-            // 
+            //
             this.checkBox_DatabaseConsidering.AutoSize = true;
             this.checkBox_DatabaseConsidering.Checked = true;
             this.checkBox_DatabaseConsidering.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -900,9 +902,9 @@
             this.checkBox_DatabaseConsidering.TabIndex = 5;
             this.checkBox_DatabaseConsidering.Text = "Considering database";
             this.checkBox_DatabaseConsidering.UseVisualStyleBackColor = true;
-            // 
+            //
             // label_GameobjectsRemoved
-            // 
+            //
             this.label_GameobjectsRemoved.AutoSize = true;
             this.label_GameobjectsRemoved.Location = new System.Drawing.Point(494, 132);
             this.label_GameobjectsRemoved.Name = "label_GameobjectsRemoved";
@@ -910,9 +912,9 @@
             this.label_GameobjectsRemoved.TabIndex = 4;
             this.label_GameobjectsRemoved.Text = "No gameobjects removed";
             this.label_GameobjectsRemoved.Visible = false;
-            // 
+            //
             // checkBox_GameobjectsRemover
-            // 
+            //
             this.checkBox_GameobjectsRemover.AutoSize = true;
             this.checkBox_GameobjectsRemover.Checked = true;
             this.checkBox_GameobjectsRemover.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -923,9 +925,9 @@
             this.checkBox_GameobjectsRemover.Text = "Gameobjects";
             this.checkBox_GameobjectsRemover.UseVisualStyleBackColor = true;
             this.checkBox_GameobjectsRemover.CheckedChanged += new System.EventHandler(this.checkBox_GameobjectsRemover_CheckedChanged);
-            // 
+            //
             // checkBox_CreaturesRemover
-            // 
+            //
             this.checkBox_CreaturesRemover.AutoSize = true;
             this.checkBox_CreaturesRemover.Checked = true;
             this.checkBox_CreaturesRemover.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -936,9 +938,9 @@
             this.checkBox_CreaturesRemover.Text = "Creatures";
             this.checkBox_CreaturesRemover.UseVisualStyleBackColor = true;
             this.checkBox_CreaturesRemover.CheckedChanged += new System.EventHandler(this.checkBox_CreaturesRemover_CheckedChanged);
-            // 
+            //
             // label_CreaturesRemoved
-            // 
+            //
             this.label_CreaturesRemoved.AutoSize = true;
             this.label_CreaturesRemoved.Location = new System.Drawing.Point(494, 112);
             this.label_CreaturesRemoved.Name = "label_CreaturesRemoved";
@@ -946,10 +948,10 @@
             this.label_CreaturesRemoved.TabIndex = 1;
             this.label_CreaturesRemoved.Text = "No creatures removed";
             this.label_CreaturesRemoved.Visible = false;
-            // 
+            //
             // button_ImportFileForRemoving
-            // 
-            this.button_ImportFileForRemoving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.button_ImportFileForRemoving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button_ImportFileForRemoving.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.button_ImportFileForRemoving.FlatAppearance.BorderSize = 5;
@@ -961,9 +963,9 @@
             this.button_ImportFileForRemoving.Text = "Import File";
             this.button_ImportFileForRemoving.UseVisualStyleBackColor = true;
             this.button_ImportFileForRemoving.Click += new System.EventHandler(this.button_ImportFile_Click);
-            // 
+            //
             // statusStrip_LoadedFile
-            // 
+            //
             this.statusStrip_LoadedFile.BackColor = System.Drawing.Color.LightGray;
             this.statusStrip_LoadedFile.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip_LoadedFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -975,25 +977,25 @@
             this.statusStrip_LoadedFile.Size = new System.Drawing.Size(2050, 30);
             this.statusStrip_LoadedFile.TabIndex = 2;
             this.statusStrip_LoadedFile.Text = "statusStrip";
-            // 
+            //
             // toolStripStatusLabel_FileStatus
-            // 
+            //
             this.toolStripStatusLabel_FileStatus.Name = "toolStripStatusLabel_FileStatus";
             this.toolStripStatusLabel_FileStatus.Size = new System.Drawing.Size(131, 25);
             this.toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-            // 
+            //
             // toolStripStatusLabel_CurrentAction
-            // 
+            //
             this.toolStripStatusLabel_CurrentAction.Name = "toolStripStatusLabel_CurrentAction";
             this.toolStripStatusLabel_CurrentAction.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.toolStripStatusLabel_CurrentAction.Size = new System.Drawing.Size(0, 25);
-            // 
+            //
             // openFileDialog
-            // 
+            //
             this.openFileDialog.FileName = "openFileDialog_WSC";
-            // 
+            //
             // MainForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2050, 1009);
