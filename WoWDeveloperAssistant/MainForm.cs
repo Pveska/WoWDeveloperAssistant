@@ -41,7 +41,7 @@ namespace WoWDeveloperAssistant
 
             DataSet creatureNameDs = new DataSet();
             string creatureNameQuery = "SELECT `entry`, `Name1` FROM `creature_template_wdb`;";
-            creatureNameDs = (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery);
+            creatureNameDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
 
             if (creatureNameDs != null)
             {
