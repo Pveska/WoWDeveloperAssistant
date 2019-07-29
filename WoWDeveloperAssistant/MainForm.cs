@@ -23,6 +23,8 @@ namespace WoWDeveloperAssistant
             creatureScriptsCreator = new CreatureScriptsCreator(this);
             waypointsCreator = new WaypointsCreator(this);
 
+            creatureNamesDict = new Dictionary<uint, string>();
+
             if (Properties.Settings.Default.UsingDB == true)
             {
                 creatureNamesDict = GetCreatureNamesFromDB();
@@ -106,7 +108,7 @@ namespace WoWDeveloperAssistant
             {
                 creatureScriptsCreator.ImportStarted();
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) && 
+                if (IsTxtFileValidForParse(openFileDialog.FileName) &&
                     creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileName))
                 {
                     creatureScriptsCreator.ImportSuccessful();
