@@ -391,7 +391,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 DataSet creatureAddonDs;
                 string sqlQuery = "SELECT * FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';";
                 bool alreadyHaveWaypointsInDb = false;
-                creatureAddonDs = SQLModule.DatabaseSelectQuery(sqlQuery);
+                creatureAddonDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(sqlQuery) : null;
 
                 if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
                 {
@@ -505,7 +505,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string sqlQuery = "SELECT * FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';";
             string creatureAddon = "";
             bool addonFound = false;
-            creatureAddonDs = SQLModule.DatabaseSelectQuery(sqlQuery);
+            creatureAddonDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(sqlQuery) : null;
 
             if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
             {
