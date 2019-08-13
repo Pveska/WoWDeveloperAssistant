@@ -17,6 +17,7 @@ namespace WoWDeveloperAssistant
         public bool isCombatSpell;
         public string name;
         public CombatCastTimings combatCastTimings;
+        public bool isDeathSpell;
 
         public struct CombatCastTimings
         {
@@ -39,6 +40,7 @@ namespace WoWDeveloperAssistant
             spellStartCastTimes.Add(spellPacket.spellCastStartTime);
             castTimes = 1;
             isCombatSpell = false;
+            isDeathSpell = false;
             name = GetSpellName(spellPacket.spellId);
         }
 
@@ -129,7 +131,7 @@ namespace WoWDeveloperAssistant
         {
             Parallel.ForEach(spellStartCastTimes, time =>
             {
-                if (time > reactionPacket.packetSendTime || time == reactionPacket.packetSendTime)
+                if (time >= reactionPacket.packetSendTime)
                 {
                     isCombatSpell = true;
                     return;
@@ -206,6 +208,18 @@ namespace WoWDeveloperAssistant
             castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) >= castTimings.minRepeatTime ? Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) : castTimings.minRepeatTime;
 
             combatCastTimings = castTimings;
+        }
+
+        public void MarkSpellAsDeath(Creature currentCreature)
+        {
+            Parallel.ForEach(spellStartCastTimes, time =>
+            {
+                if (time >= currentCreature.deathTime)
+                {
+                    isDeathSpell = true;
+                    return;
+                }
+            });
         }
 
         public uint GetTargetType()

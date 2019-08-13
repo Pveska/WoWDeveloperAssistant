@@ -337,6 +337,11 @@ namespace WoWDeveloperAssistant
                 creature.Value.CreateCombatCastTimings();
             });
 
+            Parallel.ForEach(creaturesDict, creature =>
+            {
+                creature.Value.CreateDeathSpells();
+            });
+
             mainForm.SetCurrentStatus("");
             return true;
         }
@@ -367,7 +372,14 @@ namespace WoWDeveloperAssistant
             {
                 Spell spell = (Spell) mainForm.dataGridView_Spells[8, l].Value;
 
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000 + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? (Math.Floor(spell.spellCastTime.TotalSeconds) + 1) * 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
+                if (spell.isDeathSpell)
+                {
+                    SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Cast " + spell.name + "')";
+                }
+                else
+                {
+                    SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000 + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? (Math.Floor(spell.spellCastTime.TotalSeconds) + 1) * 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
+                }
 
                 if (l < mainForm.dataGridView_Spells.RowCount - 1)
                 {

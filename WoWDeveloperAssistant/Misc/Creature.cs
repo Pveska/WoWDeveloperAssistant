@@ -128,6 +128,14 @@ namespace WoWDeveloperAssistant
             });
         }
 
+        public void CreateDeathSpells()
+        {
+            Parallel.ForEach(castedSpells, spell =>
+            {
+                spell.Value.MarkSpellAsDeath(this);
+            });
+        }
+
         public bool HasCombatSpells()
         {
             foreach (Spell spell in castedSpells.Values)
