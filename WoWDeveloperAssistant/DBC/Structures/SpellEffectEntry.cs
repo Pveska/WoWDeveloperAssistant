@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 namespace WoWDeveloperAssistant.Structures
 {
-    [DBFile("SpellEffectEntry")]
+    [DBFile("SpellEffect")]
 
     public sealed class SpellEffectEntry
     {

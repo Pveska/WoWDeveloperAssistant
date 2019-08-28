@@ -26,6 +26,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public bool GetDataFromSniffFile(string fileName)
         {
+            mainForm.SetCurrentStatus("Loading DBC...");
+
+            DBC.Load();
+
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);

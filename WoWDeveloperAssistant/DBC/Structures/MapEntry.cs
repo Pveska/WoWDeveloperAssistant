@@ -27,6 +27,7 @@ namespace WoWDeveloperAssistant.Structures
         public byte MaxPlayers;
         public short WindSettingsID;
         public int ZmpFileDataID;
+        public int WdtFileDataID;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public uint[] Flags;
     }

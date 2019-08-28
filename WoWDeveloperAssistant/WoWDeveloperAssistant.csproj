@@ -57,7 +57,7 @@
   <ItemGroup>
     <Reference Include="CascStorageLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Packages\CascStorageLib\CascStorageLib.dll</HintPath>
+      <HintPath>..\Packages\DB2FileReaderLib.NET\DB2FileReaderLib.NET\bin\Release\CascStorageLib.dll</HintPath>
     </Reference>
     <Reference Include="MetroFramework">
       <HintPath>..\Packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>

@@ -1,6 +1,6 @@
 ﻿namespace WoWDeveloperAssistant.Structures
 {
-    [DBFile("SpellCastTimesEntry")]
+    [DBFile("SpellCastTimes")]
 
     public sealed class SpellCastTimesEntry
     {

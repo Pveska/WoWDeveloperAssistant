@@ -214,7 +214,7 @@ namespace WoWDeveloperAssistant
         {
             Parallel.ForEach(spellStartCastTimes, time =>
             {
-                if (time >= currentCreature.deathTime)
+                if (currentCreature.deathTime != TimeSpan.Zero && time >= currentCreature.deathTime)
                 {
                     isDeathSpell = true;
                     return;
