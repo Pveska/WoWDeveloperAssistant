@@ -265,5 +265,23 @@ namespace WoWDeveloperAssistant
 
             return nonSelfTargetTypesList.Contains(targetType);
         }
+
+        public bool ShouldBeCastedBeforeDeath()
+        {
+            for (uint i = 0; i < 32; i++)
+            {
+                var spellEffectTuple = Tuple.Create(spellId, i);
+
+                if (DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                {
+                    var spellEffect = DBC.SpellEffectStores[spellEffectTuple];
+
+                    if (spellEffect.ImplicitTarget[0] == 123 || spellEffect.ImplicitTarget[1] == 123)
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

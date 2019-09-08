@@ -318,7 +318,7 @@ namespace WoWDeveloperAssistant
                         {
                             creaturesDict[attackStopPacket.creatureGuid].UpdateSpellsByAttackStopPacket(attackStopPacket);
 
-                            if (attackStopPacket.nowDead && creaturesDict[attackStopPacket.creatureGuid].deathTime == TimeSpan.Zero)
+                            if (attackStopPacket.nowDead)
                             {
                                 creaturesDict[attackStopPacket.creatureGuid].deathTime = attackStopPacket.packetSendTime;
                             }
@@ -374,7 +374,14 @@ namespace WoWDeveloperAssistant
 
                 if (spell.isDeathSpell)
                 {
-                    SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Cast " + spell.name + "')";
+                    if (spell.ShouldBeCastedBeforeDeath())
+                    {
+                        SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 82, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - Before death - Cast " + spell.name + "')";
+                    }
+                    else
+                    {
+                        SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Cast " + spell.name + "')";
+                    }
                 }
                 else
                 {
