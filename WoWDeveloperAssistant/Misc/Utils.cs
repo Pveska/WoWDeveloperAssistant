@@ -308,5 +308,17 @@ namespace WoWDeveloperAssistant.Misc
             }
             return sb.ToString();
         }
+
+        public static string AddSpacesCount(uint count)
+        {
+            string spaces = "";
+
+            for (uint i = 0; i < count; i++)
+            {
+                spaces += ' ';
+            }
+
+            return spaces;
+        }
     }
 }

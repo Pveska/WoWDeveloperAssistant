@@ -29,30 +29,30 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle31 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle32 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle57 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle58 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle59 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle60 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle61 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle62 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle71 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle72 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle63 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle64 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle65 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle66 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle67 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle68 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle69 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle70 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage_CreatureScriptsCreator = new System.Windows.Forms.TabPage();
@@ -121,6 +121,10 @@
             this.checkBox_CreaturesRemover = new System.Windows.Forms.CheckBox();
             this.label_CreaturesRemoved = new System.Windows.Forms.Label();
             this.button_ImportFileForRemoving = new System.Windows.Forms.Button();
+            this.coreScriptTemplates = new System.Windows.Forms.TabPage();
+            this.textBox_CoreScriptTemplates = new System.Windows.Forms.TextBox();
+            this.comboBox_CoreScriptTemplates = new System.Windows.Forms.ComboBox();
+            this.listBox_CoreScriptTemplates = new System.Windows.Forms.ListBox();
             this.statusStrip_LoadedFile = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
@@ -138,24 +142,26 @@
             this.tabPage_Output.SuspendLayout();
             this.tabPage_DatabaseAdvisor.SuspendLayout();
             this.tabPage_DoubleSpawnsRemover.SuspendLayout();
+            this.coreScriptTemplates.SuspendLayout();
             this.statusStrip_LoadedFile.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // tabControl
-            //
+            // 
             this.tabControl.Controls.Add(this.tabPage_CreatureScriptsCreator);
             this.tabControl.Controls.Add(this.tabPage_WaypointsCreator);
             this.tabControl.Controls.Add(this.tabPage_Output);
             this.tabControl.Controls.Add(this.tabPage_DatabaseAdvisor);
             this.tabControl.Controls.Add(this.tabPage_DoubleSpawnsRemover);
+            this.tabControl.Controls.Add(this.coreScriptTemplates);
             this.tabControl.Location = new System.Drawing.Point(3, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(2048, 988);
             this.tabControl.TabIndex = 1;
-            //
+            // 
             // tabPage_CreatureScriptsCreator
-            //
+            // 
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.checkBox_OnlyCombatSpells);
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.dataGridView_Spells);
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.listBox_CreatureGuids);
@@ -167,9 +173,9 @@
             this.tabPage_CreatureScriptsCreator.TabIndex = 0;
             this.tabPage_CreatureScriptsCreator.Text = "Creature Scripts Creator";
             this.tabPage_CreatureScriptsCreator.UseVisualStyleBackColor = true;
-            //
+            // 
             // checkBox_OnlyCombatSpells
-            //
+            // 
             this.checkBox_OnlyCombatSpells.AutoSize = true;
             this.checkBox_OnlyCombatSpells.BackColor = System.Drawing.Color.LightGray;
             this.checkBox_OnlyCombatSpells.Checked = true;
@@ -181,9 +187,9 @@
             this.checkBox_OnlyCombatSpells.TabIndex = 4;
             this.checkBox_OnlyCombatSpells.Text = "Only Combat Spells";
             this.checkBox_OnlyCombatSpells.UseVisualStyleBackColor = false;
-            //
+            // 
             // dataGridView_Spells
-            //
+            // 
             this.dataGridView_Spells.AllowUserToAddRows = false;
             this.dataGridView_Spells.AllowUserToDeleteRows = false;
             this.dataGridView_Spells.AllowUserToOrderColumns = true;
@@ -205,137 +211,148 @@
             this.dataGridView_Spells.Enabled = false;
             this.dataGridView_Spells.Location = new System.Drawing.Point(760, 49);
             this.dataGridView_Spells.Name = "dataGridView_Spells";
+            this.dataGridView_Spells.RowHeadersWidth = 62;
             this.dataGridView_Spells.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridView_Spells.RowTemplate.Height = 28;
             this.dataGridView_Spells.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_Spells.Size = new System.Drawing.Size(1269, 886);
             this.dataGridView_Spells.TabIndex = 3;
-            //
+            // 
             // SpellId
-            //
+            // 
             this.SpellId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SpellId.DefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SpellId.DefaultCellStyle = dataGridViewCellStyle29;
             this.SpellId.HeaderText = "SpellId";
             this.SpellId.MaxInputLength = 10;
+            this.SpellId.MinimumWidth = 8;
             this.SpellId.Name = "SpellId";
             this.SpellId.ReadOnly = true;
             this.SpellId.Width = 94;
-            //
+            // 
             // SpellName
-            //
+            // 
             this.SpellName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SpellName.DefaultCellStyle = dataGridViewCellStyle22;
+            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SpellName.DefaultCellStyle = dataGridViewCellStyle30;
             this.SpellName.HeaderText = "SpellName";
             this.SpellName.MaxInputLength = 50;
+            this.SpellName.MinimumWidth = 8;
             this.SpellName.Name = "SpellName";
             this.SpellName.ReadOnly = true;
             this.SpellName.Width = 122;
-            //
+            // 
             // CastTime
-            //
+            // 
             this.CastTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CastTime.DefaultCellStyle = dataGridViewCellStyle23;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastTime.DefaultCellStyle = dataGridViewCellStyle39;
             this.CastTime.HeaderText = "CastTime";
             this.CastTime.MaxInputLength = 10;
+            this.CastTime.MinimumWidth = 8;
             this.CastTime.Name = "CastTime";
             this.CastTime.ReadOnly = true;
             this.CastTime.Width = 112;
-            //
+            // 
             // MinCastStartTime
-            //
+            // 
             this.MinCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle24;
+            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle40;
             this.MinCastStartTime.HeaderText = "MinCastStartTime";
             this.MinCastStartTime.MaxInputLength = 10;
+            this.MinCastStartTime.MinimumWidth = 8;
             this.MinCastStartTime.Name = "MinCastStartTime";
             this.MinCastStartTime.ReadOnly = true;
             this.MinCastStartTime.Width = 172;
-            //
+            // 
             // MaxCastStartTime
-            //
+            // 
             this.MaxCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle25;
+            dataGridViewCellStyle57.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle57;
             this.MaxCastStartTime.HeaderText = "MaxCastStartTime";
             this.MaxCastStartTime.MaxInputLength = 10;
+            this.MaxCastStartTime.MinimumWidth = 8;
             this.MaxCastStartTime.Name = "MaxCastStartTime";
             this.MaxCastStartTime.ReadOnly = true;
             this.MaxCastStartTime.Width = 176;
-            //
+            // 
             // MinCastRepeatTime
-            //
+            // 
             this.MinCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle58.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle58;
             this.MinCastRepeatTime.HeaderText = "MinCastRepeatTime";
             this.MinCastRepeatTime.MaxInputLength = 10;
+            this.MinCastRepeatTime.MinimumWidth = 8;
             this.MinCastRepeatTime.Name = "MinCastRepeatTime";
             this.MinCastRepeatTime.ReadOnly = true;
             this.MinCastRepeatTime.Width = 190;
-            //
+            // 
             // MaxCastRepeatTime
-            //
+            // 
             this.MaxCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle27;
+            dataGridViewCellStyle59.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle59;
             this.MaxCastRepeatTime.HeaderText = "MaxCastRepeatTime";
             this.MaxCastRepeatTime.MaxInputLength = 10;
+            this.MaxCastRepeatTime.MinimumWidth = 8;
             this.MaxCastRepeatTime.Name = "MaxCastRepeatTime";
             this.MaxCastRepeatTime.ReadOnly = true;
             this.MaxCastRepeatTime.Width = 194;
-            //
+            // 
             // CastsCount
-            //
+            // 
             this.CastsCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle60.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle60;
             this.CastsCount.HeaderText = "CastsCount";
             this.CastsCount.MaxInputLength = 4;
+            this.CastsCount.MinimumWidth = 8;
             this.CastsCount.Name = "CastsCount";
             this.CastsCount.ReadOnly = true;
             this.CastsCount.Width = 129;
-            //
+            // 
             // SourceSpell
-            //
+            // 
             this.SourceSpell.HeaderText = "SourceSpell";
+            this.SourceSpell.MinimumWidth = 8;
             this.SourceSpell.Name = "SourceSpell";
             this.SourceSpell.Visible = false;
-            //
+            this.SourceSpell.Width = 150;
+            // 
             // contextMenuStrip_CSC
-            //
+            // 
             this.contextMenuStrip_CSC.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip_CSC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cutToolStripMenuItem,
             this.toolStripSeparator,
             this.createSQLToolStripMenuItem});
             this.contextMenuStrip_CSC.Name = "contextMenuStrip1";
-            this.contextMenuStrip_CSC.Size = new System.Drawing.Size(172, 70);
-            //
+            this.contextMenuStrip_CSC.Size = new System.Drawing.Size(172, 74);
+            // 
             // cutToolStripMenuItem
-            //
+            // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(171, 30);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(171, 32);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
-            //
+            // 
             // toolStripSeparator
-            //
+            // 
             this.toolStripSeparator.Name = "toolStripSeparator";
             this.toolStripSeparator.Size = new System.Drawing.Size(168, 6);
-            //
+            // 
             // createSQLToolStripMenuItem
-            //
+            // 
             this.createSQLToolStripMenuItem.Name = "createSQLToolStripMenuItem";
-            this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(171, 30);
+            this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(171, 32);
             this.createSQLToolStripMenuItem.Text = "Create SQL";
             this.createSQLToolStripMenuItem.Click += new System.EventHandler(this.createSQLToolStripMenuItem_Click);
-            //
+            // 
             // listBox_CreatureGuids
-            //
+            // 
             this.listBox_CreatureGuids.BackColor = System.Drawing.SystemColors.Control;
             this.listBox_CreatureGuids.Enabled = false;
             this.listBox_CreatureGuids.FormattingEnabled = true;
@@ -345,9 +362,9 @@
             this.listBox_CreatureGuids.Size = new System.Drawing.Size(726, 884);
             this.listBox_CreatureGuids.TabIndex = 2;
             this.listBox_CreatureGuids.SelectedIndexChanged += new System.EventHandler(this.listBox_CreatureGuids_SelectedIndexChanged);
-            //
+            // 
             // toolStrip_CSC
-            //
+            // 
             this.toolStrip_CSC.BackColor = System.Drawing.Color.LightGray;
             this.toolStrip_CSC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_CSC_ImportSniff,
@@ -357,22 +374,21 @@
             this.toolStripSeparator_CSC});
             this.toolStrip_CSC.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_CSC.Name = "toolStrip_CSC";
-            this.toolStrip_CSC.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip_CSC.Size = new System.Drawing.Size(2034, 32);
+            this.toolStrip_CSC.Size = new System.Drawing.Size(2034, 34);
             this.toolStrip_CSC.TabIndex = 1;
             this.toolStrip_CSC.Text = "toolStrip_CreatureScriptsCreator";
-            //
+            // 
             // toolStripButton_CSC_ImportSniff
-            //
+            // 
             this.toolStripButton_CSC_ImportSniff.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Import;
             this.toolStripButton_CSC_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_ImportSniff.Name = "toolStripButton_CSC_ImportSniff";
             this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(136, 29);
             this.toolStripButton_CSC_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_CSC_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
-            //
+            // 
             // toolStripButton_CSC_Search
-            //
+            // 
             this.toolStripButton_CSC_Search.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton_CSC_Search.Enabled = false;
             this.toolStripButton_CSC_Search.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Search;
@@ -381,32 +397,32 @@
             this.toolStripButton_CSC_Search.Size = new System.Drawing.Size(92, 29);
             this.toolStripButton_CSC_Search.Text = "Search";
             this.toolStripButton_CSC_Search.Click += new System.EventHandler(this.toolStripButton_Search_Click);
-            //
+            // 
             // toolStripTextBox_CSC_CreatureEntry
-            //
+            // 
             this.toolStripTextBox_CSC_CreatureEntry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripTextBox_CSC_CreatureEntry.Enabled = false;
             this.toolStripTextBox_CSC_CreatureEntry.MaxLength = 40;
             this.toolStripTextBox_CSC_CreatureEntry.Name = "toolStripTextBox_CSC_CreatureEntry";
-            this.toolStripTextBox_CSC_CreatureEntry.Size = new System.Drawing.Size(100, 32);
+            this.toolStripTextBox_CSC_CreatureEntry.Size = new System.Drawing.Size(100, 34);
             this.toolStripTextBox_CSC_CreatureEntry.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox_CSC_CreatureEntrySearch_Enter);
-            //
+            // 
             // toolStripLabel_CSC_CreatureEntry
-            //
+            // 
             this.toolStripLabel_CSC_CreatureEntry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel_CSC_CreatureEntry.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.toolStripLabel_CSC_CreatureEntry.Name = "toolStripLabel_CSC_CreatureEntry";
             this.toolStripLabel_CSC_CreatureEntry.Size = new System.Drawing.Size(184, 29);
             this.toolStripLabel_CSC_CreatureEntry.Text = "Creature EntryOrGuid:";
-            //
+            // 
             // toolStripSeparator_CSC
-            //
+            // 
             this.toolStripSeparator_CSC.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator_CSC.Name = "toolStripSeparator_CSC";
-            this.toolStripSeparator_CSC.Size = new System.Drawing.Size(6, 32);
-            //
+            this.toolStripSeparator_CSC.Size = new System.Drawing.Size(6, 34);
+            // 
             // tabPage_WaypointsCreator
-            //
+            // 
             this.tabPage_WaypointsCreator.Controls.Add(this.grid_WC_Waypoints);
             this.tabPage_WaypointsCreator.Controls.Add(this.listBox_WC_CreatureGuids);
             this.tabPage_WaypointsCreator.Controls.Add(this.chart_WC);
@@ -418,25 +434,25 @@
             this.tabPage_WaypointsCreator.TabIndex = 4;
             this.tabPage_WaypointsCreator.Text = "Waypoints Creator";
             this.tabPage_WaypointsCreator.UseVisualStyleBackColor = true;
-            //
+            // 
             // grid_WC_Waypoints
-            //
+            // 
             this.grid_WC_Waypoints.AllowUserToAddRows = false;
             this.grid_WC_Waypoints.AllowUserToDeleteRows = false;
             this.grid_WC_Waypoints.AllowUserToResizeColumns = false;
             this.grid_WC_Waypoints.AllowUserToResizeRows = false;
-            dataGridViewCellStyle29.NullValue = null;
-            this.grid_WC_Waypoints.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle29;
+            dataGridViewCellStyle61.NullValue = null;
+            this.grid_WC_Waypoints.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle61;
             this.grid_WC_Waypoints.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle30.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle30.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle30.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle30.NullValue = null;
-            dataGridViewCellStyle30.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle30.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle30.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.grid_WC_Waypoints.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle30;
+            dataGridViewCellStyle62.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle62.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle62.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle62.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle62.NullValue = null;
+            dataGridViewCellStyle62.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle62.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle62.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.grid_WC_Waypoints.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle62;
             this.grid_WC_Waypoints.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid_WC_Waypoints.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.gridColumn_Id,
@@ -449,113 +465,124 @@
             this.gridColumn_HasScript,
             this.WaypointSource});
             this.grid_WC_Waypoints.ContextMenuStrip = this.contextMenuStrip_WC;
-            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle39.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle39.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle39.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle39.NullValue = null;
-            dataGridViewCellStyle39.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle39.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle39.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.grid_WC_Waypoints.DefaultCellStyle = dataGridViewCellStyle39;
+            dataGridViewCellStyle71.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle71.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle71.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle71.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle71.NullValue = null;
+            dataGridViewCellStyle71.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle71.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle71.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.grid_WC_Waypoints.DefaultCellStyle = dataGridViewCellStyle71;
             this.grid_WC_Waypoints.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.grid_WC_Waypoints.Enabled = false;
             this.grid_WC_Waypoints.Location = new System.Drawing.Point(1274, 49);
             this.grid_WC_Waypoints.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.grid_WC_Waypoints.Name = "grid_WC_Waypoints";
+            this.grid_WC_Waypoints.RowHeadersWidth = 62;
             this.grid_WC_Waypoints.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle40.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grid_WC_Waypoints.RowsDefaultCellStyle = dataGridViewCellStyle40;
+            dataGridViewCellStyle72.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grid_WC_Waypoints.RowsDefaultCellStyle = dataGridViewCellStyle72;
             this.grid_WC_Waypoints.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grid_WC_Waypoints.Size = new System.Drawing.Size(758, 886);
             this.grid_WC_Waypoints.TabIndex = 28;
             this.grid_WC_Waypoints.TabStop = false;
-            //
+            // 
             // gridColumn_Id
-            //
-            dataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle31;
+            // 
+            dataGridViewCellStyle63.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle63;
             this.gridColumn_Id.HeaderText = "Id";
+            this.gridColumn_Id.MinimumWidth = 8;
             this.gridColumn_Id.Name = "gridColumn_Id";
             this.gridColumn_Id.ReadOnly = true;
             this.gridColumn_Id.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             this.gridColumn_Id.Width = 35;
-            //
+            // 
             // gridColumn_PosX
-            //
-            dataGridViewCellStyle32.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            dataGridViewCellStyle32.NullValue = null;
-            this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle32;
+            // 
+            dataGridViewCellStyle64.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            dataGridViewCellStyle64.NullValue = null;
+            this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle64;
             this.gridColumn_PosX.HeaderText = "PosX";
+            this.gridColumn_PosX.MinimumWidth = 8;
             this.gridColumn_PosX.Name = "gridColumn_PosX";
             this.gridColumn_PosX.ReadOnly = true;
             this.gridColumn_PosX.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_PosX.Width = 60;
-            //
+            // 
             // gridColumn_PosY
-            //
-            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            dataGridViewCellStyle33.NullValue = null;
-            this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle33;
+            // 
+            dataGridViewCellStyle65.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            dataGridViewCellStyle65.NullValue = null;
+            this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle65;
             this.gridColumn_PosY.HeaderText = "PosY";
+            this.gridColumn_PosY.MinimumWidth = 8;
             this.gridColumn_PosY.Name = "gridColumn_PosY";
             this.gridColumn_PosY.ReadOnly = true;
             this.gridColumn_PosY.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_PosY.Width = 60;
-            //
+            // 
             // gridColumn_PosZ
-            //
-            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle34;
+            // 
+            dataGridViewCellStyle66.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle66;
             this.gridColumn_PosZ.HeaderText = "PosZ";
+            this.gridColumn_PosZ.MinimumWidth = 8;
             this.gridColumn_PosZ.Name = "gridColumn_PosZ";
             this.gridColumn_PosZ.ReadOnly = true;
             this.gridColumn_PosZ.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_PosZ.Width = 60;
-            //
+            // 
             // gridColumn_Orientation
-            //
-            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle35;
+            // 
+            dataGridViewCellStyle67.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle67;
             this.gridColumn_Orientation.HeaderText = "Orientation";
+            this.gridColumn_Orientation.MinimumWidth = 8;
             this.gridColumn_Orientation.Name = "gridColumn_Orientation";
             this.gridColumn_Orientation.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.gridColumn_Orientation.Width = 65;
-            //
+            // 
             // gridColumn_WCTime
-            //
-            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle36;
+            // 
+            dataGridViewCellStyle68.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle68;
             this.gridColumn_WCTime.HeaderText = "Time";
+            this.gridColumn_WCTime.MinimumWidth = 8;
             this.gridColumn_WCTime.Name = "gridColumn_WCTime";
             this.gridColumn_WCTime.ReadOnly = true;
             this.gridColumn_WCTime.Width = 60;
-            //
+            // 
             // gridColumn_WCDelay
-            //
-            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle37;
+            // 
+            dataGridViewCellStyle69.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle69;
             this.gridColumn_WCDelay.HeaderText = "Delay";
+            this.gridColumn_WCDelay.MinimumWidth = 8;
             this.gridColumn_WCDelay.Name = "gridColumn_WCDelay";
             this.gridColumn_WCDelay.Width = 50;
-            //
+            // 
             // gridColumn_HasScript
-            //
-            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle38;
+            // 
+            dataGridViewCellStyle70.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle70;
             this.gridColumn_HasScript.HeaderText = "HasScript";
+            this.gridColumn_HasScript.MinimumWidth = 8;
             this.gridColumn_HasScript.Name = "gridColumn_HasScript";
             this.gridColumn_HasScript.ReadOnly = true;
             this.gridColumn_HasScript.Width = 60;
-            //
+            // 
             // WaypointSource
-            //
+            // 
             this.WaypointSource.HeaderText = "WaypointSource";
+            this.WaypointSource.MinimumWidth = 8;
             this.WaypointSource.Name = "WaypointSource";
             this.WaypointSource.Visible = false;
-            //
+            this.WaypointSource.Width = 150;
+            // 
             // contextMenuStrip_WC
-            //
+            // 
             this.contextMenuStrip_WC.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip_WC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cutToolStripMenuItem_WC,
@@ -565,50 +592,50 @@
             this.toolStripSeparator_WC,
             this.createSQLToolStripMenuItem_WC});
             this.contextMenuStrip_WC.Name = "contextMenuStrip_WC";
-            this.contextMenuStrip_WC.Size = new System.Drawing.Size(281, 160);
-            //
+            this.contextMenuStrip_WC.Size = new System.Drawing.Size(281, 170);
+            // 
             // cutToolStripMenuItem_WC
-            //
+            // 
             this.cutToolStripMenuItem_WC.Name = "cutToolStripMenuItem_WC";
-            this.cutToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
+            this.cutToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
             this.cutToolStripMenuItem_WC.Text = "Cut";
             this.cutToolStripMenuItem_WC.Click += new System.EventHandler(this.cutToolStripMenuItem1_Click);
-            //
+            // 
             // removeNearestPointsToolStripMenuItem_WC
-            //
+            // 
             this.removeNearestPointsToolStripMenuItem_WC.Name = "removeNearestPointsToolStripMenuItem_WC";
-            this.removeNearestPointsToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
+            this.removeNearestPointsToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
             this.removeNearestPointsToolStripMenuItem_WC.Text = "Remove nearest points";
             this.removeNearestPointsToolStripMenuItem_WC.Click += new System.EventHandler(this.removeExcessPointsToolStripMenuItem_Click);
-            //
+            // 
             // removeDuplicatePointsToolStripMenuItem_WC
-            //
+            // 
             this.removeDuplicatePointsToolStripMenuItem_WC.Name = "removeDuplicatePointsToolStripMenuItem_WC";
-            this.removeDuplicatePointsToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
+            this.removeDuplicatePointsToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
             this.removeDuplicatePointsToolStripMenuItem_WC.Text = "Remove duplicate points";
             this.removeDuplicatePointsToolStripMenuItem_WC.Click += new System.EventHandler(this.removeDuplicatePointsToolStripMenuItem_WC_Click);
-            //
+            // 
             // createReturnPathToolStripMenuItem_WC
-            //
+            // 
             this.createReturnPathToolStripMenuItem_WC.Name = "createReturnPathToolStripMenuItem_WC";
-            this.createReturnPathToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
+            this.createReturnPathToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
             this.createReturnPathToolStripMenuItem_WC.Text = "Create return path";
             this.createReturnPathToolStripMenuItem_WC.Click += new System.EventHandler(this.createReturnPathToolStripMenuItem_WC_Click);
-            //
+            // 
             // toolStripSeparator_WC
-            //
+            // 
             this.toolStripSeparator_WC.Name = "toolStripSeparator_WC";
             this.toolStripSeparator_WC.Size = new System.Drawing.Size(277, 6);
-            //
+            // 
             // createSQLToolStripMenuItem_WC
-            //
+            // 
             this.createSQLToolStripMenuItem_WC.Name = "createSQLToolStripMenuItem_WC";
-            this.createSQLToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 30);
+            this.createSQLToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
             this.createSQLToolStripMenuItem_WC.Text = "Create SQL";
             this.createSQLToolStripMenuItem_WC.Click += new System.EventHandler(this.createSQLToolStripMenuItem1_Click);
-            //
+            // 
             // listBox_WC_CreatureGuids
-            //
+            // 
             this.listBox_WC_CreatureGuids.BackColor = System.Drawing.SystemColors.Control;
             this.listBox_WC_CreatureGuids.Enabled = false;
             this.listBox_WC_CreatureGuids.FormattingEnabled = true;
@@ -619,99 +646,100 @@
             this.listBox_WC_CreatureGuids.Size = new System.Drawing.Size(356, 884);
             this.listBox_WC_CreatureGuids.TabIndex = 27;
             this.listBox_WC_CreatureGuids.SelectedIndexChanged += new System.EventHandler(this.listBox_WCCreatureGuids_SelectedIndexChanged);
-            //
+            // 
             // chart_WC
-            //
+            // 
             this.chart_WC.BorderlineWidth = 0;
             this.chart_WC.BorderSkin.BackColor = System.Drawing.Color.Transparent;
             this.chart_WC.BorderSkin.BorderColor = System.Drawing.Color.Transparent;
             this.chart_WC.BorderSkin.BorderWidth = 0;
-            chartArea2.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
-            chartArea2.AxisX.IsReversed = true;
-            chartArea2.AxisX.IsStartedFromZero = false;
-            chartArea2.AxisX.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.MajorGrid.Enabled = false;
-            chartArea2.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.MajorTickMark.Enabled = false;
-            chartArea2.AxisX.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
-            chartArea2.AxisX.ScaleBreakStyle.Enabled = true;
-            chartArea2.AxisX.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
-            chartArea2.AxisX.ScrollBar.LineColor = System.Drawing.Color.Black;
-            chartArea2.AxisX.TitleForeColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX2.MajorGrid.Enabled = false;
-            chartArea2.AxisX2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX2.MajorTickMark.Enabled = false;
-            chartArea2.AxisX2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisX2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea2.AxisY.IsStartedFromZero = false;
-            chartArea2.AxisY.LabelStyle.Enabled = false;
-            chartArea2.AxisY.LabelStyle.IsEndLabelVisible = false;
-            chartArea2.AxisY.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY.MajorGrid.Enabled = false;
-            chartArea2.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY.MajorTickMark.Enabled = false;
-            chartArea2.AxisY.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
-            chartArea2.AxisY.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
-            chartArea2.AxisY.ScrollBar.LineColor = System.Drawing.Color.Black;
-            chartArea2.AxisY.TitleForeColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY2.MajorGrid.Enabled = false;
-            chartArea2.AxisY2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY2.MajorTickMark.Enabled = false;
-            chartArea2.AxisY2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.AxisY2.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea2.BorderColor = System.Drawing.Color.Transparent;
-            chartArea2.CursorX.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea2.CursorX.IsUserEnabled = true;
-            chartArea2.CursorX.IsUserSelectionEnabled = true;
-            chartArea2.CursorX.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            chartArea2.CursorY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea2.CursorY.IsUserEnabled = true;
-            chartArea2.CursorY.IsUserSelectionEnabled = true;
-            chartArea2.CursorY.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            chartArea2.Name = "ChartArea1";
-            this.chart_WC.ChartAreas.Add(chartArea2);
+            chartArea4.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
+            chartArea4.AxisX.IsReversed = true;
+            chartArea4.AxisX.IsStartedFromZero = false;
+            chartArea4.AxisX.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.MajorGrid.Enabled = false;
+            chartArea4.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.MajorTickMark.Enabled = false;
+            chartArea4.AxisX.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
+            chartArea4.AxisX.ScaleBreakStyle.Enabled = true;
+            chartArea4.AxisX.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
+            chartArea4.AxisX.ScrollBar.LineColor = System.Drawing.Color.Black;
+            chartArea4.AxisX.TitleForeColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX2.MajorGrid.Enabled = false;
+            chartArea4.AxisX2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX2.MajorTickMark.Enabled = false;
+            chartArea4.AxisX2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisX2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea4.AxisY.IsStartedFromZero = false;
+            chartArea4.AxisY.LabelStyle.Enabled = false;
+            chartArea4.AxisY.LabelStyle.IsEndLabelVisible = false;
+            chartArea4.AxisY.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY.MajorGrid.Enabled = false;
+            chartArea4.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY.MajorTickMark.Enabled = false;
+            chartArea4.AxisY.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
+            chartArea4.AxisY.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
+            chartArea4.AxisY.ScrollBar.LineColor = System.Drawing.Color.Black;
+            chartArea4.AxisY.TitleForeColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY2.MajorGrid.Enabled = false;
+            chartArea4.AxisY2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY2.MajorTickMark.Enabled = false;
+            chartArea4.AxisY2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.AxisY2.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea4.BorderColor = System.Drawing.Color.Transparent;
+            chartArea4.CursorX.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea4.CursorX.IsUserEnabled = true;
+            chartArea4.CursorX.IsUserSelectionEnabled = true;
+            chartArea4.CursorX.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            chartArea4.CursorY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea4.CursorY.IsUserEnabled = true;
+            chartArea4.CursorY.IsUserSelectionEnabled = true;
+            chartArea4.CursorY.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            chartArea4.Name = "ChartArea1";
+            this.chart_WC.ChartAreas.Add(chartArea4);
             this.chart_WC.Enabled = false;
-            legend2.Enabled = false;
-            legend2.ForeColor = System.Drawing.Color.Transparent;
-            legend2.HeaderSeparatorColor = System.Drawing.Color.Transparent;
-            legend2.ItemColumnSeparatorColor = System.Drawing.Color.Transparent;
-            legend2.Name = "Legend1";
-            legend2.TitleForeColor = System.Drawing.Color.Transparent;
-            legend2.TitleSeparatorColor = System.Drawing.Color.Transparent;
-            this.chart_WC.Legends.Add(legend2);
+            legend4.Enabled = false;
+            legend4.ForeColor = System.Drawing.Color.Transparent;
+            legend4.HeaderSeparatorColor = System.Drawing.Color.Transparent;
+            legend4.ItemColumnSeparatorColor = System.Drawing.Color.Transparent;
+            legend4.Name = "Legend1";
+            legend4.TitleForeColor = System.Drawing.Color.Transparent;
+            legend4.TitleSeparatorColor = System.Drawing.Color.Transparent;
+            this.chart_WC.Legends.Add(legend4);
             this.chart_WC.Location = new System.Drawing.Point(4, 49);
             this.chart_WC.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chart_WC.Name = "chart_WC";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series2.Color = System.Drawing.Color.Red;
-            series2.Legend = "Legend1";
-            series2.Name = "Path";
-            series2.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            this.chart_WC.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Color = System.Drawing.Color.Red;
+            series4.Legend = "Legend1";
+            series4.Name = "Path";
+            series4.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series4.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            this.chart_WC.Series.Add(series4);
             this.chart_WC.Size = new System.Drawing.Size(894, 888);
             this.chart_WC.TabIndex = 26;
             this.chart_WC.Text = "Waypoints";
-            title2.DockedToChartArea = "ChartArea1";
-            title2.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            title2.Name = "Path";
-            title2.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
-            this.chart_WC.Titles.Add(title2);
-            //
+            title4.DockedToChartArea = "ChartArea1";
+            title4.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            title4.Name = "Path";
+            title4.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
+            this.chart_WC.Titles.Add(title4);
+            // 
             // toolStrip_WC
-            //
+            // 
             this.toolStrip_WC.BackColor = System.Drawing.Color.LightGray;
+            this.toolStrip_WC.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip_WC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_WC_Search,
             this.toolStripTextBox_WC_Entry,
@@ -721,13 +749,12 @@
             this.toolStripButton_WC_LoadSniff});
             this.toolStrip_WC.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_WC.Name = "toolStrip_WC";
-            this.toolStrip_WC.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip_WC.Size = new System.Drawing.Size(2034, 32);
+            this.toolStrip_WC.Size = new System.Drawing.Size(2034, 34);
             this.toolStrip_WC.TabIndex = 24;
             this.toolStrip_WC.Text = "toolStrip_WC";
-            //
+            // 
             // toolStripButton_WC_Search
-            //
+            // 
             this.toolStripButton_WC_Search.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton_WC_Search.Enabled = false;
             this.toolStripButton_WC_Search.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WC_Search.Image")));
@@ -737,35 +764,35 @@
             this.toolStripButton_WC_Search.Text = "Search";
             this.toolStripButton_WC_Search.ToolTipText = "Fill listbox with guids of\r\nselected entry or all entries.";
             this.toolStripButton_WC_Search.Click += new System.EventHandler(this.toolStripButton_WCSearch_Click);
-            //
+            // 
             // toolStripTextBox_WC_Entry
-            //
+            // 
             this.toolStripTextBox_WC_Entry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripTextBox_WC_Entry.Enabled = false;
             this.toolStripTextBox_WC_Entry.MaxLength = 40;
             this.toolStripTextBox_WC_Entry.Name = "toolStripTextBox_WC_Entry";
-            this.toolStripTextBox_WC_Entry.Size = new System.Drawing.Size(103, 32);
+            this.toolStripTextBox_WC_Entry.Size = new System.Drawing.Size(103, 34);
             this.toolStripTextBox_WC_Entry.Tag = "";
             this.toolStripTextBox_WC_Entry.ToolTipText = "Input entry of creature or leave\r\nblank to fill listbox will all in sniff.";
             this.toolStripTextBox_WC_Entry.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox_WCSearch_Enter);
-            //
+            // 
             // toolStripLabel_WC_Entry
-            //
+            // 
             this.toolStripLabel_WC_Entry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel_WC_Entry.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.toolStripLabel_WC_Entry.Name = "toolStripLabel_WC_Entry";
             this.toolStripLabel_WC_Entry.Size = new System.Drawing.Size(184, 29);
             this.toolStripLabel_WC_Entry.Text = "Creature EntryOrGuid:";
             this.toolStripLabel_WC_Entry.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
+            // 
             // toolStripSeparator1
-            //
+            // 
             this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 32);
-            //
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 34);
+            // 
             // toolStripButton_WC_Settings
-            //
+            // 
             this.toolStripButton_WC_Settings.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton_WC_Settings.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WC_Settings.Image")));
             this.toolStripButton_WC_Settings.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -774,9 +801,9 @@
             this.toolStripButton_WC_Settings.Text = "Settings";
             this.toolStripButton_WC_Settings.ToolTipText = "Setup chart and output SQL.";
             this.toolStripButton_WC_Settings.Click += new System.EventHandler(this.toolStripButton_WCSettings_Click);
-            //
+            // 
             // toolStripButton_WC_LoadSniff
-            //
+            // 
             this.toolStripButton_WC_LoadSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WC_LoadSniff.Image")));
             this.toolStripButton_WC_LoadSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_WC_LoadSniff.Name = "toolStripButton_WC_LoadSniff";
@@ -784,9 +811,9 @@
             this.toolStripButton_WC_LoadSniff.Text = "Import Sniff";
             this.toolStripButton_WC_LoadSniff.ToolTipText = "Import a parsed wpp sniff file.";
             this.toolStripButton_WC_LoadSniff.Click += new System.EventHandler(this.toolStripButton_WCLoadSniff_Click);
-            //
+            // 
             // tabPage_Output
-            //
+            // 
             this.tabPage_Output.Controls.Add(this.textBox_SQLOutput);
             this.tabPage_Output.Location = new System.Drawing.Point(4, 29);
             this.tabPage_Output.Name = "tabPage_Output";
@@ -795,9 +822,9 @@
             this.tabPage_Output.TabIndex = 1;
             this.tabPage_Output.Text = "SQL Output";
             this.tabPage_Output.UseVisualStyleBackColor = true;
-            //
+            // 
             // textBox_SQLOutput
-            //
+            // 
             this.textBox_SQLOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox_SQLOutput.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.textBox_SQLOutput.Location = new System.Drawing.Point(3, 3);
@@ -807,9 +834,9 @@
             this.textBox_SQLOutput.Size = new System.Drawing.Size(2034, 949);
             this.textBox_SQLOutput.TabIndex = 0;
             this.textBox_SQLOutput.WordWrap = false;
-            //
+            // 
             // tabPage_DatabaseAdvisor
-            //
+            // 
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBoxAreatriggerSplines);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_AreatriggerSplines);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_QuestFlags);
@@ -823,60 +850,60 @@
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
-            //
+            // 
             // textBoxAreatriggerSplines
-            //
+            // 
             this.textBoxAreatriggerSplines.Location = new System.Drawing.Point(8, 142);
             this.textBoxAreatriggerSplines.Name = "textBoxAreatriggerSplines";
             this.textBoxAreatriggerSplines.Size = new System.Drawing.Size(139, 26);
             this.textBoxAreatriggerSplines.TabIndex = 5;
             this.textBoxAreatriggerSplines.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxAreatriggerSplines_KeyDown);
-            //
+            // 
             // label_AreatriggerSplines
-            //
+            // 
             this.label_AreatriggerSplines.AutoSize = true;
             this.label_AreatriggerSplines.Location = new System.Drawing.Point(3, 117);
             this.label_AreatriggerSplines.Name = "label_AreatriggerSplines";
             this.label_AreatriggerSplines.Size = new System.Drawing.Size(144, 20);
             this.label_AreatriggerSplines.TabIndex = 4;
             this.label_AreatriggerSplines.Text = "Areatrigger Splines";
-            //
+            // 
             // textBox_QuestFlags
-            //
+            // 
             this.textBox_QuestFlags.Location = new System.Drawing.Point(8, 85);
             this.textBox_QuestFlags.Name = "textBox_QuestFlags";
             this.textBox_QuestFlags.Size = new System.Drawing.Size(92, 26);
             this.textBox_QuestFlags.TabIndex = 3;
             this.textBox_QuestFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_QuestFlags_KeyDown);
-            //
+            // 
             // label_QuestFlags
-            //
+            // 
             this.label_QuestFlags.AutoSize = true;
             this.label_QuestFlags.Location = new System.Drawing.Point(6, 60);
             this.label_QuestFlags.Name = "label_QuestFlags";
             this.label_QuestFlags.Size = new System.Drawing.Size(95, 20);
             this.label_QuestFlags.TabIndex = 2;
             this.label_QuestFlags.Text = "Quest Flags";
-            //
+            // 
             // textBox_CreatureFlags
-            //
+            // 
             this.textBox_CreatureFlags.Location = new System.Drawing.Point(8, 28);
             this.textBox_CreatureFlags.Name = "textBox_CreatureFlags";
             this.textBox_CreatureFlags.Size = new System.Drawing.Size(112, 26);
             this.textBox_CreatureFlags.TabIndex = 1;
             this.textBox_CreatureFlags.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_CreatureFlags_KeyDown);
-            //
+            // 
             // label_CreatureFlags
-            //
+            // 
             this.label_CreatureFlags.AutoSize = true;
             this.label_CreatureFlags.Location = new System.Drawing.Point(4, 3);
             this.label_CreatureFlags.Name = "label_CreatureFlags";
             this.label_CreatureFlags.Size = new System.Drawing.Size(114, 20);
             this.label_CreatureFlags.TabIndex = 0;
             this.label_CreatureFlags.Text = "Creature Flags";
-            //
+            // 
             // tabPage_DoubleSpawnsRemover
-            //
+            // 
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_DatabaseConsidering);
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.label_GameobjectsRemoved);
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.checkBox_GameobjectsRemover);
@@ -890,9 +917,9 @@
             this.tabPage_DoubleSpawnsRemover.TabIndex = 3;
             this.tabPage_DoubleSpawnsRemover.Text = "Double-Spawns Remover";
             this.tabPage_DoubleSpawnsRemover.UseVisualStyleBackColor = true;
-            //
+            // 
             // checkBox_DatabaseConsidering
-            //
+            // 
             this.checkBox_DatabaseConsidering.AutoSize = true;
             this.checkBox_DatabaseConsidering.Checked = true;
             this.checkBox_DatabaseConsidering.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -902,9 +929,9 @@
             this.checkBox_DatabaseConsidering.TabIndex = 5;
             this.checkBox_DatabaseConsidering.Text = "Considering database";
             this.checkBox_DatabaseConsidering.UseVisualStyleBackColor = true;
-            //
+            // 
             // label_GameobjectsRemoved
-            //
+            // 
             this.label_GameobjectsRemoved.AutoSize = true;
             this.label_GameobjectsRemoved.Location = new System.Drawing.Point(494, 132);
             this.label_GameobjectsRemoved.Name = "label_GameobjectsRemoved";
@@ -912,9 +939,9 @@
             this.label_GameobjectsRemoved.TabIndex = 4;
             this.label_GameobjectsRemoved.Text = "No gameobjects removed";
             this.label_GameobjectsRemoved.Visible = false;
-            //
+            // 
             // checkBox_GameobjectsRemover
-            //
+            // 
             this.checkBox_GameobjectsRemover.AutoSize = true;
             this.checkBox_GameobjectsRemover.Checked = true;
             this.checkBox_GameobjectsRemover.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -925,9 +952,9 @@
             this.checkBox_GameobjectsRemover.Text = "Gameobjects";
             this.checkBox_GameobjectsRemover.UseVisualStyleBackColor = true;
             this.checkBox_GameobjectsRemover.CheckedChanged += new System.EventHandler(this.checkBox_GameobjectsRemover_CheckedChanged);
-            //
+            // 
             // checkBox_CreaturesRemover
-            //
+            // 
             this.checkBox_CreaturesRemover.AutoSize = true;
             this.checkBox_CreaturesRemover.Checked = true;
             this.checkBox_CreaturesRemover.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -938,9 +965,9 @@
             this.checkBox_CreaturesRemover.Text = "Creatures";
             this.checkBox_CreaturesRemover.UseVisualStyleBackColor = true;
             this.checkBox_CreaturesRemover.CheckedChanged += new System.EventHandler(this.checkBox_CreaturesRemover_CheckedChanged);
-            //
+            // 
             // label_CreaturesRemoved
-            //
+            // 
             this.label_CreaturesRemoved.AutoSize = true;
             this.label_CreaturesRemoved.Location = new System.Drawing.Point(494, 112);
             this.label_CreaturesRemoved.Name = "label_CreaturesRemoved";
@@ -948,10 +975,10 @@
             this.label_CreaturesRemoved.TabIndex = 1;
             this.label_CreaturesRemoved.Text = "No creatures removed";
             this.label_CreaturesRemoved.Visible = false;
-            //
+            // 
             // button_ImportFileForRemoving
-            //
-            this.button_ImportFileForRemoving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            this.button_ImportFileForRemoving.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button_ImportFileForRemoving.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.button_ImportFileForRemoving.FlatAppearance.BorderSize = 5;
@@ -963,39 +990,86 @@
             this.button_ImportFileForRemoving.Text = "Import File";
             this.button_ImportFileForRemoving.UseVisualStyleBackColor = true;
             this.button_ImportFileForRemoving.Click += new System.EventHandler(this.button_ImportFile_Click);
-            //
+            // 
+            // coreScriptTemplates
+            // 
+            this.coreScriptTemplates.Controls.Add(this.textBox_CoreScriptTemplates);
+            this.coreScriptTemplates.Controls.Add(this.comboBox_CoreScriptTemplates);
+            this.coreScriptTemplates.Controls.Add(this.listBox_CoreScriptTemplates);
+            this.coreScriptTemplates.Location = new System.Drawing.Point(4, 29);
+            this.coreScriptTemplates.Name = "coreScriptTemplates";
+            this.coreScriptTemplates.Padding = new System.Windows.Forms.Padding(3);
+            this.coreScriptTemplates.Size = new System.Drawing.Size(2040, 955);
+            this.coreScriptTemplates.TabIndex = 5;
+            this.coreScriptTemplates.Text = "Core Script Templates";
+            this.coreScriptTemplates.UseVisualStyleBackColor = true;
+            // 
+            // textBox_CoreScriptTemplates
+            // 
+            this.textBox_CoreScriptTemplates.Enabled = false;
+            this.textBox_CoreScriptTemplates.Location = new System.Drawing.Point(134, 6);
+            this.textBox_CoreScriptTemplates.MaxLength = 6;
+            this.textBox_CoreScriptTemplates.Name = "textBox_CoreScriptTemplates";
+            this.textBox_CoreScriptTemplates.Size = new System.Drawing.Size(70, 26);
+            this.textBox_CoreScriptTemplates.TabIndex = 2;
+            this.textBox_CoreScriptTemplates.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_CoreScriptTemplates_Enter);
+            // 
+            // comboBox_CoreScriptTemplates
+            // 
+            this.comboBox_CoreScriptTemplates.Items.AddRange(new object[] {
+            "Creature",
+            "GameObject",
+            "AreaTrigger",
+            "Spell",
+            "PlayerScript"});
+            this.comboBox_CoreScriptTemplates.Location = new System.Drawing.Point(7, 4);
+            this.comboBox_CoreScriptTemplates.Name = "comboBox_CoreScriptTemplates";
+            this.comboBox_CoreScriptTemplates.Size = new System.Drawing.Size(121, 28);
+            this.comboBox_CoreScriptTemplates.TabIndex = 1;
+            this.comboBox_CoreScriptTemplates.SelectedIndexChanged += new System.EventHandler(this.ComboBox_SelectedIndexChanged);
+            // 
+            // listBox_CoreScriptTemplates
+            // 
+            this.listBox_CoreScriptTemplates.ItemHeight = 20;
+            this.listBox_CoreScriptTemplates.Location = new System.Drawing.Point(8, 44);
+            this.listBox_CoreScriptTemplates.Name = "listBox_CoreScriptTemplates";
+            this.listBox_CoreScriptTemplates.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.listBox_CoreScriptTemplates.Size = new System.Drawing.Size(196, 884);
+            this.listBox_CoreScriptTemplates.TabIndex = 0;
+            this.listBox_CoreScriptTemplates.SelectedIndexChanged += new System.EventHandler(this.ListBox_CoreScriptTemplates_SelectedIndexChanged);
+            // 
             // statusStrip_LoadedFile
-            //
+            // 
             this.statusStrip_LoadedFile.BackColor = System.Drawing.Color.LightGray;
             this.statusStrip_LoadedFile.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip_LoadedFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel_FileStatus,
             this.toolStripStatusLabel_CurrentAction});
-            this.statusStrip_LoadedFile.Location = new System.Drawing.Point(0, 979);
+            this.statusStrip_LoadedFile.Location = new System.Drawing.Point(0, 977);
             this.statusStrip_LoadedFile.Name = "statusStrip_LoadedFile";
             this.statusStrip_LoadedFile.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-            this.statusStrip_LoadedFile.Size = new System.Drawing.Size(2050, 30);
+            this.statusStrip_LoadedFile.Size = new System.Drawing.Size(2050, 32);
             this.statusStrip_LoadedFile.TabIndex = 2;
             this.statusStrip_LoadedFile.Text = "statusStrip";
-            //
+            // 
             // toolStripStatusLabel_FileStatus
-            //
+            // 
             this.toolStripStatusLabel_FileStatus.Name = "toolStripStatusLabel_FileStatus";
             this.toolStripStatusLabel_FileStatus.Size = new System.Drawing.Size(131, 25);
             this.toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-            //
+            // 
             // toolStripStatusLabel_CurrentAction
-            //
+            // 
             this.toolStripStatusLabel_CurrentAction.Name = "toolStripStatusLabel_CurrentAction";
             this.toolStripStatusLabel_CurrentAction.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.toolStripStatusLabel_CurrentAction.Size = new System.Drawing.Size(0, 25);
-            //
+            // 
             // openFileDialog
-            //
+            // 
             this.openFileDialog.FileName = "openFileDialog_WSC";
-            //
+            // 
             // MainForm
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2050, 1009);
@@ -1026,6 +1100,8 @@
             this.tabPage_DatabaseAdvisor.PerformLayout();
             this.tabPage_DoubleSpawnsRemover.ResumeLayout(false);
             this.tabPage_DoubleSpawnsRemover.PerformLayout();
+            this.coreScriptTemplates.ResumeLayout(false);
+            this.coreScriptTemplates.PerformLayout();
             this.statusStrip_LoadedFile.ResumeLayout(false);
             this.statusStrip_LoadedFile.PerformLayout();
             this.ResumeLayout(false);
@@ -1106,6 +1182,10 @@
         private System.Windows.Forms.ToolStripMenuItem removeDuplicatePointsToolStripMenuItem_WC;
         private System.Windows.Forms.ToolStripMenuItem createReturnPathToolStripMenuItem_WC;
         public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_CurrentAction;
+        private System.Windows.Forms.TabPage coreScriptTemplates;
+        public System.Windows.Forms.ListBox listBox_CoreScriptTemplates;
+        public System.Windows.Forms.ComboBox comboBox_CoreScriptTemplates;
+        public System.Windows.Forms.TextBox textBox_CoreScriptTemplates;
     }
 }
 

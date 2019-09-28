@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.Core_Script_Templates;
 using WoWDeveloperAssistant.Database_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
 
@@ -14,6 +15,7 @@ namespace WoWDeveloperAssistant
 
         private CreatureScriptsCreator creatureScriptsCreator;
         private WaypointsCreator waypointsCreator;
+        private CoreScriptTemplates coreScriptTemplate;
         private static Dictionary<uint, string> creatureNamesDict;
 
         public MainForm()
@@ -22,6 +24,7 @@ namespace WoWDeveloperAssistant
 
             creatureScriptsCreator = new CreatureScriptsCreator(this);
             waypointsCreator = new WaypointsCreator(this);
+            coreScriptTemplate = new CoreScriptTemplates(this);
 
             creatureNamesDict = new Dictionary<uint, string>();
 
@@ -301,6 +304,27 @@ namespace WoWDeveloperAssistant
         {
             toolStripStatusLabel_CurrentAction.Text = "Current Status: " + status;
             Update();
+        }
+
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            coreScriptTemplate.FillBoxWithHooks();
+        }
+
+        private void ListBox_CoreScriptTemplates_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBox_CoreScriptTemplates.Enabled = true;
+        }
+
+        private void TextBox_CoreScriptTemplates_Enter(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_CoreScriptTemplates.Text == "" || textBox_CoreScriptTemplates.Text == "0")
+                return;
+
+            coreScriptTemplate.CreateTemplate();
         }
     }
 }
