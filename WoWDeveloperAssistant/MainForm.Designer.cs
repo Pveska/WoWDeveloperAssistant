@@ -366,7 +366,6 @@
             // toolStrip_CSC
             // 
             this.toolStrip_CSC.BackColor = System.Drawing.Color.LightGray;
-            this.toolStrip_CSC.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip_CSC.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_CSC_ImportSniff,
             this.toolStripButton_CSC_Search,

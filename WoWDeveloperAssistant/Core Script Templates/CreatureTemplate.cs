@@ -27,40 +27,50 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             if (defaultName == "")
                 return;
 
-            scriptName = "npc_" + defaultName.Replace(" ", "_").ToLower() + "_" + objectEntry;
+            scriptName = "npc_" + defaultName.Replace(" ", "_").ToLower().Replace("'", "") + "_" + objectEntry;
 
-            scriptBody = "/// " + defaultName + " - " + objectEntry + "\n";
-            scriptBody += "class " + scriptName + " : public CreatureScript" + "\n";
-            scriptBody += "{\n";
-            scriptBody += Utils.AddSpacesCount(4) + "public:\n";
-            scriptBody += Utils.AddSpacesCount(8) + scriptName + "()" + " : CreatureScript(\"" + scriptName + "\")" + " { }" + "\n\n";
-            scriptBody += Utils.AddSpacesCount(8) + "struct " + scriptName + "AI" + " : public " + (IsVehicleScript(listBox) ? "VehicleAI" : "ScriptedAI") + "\n";
-            scriptBody += Utils.AddSpacesCount(8) + "{\n";
-            scriptBody += Utils.AddSpacesCount(12) + "explicit " + scriptName + "AI" + "(Creature* p_Creature) : " + (IsVehicleScript(listBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }" + "\n";
+            scriptBody = "/// " + defaultName + " - " + objectEntry + "\r\n";
+            scriptBody += "class " + scriptName + " : public CreatureScript" + "\r\n";
+            scriptBody += "{" + "\r\n";
+            scriptBody += Utils.AddSpacesCount(4) + "public:" + "\r\n";
+            scriptBody += Utils.AddSpacesCount(8) + scriptName + "()" + " : CreatureScript(\"" + scriptName + "\")" + " { }" + "\r\n\r\n";
+            scriptBody += Utils.AddSpacesCount(8) + "struct " + scriptName + "AI" + " : public " + (IsVehicleScript(listBox) ? "VehicleAI" : "ScriptedAI") + "\r\n";
+            scriptBody += Utils.AddSpacesCount(8) + "{" + "\r\n";
+            scriptBody += Utils.AddSpacesCount(12) + "explicit " + scriptName + "AI" + "(Creature* p_Creature) : " + (IsVehicleScript(listBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }" + "\r\n";
 
             if (HasSummonedByHook(listBox))
             {
-                scriptBody += "\n" + Utils.AddSpacesCount(12) + "ObjectGuid m_SummonerGuid;";
+                scriptBody += "\r\n" + Utils.AddSpacesCount(12) + "ObjectGuid m_SummonerGuid;";
             }
 
             if (HasEvents(listBox))
             {
-                scriptBody += "\n" + Utils.AddSpacesCount(12) + "EventMap m_Events;";
+                scriptBody += "\r\n" + Utils.AddSpacesCount(12) + "EventMap m_Events;";
             }
+
+            bool firstHookCheck = false;
 
             foreach (var item in listBox.SelectedItems)
             {
                 if (Hooks.creatureHookDictionary.ContainsKey(item.ToString()))
                 {
-                    scriptBody += "\n\n" + Hooks.creatureHookDictionary[item.ToString()];
+                    if (firstHookCheck)
+                    {
+                        scriptBody += "\r\n\r\n" + Hooks.creatureHookDictionary[item.ToString()];
+                    }
+                    else
+                    {
+                        scriptBody += "\r\n" + Hooks.creatureHookDictionary[item.ToString()];
+                        firstHookCheck = true;
+                    }
                 }
             }
 
-            scriptBody += "\n" + Utils.AddSpacesCount(8) + "};\n\n";
-            scriptBody += Utils.AddSpacesCount(8) + "CreatureAI* GetAI(Creature* p_Creature) const override" + "\n";
-            scriptBody += Utils.AddSpacesCount(8) + "{\n";
-            scriptBody += Utils.AddSpacesCount(12) + "return new " + scriptName + "AI(p_Creature);" + "\n";
-            scriptBody += Utils.AddSpacesCount(8) + "}\n";
+            scriptBody += "\r\n" + Utils.AddSpacesCount(8) + "};" + "\r\n\r\n";
+            scriptBody += Utils.AddSpacesCount(8) + "CreatureAI* GetAI(Creature* p_Creature) const override" + "\r\n";
+            scriptBody += Utils.AddSpacesCount(8) + "{" + "\r\n";
+            scriptBody += Utils.AddSpacesCount(12) + "return new " + scriptName + "AI(p_Creature);" + "\r\n";
+            scriptBody += Utils.AddSpacesCount(8) + "}" + "\r\n";
             scriptBody += "};";
 
             Clipboard.SetText(scriptBody);
