@@ -38,14 +38,23 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             scriptBody += Utils.AddSpacesCount(8) + "{" + "\r\n";
             scriptBody += Utils.AddSpacesCount(12) + "explicit " + scriptName + "AI" + "(Creature* p_Creature) : " + (IsVehicleScript(listBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }" + "\r\n";
 
+            uint variablesCount = 0;
+
             if (HasSummonedByHook(listBox))
             {
                 scriptBody += "\r\n" + Utils.AddSpacesCount(12) + "ObjectGuid m_SummonerGuid;";
+                variablesCount++;
             }
 
             if (HasEvents(listBox))
             {
                 scriptBody += "\r\n" + Utils.AddSpacesCount(12) + "EventMap m_Events;";
+                variablesCount++;
+            }
+
+            if (variablesCount != 0)
+            {
+                scriptBody += "\r\n";
             }
 
             bool firstHookCheck = false;
