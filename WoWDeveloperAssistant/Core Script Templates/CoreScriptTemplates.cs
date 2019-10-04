@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant.Core_Script_Templates
 {
@@ -23,15 +24,15 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
         public void FillBoxWithHooks()
         {
-            mainForm.listBox_CoreScriptTemplates.Items.Clear();
+            mainForm.listBox_CoreScriptTemplates_Hooks.Items.Clear();
 
-            switch (GetScriptType(mainForm.comboBox_CoreScriptTemplates.SelectedIndex))
+            switch (GetScriptType(mainForm.comboBox_CoreScriptTemplates_ScriptType.SelectedIndex))
             {
                 case ScriptTypes.Creature:
                 {
-                    foreach (var key in Hooks.creatureHookDictionary.Keys)
+                    foreach (var key in CreatureScriptTemplate.hooksDictionary.Keys)
                     {
-                        mainForm.listBox_CoreScriptTemplates.Items.Add(key);
+                        mainForm.listBox_CoreScriptTemplates_Hooks.Items.Add(key);
                     }
 
                     break;
@@ -39,15 +40,48 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             }
         }
 
-        public void CreateTemplate()
+        public void FillTreeWithHookBodies()
         {
-            uint objectEntry = Convert.ToUInt32(mainForm.textBox_CoreScriptTemplates.Text);
+            int index = 0;
+            TreeView treeView = mainForm.treeView_CoreScriptTemplates_HookBodies;
+            treeView.Nodes.Clear();
 
-            switch (GetScriptType(mainForm.comboBox_CoreScriptTemplates.SelectedIndex))
+            switch (GetScriptType(mainForm.comboBox_CoreScriptTemplates_ScriptType.SelectedIndex))
             {
                 case ScriptTypes.Creature:
                 {
-                    CreatureTemplate.CreateTemplate(objectEntry, mainForm.listBox_CoreScriptTemplates);
+                    foreach (var hook in mainForm.listBox_CoreScriptTemplates_Hooks.SelectedItems)
+                    {
+                        string hookName = hook.ToString();
+
+                        if (!CreatureScriptTemplate.hookBodiesDictionary.ContainsKey(hookName))
+                            continue;
+
+                        treeView.Nodes.Add(new TreeNode(hookName));
+
+                        foreach (var item in CreatureScriptTemplate.hookBodiesDictionary[hookName])
+                        {
+                            treeView.Nodes[index].Nodes.Add(item.Key);
+                        }
+
+                        index++;
+                    }
+
+                    treeView.ExpandAll();
+                    break;
+                }
+            }
+        }
+
+        public void CreateTemplate()
+        {
+            uint objectEntry = Convert.ToUInt32(mainForm.textBox_CoreScriptTemplates_Entry.Text);
+
+            switch (GetScriptType(mainForm.comboBox_CoreScriptTemplates_ScriptType.SelectedIndex))
+            {
+                case ScriptTypes.Creature:
+                {
+                    CreatureScriptTemplate.CreateTemplate(objectEntry, mainForm.listBox_CoreScriptTemplates_Hooks, mainForm.treeView_CoreScriptTemplates_HookBodies);
                     break;
                 }
             }

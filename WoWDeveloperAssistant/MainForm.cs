@@ -313,7 +313,8 @@ namespace WoWDeveloperAssistant
 
         private void ListBox_CoreScriptTemplates_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox_CoreScriptTemplates.Enabled = true;
+            textBox_CoreScriptTemplates_Entry.Enabled = true;
+            coreScriptTemplate.FillTreeWithHookBodies();
         }
 
         private void TextBox_CoreScriptTemplates_Enter(object sender, KeyEventArgs e)
@@ -321,7 +322,7 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_CoreScriptTemplates.Text == "" || textBox_CoreScriptTemplates.Text == "0")
+            if (textBox_CoreScriptTemplates_Entry.Text == "" || textBox_CoreScriptTemplates_Entry.Text == "0")
                 return;
 
             coreScriptTemplate.CreateTemplate();

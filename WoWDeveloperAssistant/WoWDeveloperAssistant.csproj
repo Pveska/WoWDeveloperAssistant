@@ -109,8 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core Script Templates\CoreScriptTemplates.cs" />
-    <Compile Include="Core Script Templates\CreatureTemplate.cs" />
-    <Compile Include="Core Script Templates\Hooks.cs" />
+    <Compile Include="Core Script Templates\CreatureScriptTemplate.cs" />
     <Compile Include="Misc\Aura.cs" />
     <Compile Include="Misc\Creature.cs" />
     <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />

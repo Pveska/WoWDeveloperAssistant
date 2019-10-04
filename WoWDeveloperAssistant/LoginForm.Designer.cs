@@ -63,6 +63,7 @@
             this.textBox_Host.Name = "textBox_Host";
             this.textBox_Host.Size = new System.Drawing.Size(190, 26);
             this.textBox_Host.TabIndex = 1;
+            this.textBox_Host.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label_UserName
             // 
@@ -83,6 +84,7 @@
             this.textBox_UserName.Name = "textBox_UserName";
             this.textBox_UserName.Size = new System.Drawing.Size(190, 26);
             this.textBox_UserName.TabIndex = 3;
+            this.textBox_UserName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label_Password
             // 
@@ -103,6 +105,7 @@
             this.textBox_Password.Name = "textBox_Password";
             this.textBox_Password.Size = new System.Drawing.Size(190, 26);
             this.textBox_Password.TabIndex = 5;
+            this.textBox_Password.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label_DB
             // 
@@ -123,6 +126,7 @@
             this.textBox_DB.Name = "textBox_DB";
             this.textBox_DB.Size = new System.Drawing.Size(190, 26);
             this.textBox_DB.TabIndex = 7;
+            this.textBox_DB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label_Port
             // 
@@ -143,6 +147,7 @@
             this.textBox_Port.Name = "textBox_Port";
             this.textBox_Port.Size = new System.Drawing.Size(190, 26);
             this.textBox_Port.TabIndex = 9;
+            this.textBox_Port.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // checkBox_SaveValues
             // 
