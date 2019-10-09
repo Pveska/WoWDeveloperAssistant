@@ -151,6 +151,8 @@ namespace WoWDeveloperAssistant
                         return BuildVersions.BUILD_8_1_5;
                     else if (line.Contains("V8_2_0"))
                         return BuildVersions.BUILD_8_2_0;
+                    else if (line.Contains("V8_2_5"))
+                        return BuildVersions.BUILD_8_2_5;
                     else
                         return BuildVersions.BUILD_UNKNOWN;
                 }
