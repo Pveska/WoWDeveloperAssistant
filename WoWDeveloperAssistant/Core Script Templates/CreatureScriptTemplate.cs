@@ -129,7 +129,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             { "UpdateAI",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = ObjectAccessor::GetPlayer(*me, m_SummonerGuid);" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player) || !l_Player->IsInWorld() || !l_Player->HasQuest(eQuests::QuestName))" + "\r\n" + Utils.AddSpacesCount(16) + "{" +  "\r\n" + Utils.AddSpacesCount(20) + "me->DespawnOrUnsummon();" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + Utils.AddSpacesCount(16) + "}" },
+                    { "PlayerCheck",   "Player* l_Player = ObjectAccessor::GetPlayer(*me, m_SummonerGuid);" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player || !l_Player->IsInWorld() || !l_Player->HasQuest(eQuests::QuestName))" + "\r\n" + Utils.AddSpacesCount(16) + "{" +  "\r\n" + Utils.AddSpacesCount(20) + "me->DespawnOrUnsummon();" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
                     { "CombatChecks",  "if (!UpdateVictim())" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "m_Events.Update(p_Diff);" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "if (me->HasUnitState(UNIT_STATE_CASTING))" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
                     { "EventsSwitch",  "switch (m_Events.ExecuteEvent())" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eEvents::EventName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "m_Events.ScheduleEvent(eEvents::Eventname, 10000);" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
                     { "DoMeleeAttack", "DoMeleeAttackIfReady();" }
@@ -221,7 +221,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
             if (IsHookBodiesContainItem("SetSummonerGuid", hookBodiesTreeView))
             {
-                if (variablesCount != 0)
+                if (variablesCount == 0)
                 {
                     body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "ObjectGuid m_SummonerGuid;";
                 }
@@ -235,7 +235,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
             if (IsHookBodiesContainItem("EventsSwitch", hookBodiesTreeView))
             {
-                if (variablesCount != 0)
+                if (variablesCount == 0)
                 {
                     body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "EventMap m_Events;";
                 }
