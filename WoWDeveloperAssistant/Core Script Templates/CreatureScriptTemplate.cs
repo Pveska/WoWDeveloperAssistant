@@ -17,6 +17,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             { "MoveInLineOfSight", "void MoveInLineOfSight(Unit* p_Who) override"                                                            },
             { "DoAction",          "void DoAction(int32 const p_Action) override"                                                            },
             { "SetData",           "void SetData(uint64 /*p_Type*/, uint32 p_Value) override"                                                },
+            { "OnSpellClick",      "void OnSpellClick(Unit* p_Clicker) override"                                                             },
             { "SpellHit",          "void SpellHit(Unit* p_Caster, SpellInfo const* p_Spell) override"                                        },
             { "OnSpellCasted",     "void OnSpellCasted(SpellInfo const* p_SpellInfo) override"                                               },
             { "PassengerBoarded",  "void PassengerBoarded(Unit* p_Passenger, int8 /*p_SeatID*/, bool p_Apply) override"                      },
@@ -79,6 +80,13 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                 new Dictionary<string, string>
                 {
                     { "SetDataIdSwitch", "switch (p_Value)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eDatas::DataName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                }
+            },
+
+            { "OnSpellClick",
+                new Dictionary<string, string>
+                {
+                    { "PlayerCheck",   "Player* l_Player = p_Clicker->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
                 }
             },
 
