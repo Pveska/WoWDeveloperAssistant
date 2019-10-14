@@ -90,9 +90,14 @@ namespace WoWDeveloperAssistant.Database_Advisor
         public static void GetQuestFlags(string questEntry)
         {
             DataSet questFlagsDs = new DataSet();
-            string questFlagsSqlQuery = "SELECT `Flags`, `Flags2`, `SpecialFlags` FROM `quest_template` WHERE `Id` = " + questEntry + ";";
+            string questFlagsSqlQuery = "SELECT `Flags`, `FlagsEx` FROM `quest_template` WHERE `Id` = " + questEntry + ";";
             questFlagsDs = (DataSet)SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
             if (questFlagsDs == null)
+                return;
+
+            questFlagsSqlQuery = "SELECT `SpecialFlags` FROM `quest_template_addon` WHERE `Id` = " + questEntry + ";";
+            DataSet AddonQuestFlagsDs = (DataSet)SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
+            if (AddonQuestFlagsDs == null)
                 return;
 
             if (questFlagsDs.Tables["table"].Rows.Count == 0)
@@ -101,9 +106,12 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 return;
             }
 
+            long specialFlags = 0;
+            if (questFlagsDs.Tables["table"].Rows.Count == 0)
+                specialFlags = Convert.ToInt64(AddonQuestFlagsDs.Tables["table"].Rows[0][0].ToString());
+
             long questFlags = Convert.ToInt64(questFlagsDs.Tables["table"].Rows[0][0].ToString());
             long questFlags2 = Convert.ToInt64(questFlagsDs.Tables["table"].Rows[0][1].ToString());
-            long specialFlags = Convert.ToInt64(questFlagsDs.Tables["table"].Rows[0][2].ToString());
 
             List<long> questFlagsList = new List<long>();
             List<long> questFlags2List = new List<long>();
