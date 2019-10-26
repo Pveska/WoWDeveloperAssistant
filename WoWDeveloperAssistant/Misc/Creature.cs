@@ -157,7 +157,7 @@ namespace WoWDeveloperAssistant
 
         public bool HasWaypoints()
         {
-            return waypoints.Count > 1;
+            return waypoints.Count >= 1;
         }
 
         public void AddScriptsForWaypoints(List<WaypointScript> scriptsList, MonsterMovePacket firstMovePacket, MonsterMovePacket lastMovePacket)
