@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using WoWDeveloperAssistant.Core_Script_Templates;
 using WoWDeveloperAssistant.Database_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
+using WoWDeveloperAssistant.Achievements;
 
 namespace WoWDeveloperAssistant
 {
@@ -326,6 +327,77 @@ namespace WoWDeveloperAssistant
                 return;
 
             coreScriptTemplate.CreateTemplate();
+        }
+
+        private void TextBoxAchievements_Id_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBoxAchievements_Id.Text == "" || textBoxAchievements_Id.Text == "0")
+                return;
+
+            treeView_Achievements_ChildNodes.Nodes.Clear();
+            treeView_Achievements_Criterias.Nodes.Clear();
+            treeView_Achievements_ModifierTrees.Nodes.Clear();
+            treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
+            AchievementsHandler.ShowAchievementRequirements(this);
+        }
+
+        private void TreeView_Achievements_ChildNodes_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            uint expandedNodesCount = 0;
+
+            foreach (TreeNode node in treeView_Achievements_ChildNodes.Nodes)
+            {
+                if (node.IsExpanded)
+                {
+                    expandedNodesCount++;
+                }
+            }
+
+            treeView_Achievements_Criterias.Nodes.Clear();
+            AchievementsHandler.FillTreeWithCriterias(Convert.ToUInt32(e.Node.Text), treeView_Achievements_Criterias, expandedNodesCount > 1);
+        }
+
+        private void TreeView_Achievements_ChildNodes_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            treeView_Achievements_Criterias.Nodes.Clear();
+            treeView_Achievements_ModifierTrees.Nodes.Clear();
+            treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
+        }
+
+        private void TreeView_Achievements_Criterias_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            uint expandedNodesCount = 0;
+
+            foreach (TreeNode node in treeView_Achievements_Criterias.Nodes)
+            {
+                if (node.IsExpanded)
+                {
+                    expandedNodesCount++;
+                }
+            }
+
+            treeView_Achievements_ModifierTrees.Nodes.Clear();
+            AchievementsHandler.FillTreeWithModifiers(Convert.ToUInt32(e.Node.Text), treeView_Achievements_ModifierTrees, expandedNodesCount > 1);
+        }
+
+        private void TreeView_Achievements_Criterias_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            treeView_Achievements_ModifierTrees.Nodes.Clear();
+            treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
+        }
+
+        private void TreeView_Achievements_ModifierTrees_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
+            AchievementsHandler.FillTreeWithModifiersChildNodes(Convert.ToUInt32(e.Node.Text), treeView_Achievements_ModifierTreeChildNodes);
+        }
+
+        private void TreeView_Achievements_ModifierTrees_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
         }
     }
 }

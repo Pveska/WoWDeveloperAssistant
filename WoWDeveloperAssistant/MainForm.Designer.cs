@@ -29,30 +29,30 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle77 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle78 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle87 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle88 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle105 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle106 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle107 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle108 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle109 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle110 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle119 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle120 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle111 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle112 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle113 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle114 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle115 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle116 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle117 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle118 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title7 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle61 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle62 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle71 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle72 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle89 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle90 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle91 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle92 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle93 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle94 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle103 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle104 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle95 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle96 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle97 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle98 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle99 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle100 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle101 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle102 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title6 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage_CreatureScriptsCreator = new System.Windows.Forms.TabPage();
@@ -128,10 +128,28 @@
             this.label_CoreScriptTemplates_Entry = new System.Windows.Forms.Label();
             this.textBox_CoreScriptTemplates_Entry = new System.Windows.Forms.TextBox();
             this.listBox_CoreScriptTemplates_Hooks = new System.Windows.Forms.ListBox();
+            this.tabPage_Achievements = new System.Windows.Forms.TabPage();
+            this.label_Achievements_ModifierTrees = new System.Windows.Forms.Label();
+            this.treeView_Achievements_ModifierTrees = new System.Windows.Forms.TreeView();
+            this.label_Achievements_Criterias = new System.Windows.Forms.Label();
+            this.treeView_Achievements_Criterias = new System.Windows.Forms.TreeView();
+            this.label_Achievements_CriteriaTree_Amount = new System.Windows.Forms.Label();
+            this.label_Achievements_CreteriaThreeChilds = new System.Windows.Forms.Label();
+            this.label_Achievement_CriteriaTree_Operator = new System.Windows.Forms.Label();
+            this.label_Achievements_CriteriaTreeName = new System.Windows.Forms.Label();
+            this.label_Achievements_CriteriaTreeId = new System.Windows.Forms.Label();
+            this.label_Achievements_Flags = new System.Windows.Forms.Label();
+            this.label_Achievements_Faction = new System.Windows.Forms.Label();
+            this.treeView_Achievements_ChildNodes = new System.Windows.Forms.TreeView();
+            this.label_Achievement_Name = new System.Windows.Forms.Label();
+            this.textBoxAchievements_Id = new System.Windows.Forms.TextBox();
+            this.label_Achievements_Id = new System.Windows.Forms.Label();
             this.statusStrip_LoadedFile = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.treeView_Achievements_ModifierTreeChildNodes = new System.Windows.Forms.TreeView();
+            this.label_Achievements_ModifierTreeChildNodes = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
@@ -146,6 +164,7 @@
             this.tabPage_DatabaseAdvisor.SuspendLayout();
             this.tabPage_DoubleSpawnsRemover.SuspendLayout();
             this.coreScriptTemplates.SuspendLayout();
+            this.tabPage_Achievements.SuspendLayout();
             this.statusStrip_LoadedFile.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -157,6 +176,7 @@
             this.tabControl.Controls.Add(this.tabPage_DatabaseAdvisor);
             this.tabControl.Controls.Add(this.tabPage_DoubleSpawnsRemover);
             this.tabControl.Controls.Add(this.coreScriptTemplates);
+            this.tabControl.Controls.Add(this.tabPage_Achievements);
             this.tabControl.Location = new System.Drawing.Point(3, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -224,8 +244,8 @@
             // SpellId
             // 
             this.SpellId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle77.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SpellId.DefaultCellStyle = dataGridViewCellStyle77;
+            dataGridViewCellStyle61.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SpellId.DefaultCellStyle = dataGridViewCellStyle61;
             this.SpellId.HeaderText = "SpellId";
             this.SpellId.MaxInputLength = 10;
             this.SpellId.MinimumWidth = 8;
@@ -236,8 +256,8 @@
             // SpellName
             // 
             this.SpellName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle78.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SpellName.DefaultCellStyle = dataGridViewCellStyle78;
+            dataGridViewCellStyle62.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SpellName.DefaultCellStyle = dataGridViewCellStyle62;
             this.SpellName.HeaderText = "SpellName";
             this.SpellName.MaxInputLength = 50;
             this.SpellName.MinimumWidth = 8;
@@ -248,8 +268,8 @@
             // CastTime
             // 
             this.CastTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle87.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CastTime.DefaultCellStyle = dataGridViewCellStyle87;
+            dataGridViewCellStyle71.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastTime.DefaultCellStyle = dataGridViewCellStyle71;
             this.CastTime.HeaderText = "CastTime";
             this.CastTime.MaxInputLength = 10;
             this.CastTime.MinimumWidth = 8;
@@ -260,8 +280,8 @@
             // MinCastStartTime
             // 
             this.MinCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle88.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle88;
+            dataGridViewCellStyle72.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle72;
             this.MinCastStartTime.HeaderText = "MinCastStartTime";
             this.MinCastStartTime.MaxInputLength = 10;
             this.MinCastStartTime.MinimumWidth = 8;
@@ -272,8 +292,8 @@
             // MaxCastStartTime
             // 
             this.MaxCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle105.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle105;
+            dataGridViewCellStyle89.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle89;
             this.MaxCastStartTime.HeaderText = "MaxCastStartTime";
             this.MaxCastStartTime.MaxInputLength = 10;
             this.MaxCastStartTime.MinimumWidth = 8;
@@ -284,8 +304,8 @@
             // MinCastRepeatTime
             // 
             this.MinCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle106.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle106;
+            dataGridViewCellStyle90.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle90;
             this.MinCastRepeatTime.HeaderText = "MinCastRepeatTime";
             this.MinCastRepeatTime.MaxInputLength = 10;
             this.MinCastRepeatTime.MinimumWidth = 8;
@@ -296,8 +316,8 @@
             // MaxCastRepeatTime
             // 
             this.MaxCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle107.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle107;
+            dataGridViewCellStyle91.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle91;
             this.MaxCastRepeatTime.HeaderText = "MaxCastRepeatTime";
             this.MaxCastRepeatTime.MaxInputLength = 10;
             this.MaxCastRepeatTime.MinimumWidth = 8;
@@ -308,8 +328,8 @@
             // CastsCount
             // 
             this.CastsCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle108.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle108;
+            dataGridViewCellStyle92.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle92;
             this.CastsCount.HeaderText = "CastsCount";
             this.CastsCount.MaxInputLength = 4;
             this.CastsCount.MinimumWidth = 8;
@@ -444,18 +464,18 @@
             this.grid_WC_Waypoints.AllowUserToDeleteRows = false;
             this.grid_WC_Waypoints.AllowUserToResizeColumns = false;
             this.grid_WC_Waypoints.AllowUserToResizeRows = false;
-            dataGridViewCellStyle109.NullValue = null;
-            this.grid_WC_Waypoints.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle109;
+            dataGridViewCellStyle93.NullValue = null;
+            this.grid_WC_Waypoints.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle93;
             this.grid_WC_Waypoints.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle110.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle110.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle110.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle110.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle110.NullValue = null;
-            dataGridViewCellStyle110.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle110.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle110.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.grid_WC_Waypoints.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle110;
+            dataGridViewCellStyle94.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle94.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle94.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle94.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle94.NullValue = null;
+            dataGridViewCellStyle94.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle94.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle94.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.grid_WC_Waypoints.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle94;
             this.grid_WC_Waypoints.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid_WC_Waypoints.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.gridColumn_Id,
@@ -468,15 +488,15 @@
             this.gridColumn_HasScript,
             this.WaypointSource});
             this.grid_WC_Waypoints.ContextMenuStrip = this.contextMenuStrip_WC;
-            dataGridViewCellStyle119.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle119.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle119.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle119.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle119.NullValue = null;
-            dataGridViewCellStyle119.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle119.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle119.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.grid_WC_Waypoints.DefaultCellStyle = dataGridViewCellStyle119;
+            dataGridViewCellStyle103.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle103.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle103.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle103.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle103.NullValue = null;
+            dataGridViewCellStyle103.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle103.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle103.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.grid_WC_Waypoints.DefaultCellStyle = dataGridViewCellStyle103;
             this.grid_WC_Waypoints.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.grid_WC_Waypoints.Enabled = false;
             this.grid_WC_Waypoints.Location = new System.Drawing.Point(1274, 49);
@@ -484,8 +504,8 @@
             this.grid_WC_Waypoints.Name = "grid_WC_Waypoints";
             this.grid_WC_Waypoints.RowHeadersWidth = 62;
             this.grid_WC_Waypoints.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle120.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grid_WC_Waypoints.RowsDefaultCellStyle = dataGridViewCellStyle120;
+            dataGridViewCellStyle104.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grid_WC_Waypoints.RowsDefaultCellStyle = dataGridViewCellStyle104;
             this.grid_WC_Waypoints.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grid_WC_Waypoints.Size = new System.Drawing.Size(758, 886);
             this.grid_WC_Waypoints.TabIndex = 28;
@@ -493,8 +513,8 @@
             // 
             // gridColumn_Id
             // 
-            dataGridViewCellStyle111.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle111;
+            dataGridViewCellStyle95.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle95;
             this.gridColumn_Id.HeaderText = "Id";
             this.gridColumn_Id.MinimumWidth = 8;
             this.gridColumn_Id.Name = "gridColumn_Id";
@@ -504,9 +524,9 @@
             // 
             // gridColumn_PosX
             // 
-            dataGridViewCellStyle112.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            dataGridViewCellStyle112.NullValue = null;
-            this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle112;
+            dataGridViewCellStyle96.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            dataGridViewCellStyle96.NullValue = null;
+            this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle96;
             this.gridColumn_PosX.HeaderText = "PosX";
             this.gridColumn_PosX.MinimumWidth = 8;
             this.gridColumn_PosX.Name = "gridColumn_PosX";
@@ -516,9 +536,9 @@
             // 
             // gridColumn_PosY
             // 
-            dataGridViewCellStyle113.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            dataGridViewCellStyle113.NullValue = null;
-            this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle113;
+            dataGridViewCellStyle97.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            dataGridViewCellStyle97.NullValue = null;
+            this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle97;
             this.gridColumn_PosY.HeaderText = "PosY";
             this.gridColumn_PosY.MinimumWidth = 8;
             this.gridColumn_PosY.Name = "gridColumn_PosY";
@@ -528,8 +548,8 @@
             // 
             // gridColumn_PosZ
             // 
-            dataGridViewCellStyle114.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle114;
+            dataGridViewCellStyle98.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle98;
             this.gridColumn_PosZ.HeaderText = "PosZ";
             this.gridColumn_PosZ.MinimumWidth = 8;
             this.gridColumn_PosZ.Name = "gridColumn_PosZ";
@@ -539,8 +559,8 @@
             // 
             // gridColumn_Orientation
             // 
-            dataGridViewCellStyle115.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle115;
+            dataGridViewCellStyle99.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle99;
             this.gridColumn_Orientation.HeaderText = "Orientation";
             this.gridColumn_Orientation.MinimumWidth = 8;
             this.gridColumn_Orientation.Name = "gridColumn_Orientation";
@@ -549,8 +569,8 @@
             // 
             // gridColumn_WCTime
             // 
-            dataGridViewCellStyle116.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle116;
+            dataGridViewCellStyle100.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle100;
             this.gridColumn_WCTime.HeaderText = "Time";
             this.gridColumn_WCTime.MinimumWidth = 8;
             this.gridColumn_WCTime.Name = "gridColumn_WCTime";
@@ -559,8 +579,8 @@
             // 
             // gridColumn_WCDelay
             // 
-            dataGridViewCellStyle117.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle117;
+            dataGridViewCellStyle101.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle101;
             this.gridColumn_WCDelay.HeaderText = "Delay";
             this.gridColumn_WCDelay.MinimumWidth = 8;
             this.gridColumn_WCDelay.Name = "gridColumn_WCDelay";
@@ -568,8 +588,8 @@
             // 
             // gridColumn_HasScript
             // 
-            dataGridViewCellStyle118.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle118;
+            dataGridViewCellStyle102.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle102;
             this.gridColumn_HasScript.HeaderText = "HasScript";
             this.gridColumn_HasScript.MinimumWidth = 8;
             this.gridColumn_HasScript.Name = "gridColumn_HasScript";
@@ -656,88 +676,88 @@
             this.chart_WC.BorderSkin.BackColor = System.Drawing.Color.Transparent;
             this.chart_WC.BorderSkin.BorderColor = System.Drawing.Color.Transparent;
             this.chart_WC.BorderSkin.BorderWidth = 0;
-            chartArea7.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
-            chartArea7.AxisX.IsReversed = true;
-            chartArea7.AxisX.IsStartedFromZero = false;
-            chartArea7.AxisX.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.MajorGrid.Enabled = false;
-            chartArea7.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.MajorTickMark.Enabled = false;
-            chartArea7.AxisX.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
-            chartArea7.AxisX.ScaleBreakStyle.Enabled = true;
-            chartArea7.AxisX.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
-            chartArea7.AxisX.ScrollBar.LineColor = System.Drawing.Color.Black;
-            chartArea7.AxisX.TitleForeColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX2.MajorGrid.Enabled = false;
-            chartArea7.AxisX2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX2.MajorTickMark.Enabled = false;
-            chartArea7.AxisX2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisX2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea7.AxisY.IsStartedFromZero = false;
-            chartArea7.AxisY.LabelStyle.Enabled = false;
-            chartArea7.AxisY.LabelStyle.IsEndLabelVisible = false;
-            chartArea7.AxisY.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY.MajorGrid.Enabled = false;
-            chartArea7.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY.MajorTickMark.Enabled = false;
-            chartArea7.AxisY.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
-            chartArea7.AxisY.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
-            chartArea7.AxisY.ScrollBar.LineColor = System.Drawing.Color.Black;
-            chartArea7.AxisY.TitleForeColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY2.MajorGrid.Enabled = false;
-            chartArea7.AxisY2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY2.MajorTickMark.Enabled = false;
-            chartArea7.AxisY2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.AxisY2.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
-            chartArea7.BorderColor = System.Drawing.Color.Transparent;
-            chartArea7.CursorX.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea7.CursorX.IsUserEnabled = true;
-            chartArea7.CursorX.IsUserSelectionEnabled = true;
-            chartArea7.CursorX.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            chartArea7.CursorY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea7.CursorY.IsUserEnabled = true;
-            chartArea7.CursorY.IsUserSelectionEnabled = true;
-            chartArea7.CursorY.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            chartArea7.Name = "ChartArea1";
-            this.chart_WC.ChartAreas.Add(chartArea7);
+            chartArea6.AlignmentOrientation = ((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations)((System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Vertical | System.Windows.Forms.DataVisualization.Charting.AreaAlignmentOrientations.Horizontal)));
+            chartArea6.AxisX.IsReversed = true;
+            chartArea6.AxisX.IsStartedFromZero = false;
+            chartArea6.AxisX.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.MajorGrid.Enabled = false;
+            chartArea6.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.MajorTickMark.Enabled = false;
+            chartArea6.AxisX.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
+            chartArea6.AxisX.ScaleBreakStyle.Enabled = true;
+            chartArea6.AxisX.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
+            chartArea6.AxisX.ScrollBar.LineColor = System.Drawing.Color.Black;
+            chartArea6.AxisX.TitleForeColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX2.MajorGrid.Enabled = false;
+            chartArea6.AxisX2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX2.MajorTickMark.Enabled = false;
+            chartArea6.AxisX2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisX2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea6.AxisY.IsStartedFromZero = false;
+            chartArea6.AxisY.LabelStyle.Enabled = false;
+            chartArea6.AxisY.LabelStyle.IsEndLabelVisible = false;
+            chartArea6.AxisY.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY.MajorGrid.Enabled = false;
+            chartArea6.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY.MajorTickMark.Enabled = false;
+            chartArea6.AxisY.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY.MinorTickMark.TickMarkStyle = System.Windows.Forms.DataVisualization.Charting.TickMarkStyle.None;
+            chartArea6.AxisY.ScaleBreakStyle.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY.ScrollBar.ButtonColor = System.Drawing.Color.Silver;
+            chartArea6.AxisY.ScrollBar.LineColor = System.Drawing.Color.Black;
+            chartArea6.AxisY.TitleForeColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY2.MajorGrid.Enabled = false;
+            chartArea6.AxisY2.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY2.MajorTickMark.Enabled = false;
+            chartArea6.AxisY2.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY2.MinorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.AxisY2.MinorTickMark.LineColor = System.Drawing.Color.Transparent;
+            chartArea6.BorderColor = System.Drawing.Color.Transparent;
+            chartArea6.CursorX.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea6.CursorX.IsUserEnabled = true;
+            chartArea6.CursorX.IsUserSelectionEnabled = true;
+            chartArea6.CursorX.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            chartArea6.CursorY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea6.CursorY.IsUserEnabled = true;
+            chartArea6.CursorY.IsUserSelectionEnabled = true;
+            chartArea6.CursorY.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            chartArea6.Name = "ChartArea1";
+            this.chart_WC.ChartAreas.Add(chartArea6);
             this.chart_WC.Enabled = false;
-            legend7.Enabled = false;
-            legend7.ForeColor = System.Drawing.Color.Transparent;
-            legend7.HeaderSeparatorColor = System.Drawing.Color.Transparent;
-            legend7.ItemColumnSeparatorColor = System.Drawing.Color.Transparent;
-            legend7.Name = "Legend1";
-            legend7.TitleForeColor = System.Drawing.Color.Transparent;
-            legend7.TitleSeparatorColor = System.Drawing.Color.Transparent;
-            this.chart_WC.Legends.Add(legend7);
+            legend6.Enabled = false;
+            legend6.ForeColor = System.Drawing.Color.Transparent;
+            legend6.HeaderSeparatorColor = System.Drawing.Color.Transparent;
+            legend6.ItemColumnSeparatorColor = System.Drawing.Color.Transparent;
+            legend6.Name = "Legend1";
+            legend6.TitleForeColor = System.Drawing.Color.Transparent;
+            legend6.TitleSeparatorColor = System.Drawing.Color.Transparent;
+            this.chart_WC.Legends.Add(legend6);
             this.chart_WC.Location = new System.Drawing.Point(4, 49);
             this.chart_WC.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chart_WC.Name = "chart_WC";
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series7.Color = System.Drawing.Color.Red;
-            series7.Legend = "Legend1";
-            series7.Name = "Path";
-            series7.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            series7.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            this.chart_WC.Series.Add(series7);
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series6.Color = System.Drawing.Color.Red;
+            series6.Legend = "Legend1";
+            series6.Name = "Path";
+            series6.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series6.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            this.chart_WC.Series.Add(series6);
             this.chart_WC.Size = new System.Drawing.Size(894, 888);
             this.chart_WC.TabIndex = 26;
             this.chart_WC.Text = "Waypoints";
-            title7.DockedToChartArea = "ChartArea1";
-            title7.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            title7.Name = "Path";
-            title7.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
-            this.chart_WC.Titles.Add(title7);
+            title6.DockedToChartArea = "ChartArea1";
+            title6.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            title6.Name = "Path";
+            title6.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
+            this.chart_WC.Titles.Add(title6);
             // 
             // toolStrip_WC
             // 
@@ -1069,6 +1089,167 @@
             this.listBox_CoreScriptTemplates_Hooks.TabIndex = 0;
             this.listBox_CoreScriptTemplates_Hooks.SelectedIndexChanged += new System.EventHandler(this.ListBox_CoreScriptTemplates_SelectedIndexChanged);
             // 
+            // tabPage_Achievements
+            // 
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_ModifierTreeChildNodes);
+            this.tabPage_Achievements.Controls.Add(this.treeView_Achievements_ModifierTreeChildNodes);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_ModifierTrees);
+            this.tabPage_Achievements.Controls.Add(this.treeView_Achievements_ModifierTrees);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_Criterias);
+            this.tabPage_Achievements.Controls.Add(this.treeView_Achievements_Criterias);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_CriteriaTree_Amount);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_CreteriaThreeChilds);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievement_CriteriaTree_Operator);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_CriteriaTreeName);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_CriteriaTreeId);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_Flags);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_Faction);
+            this.tabPage_Achievements.Controls.Add(this.treeView_Achievements_ChildNodes);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievement_Name);
+            this.tabPage_Achievements.Controls.Add(this.textBoxAchievements_Id);
+            this.tabPage_Achievements.Controls.Add(this.label_Achievements_Id);
+            this.tabPage_Achievements.Location = new System.Drawing.Point(4, 29);
+            this.tabPage_Achievements.Name = "tabPage_Achievements";
+            this.tabPage_Achievements.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Achievements.Size = new System.Drawing.Size(2040, 955);
+            this.tabPage_Achievements.TabIndex = 6;
+            this.tabPage_Achievements.Text = "Achievements";
+            this.tabPage_Achievements.UseVisualStyleBackColor = true;
+            // 
+            // label_Achievements_ModifierTrees
+            // 
+            this.label_Achievements_ModifierTrees.AutoSize = true;
+            this.label_Achievements_ModifierTrees.Location = new System.Drawing.Point(1211, 226);
+            this.label_Achievements_ModifierTrees.Name = "label_Achievements_ModifierTrees";
+            this.label_Achievements_ModifierTrees.Size = new System.Drawing.Size(113, 20);
+            this.label_Achievements_ModifierTrees.TabIndex = 14;
+            this.label_Achievements_ModifierTrees.Text = "Modifier Trees:";
+            // 
+            // treeView_Achievements_ModifierTrees
+            // 
+            this.treeView_Achievements_ModifierTrees.Location = new System.Drawing.Point(1017, 251);
+            this.treeView_Achievements_ModifierTrees.Name = "treeView_Achievements_ModifierTrees";
+            this.treeView_Achievements_ModifierTrees.Size = new System.Drawing.Size(500, 685);
+            this.treeView_Achievements_ModifierTrees.TabIndex = 13;
+            this.treeView_Achievements_ModifierTrees.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Achievements_ModifierTrees_AfterCollapse);
+            this.treeView_Achievements_ModifierTrees.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Achievements_ModifierTrees_AfterExpand);
+            // 
+            // label_Achievements_Criterias
+            // 
+            this.label_Achievements_Criterias.AutoSize = true;
+            this.label_Achievements_Criterias.Location = new System.Drawing.Point(726, 225);
+            this.label_Achievements_Criterias.Name = "label_Achievements_Criterias";
+            this.label_Achievements_Criterias.Size = new System.Drawing.Size(71, 20);
+            this.label_Achievements_Criterias.TabIndex = 12;
+            this.label_Achievements_Criterias.Text = "Criterias:";
+            // 
+            // treeView_Achievements_Criterias
+            // 
+            this.treeView_Achievements_Criterias.Location = new System.Drawing.Point(511, 251);
+            this.treeView_Achievements_Criterias.Name = "treeView_Achievements_Criterias";
+            this.treeView_Achievements_Criterias.Size = new System.Drawing.Size(500, 685);
+            this.treeView_Achievements_Criterias.TabIndex = 11;
+            this.treeView_Achievements_Criterias.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Achievements_Criterias_AfterCollapse);
+            this.treeView_Achievements_Criterias.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Achievements_Criterias_AfterExpand);
+            // 
+            // label_Achievements_CriteriaTree_Amount
+            // 
+            this.label_Achievements_CriteriaTree_Amount.AutoSize = true;
+            this.label_Achievements_CriteriaTree_Amount.Location = new System.Drawing.Point(6, 170);
+            this.label_Achievements_CriteriaTree_Amount.Name = "label_Achievements_CriteriaTree_Amount";
+            this.label_Achievements_CriteriaTree_Amount.Size = new System.Drawing.Size(163, 20);
+            this.label_Achievements_CriteriaTree_Amount.TabIndex = 10;
+            this.label_Achievements_CriteriaTree_Amount.Text = "Criteria Tree Amount: ";
+            // 
+            // label_Achievements_CreteriaThreeChilds
+            // 
+            this.label_Achievements_CreteriaThreeChilds.AutoSize = true;
+            this.label_Achievements_CreteriaThreeChilds.Location = new System.Drawing.Point(161, 228);
+            this.label_Achievements_CreteriaThreeChilds.Name = "label_Achievements_CreteriaThreeChilds";
+            this.label_Achievements_CreteriaThreeChilds.Size = new System.Drawing.Size(188, 20);
+            this.label_Achievements_CreteriaThreeChilds.TabIndex = 9;
+            this.label_Achievements_CreteriaThreeChilds.Text = "Criteria Tree Child Nodes:";
+            // 
+            // label_Achievement_CriteriaTree_Operator
+            // 
+            this.label_Achievement_CriteriaTree_Operator.AutoSize = true;
+            this.label_Achievement_CriteriaTree_Operator.Location = new System.Drawing.Point(6, 195);
+            this.label_Achievement_CriteriaTree_Operator.Name = "label_Achievement_CriteriaTree_Operator";
+            this.label_Achievement_CriteriaTree_Operator.Size = new System.Drawing.Size(166, 20);
+            this.label_Achievement_CriteriaTree_Operator.TabIndex = 8;
+            this.label_Achievement_CriteriaTree_Operator.Text = "CriteriaTree Operator: ";
+            // 
+            // label_Achievements_CriteriaTreeName
+            // 
+            this.label_Achievements_CriteriaTreeName.AutoSize = true;
+            this.label_Achievements_CriteriaTreeName.Location = new System.Drawing.Point(5, 145);
+            this.label_Achievements_CriteriaTreeName.Name = "label_Achievements_CriteriaTreeName";
+            this.label_Achievements_CriteriaTreeName.Size = new System.Drawing.Size(145, 20);
+            this.label_Achievements_CriteriaTreeName.TabIndex = 7;
+            this.label_Achievements_CriteriaTreeName.Text = "CriteriaTree Name: ";
+            // 
+            // label_Achievements_CriteriaTreeId
+            // 
+            this.label_Achievements_CriteriaTreeId.AutoSize = true;
+            this.label_Achievements_CriteriaTreeId.Location = new System.Drawing.Point(6, 120);
+            this.label_Achievements_CriteriaTreeId.Name = "label_Achievements_CriteriaTreeId";
+            this.label_Achievements_CriteriaTreeId.Size = new System.Drawing.Size(113, 20);
+            this.label_Achievements_CriteriaTreeId.TabIndex = 6;
+            this.label_Achievements_CriteriaTreeId.Text = "CriteriaTreeId: ";
+            // 
+            // label_Achievements_Flags
+            // 
+            this.label_Achievements_Flags.AutoSize = true;
+            this.label_Achievements_Flags.Location = new System.Drawing.Point(6, 85);
+            this.label_Achievements_Flags.Name = "label_Achievements_Flags";
+            this.label_Achievements_Flags.Size = new System.Drawing.Size(152, 20);
+            this.label_Achievements_Flags.TabIndex = 5;
+            this.label_Achievements_Flags.Text = "Achievement Flags: ";
+            // 
+            // label_Achievements_Faction
+            // 
+            this.label_Achievements_Faction.AutoSize = true;
+            this.label_Achievements_Faction.Location = new System.Drawing.Point(5, 60);
+            this.label_Achievements_Faction.Name = "label_Achievements_Faction";
+            this.label_Achievements_Faction.Size = new System.Drawing.Size(166, 20);
+            this.label_Achievements_Faction.TabIndex = 4;
+            this.label_Achievements_Faction.Text = "Achievement Faction: ";
+            // 
+            // treeView_Achievements_ChildNodes
+            // 
+            this.treeView_Achievements_ChildNodes.Location = new System.Drawing.Point(5, 251);
+            this.treeView_Achievements_ChildNodes.Name = "treeView_Achievements_ChildNodes";
+            this.treeView_Achievements_ChildNodes.Size = new System.Drawing.Size(500, 685);
+            this.treeView_Achievements_ChildNodes.TabIndex = 3;
+            this.treeView_Achievements_ChildNodes.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Achievements_ChildNodes_AfterCollapse);
+            this.treeView_Achievements_ChildNodes.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Achievements_ChildNodes_AfterExpand);
+            // 
+            // label_Achievement_Name
+            // 
+            this.label_Achievement_Name.AutoSize = true;
+            this.label_Achievement_Name.Location = new System.Drawing.Point(5, 35);
+            this.label_Achievement_Name.Name = "label_Achievement_Name";
+            this.label_Achievement_Name.Size = new System.Drawing.Size(155, 20);
+            this.label_Achievement_Name.TabIndex = 2;
+            this.label_Achievement_Name.Text = "Achievement Name: ";
+            // 
+            // textBoxAchievements_Id
+            // 
+            this.textBoxAchievements_Id.Location = new System.Drawing.Point(130, 2);
+            this.textBoxAchievements_Id.Name = "textBoxAchievements_Id";
+            this.textBoxAchievements_Id.Size = new System.Drawing.Size(100, 26);
+            this.textBoxAchievements_Id.TabIndex = 1;
+            this.textBoxAchievements_Id.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBoxAchievements_Id_KeyUp);
+            // 
+            // label_Achievements_Id
+            // 
+            this.label_Achievements_Id.AutoSize = true;
+            this.label_Achievements_Id.Location = new System.Drawing.Point(5, 8);
+            this.label_Achievements_Id.Name = "label_Achievements_Id";
+            this.label_Achievements_Id.Size = new System.Drawing.Size(123, 20);
+            this.label_Achievements_Id.TabIndex = 0;
+            this.label_Achievements_Id.Text = "Achievement Id:";
+            // 
             // statusStrip_LoadedFile
             // 
             this.statusStrip_LoadedFile.BackColor = System.Drawing.Color.LightGray;
@@ -1098,6 +1279,22 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog_WSC";
+            // 
+            // treeView_Achievements_ModifierTreeChildNodes
+            // 
+            this.treeView_Achievements_ModifierTreeChildNodes.Location = new System.Drawing.Point(1523, 251);
+            this.treeView_Achievements_ModifierTreeChildNodes.Name = "treeView_Achievements_ModifierTreeChildNodes";
+            this.treeView_Achievements_ModifierTreeChildNodes.Size = new System.Drawing.Size(500, 685);
+            this.treeView_Achievements_ModifierTreeChildNodes.TabIndex = 15;
+            // 
+            // label_Achievements_ModifierTreeChildNodes
+            // 
+            this.label_Achievements_ModifierTreeChildNodes.AutoSize = true;
+            this.label_Achievements_ModifierTreeChildNodes.Location = new System.Drawing.Point(1676, 225);
+            this.label_Achievements_ModifierTreeChildNodes.Name = "label_Achievements_ModifierTreeChildNodes";
+            this.label_Achievements_ModifierTreeChildNodes.Size = new System.Drawing.Size(194, 20);
+            this.label_Achievements_ModifierTreeChildNodes.TabIndex = 16;
+            this.label_Achievements_ModifierTreeChildNodes.Text = "Modifier Tree Child Nodes:";
             // 
             // MainForm
             // 
@@ -1134,6 +1331,8 @@
             this.tabPage_DoubleSpawnsRemover.PerformLayout();
             this.coreScriptTemplates.ResumeLayout(false);
             this.coreScriptTemplates.PerformLayout();
+            this.tabPage_Achievements.ResumeLayout(false);
+            this.tabPage_Achievements.PerformLayout();
             this.statusStrip_LoadedFile.ResumeLayout(false);
             this.statusStrip_LoadedFile.PerformLayout();
             this.ResumeLayout(false);
@@ -1221,6 +1420,24 @@
         private System.Windows.Forms.Label label_CoreScriptTemplates_ScriptType;
         private System.Windows.Forms.Label label_CoreScriptTemplates_Entry;
         public System.Windows.Forms.TreeView treeView_CoreScriptTemplates_HookBodies;
+        public System.Windows.Forms.TabPage tabPage_Achievements;
+        public System.Windows.Forms.TextBox textBoxAchievements_Id;
+        public System.Windows.Forms.Label label_Achievements_Id;
+        public System.Windows.Forms.TreeView treeView_Achievements_ChildNodes;
+        public System.Windows.Forms.Label label_Achievement_Name;
+        public System.Windows.Forms.Label label_Achievements_CreteriaThreeChilds;
+        public System.Windows.Forms.Label label_Achievement_CriteriaTree_Operator;
+        public System.Windows.Forms.Label label_Achievements_CriteriaTreeName;
+        public System.Windows.Forms.Label label_Achievements_CriteriaTreeId;
+        public System.Windows.Forms.Label label_Achievements_Flags;
+        public System.Windows.Forms.Label label_Achievements_Faction;
+        public System.Windows.Forms.Label label_Achievements_CriteriaTree_Amount;
+        public System.Windows.Forms.TreeView treeView_Achievements_Criterias;
+        private System.Windows.Forms.Label label_Achievements_Criterias;
+        private System.Windows.Forms.Label label_Achievements_ModifierTrees;
+        public System.Windows.Forms.TreeView treeView_Achievements_ModifierTrees;
+        private System.Windows.Forms.Label label_Achievements_ModifierTreeChildNodes;
+        public System.Windows.Forms.TreeView treeView_Achievements_ModifierTreeChildNodes;
     }
 }
 

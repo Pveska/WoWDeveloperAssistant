@@ -107,8 +107,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Achievements\AchievementEnums.cs" />
+    <Compile Include="Achievements\AchievementsHandler.cs" />
     <Compile Include="Core Script Templates\CoreScriptTemplates.cs" />
     <Compile Include="Core Script Templates\CreatureScriptTemplate.cs" />
+    <Compile Include="DBC\Structures\AchievementEntry.cs" />
+    <Compile Include="DBC\Structures\CriteriaEntry.cs" />
+    <Compile Include="DBC\Structures\CriteriaTreeEntry.cs" />
+    <Compile Include="DBC\Structures\ModifierTreeEntry.cs" />
     <Compile Include="Misc\Aura.cs" />
     <Compile Include="Misc\Creature.cs" />
     <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />

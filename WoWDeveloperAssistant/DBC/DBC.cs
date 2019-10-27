@@ -11,11 +11,16 @@ namespace WoWDeveloperAssistant
 {
     public static class DBC
     {
+        private static bool loaded = false;
         public static Storage<SpellEffectEntry> SpellEffect { get; set; }
         public static Storage<SpellNameEntry> SpellName { get; set; }
         public static Storage<SpellMiscEntry> SpellMisc { get; set; }
         public static Storage<SpellCastTimesEntry> SpellCastTimes { get; set; }
         public static Storage<MapEntry> Map { get; set; }
+        public static Storage<AchievementEntry> Achievement { get; set; }
+        public static Storage<CriteriaTreeEntry> CriteriaTree { get; set; }
+        public static Storage<CriteriaEntry> Criteria { get; set; }
+        public static Storage<ModifierTreeEntry> ModifierTree { get; set; }
 
         private static string GetPath()
         {
@@ -67,6 +72,13 @@ namespace WoWDeveloperAssistant
                     }
                 });
             }
+
+            loaded = true;
+        }
+
+        public static bool IsLoaded()
+        {
+            return loaded;
         }
 
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffectEntry> SpellEffectStores = new Dictionary<Tuple<uint, uint>, SpellEffectEntry>();
