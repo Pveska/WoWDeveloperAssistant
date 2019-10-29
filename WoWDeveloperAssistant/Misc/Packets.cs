@@ -320,14 +320,17 @@ namespace WoWDeveloperAssistant
             {
                 Position spawnPosition = new Position();
 
+                if (xyzLine.Contains("TransportPosition"))
+                    return spawnPosition;
+
                 Regex xyzRegex = new Regex(@"Position:\s{1}X:{1}\s{1}");
                 if (xyzRegex.IsMatch(xyzLine))
                 {
                     string[] splittedLine = xyzLine.Split(' ');
 
-                    spawnPosition.x = float.Parse(splittedLine[4], CultureInfo.InvariantCulture.NumberFormat);
-                    spawnPosition.y = float.Parse(splittedLine[6], CultureInfo.InvariantCulture.NumberFormat);
-                    spawnPosition.z = float.Parse(splittedLine[8], CultureInfo.InvariantCulture.NumberFormat);
+                    spawnPosition.x = float.Parse(splittedLine[3], CultureInfo.InvariantCulture.NumberFormat);
+                    spawnPosition.y = float.Parse(splittedLine[5], CultureInfo.InvariantCulture.NumberFormat);
+                    spawnPosition.z = float.Parse(splittedLine[7], CultureInfo.InvariantCulture.NumberFormat);
                 }
 
                 Regex oriRegex = new Regex(@"Orientation:\s{1}");
@@ -335,7 +338,7 @@ namespace WoWDeveloperAssistant
                 {
                     string[] splittedLine = oriLine.Split(' ');
 
-                    spawnPosition.orientation = float.Parse(splittedLine[3], CultureInfo.InvariantCulture.NumberFormat);
+                    spawnPosition.orientation = float.Parse(splittedLine[2], CultureInfo.InvariantCulture.NumberFormat);
                 }
 
                 return spawnPosition;
