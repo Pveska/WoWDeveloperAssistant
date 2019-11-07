@@ -7,6 +7,7 @@ using WoWDeveloperAssistant.Core_Script_Templates;
 using WoWDeveloperAssistant.Database_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using WoWDeveloperAssistant.Achievements;
+using WoWDeveloperAssistant.Creature_Scripts_Creator;
 
 namespace WoWDeveloperAssistant
 {
@@ -29,7 +30,7 @@ namespace WoWDeveloperAssistant
 
             creatureNamesDict = new Dictionary<uint, string>();
 
-            if (Properties.Settings.Default.UsingDB == true)
+            if (Properties.Settings.Default.UsingDB)
             {
                 creatureNamesDict = GetCreatureNamesFromDB();
             }
@@ -43,9 +44,8 @@ namespace WoWDeveloperAssistant
         {
             Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
 
-            DataSet creatureNameDs = new DataSet();
             string creatureNameQuery = "SELECT `entry`, `Name1` FROM `creature_template_wdb`;";
-            creatureNameDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
 
             if (creatureNameDs != null)
             {
@@ -66,7 +66,7 @@ namespace WoWDeveloperAssistant
             return "Unknown";
         }
 
-        private bool IsTxtFileValidForParse(string fileName)
+        private static bool IsTxtFileValidForParse(string fileName)
         {
             StreamReader file = new StreamReader(fileName);
             var line = file.ReadLine();
@@ -76,11 +76,9 @@ namespace WoWDeveloperAssistant
             {
                 return true;
             }
-            else
-            {
-                MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                return false;
-            }
+
+            MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+            return false;
         }
 
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
@@ -124,10 +122,6 @@ namespace WoWDeveloperAssistant
                     toolStripButton_CSC_ImportSniff.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }
-            }
-            else
-            {
-                return;
             }
         }
 
@@ -245,10 +239,6 @@ namespace WoWDeveloperAssistant
                     toolStripButton_WC_LoadSniff.Enabled = true;
                     Cursor = Cursors.Default;
                 }
-            }
-            else
-            {
-                return;
             }
         }
 

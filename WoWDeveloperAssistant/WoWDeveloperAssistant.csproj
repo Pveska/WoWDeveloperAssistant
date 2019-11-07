@@ -55,10 +55,6 @@
     <StartupObject>WoWDeveloperAssistant.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CascStorageLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Packages\DB2FileReaderLib.NET\DB2FileReaderLib.NET\bin\Release\CascStorageLib.dll</HintPath>
-    </Reference>
     <Reference Include="MetroFramework">
       <HintPath>..\Packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>
     </Reference>
@@ -121,20 +117,19 @@
     <Compile Include="Misc\LineGetters.cs" />
     <Compile Include="Misc\Packets.cs" />
     <Compile Include="Creature Scripts Creator\Spell.cs" />
-    <Compile Include="Creature Scripts Creator\Text.cs" />
+    <Compile Include="Creature Scripts Creator\CreatureText.cs" />
     <Compile Include="Database Advisor\AreatriggerSplineCreator.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
     <Compile Include="DBC\DBC.cs" />
     <Compile Include="DBC\Misc\Configuration.cs" />
     <Compile Include="DBC\Misc\Settings.cs" />
-    <Compile Include="DBC\Structures\DBFileAttribute.cs" />
     <Compile Include="DBC\Structures\MapEntry.cs" />
-    <Compile Include="DBC\Structures\SpellCastTimes.cs" />
+    <Compile Include="DBC\Structures\SpellCastTimesEntry.cs" />
     <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
     <Compile Include="DBC\Structures\SpellMiscEntry.cs" />
     <Compile Include="DBC\Structures\SpellNameEntry.cs" />
-    <Compile Include="DoubleSpawnRemover.cs" />
+    <Compile Include="DoubleSpawnsRemover.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -209,6 +204,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DB2FileReaderLib\DBFileReaderLib.csproj">
+      <Project>{62800BCA-47BF-42F8-AD38-C828EDA81025}</Project>
+      <Name>DBFileReaderLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

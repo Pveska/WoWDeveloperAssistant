@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
-using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
     public class CreatureScriptsCreator
     {
@@ -35,12 +34,9 @@ namespace WoWDeveloperAssistant
 
             if (mainForm.checkBox_OnlyCombatSpells.Checked)
             {
-                foreach (Spell spell in spellsList)
+                foreach (var spell in spellsList.Where(spell => spell.isCombatSpell))
                 {
-                    if (spell.isCombatSpell)
-                    {
-                        mainForm.dataGridView_Spells.Rows.Add(spell.spellId, spell.name, spell.spellStartCastTimes.Min().ToFormattedString(), spell.combatCastTimings.minCastTime.ToFormattedString(), spell.combatCastTimings.maxCastTime.ToFormattedString(), spell.combatCastTimings.minRepeatTime.ToFormattedString(), spell.combatCastTimings.maxRepeatTime.ToFormattedString(), spell.castTimes, spell);
-                    }
+                    mainForm.dataGridView_Spells.Rows.Add(spell.spellId, spell.name, spell.spellStartCastTimes.Min().ToFormattedString(), spell.combatCastTimings.minCastTime.ToFormattedString(), spell.combatCastTimings.maxCastTime.ToFormattedString(), spell.combatCastTimings.minRepeatTime.ToFormattedString(), spell.combatCastTimings.maxRepeatTime.ToFormattedString(), spell.castTimes, spell);
                 }
             }
             else
@@ -59,14 +55,8 @@ namespace WoWDeveloperAssistant
             mainForm.listBox_CreatureGuids.Items.Clear();
             mainForm.dataGridView_Spells.Rows.Clear();
 
-            foreach (Creature creature in creaturesDict.Values)
+            foreach (var creature in creaturesDict.Values.Where(creature => !mainForm.checkBox_OnlyCombatSpells.Checked || creature.HasCombatSpells()).Where(creature => creature.castedSpells.Count != 0))
             {
-                if (mainForm.checkBox_OnlyCombatSpells.Checked && !creature.HasCombatSpells())
-                    continue;
-
-                if (creature.castedSpells.Count == 0)
-                    continue;
-
                 if (mainForm.toolStripTextBox_CSC_CreatureEntry.Text != "" && mainForm.toolStripTextBox_CSC_CreatureEntry.Text != "0")
                 {
                     if (mainForm.toolStripTextBox_CSC_CreatureEntry.Text == creature.entry.ToString() ||
@@ -89,7 +79,7 @@ namespace WoWDeveloperAssistant
         {
             mainForm.SetCurrentStatus("Loading DBC...");
 
-            DBC.Load();
+            DBC.DBC.Load();
 
             mainForm.SetCurrentStatus("Getting lines...");
 
@@ -109,38 +99,32 @@ namespace WoWDeveloperAssistant
 
             Parallel.For(0, lines.Length, index =>
             {
-                if (lines[index].Contains("SMSG_UPDATE_OBJECT") &&
-                !packetIndexes.ContainsKey(index))
+                if (lines[index].Contains("SMSG_UPDATE_OBJECT") && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
                 }
-                else if (lines[index].Contains("SMSG_AI_REACTION") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_AI_REACTION") && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, Packet.PacketTypes.SMSG_AI_REACTION);
                 }
-                else if (lines[index].Contains("SMSG_SPELL_START") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_SPELL_START") && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
                 }
-                else if (lines[index].Contains("SMSG_CHAT") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_CHAT") && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
                 }
-                else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, Packet.PacketTypes.SMSG_ON_MONSTER_MOVE);
                 }
-                else if (lines[index].Contains("SMSG_ATTACK_STOP") &&
-                !packetIndexes.ContainsKey(index))
+                else if (lines[index].Contains("SMSG_ATTACK_STOP") && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, Packet.PacketTypes.SMSG_ATTACK_STOP);
@@ -292,37 +276,44 @@ namespace WoWDeveloperAssistant
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
-                if (value.Value == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE)
+                switch (value.Value)
                 {
-                    MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion);
-                    if (movePacket.creatureGuid == "")
-                        return;
-
-                    lock (creaturesDict)
+                    case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
                     {
-                        if (creaturesDict.ContainsKey(movePacket.creatureGuid))
-                        {
-                            creaturesDict[movePacket.creatureGuid].UpdateSpellsByMovementPacket(movePacket);
-                        }
-                    }
-                }
-                else if (value.Value == Packet.PacketTypes.SMSG_ATTACK_STOP)
-                {
-                    AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
-                    if (attackStopPacket.creatureGuid == "")
-                        return;
+                        MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion);
+                        if (movePacket.creatureGuid == "")
+                            return;
 
-                    lock (creaturesDict)
-                    {
-                        if (creaturesDict.ContainsKey(attackStopPacket.creatureGuid))
+                        lock (creaturesDict)
                         {
-                            creaturesDict[attackStopPacket.creatureGuid].UpdateSpellsByAttackStopPacket(attackStopPacket);
-
-                            if (attackStopPacket.nowDead)
+                            if (creaturesDict.ContainsKey(movePacket.creatureGuid))
                             {
-                                creaturesDict[attackStopPacket.creatureGuid].deathTime = attackStopPacket.packetSendTime;
+                                creaturesDict[movePacket.creatureGuid].UpdateSpellsByMovementPacket(movePacket);
                             }
                         }
+
+                        break;
+                    }
+                    case Packet.PacketTypes.SMSG_ATTACK_STOP:
+                    {
+                        AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
+                        if (attackStopPacket.creatureGuid == "")
+                            return;
+
+                        lock (creaturesDict)
+                        {
+                            if (creaturesDict.ContainsKey(attackStopPacket.creatureGuid))
+                            {
+                                creaturesDict[attackStopPacket.creatureGuid].UpdateSpellsByAttackStopPacket(attackStopPacket);
+
+                                if (attackStopPacket.nowDead)
+                                {
+                                    creaturesDict[attackStopPacket.creatureGuid].deathTime = attackStopPacket.packetSendTime;
+                                }
+                            }
+                        }
+
+                        break;
                     }
                 }
             });
@@ -348,23 +339,22 @@ namespace WoWDeveloperAssistant
 
         public void FillSQLOutput()
         {
-            string SQLtext = "";
             Creature creature = creaturesDict[mainForm.listBox_CreatureGuids.SelectedItem.ToString()];
             int i = 0;
 
-            SQLtext = "UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` = " + creature.entry + ";\r\n";
-            SQLtext = SQLtext + "DELETE FROM `smart_scripts` WHERE `entryorguid` = " + creature.entry + ";\r\n";
-            SQLtext = SQLtext + "INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_difficulties`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\r\n";
+            var SQLtext = "UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` = " + creature.entry + ";\r\n";
+            SQLtext += "DELETE FROM `smart_scripts` WHERE `entryorguid` = " + creature.entry + ";\r\n";
+            SQLtext += "INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_difficulties`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES\r\n";
 
             if (IsCreatureHasAggroText(creature.entry))
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 100, 0, '', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
+                SQLtext += "(" + creature.entry + ", 0, " + i + ", 0, 4, 0, 100, 0, '', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On aggro - Say line 0'),\r\n";
                 i++;
             }
 
             if (IsCreatureHasDeathText(creature.entry))
             {
-                SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
+                SQLtext += "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Say line 1'),\r\n";
                 i++;
             }
 
@@ -376,25 +366,25 @@ namespace WoWDeveloperAssistant
                 {
                     if (spell.ShouldBeCastedBeforeDeath())
                     {
-                        SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 82, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - Before death - Cast " + spell.name + "')";
+                        SQLtext += "(" + creature.entry + ", 0, " + i + ", 0, 82, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - Before death - Cast " + spell.name + "')";
                     }
                     else
                     {
-                        SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Cast " + spell.name + "')";
+                        SQLtext += "(" + creature.entry + ", 0, " + i + ", 0, 6, 0, 100, 0, '', 0, 0, 0, 0, 11, " + spell.spellId + ", 0, 0, 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - On death - Cast " + spell.name + "')";
                     }
                 }
                 else
                 {
-                    SQLtext = SQLtext + "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000 + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? (Math.Floor(spell.spellCastTime.TotalSeconds) + 1) * 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
+                    SQLtext += "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000 + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? (Math.Floor(spell.spellCastTime.TotalSeconds) + 1) * 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
                 }
 
                 if (l < mainForm.dataGridView_Spells.RowCount - 1)
                 {
-                    SQLtext = SQLtext + ",\r\n";
+                    SQLtext += ",\r\n";
                 }
                 else
                 {
-                    SQLtext = SQLtext + ";\r\n";
+                    SQLtext += ";\r\n";
                 }
             }
 
@@ -413,11 +403,7 @@ namespace WoWDeveloperAssistant
         {
             if (creatureTextsDict.ContainsKey(creatureEntry))
             {
-                foreach (CreatureText text in creatureTextsDict[creatureEntry])
-                {
-                    if (text.isAggroText)
-                        return true;
-                }
+                return creatureTextsDict[creatureEntry].Any(text => text.isAggroText);
             }
 
             return false;
@@ -427,11 +413,7 @@ namespace WoWDeveloperAssistant
         {
             if (creatureTextsDict.ContainsKey(creatureEntry))
             {
-                foreach (CreatureText text in creatureTextsDict[creatureEntry])
-                {
-                    if (text.isDeathText)
-                        return true;
-                }
+                return creatureTextsDict[creatureEntry].Any(text => text.isDeathText);
             }
 
             return false;

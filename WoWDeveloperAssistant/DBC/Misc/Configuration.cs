@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 
-namespace WoWDeveloperAssistant.Misc
+namespace WoWDeveloperAssistant.DBC.Misc
 {
     public class Configuration
     {

@@ -1,6 +1,7 @@
 ﻿using System;
+using WoWDeveloperAssistant.Misc;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
     public class CreatureText
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant.Database_Advisor
@@ -89,14 +90,13 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
         public static void GetQuestFlags(string questEntry)
         {
-            DataSet questFlagsDs = new DataSet();
             string questFlagsSqlQuery = "SELECT `Flags`, `FlagsEx` FROM `quest_template` WHERE `Id` = " + questEntry + ";";
-            questFlagsDs = (DataSet)SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
+            var questFlagsDs = SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
             if (questFlagsDs == null)
                 return;
 
             questFlagsSqlQuery = "SELECT `SpecialFlags` FROM `quest_template_addon` WHERE `Id` = " + questEntry + ";";
-            DataSet AddonQuestFlagsDs = (DataSet)SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
+            DataSet AddonQuestFlagsDs = SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
             if (AddonQuestFlagsDs == null)
                 return;
 
@@ -172,10 +172,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Quest has the following QuestFlags: \r\n";
 
-                foreach (long itr in questFlagsList)
-                {
-                    outputText += (QuestFlags)itr + ": " + itr + "\r\n";
-                }
+                outputText = questFlagsList.Aggregate(outputText, (current, itr) => current + ((QuestFlags) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Quest doesn't have any QuestFlags!\r\n";
@@ -184,10 +181,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Quest has the following QuestFlags2: \r\n";
 
-                foreach (long itr in questFlags2List)
-                {
-                    outputText += (QuestFlagsEx)itr + ": " + itr + "\r\n";
-                }
+                outputText = questFlags2List.Aggregate(outputText, (current, itr) => current + ((QuestFlagsEx) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Quest doesn't have any QuestFlags2!\r\n";
@@ -196,10 +190,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Quest has the following SpecialFlags: \r\n";
 
-                foreach (long itr in specialFlagsList)
-                {
-                    outputText += (QuestSpecialFlags)itr + ": " + itr + "\r\n";
-                }
+                outputText = specialFlagsList.Aggregate(outputText, (current, itr) => current + ((QuestSpecialFlags) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Quest doesn't have any SpecialFlags!\r\n";

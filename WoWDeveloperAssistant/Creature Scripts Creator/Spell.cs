@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WoWDeveloperAssistant.Misc;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
     public class Spell
     {
@@ -36,8 +36,7 @@ namespace WoWDeveloperAssistant
             spellCastTime = spellPacket.spellCastTime;
             hasConeType = SetConeTypeIfPossible();
             needConeDelay = false;
-            spellStartCastTimes = new List<TimeSpan>();
-            spellStartCastTimes.Add(spellPacket.spellCastStartTime);
+            spellStartCastTimes = new List<TimeSpan> { spellPacket.spellCastStartTime };
             castTimes = 1;
             isCombatSpell = false;
             isDeathSpell = false;
@@ -92,9 +91,9 @@ namespace WoWDeveloperAssistant
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
 
                     if ((spellEffect.ImplicitTarget[0] == 129 || spellEffect.ImplicitTarget[1] == 129) ||
                         (spellEffect.ImplicitTarget[0] == 130 || spellEffect.ImplicitTarget[1] == 130) ||
@@ -109,10 +108,10 @@ namespace WoWDeveloperAssistant
             return false;
         }
 
-        public string GetSpellName(uint spellId)
+        public static string GetSpellName(uint spellId)
         {
-            if (DBC.SpellName.ContainsKey((int)spellId))
-                return DBC.SpellName[(int)spellId].Name;
+            if (DBC.DBC.SpellName.ContainsKey((int)spellId))
+                return DBC.DBC.SpellName[(int)spellId].Name;
 
             return "Unknown";
         }
@@ -228,13 +227,13 @@ namespace WoWDeveloperAssistant
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
 
                     if (IsSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
                         return 1;
-                    else if (IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
+                    if (IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
                         return 2;
                 }
             }
@@ -242,7 +241,7 @@ namespace WoWDeveloperAssistant
             return 99;
         }
 
-        private bool IsSelfTargetType(uint targetType)
+        private static bool IsSelfTargetType(uint targetType)
         {
             List<uint> selfTargetTypesList = new List<uint>()
             {
@@ -256,7 +255,7 @@ namespace WoWDeveloperAssistant
             return selfTargetTypesList.Contains(targetType);
         }
 
-        private bool IsNonSelfTargetType(uint targetType)
+        private static bool IsNonSelfTargetType(uint targetType)
         {
             List<uint> nonSelfTargetTypesList = new List<uint>()
             {
@@ -272,9 +271,9 @@ namespace WoWDeveloperAssistant
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
 
                     if (spellEffect.ImplicitTarget[0] == 123 || spellEffect.ImplicitTarget[1] == 123)
                         return true;

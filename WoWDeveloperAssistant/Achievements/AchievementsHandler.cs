@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WoWDeveloperAssistant.Structures;
-using WoWDeveloperAssistant.Achievements.Enums;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.DBC.Structures;
 
 namespace WoWDeveloperAssistant.Achievements
 {
@@ -13,18 +10,16 @@ namespace WoWDeveloperAssistant.Achievements
     {
         public static void ShowAchievementRequirements(MainForm mainForm)
         {
-            if (!DBC.IsLoaded())
+            if (!DBC.DBC.IsLoaded())
             {
-                DBC.Load();
+                DBC.DBC.Load();
             }
 
-            AchievementEntry achievement;
-            DBC.Achievement.TryGetValue(int.Parse(mainForm.textBoxAchievements_Id.Text), out achievement);
+            DBC.DBC.Achievement.TryGetValue(int.Parse(mainForm.textBoxAchievements_Id.Text), out var achievement);
             if (achievement == null)
                 return;
 
-            CriteriaTreeEntry criteriaTree;
-            DBC.CriteriaTree.TryGetValue((int)achievement.CriteriaTree, out criteriaTree);
+            DBC.DBC.CriteriaTree.TryGetValue((int)achievement.CriteriaTree, out var criteriaTree);
             if (criteriaTree == null)
                 return;
 
@@ -32,10 +27,10 @@ namespace WoWDeveloperAssistant.Achievements
             mainForm.label_Achievements_Faction.Text = "Achievement Faction: " + (AchievementEnums.AchievementFaction) achievement.Faction;
             mainForm.label_Achievements_Flags.Text = "Achievement Flags: " + GetAchievementFlagNames(achievement.Flags);
 
-            mainForm.label_Achievements_CriteriaTreeId.Text = "CriteriaThree Id: " + achievement.CriteriaTree;
-            mainForm.label_Achievements_CriteriaTreeName.Text = "CriteriaThree Name: " + criteriaTree.Description;
-            mainForm.label_Achievements_CriteriaTree_Amount.Text = "CriteriaThree Amount: " + criteriaTree.Amount;
-            mainForm.label_Achievement_CriteriaTree_Operator.Text = "CriteriaThree Operator: " + (AchievementEnums.CriteriaTreeOperator)criteriaTree.Operator;
+            mainForm.label_Achievements_CriteriaTreeId.Text = "CriteriaTree Id: " + achievement.CriteriaTree;
+            mainForm.label_Achievements_CriteriaTreeName.Text = "CriteriaTree Name: " + criteriaTree.Description;
+            mainForm.label_Achievements_CriteriaTree_Amount.Text = "CriteriaTree Amount: " + criteriaTree.Amount;
+            mainForm.label_Achievement_CriteriaTree_Operator.Text = "CriteriaTree Operator: " + (AchievementEnums.CriteriaTreeOperator)criteriaTree.Operator;
             FillTreeWithCriteriaTreeChildNodes(achievement.CriteriaTree, mainForm.treeView_Achievements_ChildNodes);
         }
 
@@ -66,7 +61,7 @@ namespace WoWDeveloperAssistant.Achievements
 
         private static IEnumerable<KeyValuePair<int, CriteriaTreeEntry>> GetCriteriaTreeChildNodes(uint criteriaTreeId)
         {
-            return DBC.CriteriaTree.Where(x => x.Value.Parent == criteriaTreeId);
+            return DBC.DBC.CriteriaTree.Where(x => x.Value.Parent == criteriaTreeId);
         }
 
         private static void FillTreeWithCriteriaTreeChildNodes(uint criteriaTreeId, TreeView treeWiev)
@@ -85,8 +80,7 @@ namespace WoWDeveloperAssistant.Achievements
 
         public static void FillTreeWithCriterias(uint criteriaTreeId, TreeView treeWiev, bool clearBeforeAdd)
         {
-            CriteriaEntry criteria;
-            DBC.Criteria.TryGetValue((int)GetCriteriaIdFromCriteriaTree(criteriaTreeId), out criteria);
+            DBC.DBC.Criteria.TryGetValue((int)GetCriteriaIdFromCriteriaTree(criteriaTreeId), out var criteria);
             if (criteria == null)
                 return;
 
@@ -109,8 +103,8 @@ namespace WoWDeveloperAssistant.Achievements
 
         private static uint GetCriteriaIdFromCriteriaTree(uint criteriaTreeId)
         {
-            if (DBC.CriteriaTree.ContainsKey((int)criteriaTreeId))
-                return DBC.CriteriaTree[(int)criteriaTreeId].CriteriaID;
+            if (DBC.DBC.CriteriaTree.ContainsKey((int)criteriaTreeId))
+                return DBC.DBC.CriteriaTree[(int)criteriaTreeId].CriteriaID;
 
             return 0;
         }
@@ -167,8 +161,7 @@ namespace WoWDeveloperAssistant.Achievements
 
         public static void FillTreeWithModifiers(uint criteriaTreeId, TreeView treeWiev, bool clearBeforeAdd)
         {
-            ModifierTreeEntry modifierTree;
-            DBC.ModifierTree.TryGetValue((int)GetModifierTreeForCriteria(criteriaTreeId), out modifierTree);
+            DBC.DBC.ModifierTree.TryGetValue((int)GetModifierTreeForCriteria(criteriaTreeId), out var modifierTree);
             if (modifierTree == null)
                 return;
 
@@ -189,8 +182,8 @@ namespace WoWDeveloperAssistant.Achievements
 
         private static uint GetModifierTreeForCriteria(uint criteriaId)
         {
-            if (DBC.Criteria.ContainsKey((int)criteriaId))
-                return DBC.Criteria[(int)criteriaId].ModifierTreeID;
+            if (DBC.DBC.Criteria.ContainsKey((int)criteriaId))
+                return DBC.DBC.Criteria[(int)criteriaId].ModifierTreeID;
 
             return 0;
         }
@@ -229,7 +222,7 @@ namespace WoWDeveloperAssistant.Achievements
 
         private static IEnumerable<KeyValuePair<int, ModifierTreeEntry>> GetModifierTreeChildNodes(uint modifierTreeId)
         {
-            return DBC.ModifierTree.Where(x => x.Value.Parent == modifierTreeId);
+            return DBC.DBC.ModifierTree.Where(x => x.Value.Parent == modifierTreeId);
         }
     }
 }

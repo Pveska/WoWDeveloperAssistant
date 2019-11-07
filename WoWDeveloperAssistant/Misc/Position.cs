@@ -4,6 +4,28 @@ namespace WoWDeveloperAssistant.Misc
 {
     public struct Position
     {
+        public bool Equals(Position other)
+        {
+            return x.Equals(other.x) && y.Equals(other.y) && z.Equals(other.z) && orientation.Equals(other.orientation);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Position other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = x.GetHashCode();
+                hashCode = (hashCode * 397) ^ y.GetHashCode();
+                hashCode = (hashCode * 397) ^ z.GetHashCode();
+                hashCode = (hashCode * 397) ^ orientation.GetHashCode();
+                return hashCode;
+            }
+        }
+
         public float x;
         public float y;
         public float z;
@@ -20,7 +42,7 @@ namespace WoWDeveloperAssistant.Misc
             return x != 0.0f && y != 0.0f;
         }
 
-        public double GetExactDist2dSq(Position mainPos, Position comparePos)
+        public static double GetExactDist2dSq(Position mainPos, Position comparePos)
         {
             double dx = mainPos.x - comparePos.x; double dy = mainPos.y - comparePos.y;
             return dx * dx + dy * dy;

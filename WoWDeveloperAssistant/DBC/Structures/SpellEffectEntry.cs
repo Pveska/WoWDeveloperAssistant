@@ -1,10 +1,8 @@
-﻿using System.Runtime.InteropServices;
-namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
-    [DBFile("SpellEffect")]
-
     public sealed class SpellEffectEntry
     {
+        public uint Id;
         public int DifficultyID;
         public int EffectIndex;
         public uint Effect;
@@ -28,14 +26,10 @@ namespace WoWDeveloperAssistant.Structures
         public float ResourceCoefficient;
         public float GroupSizeBasePointsCoefficient;
         public float EffectBasePoints;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public int[] EffectMiscValue;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public uint[] EffectRadiusIndex;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public int[] EffectSpellClassMask;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public short[] ImplicitTarget;
+        public int[] EffectMiscValue = new int[2];
+        public uint[] EffectRadiusIndex = new uint[2];
+        public int[] EffectSpellClassMask = new int[4];
+        public short[] ImplicitTarget = new short[2];
         public int SpellID;
     }
 }

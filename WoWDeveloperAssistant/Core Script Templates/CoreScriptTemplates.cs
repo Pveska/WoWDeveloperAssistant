@@ -12,7 +12,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             this.mainForm = mainForm;
         }
 
-        private enum ScriptTypes : int
+        private enum ScriptTypes
         {
             Creature     = 0,
             GameObject   = 1,
@@ -87,7 +87,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             }
         }
 
-        private ScriptTypes GetScriptType(int selectedIndex)
+        private static ScriptTypes GetScriptType(int selectedIndex)
         {
             switch (selectedIndex)
             {

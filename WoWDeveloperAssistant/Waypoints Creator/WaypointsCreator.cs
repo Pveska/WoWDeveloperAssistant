@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
-using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
@@ -28,7 +27,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             mainForm.SetCurrentStatus("Loading DBC...");
 
-            DBC.Load();
+            DBC.DBC.Load();
 
             mainForm.SetCurrentStatus("Getting lines...");
 
@@ -243,44 +242,29 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     {
                         SortedDictionary<long, Packet> creaturePacketsDict = new SortedDictionary<long, Packet>();
 
-                        foreach (Packet packet in updateObjectPacketsDict.Values)
+                        foreach (var packet in updateObjectPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
-                            if (packet.HasCreatureWithGuid(creature.guid))
-                            {
-                                creaturePacketsDict.Add(packet.index, packet);
-                            }
+                            creaturePacketsDict.Add(packet.index, packet);
                         }
 
-                        foreach (Packet packet in movementPacketsDict.Values)
+                        foreach (var packet in movementPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
-                            if (packet.HasCreatureWithGuid(creature.guid))
-                            {
-                                creaturePacketsDict.Add(packet.index, packet);
-                            }
+                            creaturePacketsDict.Add(packet.index, packet);
                         }
 
-                        foreach (Packet packet in spellPacketsDict.Values)
+                        foreach (var packet in spellPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
-                            if (packet.HasCreatureWithGuid(creature.guid))
-                            {
-                                creaturePacketsDict.Add(packet.index, packet);
-                            }
+                            creaturePacketsDict.Add(packet.index, packet);
                         }
 
-                        foreach (Packet packet in auraPacketsDict.Values)
+                        foreach (var packet in auraPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
-                            if (packet.HasCreatureWithGuid(creature.guid))
-                            {
-                                creaturePacketsDict.Add(packet.index, packet);
-                            }
+                            creaturePacketsDict.Add(packet.index, packet);
                         }
 
-                        foreach (Packet packet in emotePacketsDict.Values)
+                        foreach (var packet in emotePacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
-                            if (packet.HasCreatureWithGuid(creature.guid))
-                            {
-                                creaturePacketsDict.Add(packet.index, packet);
-                            }
+                            creaturePacketsDict.Add(packet.index, packet);
                         }
 
                         List<WaypointScript> scriptsList = new List<WaypointScript>();
@@ -327,10 +311,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                                             List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
                                             if (updateScriptsList.Count != 0)
                                             {
-                                                foreach (WaypointScript script in updateScriptsList)
-                                                {
-                                                    scriptsList.Add(script);
-                                                }
+                                                scriptsList.AddRange(updateScriptsList);
                                             }
                                         }
                                     }
@@ -370,8 +351,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                default:
-                                    break;
                             }
                         }
                     }
@@ -392,10 +371,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 if (!creature.HasWaypoints())
                     continue;
 
-                DataSet creatureAddonDs;
                 string sqlQuery = "SELECT * FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';";
                 bool alreadyHaveWaypointsInDb = false;
-                creatureAddonDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(sqlQuery) : null;
+                var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(sqlQuery) : null;
 
                 if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
                 {
@@ -505,11 +483,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void CreateSQL()
         {
             Creature creature = creaturesDict[mainForm.listBox_WC_CreatureGuids.SelectedItem.ToString()];
-            DataSet creatureAddonDs;
             string sqlQuery = "SELECT * FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';";
-            string creatureAddon = "";
+            string creatureAddon;
             bool addonFound = false;
-            creatureAddonDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(sqlQuery) : null;
+            var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(sqlQuery) : null;
 
             if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
             {
@@ -521,12 +498,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 creatureAddon = "('" + creature.GetLinkedId() + "', @PATH, 0, 0, 1, 0, 0, 0, 0, '', -1); " + "\r\n";
             }
 
-            List<Waypoint> waypoints = new List<Waypoint>();
-            foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
-            {
-                Waypoint waypoint = (Waypoint)row.Cells[8].Value;
-                waypoints.Add(waypoint);
-            }
+            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
 
             if (Properties.Settings.Default.Scripts && waypoints.GetScriptsCount() != 0)
             {
@@ -543,13 +515,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (addonFound)
             {
-                SQLtext = SQLtext + creatureAddon;
+                SQLtext += creatureAddon;
             }
             else
             {
-                SQLtext = SQLtext + "DELETE FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + "\r\n";
-                SQLtext = SQLtext + "INSERT INTO `creature_addon` (`linked_id`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `AiAnimKit`, `MovementAnimKit`, `MeleeAnimKit`, `auras`, `VerifiedBuild`) VALUES" + "\r\n";
-                SQLtext = SQLtext + creatureAddon;
+                SQLtext += "DELETE FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + "\r\n";
+                SQLtext += "INSERT INTO `creature_addon` (`linked_id`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `AiAnimKit`, `MovementAnimKit`, `MeleeAnimKit`, `auras`, `VerifiedBuild`) VALUES" + "\r\n";
+                SQLtext += creatureAddon;
             }
 
             SQLtext = SQLtext + "DELETE FROM `waypoint_data` WHERE `id` = @PATH;" + "\r\n";
@@ -587,21 +559,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 uint scriptsCount = waypoints.GetScriptsCount() - 1;
 
-                for (int i = 0; i < waypoints.Count; i++)
+                foreach (var script in waypoints.SelectMany(waypoint => waypoint.scripts))
                 {
-                    Waypoint waypoint = waypoints[i];
-
-                    foreach (WaypointScript script in waypoint.scripts)
+                    if (scriptsCount != 0)
                     {
-                        if (scriptsCount != 0)
-                        {
-                            SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + "),\r\n";
-                            scriptsCount--;
-                        }
-                        else
-                        {
-                            SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");\r\n";
-                        }
+                        SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + "),\r\n";
+                        scriptsCount--;
+                    }
+                    else
+                    {
+                        SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");\r\n";
                     }
                 }
             }
@@ -679,22 +646,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 Waypoint waypoint = (Waypoint)row.Cells[8].Value;
 
-                bool waypointIsValid = true;
-
                 if (waypoint.HasOrientation() || waypoint.HasScripts())
                 {
                     waypointsList.Add(waypoint);
                     continue;
                 }
 
-                foreach (Waypoint compareWaypoint in waypointsList)
-                {
-                    if (waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f)
-                    {
-                        waypointIsValid = false;
-                        break;
-                    }
-                }
+                bool waypointIsValid = waypointsList.All(compareWaypoint => !(waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f));
 
                 if (waypointIsValid)
                 {
@@ -721,22 +679,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint waypoint in waypoints)
             {
-                bool waypointIsValid = true;
-
                 if (waypoint.HasOrientation() || waypoint.HasScripts())
                 {
                     waypointsList.Add(waypoint);
                     continue;
                 }
 
-                foreach (Waypoint compareWaypoint in waypointsList)
-                {
-                    if (waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f)
-                    {
-                        waypointIsValid = false;
-                        break;
-                    }
-                }
+                bool waypointIsValid = waypointsList.All(compareWaypoint => !(waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f));
 
                 if (waypointIsValid)
                 {
@@ -746,20 +695,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             waypoints.Clear();
 
-            foreach (Waypoint wp in waypointsList)
-            {
-                waypoints.Add(wp);
-            }
+            waypoints.AddRange(waypointsList);
         }
 
         public void CreateReturnPath()
         {
-            List<Waypoint> waypoints = new List<Waypoint>();
-
-            foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
-            {
-                waypoints.Add((Waypoint)row.Cells[8].Value);
-            }
+            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
 
             waypoints.Reverse();
 

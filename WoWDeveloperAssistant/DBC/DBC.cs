@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
-using DB2FileReaderLib.NET;
+using DBFileReaderLib;
+using WoWDeveloperAssistant.DBC.Misc;
+using WoWDeveloperAssistant.DBC.Structures;
 using WoWDeveloperAssistant.Misc;
-using WoWDeveloperAssistant.Structures;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.DBC
 {
     public static class DBC
     {
-        private static bool loaded = false;
+        private static bool loaded;
         public static Storage<SpellEffectEntry> SpellEffect { get; set; }
         public static Storage<SpellNameEntry> SpellName { get; set; }
         public static Storage<SpellMiscEntry> SpellMisc { get; set; }
@@ -27,50 +28,45 @@ namespace WoWDeveloperAssistant
             return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Settings.DBCPath, Settings.DBCLocale);
         }
 
-        private static string GetPath(string fileName)
-        {
-            return Path.Combine(GetPath(), fileName);
-        }
-
         public static void Load()
         {
-            Parallel.ForEach(typeof(DBC).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic), dbc =>
-            {
-                Type type = dbc.PropertyType.GetGenericArguments()[0];
+            if (!Directory.Exists(GetPath()))
+                return;
 
-                if (!type.IsClass)
-                    return;
+            var dbReader = new DBReader(GetPath(), "SpellEffect.db2");
+            SpellEffect = dbReader.GetRecords<SpellEffectEntry>();
 
-                var attr = type.GetCustomAttribute<DBFileAttribute>();
-                if (attr == null)
-                    return;
+            dbReader = new DBReader(GetPath(), "SpellName.db2");
+            SpellName = dbReader.GetRecords<SpellNameEntry>();
 
-                var instanceType = typeof(Storage<>).MakeGenericType(type);
-                var instance = Activator.CreateInstance(instanceType, $"{ GetPath(attr.FileName) }.db2");
+            dbReader = new DBReader(GetPath(), "SpellMisc.db2");
+            SpellMisc = dbReader.GetRecords<SpellMiscEntry>();
 
-                try
-                {
-                    dbc.SetValue(dbc.GetValue(null), instance);
-                }
-                catch (TargetInvocationException tie)
-                {
-                    if (tie.InnerException is ArgumentException)
-                        throw new ArgumentException($"Failed to load {attr.FileName}.db2: {tie.InnerException.Message}");
-                    throw;
-                }
-            });
+            dbReader = new DBReader(GetPath(), "SpellCastTimes.db2");
+            SpellCastTimes = dbReader.GetRecords<SpellCastTimesEntry>();
+
+            dbReader = new DBReader(GetPath(), "Map.db2");
+            Map = dbReader.GetRecords<MapEntry>();
+
+            dbReader = new DBReader(GetPath(), "Achievement.db2");
+            Achievement = dbReader.GetRecords<AchievementEntry>();
+
+            dbReader = new DBReader(GetPath(), "CriteriaTree.db2");
+            CriteriaTree = dbReader.GetRecords<CriteriaTreeEntry>();
+
+            dbReader = new DBReader(GetPath(), "Criteria.db2");
+            Criteria = dbReader.GetRecords<CriteriaEntry>();
+
+            dbReader = new DBReader(GetPath(), "ModifierTree.db2");
+            ModifierTree = dbReader.GetRecords<ModifierTreeEntry>();
 
             if (SpellEffect != null && SpellEffectStores.Count == 0)
             {
-                Parallel.ForEach(SpellEffect, effect =>
+                foreach (var effect in SpellEffect)
                 {
                     var tuple = Tuple.Create((uint)effect.Value.SpellID, (uint)effect.Value.EffectIndex);
-
-                    lock (SpellEffectStores)
-                    {
-                        SpellEffectStores[tuple] = effect.Value;
-                    }
-                });
+                    SpellEffectStores[tuple] = effect.Value;
+                }
             }
 
             loaded = true;

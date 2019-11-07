@@ -1,8 +1,8 @@
-﻿namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
-    [DBFile("Criteria")]
     public sealed class CriteriaEntry
     {
+        public uint ID;
         public short Type;
         public int Asset;
         public uint ModifierTreeID;
@@ -13,6 +13,6 @@
         public int FailAsset;
         public byte Flags;
         public short EligibilityWorldStateID;
-        public sbyte EligibilityWorldStatevalue;
+        public sbyte EligibilityWorldStateValue;
     }
 }
