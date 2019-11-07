@@ -1,4 +1,4 @@
-﻿namespace WoWDeveloperAssistant.Misc
+﻿namespace WoWDeveloperAssistant.DBC.Misc
 {
     public static class Settings
     {

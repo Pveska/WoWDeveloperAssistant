@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using static WoWDeveloperAssistant.Packets;
+using WoWDeveloperAssistant.Misc;
+using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
@@ -64,10 +65,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 return new WaypointScript(0, 0, ScriptType.Jump, movePacket.jumpInfo.moveTime, 0, 0, movePacket.jumpInfo.jumpPos.x, movePacket.jumpInfo.jumpPos.y, movePacket.jumpInfo.jumpPos.z, movePacket.jumpInfo.jumpGravity, 0, movePacket.packetSendTime);
             }
-            else
-            {
-                return new WaypointScript(0, 0, ScriptType.SetOrientation, 0, 0, 0, 0.0f, 0.0f, 0.0f, movePacket.creatureOrientation, 0, movePacket.packetSendTime);
-            }
+
+            return new WaypointScript(0, 0, ScriptType.SetOrientation, 0, 0, 0, 0.0f, 0.0f, 0.0f, movePacket.creatureOrientation, 0, movePacket.packetSendTime);
         }
 
         public static WaypointScript GetScriptsFromAuraUpdatePacket(AuraUpdatePacket auraPacket, Creature creature)

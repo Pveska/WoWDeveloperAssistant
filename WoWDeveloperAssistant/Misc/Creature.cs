@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WoWDeveloperAssistant.Misc;
+using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Waypoints_Creator;
-using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Packets;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.Misc
 {
     public class Creature
     {
@@ -138,19 +137,12 @@ namespace WoWDeveloperAssistant
 
         public bool HasCombatSpells()
         {
-            foreach (Spell spell in castedSpells.Values)
-            {
-                if (spell.isCombatSpell)
-                    return true;
-            }
-
-            return false;
+            return castedSpells.Values.Any(spell => spell.isCombatSpell);
         }
 
         public string GetLinkedId()
         {
-            string linkedId = "";
-            linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.z / 0.25)) + " ";
+            var linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.z / 0.25)) + " ";
             linkedId += Convert.ToString(entry) + " " + Convert.ToString(mapId) + " 0 1 0";
             return Utils.SHA1HashStringForUTF8String(linkedId).ToUpper();
         }
@@ -165,7 +157,7 @@ namespace WoWDeveloperAssistant
             Waypoint waypoint = waypoints.GetLastWaypointWithTime(firstMovePacket.packetSendTime);
 
             uint id = (entry * 100) + waypoints.GetPointsWithScriptsCount();
-            uint guid = id + waypoints.GetScriptsCount() == id ? id + waypoints.GetScriptsCount() : id + waypoints.GetScriptsCount() - 1;
+            uint _guid = id + waypoints.GetScriptsCount() == id ? id + waypoints.GetScriptsCount() : id + waypoints.GetScriptsCount() - 1;
 
             foreach (WaypointScript script in scriptsList)
             {
@@ -179,8 +171,8 @@ namespace WoWDeveloperAssistant
 
                 script.SetId(id);
                 script.SetDelay(tempDelay < 0 ? 0 : (uint)tempDelay);
-                script.SetGuid(guid);
-                guid++;
+                script.SetGuid(_guid);
+                _guid++;
 
                 waypoint.scripts.Add(script);
             }
@@ -208,7 +200,7 @@ namespace WoWDeveloperAssistant
             {
                 for (int i = auraIndex; i >= 0; i--)
                 {
-                    if (auras[i].HasAura == true && auras[i].slot == auraPacket.slot)
+                    if (auras[i].HasAura && auras[i].slot == auraPacket.slot)
                         spellId = auras[i].spellId;
                 }
             }
@@ -228,7 +220,7 @@ namespace WoWDeveloperAssistant
 
         public void SortWaypoints()
         {
-            waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.moveStartTime select waypoint);
+            waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse, waypoint.moveStartTime select waypoint);
         }
     }
 }

@@ -1,21 +1,20 @@
-﻿using System.Runtime.InteropServices;
-namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
-    [DBFile("SpellMisc")]
-
     public sealed class SpellMiscEntry
     {
+        public uint ID;
         public byte DifficultyID;
-        public short CastingTimeIndex;
-        public short DurationIndex;
-        public short RangeIndex;
+        public ushort CastingTimeIndex;
+        public ushort DurationIndex;
+        public ushort RangeIndex;
         public byte SchoolMask;
         public float Speed;
         public float LaunchDelay;
-        public float UnknownField;
+        public float MinDuration;
         public int SpellIconFileDataID;
         public int ActiveIconFileDataID;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
-        public int[] Attributes;
+        public int ContentTuningID;
+        public int[] Attributes = new int[14];
+        public int SpellID;
     }
 }

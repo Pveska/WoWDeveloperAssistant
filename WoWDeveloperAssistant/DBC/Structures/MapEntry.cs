@@ -1,18 +1,15 @@
-﻿using System.Runtime.InteropServices;
-
-namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
-    [DBFile("Map")]
     public sealed class MapEntry
     {
+        public uint ID;
         public string Directory;
         public string MapName;
         public string MapDescription0;
         public string MapDescription1;
         public string PvpShortDescription;
         public string PvpLongDescription;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public float[] Corpse;
+        public float[] Corpse = new float[2];
         public byte MapType;
         public sbyte InstanceType;
         public byte ExpansionID;
@@ -28,7 +25,6 @@ namespace WoWDeveloperAssistant.Structures
         public short WindSettingsID;
         public int ZmpFileDataID;
         public int WdtFileDataID;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public uint[] Flags;
+        public int[] Flags = new int[2];
     }
 }

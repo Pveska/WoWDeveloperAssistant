@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using WoWDeveloperAssistant.Misc;
+using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Utils;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.Misc
 {
     public static class Packets
     {
@@ -61,56 +61,49 @@ namespace WoWDeveloperAssistant
                 {
                     case PacketTypes.SMSG_UPDATE_OBJECT:
                     {
-                        foreach (UpdateObjectPacket updatePacket in parsedPacketsList)
+                        if (parsedPacketsList.Cast<UpdateObjectPacket>().Any(updatePacket => updatePacket.creatureGuid == guid))
                         {
-                            if (updatePacket.creatureGuid == guid)
-                                return true;
+                            return true;
                         }
 
                         break;
                     }
                     case PacketTypes.SMSG_ON_MONSTER_MOVE:
                     {
-                        foreach (MonsterMovePacket movementPacket in parsedPacketsList)
+                        if (parsedPacketsList.Cast<MonsterMovePacket>().Any(movementPacket => movementPacket.creatureGuid == guid))
                         {
-                            if (movementPacket.creatureGuid == guid)
-                                return true;
+                            return true;
                         }
 
                         break;
                     }
                     case PacketTypes.SMSG_SPELL_START:
                     {
-                        foreach (SpellStartPacket spellPacket in parsedPacketsList)
+                        if (parsedPacketsList.Cast<SpellStartPacket>().Any(spellPacket => spellPacket.casterGuid == guid))
                         {
-                            if (spellPacket.casterGuid == guid)
-                                return true;
+                            return true;
                         }
 
                         break;
                     }
                     case PacketTypes.SMSG_AURA_UPDATE:
                     {
-                        foreach (AuraUpdatePacket auraPacket in parsedPacketsList)
+                        if (parsedPacketsList.Cast<AuraUpdatePacket>().Any(auraPacket => auraPacket.unitGuid == guid))
                         {
-                            if (auraPacket.unitGuid == guid)
-                                return true;
+                            return true;
                         }
 
                         break;
                     }
                     case PacketTypes.SMSG_EMOTE:
                     {
-                        foreach (EmotePacket emotePacket in parsedPacketsList)
+                        if (parsedPacketsList.Cast<EmotePacket>().Any(emotePacket => emotePacket.guid == guid))
                         {
-                            if (emotePacket.guid == guid)
-                                return true;
+                            return true;
                         }
 
                         break;
                     }
-                    default:
-                        break;
                 }
 
                 return false;
@@ -287,8 +280,7 @@ namespace WoWDeveloperAssistant
                 Regex entryRegexField = new Regex(@"EntryID:{1}\s*\d+");
                 if (entryRegexField.IsMatch(line))
                     return Convert.ToUInt32(entryRegexField.Match(line).ToString().Replace("EntryID: ", ""));
-                else
-                    return 0;
+                return 0;
             }
 
             public static int GetHealthFromLine(string line)
@@ -355,10 +347,9 @@ namespace WoWDeveloperAssistant
                 if (map == "")
                     return null;
 
-                foreach (var row in DBC.Map)
+                foreach (var row in DBC.DBC.Map.Where(row => map == row.Value.MapName))
                 {
-                    if (map == row.Value.MapName)
-                        return (uint?)row.Key;
+                    return (uint?)row.Key;
                 }
 
                 return null;
@@ -402,8 +393,8 @@ namespace WoWDeveloperAssistant
             public static uint? GetEmoteStateFromLine(string line)
             {
                 Regex emoteRegex = new Regex(@"EmoteState:{1}\s{1}\w+");
-                if (emoteRegex.IsMatch(line.ToString()))
-                    return Convert.ToUInt32(emoteRegex.Match(line.ToString()).ToString().Replace("EmoteState: ", ""));
+                if (emoteRegex.IsMatch(line))
+                    return Convert.ToUInt32(emoteRegex.Match(line).ToString().Replace("EmoteState: ", ""));
 
                 return null;
             }
@@ -411,8 +402,8 @@ namespace WoWDeveloperAssistant
             public static uint? GetSheatheStateFromLine(string line)
             {
                 Regex sheatheStateRegex = new Regex(@"SheatheState:{1}\s{1}\w+");
-                if (sheatheStateRegex.IsMatch(line.ToString()))
-                    return Convert.ToUInt32(sheatheStateRegex.Match(line.ToString()).ToString().Replace("SheatheState: ", ""));
+                if (sheatheStateRegex.IsMatch(line))
+                    return Convert.ToUInt32(sheatheStateRegex.Match(line).ToString().Replace("SheatheState: ", ""));
 
                 return null;
             }
@@ -420,13 +411,13 @@ namespace WoWDeveloperAssistant
             public static uint? GetStandStateFromLine(string line)
             {
                 Regex standstateRegex = new Regex(@"StandState:{1}\s{1}\w+");
-                if (standstateRegex.IsMatch(line.ToString()))
-                    return Convert.ToUInt32(standstateRegex.Match(line.ToString()).ToString().Replace("StandState: ", ""));
+                if (standstateRegex.IsMatch(line))
+                    return Convert.ToUInt32(standstateRegex.Match(line).ToString().Replace("StandState: ", ""));
 
                 return null;
             }
 
-            public static List<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
+            public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                 List<UpdateObjectPacket> updatePacketsList = new List<UpdateObjectPacket>();
@@ -660,7 +651,7 @@ namespace WoWDeveloperAssistant
 
             public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion)
             {
-                MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new MonsterMovePacket.JumpInfo());
+                MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
 
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
@@ -894,7 +885,7 @@ namespace WoWDeveloperAssistant
                 return "";
             }
 
-            public static List<AuraUpdatePacket> ParseAuraUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
+            public static IEnumerable<AuraUpdatePacket> ParseAuraUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                 List<AuraUpdatePacket> aurasList = new List<AuraUpdatePacket>();

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant
@@ -35,12 +31,6 @@ namespace WoWDeveloperAssistant
 
             List<string> allowedCreatureLinkedIds = new List<string>();
             List<string> allowedGameobjectLinkedIds = new List<string>();
-
-            List<string> creatureLinkedIds;
-            List<string> gameobjectLinkedIds;
-
-            List<string> creatureAddonLinkedIds;
-            List<string> gameobjectAddonLinkedIds;
 
             var lines = File.ReadAllLines(fileName);
             List<string> outputLines = new List<string>();
@@ -108,16 +98,14 @@ namespace WoWDeveloperAssistant
 
                                 break;
                             }
-                            default:
-                                break;
                         }
                     }
                     while (lines[i] != "" && GetLinkedIdFromLine(lines[i]) != "" && !IsCreatureAddonDeleteLine(lines[i]) && !IsGameObjectAddonDeleteLine(lines[i]));
                 }
             }
 
-            creatureLinkedIds = new List<string>(allowedCreatureLinkedIds);
-            gameobjectLinkedIds = new List<string>(allowedGameobjectLinkedIds);
+            var creatureLinkedIds = new List<string>(allowedCreatureLinkedIds);
+            var gameobjectLinkedIds = new List<string>(allowedGameobjectLinkedIds);
 
             if (consideringDB)
             {
@@ -127,8 +115,7 @@ namespace WoWDeveloperAssistant
                     {
                         string creaturesQuery = "SELECT `linked_id` FROM `creature` WHERE `linked_id` = '" + linkedId + "'";
 
-                        DataSet creaturesDs = new DataSet();
-                        creaturesDs = (DataSet)SQLModule.DatabaseSelectQuery(creaturesQuery);
+                        var creaturesDs = SQLModule.DatabaseSelectQuery(creaturesQuery);
 
                         if (creaturesDs != null && creaturesDs.Tables["table"].Rows.Count > 0)
                         {
@@ -152,8 +139,7 @@ namespace WoWDeveloperAssistant
                     {
                         string gameobjectsQuery = "SELECT `linked_id` FROM `gameobject` WHERE `linked_id` = '" + linkedId + "'";
 
-                        DataSet gameobjectsDs = new DataSet();
-                        gameobjectsDs = (DataSet)SQLModule.DatabaseSelectQuery(gameobjectsQuery);
+                        var gameobjectsDs = SQLModule.DatabaseSelectQuery(gameobjectsQuery);
 
                         if (gameobjectsDs != null && gameobjectsDs.Tables["table"].Rows.Count > 0)
                         {
@@ -172,8 +158,8 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            creatureAddonLinkedIds = new List<string>(creatureLinkedIds);
-            gameobjectAddonLinkedIds = new List<string>(gameobjectLinkedIds);
+            var creatureAddonLinkedIds = new List<string>(creatureLinkedIds);
+            var gameobjectAddonLinkedIds = new List<string>(gameobjectLinkedIds);
 
             for (int i = 0; i < lines.Count(); i++)
             {
@@ -228,8 +214,6 @@ namespace WoWDeveloperAssistant
 
                             break;
                         }
-                        default:
-                            break;
                     }
                 }
                 else if (IsInsertLine(lines[i]))
@@ -397,10 +381,8 @@ namespace WoWDeveloperAssistant
                     return linkedIdRegex.Match(line).ToString().Replace("'", "");
                 }
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
 
         private static uint GetEntryFromLine(string line)
@@ -415,8 +397,7 @@ namespace WoWDeveloperAssistant
             if (line.Contains("DELETE FROM `creature`") ||
                 line.Contains("DELETE FROM `gameobject`"))
                 return true;
-            else
-                return false;
+            return false;
         }
 
         private static bool IsInsertLine(string line)
@@ -424,18 +405,16 @@ namespace WoWDeveloperAssistant
             if (line.Contains("INSERT INTO `creature`") ||
                 line.Contains("INSERT INTO `gameobject`"))
                 return true;
-            else
-                return false;
+            return false;
         }
 
         private static ObjectTypes GetObjectTypeFromLine(string line)
         {
             if (line.Contains("INSERT INTO `creature`") || line.Contains("DELETE FROM `creature`"))
                 return ObjectTypes.Creature;
-            else if (line.Contains("INSERT INTO `gameobject`") || line.Contains("DELETE FROM `gameobject`"))
+            if (line.Contains("INSERT INTO `gameobject`") || line.Contains("DELETE FROM `gameobject`"))
                 return ObjectTypes.GameObject;
-            else
-                return ObjectTypes.Unknown;
+            return ObjectTypes.Unknown;
         }
 
         private static bool IsCreatureAddonDeleteLine(string line)

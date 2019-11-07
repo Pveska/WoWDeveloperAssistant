@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant.Database_Advisor
@@ -264,8 +265,8 @@ namespace WoWDeveloperAssistant.Database_Advisor
             DataSet typeFlagsDs = new DataSet();
             string unitFlagsSqlQuery = "SELECT `npcflag`, `npcflag2`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `flags_extra` FROM `creature_template` WHERE `entry` = " + creatureEntry + ";";
             string typeFlagsSqlQuery = "SELECT `TypeFlags`, `TypeFlags2` FROM `creature_template_wdb` WHERE `entry` = " + creatureEntry + ";";
-            unitFlagsDs = (DataSet)SQLModule.DatabaseSelectQuery(unitFlagsSqlQuery);
-            typeFlagsDs = (DataSet)SQLModule.DatabaseSelectQuery(typeFlagsSqlQuery);
+            unitFlagsDs = SQLModule.DatabaseSelectQuery(unitFlagsSqlQuery);
+            typeFlagsDs = SQLModule.DatabaseSelectQuery(typeFlagsSqlQuery);
             if (unitFlagsDs == null || typeFlagsDs == null)
                 return;
 
@@ -446,10 +447,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following NpcFlags: \r\n";
 
-                foreach (long itr in npcFlagsList)
-                {
-                    outputText += (NpcFlags)itr + ": " + itr + "\r\n";
-                }
+                outputText = npcFlagsList.Aggregate(outputText, (current, itr) => current + ((NpcFlags) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any NpcFlags!\r\n";
@@ -458,10 +456,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following NpcFlags2: \r\n";
 
-                foreach (long itr in npcFlags2List)
-                {
-                    outputText += (NpcFlags2)itr + ": " + itr + "\r\n";
-                }
+                outputText = npcFlags2List.Aggregate(outputText, (current, itr) => current + ((NpcFlags2) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any NpcFlags2!\r\n";
@@ -470,10 +465,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following UnitFlags: \r\n";
 
-                foreach (long itr in unitFlagsList)
-                {
-                    outputText += (UnitFlags)itr + ": " + itr + "\r\n";
-                }
+                outputText = unitFlagsList.Aggregate(outputText, (current, itr) => current + ((UnitFlags) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any UnitFlags!\r\n";
@@ -482,10 +474,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following UnitFlags2: \r\n";
 
-                foreach (long itr in unitFlags2List)
-                {
-                    outputText += (UnitFlags2)itr + ": " + itr + "\r\n";
-                }
+                outputText = unitFlags2List.Aggregate(outputText, (current, itr) => current + ((UnitFlags2) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any UnitFlags2!\r\n";
@@ -494,10 +483,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following UnitFlags3: \r\n";
 
-                foreach (long itr in unitFlags3List)
-                {
-                    outputText += (UnitFlags3)itr + ": " + itr + "\r\n";
-                }
+                outputText = unitFlags3List.Aggregate(outputText, (current, itr) => current + ((UnitFlags3) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any UnitFlags3!\r\n";
@@ -506,10 +492,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following DynamicFlags: \r\n";
 
-                foreach (long itr in dynamicFlagsList)
-                {
-                    outputText += (DynamicFlags)itr + ": " + itr + "\r\n";
-                }
+                outputText = dynamicFlagsList.Aggregate(outputText, (current, itr) => current + ((DynamicFlags) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any DynamicFlags!\r\n";
@@ -518,10 +501,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following ExtraFlags: \r\n";
 
-                foreach (long itr in extraFlagsList)
-                {
-                    outputText += (FlagsExtra)itr + ": " + itr + "\r\n";
-                }
+                outputText = extraFlagsList.Aggregate(outputText, (current, itr) => current + ((FlagsExtra) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any ExtraFlags!\r\n";
@@ -530,10 +510,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following TypeFlags: \r\n";
 
-                foreach (long itr in typeFlagsList)
-                {
-                    outputText += (TypeFlags)itr + ": " + itr + "\r\n";
-                }
+                outputText = typeFlagsList.Aggregate(outputText, (current, itr) => current + ((TypeFlags) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any TypeFlags!\r\n";
@@ -542,10 +519,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 outputText += "Creature has the following TypeFlags2: \r\n";
 
-                foreach (long itr in typeFlags2List)
-                {
-                    outputText += (TypeFlags2)itr + ": " + itr + "\r\n";
-                }
+                outputText = typeFlags2List.Aggregate(outputText, (current, itr) => current + ((TypeFlags2) itr + ": " + itr + "\r\n"));
             }
             else
                 outputText += "Creature doesn't have any TypeFlags2!\r\n";

@@ -1,7 +1,6 @@
-﻿namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
-    [DBFile("Achievement")]
-    public sealed class AchievementEntry
+    public class AchievementEntry
     {
         public string Description;
         public string Title;
@@ -16,7 +15,7 @@
         public int Flags;
         public short UiOrder;
         public int IconFileID;
-        public int ItemRewardID;
+        public int RewardItemID;
         public uint CriteriaTree;
         public short SharesCriteria;
     }

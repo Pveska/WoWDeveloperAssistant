@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 
@@ -150,9 +151,8 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             string defaultName = "";
             string scriptName = "";
 
-            DataSet creatureNameDs = new DataSet();
             string creatureNameQuery = "SELECT `Name1` FROM `creature_template_wdb` WHERE `entry` = " + objectEntry + ";";
-            creatureNameDs = Properties.Settings.Default.UsingDB ? (DataSet)SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
 
             if (creatureNameDs != null)
             {
@@ -190,13 +190,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
         private static bool IsVehicleScript(ListBox listBox)
         {
-            foreach (var item in listBox.SelectedItems)
-            {
-                if (item.ToString() == "PassengerBoarded")
-                    return true;
-            }
-
-            return false;
+            return listBox.SelectedItems.Cast<object>().Any(item => item.ToString() == "PassengerBoarded");
         }
 
         private static string GetEnumsBody(TreeView hookBodiesTreeView)
@@ -260,16 +254,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
         private static bool IsHookBodiesContainItem(string itemName, TreeView hookBodiesTreeView)
         {
-            foreach (TreeNode parentNode in hookBodiesTreeView.Nodes)
-            {
-                foreach (TreeNode childNode in parentNode.Nodes)
-                {
-                    if (childNode.Checked && childNode.Text == itemName)
-                        return true;
-                }
-            }
-
-            return false;
+            return hookBodiesTreeView.Nodes.Cast<TreeNode>().Any(parentNode => parentNode.Nodes.Cast<TreeNode>().Any(childNode => childNode.Checked && childNode.Text == itemName));
         }
 
         private static string GetHooksBody(ListBox hooksListBox, TreeView hookBodiesTreeView)

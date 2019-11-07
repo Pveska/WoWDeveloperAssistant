@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using WoWDeveloperAssistant.Waypoints_Creator;
-using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -26,7 +25,7 @@ namespace WoWDeveloperAssistant.Misc
             return value.ToString().Replace(",", ".");
         }
 
-        public static void RecalculateIdsAndGuids(this List<Waypoint> list, uint baseId)
+        public static void RecalculateIdsAndGuids(this IEnumerable<Waypoint> list, uint baseId)
         {
             uint id = baseId * 100;
             uint guid = id;
@@ -47,18 +46,11 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        public static string GetScriptIds(this List<Waypoint> list)
+        public static string GetScriptIds(this IEnumerable<Waypoint> list)
         {
-            List<uint> scriptIds = new List<uint>();
             string ids = "";
 
-            foreach (Waypoint waypoint in list)
-            {
-                if (waypoint.HasScripts())
-                {
-                    scriptIds.Add(waypoint.GetScriptId());
-                }
-            }
+            List<uint> scriptIds = (from waypoint in list where waypoint.HasScripts() select waypoint.GetScriptId()).ToList();
 
             for (int i = 0; i < scriptIds.Count; i++)
             {
@@ -71,27 +63,18 @@ namespace WoWDeveloperAssistant.Misc
             return ids;
         }
 
-        public static uint GetScriptsCount(this List<Waypoint> list)
+        public static uint GetScriptsCount(this IEnumerable<Waypoint> list)
         {
-            uint scriptsCount = 0;
-
-            foreach (Waypoint waypoint in list)
-            {
-                if (waypoint.scripts.Count > 0)
-                    scriptsCount += (uint)waypoint.scripts.Count;
-            }
-
-            return scriptsCount;
+            return list.Where(waypoint => waypoint.scripts.Count > 0).Aggregate<Waypoint, uint>(0, (current, waypoint) => current + (uint) waypoint.scripts.Count);
         }
 
-        public static uint GetPointsWithScriptsCount(this List<Waypoint> list)
+        public static uint GetPointsWithScriptsCount(this IEnumerable<Waypoint> list)
         {
             uint pointsCount = 0;
 
-            foreach (Waypoint waypoint in list)
+            foreach (var waypoint in list.Where(waypoint => waypoint.scripts.Count > 0))
             {
-                if (waypoint.scripts.Count > 0)
-                    pointsCount++;
+                pointsCount++;
             }
 
             return pointsCount;
@@ -114,7 +97,8 @@ namespace WoWDeveloperAssistant.Misc
                             loopStopped = true;
                             break;
                         }
-                        else if (i + 1 > list.Count)
+
+                        if (i + 1 > list.Count)
                         {
                             loopStopped = true;
                             break;
@@ -132,30 +116,23 @@ namespace WoWDeveloperAssistant.Misc
             return waypoint;
         }
 
-        public static UpdateObjectPacket? GetUpdatePacketForCreatureWithGuid(this List<object> list, string guid)
+        public static UpdateObjectPacket? GetUpdatePacketForCreatureWithGuid(this IEnumerable<object> list, string guid)
         {
-            foreach (object updatePacket in list)
+            foreach (var updateObjectPacket in list.Cast<UpdateObjectPacket>().Where(updateObjectPacket => updateObjectPacket.creatureGuid == guid))
             {
-                UpdateObjectPacket updateObjectPacket = (UpdateObjectPacket)updatePacket;
-                if (updateObjectPacket.creatureGuid == guid)
-                {
-                    return updateObjectPacket;
-                }
+                return updateObjectPacket;
             }
 
             return null;
         }
 
-        public static uint GetObjectstWithTypeCount(this List<Packet> list, Packet.PacketTypes type)
+        public static uint GetObjectstWithTypeCount(this IEnumerable<Packet> list, Packet.PacketTypes type)
         {
             uint packetsCount = 0;
 
-            foreach (Packet packet in list)
+            foreach (var packet in list.Where(packet => packet.packetType == type))
             {
-                if (packet.packetType == type)
-                {
-                    packetsCount++;
-                }
+                packetsCount++;
             }
 
             return packetsCount;
@@ -163,88 +140,57 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromEmotePacket(this SortedDictionary<long, Packet> dict, EmotePacket emotePacket, long index)
         {
-            foreach (Packet packet in dict.Values)
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_EMOTE && packet.index == index))
             {
-                if (packet.packetType == Packet.PacketTypes.SMSG_EMOTE && packet.index == index)
-                {
-                    packet.parsedPacketsList.Add(emotePacket);
-                    return;
-                }
+                packet.parsedPacketsList.Add(emotePacket);
+                return;
             }
         }
 
         public static void AddSourceFromAuraUpdatePacket(this SortedDictionary<long, Packet> dict, AuraUpdatePacket auraPacket, long index)
         {
-            foreach (Packet packet in dict.Values)
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_AURA_UPDATE && packet.index == index))
             {
-                if (packet.packetType == Packet.PacketTypes.SMSG_AURA_UPDATE && packet.index == index)
-                {
-                    packet.parsedPacketsList.Add(auraPacket);
-                    return;
-                }
+                packet.parsedPacketsList.Add(auraPacket);
+                return;
             }
         }
 
         public static void AddSourceFromSpellPacket(this SortedDictionary<long, Packet> dict, SpellStartPacket spellPacket, long index)
         {
-            foreach (Packet packet in dict.Values)
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_SPELL_START && packet.index == index))
             {
-                if (packet.packetType == Packet.PacketTypes.SMSG_SPELL_START && packet.index == index)
-                {
-                    packet.parsedPacketsList.Add(spellPacket);
-                    return;
-                }
+                packet.parsedPacketsList.Add(spellPacket);
+                return;
             }
         }
 
         public static void AddSourceFromMovementPacket(this SortedDictionary<long, Packet> dict, MonsterMovePacket movementPacket, long index)
         {
-            foreach (Packet packet in dict.Values)
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && packet.index == index))
             {
-                if (packet.packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && packet.index == index)
-                {
-                    packet.parsedPacketsList.Add(movementPacket);
-                    return;
-                }
+                packet.parsedPacketsList.Add(movementPacket);
+                return;
             }
         }
 
         public static void AddSourceFromUpdatePacket(this SortedDictionary<long, Packet> dict, UpdateObjectPacket updatePacket, long index)
         {
-            foreach (Packet packet in dict.Values)
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && packet.index == index))
             {
-                if (packet.packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && packet.index == index)
-                {
-                    packet.parsedPacketsList.Add(updatePacket);
-                    return;
-                }
+                packet.parsedPacketsList.Add(updatePacket);
+                return;
             }
         }
 
-        public static bool ContainPacketWithIndex(this List<Packet> list, long index)
+        public static bool ContainPacketWithIndex(this IEnumerable<Packet> list, long index)
         {
-            foreach (Packet packet in list)
-            {
-                if (packet.index == index)
-                    return true;
-            }
-
-            return false;
+            return list.Any(packet => packet.index == index);
         }
 
-        public static List<Packet> GetPacketsForCreatureWithGuid(this List<Packet> list, string guid)
+        public static List<Packet> GetPacketsForCreatureWithGuid(this IEnumerable<Packet> list, string guid)
         {
-            List<Packet> packets = new List<Packet>();
-
-            foreach (Packet packet in list)
-            {
-                if (packet.HasCreatureWithGuid(guid))
-                {
-                    packets.Add(packet);
-                }
-            }
-
-            return packets;
+            return list.Where(packet => packet.HasCreatureWithGuid(guid)).ToList();
         }
 
         public static string GetTimeWithoutMilliseconds(this TimeSpan span)
@@ -257,7 +203,7 @@ namespace WoWDeveloperAssistant.Misc
             return $"{span.Hours:00}:{span.Minutes:00}:{span.Seconds:00}";
         }
 
-        public static TimeSpan GetMinTimeSpanFromList(List<TimeSpan> timeSpanList)
+        public static TimeSpan GetMinTimeSpanFromList(IEnumerable<TimeSpan> timeSpanList)
         {
             List<TimeSpan> sortedList = new List<TimeSpan>(from time in timeSpanList orderby time.TotalSeconds ascending select time);
 
@@ -267,7 +213,7 @@ namespace WoWDeveloperAssistant.Misc
             return new TimeSpan();
         }
 
-        public static TimeSpan GetMaxTimeSpanFromList(List<TimeSpan> timeSpanList)
+        public static TimeSpan GetMaxTimeSpanFromList(IEnumerable<TimeSpan> timeSpanList)
         {
             List<TimeSpan> sortedList = new List<TimeSpan>(from time in timeSpanList orderby time.TotalSeconds descending select time);
 
@@ -279,12 +225,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static TimeSpan GetAverageTimeSpanFromList(List<TimeSpan> timeSpanList)
         {
-            int average = 0;
-
-            foreach (TimeSpan time in timeSpanList)
-            {
-                average += (int)time.TotalSeconds;
-            }
+            int average = timeSpanList.Sum(time => (int) time.TotalSeconds);
 
             return new TimeSpan(0, 0, average / timeSpanList.Count);
         }
@@ -299,7 +240,7 @@ namespace WoWDeveloperAssistant.Misc
             return HexStringFromBytes(hashBytes);
         }
 
-        public static string HexStringFromBytes(byte[] bytes)
+        public static string HexStringFromBytes(IEnumerable<byte> bytes)
         {
             var sb = new StringBuilder();
             foreach (byte b in bytes)

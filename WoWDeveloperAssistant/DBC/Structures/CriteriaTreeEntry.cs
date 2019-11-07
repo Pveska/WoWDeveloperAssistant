@@ -1,8 +1,8 @@
-﻿namespace WoWDeveloperAssistant.Structures
+﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
-    [DBFile("CriteriaTree")]
     public sealed class CriteriaTreeEntry
     {
+        public uint ID;
         public string Description;
         public uint Parent;
         public uint Amount;

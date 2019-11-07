@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using static WoWDeveloperAssistant.Packets;
+using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
 
-namespace WoWDeveloperAssistant
+namespace WoWDeveloperAssistant.Misc
 {
     public static class LineGetters
     {
@@ -54,7 +55,7 @@ namespace WoWDeveloperAssistant
                 Regex guidRegexSecond = new Regex(@"Object GUID: Full:{1}\s*\w{20,}");
                 if (guidRegex.IsMatch(line))
                     return guidRegex.Match(line).ToString().Replace("ObjectGuid: Full: ", "");
-                else if (guidRegexSecond.IsMatch(line))
+                if (guidRegexSecond.IsMatch(line))
                     return guidRegexSecond.Match(line).ToString().Replace("Object GUID: Full: ", "");
 
             }
@@ -120,7 +121,7 @@ namespace WoWDeveloperAssistant
 
         public static string GetPacketTimeFromStringInSeconds(string line)
         {
-            Regex timeRegex = timeRegex = new Regex(@"\d+:+\d+:+\d+");
+            Regex timeRegex = new Regex(@"\d+:+\d+:+\d+");
 
             if (timeRegex.IsMatch(line))
             {
@@ -137,7 +138,7 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        public static BuildVersions GetBuildVersion(string[] lines)
+        public static BuildVersions GetBuildVersion(IEnumerable<string> lines)
         {
             foreach (var line in lines)
             {
@@ -145,16 +146,15 @@ namespace WoWDeveloperAssistant
                 {
                     if (line.Contains("V8_0_1"))
                         return BuildVersions.BUILD_8_0_1;
-                    else if (line.Contains("V8_1_0"))
+                    if (line.Contains("V8_1_0"))
                         return BuildVersions.BUILD_8_1_0;
-                    else if (line.Contains("V8_1_5"))
+                    if (line.Contains("V8_1_5"))
                         return BuildVersions.BUILD_8_1_5;
-                    else if (line.Contains("V8_2_0"))
+                    if (line.Contains("V8_2_0"))
                         return BuildVersions.BUILD_8_2_0;
-                    else if (line.Contains("V8_2_5"))
+                    if (line.Contains("V8_2_5"))
                         return BuildVersions.BUILD_8_2_5;
-                    else
-                        return BuildVersions.BUILD_UNKNOWN;
+                    return BuildVersions.BUILD_UNKNOWN;
                 }
             }
 

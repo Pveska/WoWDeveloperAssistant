@@ -6,8 +6,6 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B7C4440C-CE8F-4EC1-9793-61958F2265DF}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CascStorageLib</RootNamespace>
-    <AssemblyName>CascStorageLib</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
