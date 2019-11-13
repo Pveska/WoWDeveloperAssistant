@@ -220,7 +220,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public void SortWaypoints()
         {
-            waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse, waypoint.moveStartTime select waypoint);
+            waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.moveStartTime select waypoint);
         }
     }
 }
