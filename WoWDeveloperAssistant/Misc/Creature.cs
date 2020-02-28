@@ -143,7 +143,7 @@ namespace WoWDeveloperAssistant.Misc
         public string GetLinkedId()
         {
             var linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.z / 0.25)) + " ";
-            linkedId += Convert.ToString(entry) + " " + Convert.ToString(mapId) + " 0 1 0";
+            linkedId += Convert.ToString(entry) + " " + Convert.ToString(mapId) + " 0 1 " + GetSpawnDifficulties();
             return Utils.SHA1HashStringForUTF8String(linkedId).ToUpper();
         }
 
@@ -221,6 +221,163 @@ namespace WoWDeveloperAssistant.Misc
         public void SortWaypoints()
         {
             waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.moveStartTime select waypoint);
+        }
+
+        public string GetSpawnDifficulties()
+        {
+            if (MapIsAzeriteExpeditions((uint)mapId))
+                return "38 39 40 45";
+
+            if (DBC.DBC.MapSpawnDifficultyStore.ContainsKey((int)mapId))
+                return DBC.DBC.MapSpawnDifficultyStore[(int)mapId];
+
+            if (MapIsContinent((uint)mapId))
+                return "0";
+
+            return "1 2";
+        }
+
+        public bool MapIsAzeriteExpeditions(uint mapId)
+        {
+            switch (mapId)
+            {
+                case 2124: // Crestfall 8.2
+                case 1907: // Snowblossom Village 8.1
+                case 1814: // Havenswood 8.1
+                case 1879: // Jorundall 8.1
+                case 1897: // The Molten Cay
+                case 1813: // Un'gol Ruins
+                case 1892: // The Rotting Mire
+                case 1883: // The Whispering Reef
+                case 1882: // Verdant Wilds
+                case 1893: // The Dread Chain
+                case 1898: // Skittering Hollow
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool MapIsContinent(uint mapId)
+        {
+            switch (mapId)
+            {
+                case 0: // Eastern Kingdoms
+                case 1: // Kalimdor
+                case 13: // Art Team Map
+                case 35: // <unused>StormwindPrison
+                case 37: // Azshara Crater
+                case 369: // Deeprun Tram
+                case 449: // Alliance PVP Barracks
+                case 450: // Horde PVP Barracks
+                case 451: // Development Land
+                case 530: // Outland
+                case 571: // Northrend
+                case 606: // QA and DVD
+                case 609: // Ebon Hold
+                case 638: // Gilneas
+                case 646: // Deepholm
+                case 648: // LostIsles
+                case 654: // Gilneas2
+                case 655: // GilneasPhase1
+                case 656: // GilneasPhase2
+                case 659: // Lost Isles Volcano Eruption
+                case 660: // Deephome Ceiling
+                case 661: // Lost Isles Town in a Box
+                case 718: // Trasnport: The Mighty Wind (Icecrown Citadel Raid)
+                case 719: // Mount Hyjal Phase 1
+                case 723: // Stormwind
+                case 730: // Maelstrom Zone
+                case 731: // Stonetalon Bomb
+                case 732: // Tol Barad
+                case 736: // Twilight Highlands Dragonmaw Phase
+                case 738: // Ship to Vashj'ir (Orgrimmar -> Vashj'ir)
+                case 739: // Vashj'ir Sub - Horde
+                case 740: // Vashj'ir Sub - Alliance
+                case 742: // Vashj'ir Sub - Horde - Circling Abyssal Maw
+                case 743: // Vashj'ir Sub - Alliance circling Abyssal Maw
+                case 746: // Uldum Phase Oasis
+                case 751: // Redridge - Orc Bomb
+                case 752: // Redridge - Bridge Phase One
+                case 753: // Redridge - Bridge Phase Two
+                case 759: // Uldum Phased Entrance
+                case 760: // Twilight Highlands Phased Entrance
+                case 762: // Twilight Highlands Zeppelin 1
+                case 763: // Twilight Highlands Zeppelin 2
+                case 764: // Uldum - Phase Wrecked Camp
+                case 765: // Krazzworks Attack Zeppelin
+                case 860: // The Wandering Isle
+                case 861: // Molten Front
+                case 870: // Pandaria
+                case 971: // Jade Forest Alliance Hub Phase
+                case 972: // Jade Forest Battlefield Phase
+                case 974: // Darkmoon Faire
+                case 975: // Turtle Ship Phase 01
+                case 976: // Turtle Ship Phase 02
+                case 1019: // Ruins of Theramore
+                case 1043: // Brawl'gar Arena
+                case 1060: // Level Design Land - Dev Only
+                case 1061: // Horde Beach Daily Area
+                case 1062: // Alliance Beach Daily Area
+                case 1064: // Mogu Island Daily Area
+                case 1066: // Stormwind Gunship Pandaria Start Area
+                case 1074: // Orgrimmar Gunship Pandaria Start
+                case 1075: // Theramore's Fall Phase
+                case 1076: // Jade Forest Horde Starting Area
+                case 1101: // Defense Of The Ale House BG
+                case 1107: // Dreadscar Rift
+                case 1116: // Draenor
+                case 1120: // Thunder King Horde Hub
+                case 1121: // Thunder Island Alliance Hub
+                case 1128: // Mogu Island Events - Horde Base
+                case 1129: // Mogu Island Events - Alliance Base
+                case 1166: // Small Battleground A
+                case 1169: // Small Battleground B
+                case 1170: // Small Battleground C
+                case 1179: // Warcraft Heroes
+                case 1190: // Blasted Lands Phase
+                case 1220: // Broken Isles
+                case 1264: // Propland - Dev Only
+                case 1265: // Tanaan Jungle Intro
+                case 1270: // Development Land 3
+                case 1307: // Tanaan Jungle Intro - Forge Phase
+                case 1310: // Expansion 5 QA Model Map
+                case 1462: // Illidans Rock
+                case 1463: // Helhiem Exterior Area
+                case 1464: // Tanaan Jungle
+                case 1465: // Tanaan Jungle - No Hubs Phase
+                case 1468: // Warden Prison DH Quests
+                case 1469: // The Heart of Azeroth
+                case 1479: // Skyhold
+                case 1481: // Mardum
+                case 1502: // Dalaran Underbelly
+                case 1509: // Bloodtotem Cavern - Fel Phase
+                case 1510: // Bloodtotem Cavern - Tauren Phase
+                case 1512: // Netherlight Temple
+                case 1513: // Hall of the Guardian
+                case 1514: // The Wandering Isle
+                case 1515: // Huln's War
+                case 1519: // The Fel Hammer
+                case 1540: // Emerald Dreamway
+                case 1547: // Artifact - Combat - Acquisition Ship
+                case 1602: // Artifact - The Vortex Pinnacle - Shaman Order Hall
+                case 1604: // Artifact - Order Campaign - Portal World Niskara
+                case 1605: // Firelands_Artifact
+                case 1608: // Hyjal War of the Ancients Quest
+                case 1618: // Death Knight Campaign - Scarlet Monastery
+                case 1622: // Pandemonium
+                case 1647: // Vol'jin's Funeral Pyre
+                case 1670: // Broken Shore (Delete)
+                case 1711: // Alliance Submarine (7.1.5 Boat Holiday)
+                case 1918: // Kalimdor Darkshore Phase
+                case 1817: // Silithus: The Wound
+                case 1643: // Kultiras
+                case 1642: // Zandalar
+                case 1718: // Nazjatar
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

@@ -110,6 +110,7 @@
     <Compile Include="DBC\Structures\AchievementEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaTreeEntry.cs" />
+    <Compile Include="DBC\Structures\MapDifficultyEntry.cs" />
     <Compile Include="DBC\Structures\ModifierTreeEntry.cs" />
     <Compile Include="Misc\Aura.cs" />
     <Compile Include="Misc\Creature.cs" />

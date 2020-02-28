@@ -22,6 +22,7 @@ namespace WoWDeveloperAssistant.DBC
         public static Storage<CriteriaTreeEntry> CriteriaTree { get; set; }
         public static Storage<CriteriaEntry> Criteria { get; set; }
         public static Storage<ModifierTreeEntry> ModifierTree { get; set; }
+        public static Storage<MapDifficultyEntry> MapDifficulty { get; set; }
 
         private static string GetPath()
         {
@@ -60,12 +61,26 @@ namespace WoWDeveloperAssistant.DBC
             dbReader = new DBReader(GetPath(), "ModifierTree.db2");
             ModifierTree = dbReader.GetRecords<ModifierTreeEntry>();
 
+            dbReader = new DBReader(GetPath(), "MapDifficulty.db2");
+            MapDifficulty = dbReader.GetRecords<MapDifficultyEntry>();
+
             if (SpellEffect != null && SpellEffectStores.Count == 0)
             {
                 foreach (var effect in SpellEffect)
                 {
                     var tuple = Tuple.Create((uint)effect.Value.SpellID, (uint)effect.Value.EffectIndex);
                     SpellEffectStores[tuple] = effect.Value;
+                }
+            }
+
+            if (MapDifficulty != null && MapSpawnDifficultyStore.Count == 0)
+            {
+                foreach (var mapDifficulty in MapDifficulty)
+                {
+                    if (MapSpawnDifficultyStore.ContainsKey(mapDifficulty.Value.MapID))
+                        MapSpawnDifficultyStore[mapDifficulty.Value.MapID] = MapSpawnDifficultyStore[mapDifficulty.Value.MapID] + " " + mapDifficulty.Value.DifficultyID;
+                    else
+                        MapSpawnDifficultyStore.Add(mapDifficulty.Value.MapID, Convert.ToString(mapDifficulty.Value.DifficultyID));
                 }
             }
 
@@ -78,5 +93,6 @@ namespace WoWDeveloperAssistant.DBC
         }
 
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffectEntry> SpellEffectStores = new Dictionary<Tuple<uint, uint>, SpellEffectEntry>();
+        public static readonly Dictionary<int, string> MapSpawnDifficultyStore = new Dictionary<int, string>();
     }
 }
