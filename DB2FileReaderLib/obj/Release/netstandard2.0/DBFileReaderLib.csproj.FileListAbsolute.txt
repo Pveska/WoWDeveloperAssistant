@@ -1,8 +1,0 @@
-C:\a_work\WPP\DB2FileReaderLib\bin\Release\netstandard2.0\DBFileReaderLib.deps.json
-C:\a_work\WPP\DB2FileReaderLib\bin\Release\netstandard2.0\DBFileReaderLib.dll
-C:\a_work\WPP\DB2FileReaderLib\bin\Release\netstandard2.0\DBFileReaderLib.pdb
-C:\a_work\WPP\DB2FileReaderLib\obj\Release\netstandard2.0\DBFileReaderLib.csprojAssemblyReference.cache
-C:\a_work\WPP\DB2FileReaderLib\obj\Release\netstandard2.0\DBFileReaderLib.AssemblyInfoInputs.cache
-C:\a_work\WPP\DB2FileReaderLib\obj\Release\netstandard2.0\DBFileReaderLib.AssemblyInfo.cs
-C:\a_work\WPP\DB2FileReaderLib\obj\Release\netstandard2.0\DBFileReaderLib.dll
-C:\a_work\WPP\DB2FileReaderLib\obj\Release\netstandard2.0\DBFileReaderLib.pdb
