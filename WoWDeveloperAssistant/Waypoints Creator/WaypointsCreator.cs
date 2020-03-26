@@ -161,7 +161,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             {
                                 creature.AddWaypointsFromMovementPacket(movePacket);
                             }
-                            else if (creature.HasWaypoints() && movePacket.HasOrientation())
+                            else if (creature.HasWaypoints() && movePacket.HasOrientation() && !movePacket.HasWaypoints())
                             {
                                 creature.SortWaypoints();
                                 creature.waypoints.Last().SetOrientation(movePacket.creatureOrientation);
