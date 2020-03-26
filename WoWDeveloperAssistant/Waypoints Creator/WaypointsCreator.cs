@@ -390,7 +390,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 if (mainForm.toolStripTextBox_WC_Entry.Text != "" && mainForm.toolStripTextBox_WC_Entry.Text != "0")
                 {
                     if (mainForm.toolStripTextBox_WC_Entry.Text == creature.entry.ToString() ||
-                        mainForm.toolStripTextBox_WC_Entry.Text == creature.guid)
+                        mainForm.toolStripTextBox_WC_Entry.Text == creature.guid ||
+                        mainForm.toolStripTextBox_WC_Entry.Text == creature.GetLinkedId())
                     {
                         mainForm.listBox_WC_CreatureGuids.Items.Add(creature.guid);
                     }
