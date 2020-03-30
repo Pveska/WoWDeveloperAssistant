@@ -165,7 +165,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             if (defaultName == "")
                 return;
 
-            scriptName = "npc_" + defaultName.Replace(" ", "_").ToLower().Replace("'", "") + "_" + objectEntry;
+            scriptName = "npc_" + defaultName.Replace(" ", "_").ToLower().Replace("'", "").Replace("-", "_") + "_" + objectEntry;
             scriptBody = "/// " + defaultName + " - " + objectEntry + "\r\n";
             scriptBody += "class " + scriptName + " : public CreatureScript" + "\r\n";
             scriptBody += "{" + "\r\n";
