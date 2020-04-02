@@ -31,7 +31,8 @@ namespace WoWDeveloperAssistant.Misc
                 SMSG_ON_MONSTER_MOVE = 5,
                 SMSG_ATTACK_STOP     = 6,
                 SMSG_AURA_UPDATE     = 7,
-                SMSG_EMOTE           = 8
+                SMSG_EMOTE           = 8,
+                SMSG_SPELL_GO        = 9
             }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
@@ -128,9 +129,10 @@ namespace WoWDeveloperAssistant.Misc
             public uint spellId;
             public TimeSpan spellCastTime;
             public TimeSpan spellCastStartTime;
+            public Position spellDestination;
 
-            public SpellStartPacket(string guid, uint id, TimeSpan castTime, TimeSpan startTime)
-            { casterGuid = guid; spellId = id; spellCastTime = castTime; spellCastStartTime = startTime; }
+            public SpellStartPacket(string guid, uint id, TimeSpan castTime, TimeSpan startTime, Position spellDest)
+            { casterGuid = guid; spellId = id; spellCastTime = castTime; spellCastStartTime = startTime; spellDestination = spellDest; }
 
             public static uint GetSpellIdFromLine(string line)
             {
@@ -150,6 +152,23 @@ namespace WoWDeveloperAssistant.Misc
                 return new TimeSpan();
             }
 
+            public static Position GetSpellDestinationFromLine(string line)
+            {
+                Position destPosition = new Position();
+
+                Regex xyzRegex = new Regex(@"Location:\s{1}X:{1}\s{1}");
+                if (xyzRegex.IsMatch(line))
+                {
+                    string[] splittedLine = line.Split(' ');
+
+                    destPosition.x = float.Parse(splittedLine[5], CultureInfo.InvariantCulture.NumberFormat);
+                    destPosition.y = float.Parse(splittedLine[7], CultureInfo.InvariantCulture.NumberFormat);
+                    destPosition.z = float.Parse(splittedLine[9], CultureInfo.InvariantCulture.NumberFormat);
+                }
+
+                return destPosition;
+            }
+
             public static bool IsCreatureSpellCastLine(string line)
             {
                 if (line.Contains("CasterGUID: Full:") &&
@@ -161,7 +180,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion)
             {
-                SpellStartPacket spellPacket = new SpellStartPacket("", 0, new TimeSpan(), LineGetters.GetTimeSpanFromLine(lines[index]));
+                SpellStartPacket spellPacket = new SpellStartPacket("", 0, new TimeSpan(), LineGetters.GetTimeSpanFromLine(lines[index]), new Position());
 
                 if (IsCreatureSpellCastLine(lines[index + 1]))
                 {
@@ -175,6 +194,9 @@ namespace WoWDeveloperAssistant.Misc
 
                         if (GetCastTimeFromLine(lines[index]) != TimeSpan.Zero)
                             spellPacket.spellCastTime = GetCastTimeFromLine(lines[index]);
+
+                        if (GetSpellDestinationFromLine(lines[index]).IsValid())
+                            spellPacket.spellDestination = GetSpellDestinationFromLine(lines[index]);
 
                         index++;
                     }

@@ -389,5 +389,21 @@ namespace WoWDeveloperAssistant
         {
             treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
         }
+
+        private void textBox_SpellDestinations_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_SpellDestinations.Text == "" || textBox_SpellDestinations.Text == "0")
+                return;
+
+            SpellDestinationsParser.OpenFileDialog(openFileDialog);
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                SpellDestinationsParser.ParseSpellDestinations(openFileDialog.FileName, textBox_SpellDestinations.Text);
+            }
+        }
     }
 }

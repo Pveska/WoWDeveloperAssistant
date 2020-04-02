@@ -70,7 +70,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
         public static void OpenFileDialog(OpenFileDialog fileDialog)
         {
             fileDialog.Title = "Open File";
-            fileDialog.Filter = "SQL File (*.sql)|*.sql";
+            fileDialog.Filter = "Txt File (*.txt)|*.txt";
             fileDialog.FileName = "";
             fileDialog.FilterIndex = 1;
             fileDialog.ShowReadOnly = false;
