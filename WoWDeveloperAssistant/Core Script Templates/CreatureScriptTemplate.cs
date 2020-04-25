@@ -124,14 +124,14 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             { "Reset",
                 new Dictionary<string, string>
                 {
-                    { "EventReset",   "m_Events.Reset();" },
+                    { "EventReset",   "events.Reset();" },
                 }
             },
 
             { "EnterCombat",
                 new Dictionary<string, string>
                 {
-                    { "ScheduleEvent", "m_Events.ScheduleEvent(eEvents::EventName, 10000);" },
+                    { "ScheduleEvent", "events.ScheduleEvent(eEvents::EventName, 10000);" },
                 }
             },
 
@@ -139,8 +139,8 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                 new Dictionary<string, string>
                 {
                     { "PlayerCheck",   "Player* l_Player = ObjectAccessor::GetPlayer(*me, m_SummonerGuid);" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player || !l_Player->IsInWorld() || !l_Player->HasQuest(eQuests::QuestName))" + "\r\n" + Utils.AddSpacesCount(16) + "{" +  "\r\n" + Utils.AddSpacesCount(20) + "me->DespawnOrUnsummon();" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
-                    { "CombatChecks",  "if (!UpdateVictim())" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "m_Events.Update(p_Diff);" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "if (me->HasUnitState(UNIT_STATE_CASTING))" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
-                    { "EventsSwitch",  "switch (m_Events.ExecuteEvent())" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eEvents::EventName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "m_Events.ScheduleEvent(eEvents::Eventname, 10000);" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
+                    { "CombatChecks",  "if (!UpdateVictim())" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "events.Update(p_Diff);" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "if (me->HasUnitState(UNIT_STATE_CASTING))" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
+                    { "EventsSwitch",  "switch (events.ExecuteEvent())" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eEvents::EventName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "events.ScheduleEvent(eEvents::Eventname, 10000);" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
                     { "DoMeleeAttack", "DoMeleeAttackIfReady();" }
                 }
             },
@@ -175,7 +175,6 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             scriptBody += Utils.AddSpacesCount(8) + "{" + "\r\n";
             scriptBody += Utils.AddSpacesCount(12) + "explicit " + scriptName + "AI" + "(Creature* p_Creature) : " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }";
             scriptBody += GetEnumsBody(hookBodiesTreeView);
-            scriptBody += GetVariablesBody(hookBodiesTreeView);
             scriptBody += GetHooksBody(hooksListBox, hookBodiesTreeView);
             scriptBody += "\r\n" + Utils.AddSpacesCount(8) + "};" + "\r\n\r\n";
             scriptBody += Utils.AddSpacesCount(8) + "CreatureAI* GetAI(Creature* p_Creature) const override" + "\r\n";
@@ -211,42 +210,6 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             if (IsHookBodiesContainItem("EventsSwitch", hookBodiesTreeView))
             {
                 body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "enum eEvents" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(12) + "};";
-            }
-
-            return body;
-        }
-
-        private static string GetVariablesBody(TreeView hookBodiesTreeView)
-        {
-            string body = "";
-            uint variablesCount = 0;
-
-            if (IsHookBodiesContainItem("SetSummonerGuid", hookBodiesTreeView))
-            {
-                if (variablesCount == 0)
-                {
-                    body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "ObjectGuid m_SummonerGuid;";
-                }
-                else
-                {
-                    body += "\r\n" + Utils.AddSpacesCount(12) + "ObjectGuid m_SummonerGuid;";
-                }
-
-                variablesCount++;
-            }
-
-            if (IsHookBodiesContainItem("EventsSwitch", hookBodiesTreeView))
-            {
-                if (variablesCount == 0)
-                {
-                    body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "EventMap m_Events;";
-                }
-                else
-                {
-                    body += "\r\n" + Utils.AddSpacesCount(12) + "EventMap m_Events;";
-                }
-
-                variablesCount++;
             }
 
             return body;

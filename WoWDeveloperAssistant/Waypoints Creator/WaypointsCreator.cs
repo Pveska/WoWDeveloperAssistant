@@ -578,7 +578,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 SQLtext += "\r\n";
                 SQLtext += "-- Vector3 for movement in core for " + creature.name + " Entry: " + creature.entry + "\r\n";
-                SQLtext = SQLtext + "G3D::Vector3 const Path_XXX[" + mainForm.grid_WC_Waypoints.RowCount + "] =" + "\r\n";
+                SQLtext = SQLtext + "std::vector<G3D::Vector3> const g_Path" + creature.name + " =" + "\r\n";
                 SQLtext = SQLtext + "{" + "\r\n";
 
                 for (int i = 0; i < waypoints.Count; i++)
