@@ -74,7 +74,21 @@ namespace WoWDeveloperAssistant.Achievements
                 treeNode.Nodes.Add("Amount: " + node.Value.Amount);
                 treeNode.Nodes.Add("Operator: " + (AchievementEnums.CriteriaTreeOperator)node.Value.Operator);
                 treeNode.Nodes.Add("Flags: " + GetCriteriaTreeFlagNames(node.Value.Flags));
+                FillTreeWithCriteriaTreeChildNodes((uint)node.Key, treeNode);
                 treeWiev.Nodes.Add(treeNode);
+            }
+        }
+
+        private static void FillTreeWithCriteriaTreeChildNodes(uint criteriaTreeId, TreeNode treeNode)
+        {
+            foreach (var nodeIter in GetCriteriaTreeChildNodes(criteriaTreeId))
+            {
+                TreeNode node = new TreeNode(nodeIter.Key.ToString());
+                node.Nodes.Add("Amount: " + nodeIter.Value.Amount);
+                node.Nodes.Add("Operator: " + (AchievementEnums.CriteriaTreeOperator)nodeIter.Value.Operator);
+                node.Nodes.Add("Flags: " + GetCriteriaTreeFlagNames(nodeIter.Value.Flags));
+                FillTreeWithCriteriaTreeChildNodes((uint)nodeIter.Key, node);
+                treeNode.Nodes.Add(node);
             }
         }
 
