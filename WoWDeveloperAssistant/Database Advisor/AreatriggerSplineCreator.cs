@@ -18,7 +18,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 if (lines[i].Contains("UpdateType: CreateObject2"))
                 {
-                    if (lines[i + 1].Contains("AreaTrigger/0") && 
+                    if (lines[i + 1].Contains("AreaTrigger") && 
                         LineGetters.GetAreatriggerEntryFromLine(lines[i + 1]) == customEntry)
                     {
                         outputLine += "DELETE FROM `areatrigger_move_splines` WHERE `move_curve_id` = " + customEntry + ";\n";
