@@ -10,10 +10,10 @@ namespace WoWDeveloperAssistant.Misc
     {
         public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool updateAuraGuid = false)
         {
-            if (!line.Contains("Creature") && !line.Contains("Vehicle"))
+            if (!line.Contains("TypeName: Creature; Full:") && !line.Contains("TypeName: Vehicle; Full:"))
                 return "";
 
-            Regex objectTypeRegex = new Regex(@"Full:{1}\s{1}[a-zA-Z]+;{1}\s");
+            Regex objectTypeRegex = new Regex(@"[a-zA-Z]+;{1}\s{1}Full:{1}\s");
 
             if (objectFieldGuid && buidVersion == BuildVersions.BUILD_8_0_1)
             {
@@ -23,42 +23,39 @@ namespace WoWDeveloperAssistant.Misc
             }
             else if (unitGuid)
             {
-                Regex guidRegex = new Regex(@"UnitGUID: Full:{1}\s{1}[a-zA-Z]+;{1}\s{1}\w{20,}");
+                Regex guidRegex = new Regex(@"UnitGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("UnitGUID: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+                    return guidRegex.Match(line).ToString().Replace("UnitGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else if (senderGuid)
             {
-                Regex guidRegex = new Regex(@"SenderGUID: Full:{1}\s{1}[a-zA-Z]+;{1}\s{1}\w{20,}");
+                Regex guidRegex = new Regex(@"SenderGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("SenderGUID: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+                    return guidRegex.Match(line).ToString().Replace("SenderGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else if (moverGuid)
             {
-                Regex guidRegex = new Regex(@"MoverGUID: Full:{1}\s{1}[a-zA-Z]+;{1}\s{1}\w{20,}");
+                Regex guidRegex = new Regex(@"MoverGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("MoverGUID: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+                    return guidRegex.Match(line).ToString().Replace("MoverGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else if (attackerGuid)
             {
-                Regex guidRegex = new Regex(@"Attacker Guid: Full:{1}\s{1}[a-zA-Z]+;{1}\s{1}\w{20,}");
+                Regex guidRegex = new Regex(@"Attacker Guid: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("Attacker Guid: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+                    return guidRegex.Match(line).ToString().Replace("Attacker Guid: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else if (casterGuid)
             {
-                Regex guidRegex = new Regex(@"CasterGUID: Full:{1}\s{1}[a-zA-Z]+;{1}\s{1}\w{20,}");
+                Regex guidRegex = new Regex(@"CasterGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("CasterGUID: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+                    return guidRegex.Match(line).ToString().Replace("CasterGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else
             {
-                Regex guidRegex = new Regex(@"ObjectGuid: Full:{1}\s{1}[a-zA-Z]+;{1}\s{1}\w{20,}");
-                Regex guidRegexSecond = new Regex(@"Object GUID: Full:{1}\s*\w{20,}");
+                Regex guidRegex = new Regex(@"ObjectGuid: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("ObjectGuid: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
-                else if (guidRegexSecond.IsMatch(line))
-                    return guidRegexSecond.Match(line).ToString().Replace("Object GUID: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+                    return guidRegex.Match(line).ToString().Replace("ObjectGuid: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
 
             return "";
@@ -102,8 +99,8 @@ namespace WoWDeveloperAssistant.Misc
         public static bool IsCreatureLine(string updateTypeLine)
         {
             if ((updateTypeLine.Contains("Creature") || updateTypeLine.Contains("Vehicle")) &&
-                (updateTypeLine.Contains("ObjectGuid: Full:") || updateTypeLine.Contains("SenderGUID: Full:") ||
-                updateTypeLine.Contains("MoverGUID: Full:") || updateTypeLine.Contains("Attacker Guid: Full:")))
+                (updateTypeLine.Contains("ObjectGuid:") || updateTypeLine.Contains("SenderGUID:") ||
+                updateTypeLine.Contains("MoverGUID:") || updateTypeLine.Contains("Attacker Guid:")))
                 return true;
 
             return false;
