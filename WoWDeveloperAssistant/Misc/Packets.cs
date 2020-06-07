@@ -171,11 +171,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static bool IsCreatureSpellCastLine(string line)
             {
-                if (line.Contains("CasterGUID: Full:") &&
-                    (line.Contains("Creature") || line.Contains("Vehicle")))
-                    return true;
-
-                return false;
+                return line.Contains("CasterGUID: TypeName: Creature;") || line.Contains("CasterGUID: TypeName: Vehicle;");
             }
 
             public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion)
