@@ -171,11 +171,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static bool IsCreatureSpellCastLine(string line)
             {
-                if (line.Contains("CasterGUID: Full:") &&
-                    (line.Contains("Creature/0") || line.Contains("Vehicle/0")))
-                    return true;
-
-                return false;
+                return line.Contains("CasterGUID: TypeName: Creature;") || line.Contains("CasterGUID: TypeName: Vehicle;");
             }
 
             public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion)
@@ -360,19 +356,9 @@ namespace WoWDeveloperAssistant.Misc
 
             public static uint? GetMapIdFromLine(string line)
             {
-                string map = "";
-
-                Regex mapRegex = new Regex(@"Map:{1}.+Entry:{1}");
+                Regex mapRegex = new Regex(@"MapId:{1}\s{1}\d+");
                 if (mapRegex.IsMatch(line))
-                    map = mapRegex.Match(line).ToString().Replace("Map: ", "").Replace(" Entry:", "");
-
-                if (map == "")
-                    return null;
-
-                foreach (var row in DBC.DBC.Map.Where(row => map == row.Value.MapName))
-                {
-                    return (uint?)row.Key;
-                }
+                    return Convert.ToUInt32(mapRegex.Match(line).ToString().Replace("MapId: ", ""));
 
                 return null;
             }
