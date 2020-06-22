@@ -165,6 +165,7 @@ namespace WoWDeveloperAssistant
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked, toolStripStatusLabel_FileStatus, this);
+                toolStripStatusLabel_FileStatus.Text =openFileDialog.FileName + " is selected for input.";
                 button_ImportFileForRemoving.Enabled = true;
                 this.Cursor = Cursors.Default;
             }

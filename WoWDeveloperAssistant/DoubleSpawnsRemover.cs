@@ -32,8 +32,8 @@ namespace WoWDeveloperAssistant
         {
             StreamWriter outputFile = new StreamWriter(fileName + "_without_duplicates.sql");
 
-            List<uint> creatureEntries = new List<uint>();
-            List<uint> gameobjectEntries = new List<uint>();
+            List<string> creatureEntries = new List<string>();
+            List<string> gameobjectEntries = new List<string>();
 
             Dictionary<string, List<DataRow>> creaturesDataRowDictionary = new Dictionary<string, List<DataRow>>();
             Dictionary<string, List<DataRow>> gameobjectDataRowDictionary = new Dictionary<string, List<DataRow>>();
@@ -46,6 +46,9 @@ namespace WoWDeveloperAssistant
 
             List<string> creatureAllowedLinkedIds = new List<string>();
             List<string> gameobjectAllowedLinkedIds = new List<string>();
+
+            List<string> creatureAddonAllowedLinkedIds = new List<string>();
+            List<string> gameobjectAddonAllowedLinkedIds = new List<string>();
 
             uint creaturesRemovedUsingLinkedIdCount = 0;
             uint creaturesRemovedUsingPositionCompareCount = 0;
@@ -71,8 +74,8 @@ namespace WoWDeveloperAssistant
                         if (IsCreatureAddonDeleteLine(lines[i]))
                             break;
 
-                        uint entry = GetEntryFromLine(lines[i]);
-                        if (entry == 0 || creatureEntries.Contains(entry))
+                        string entry = GetEntryFromLine(lines[i]);
+                        if (entry == "" || creatureEntries.Contains(entry))
                             continue;
 
                         creatureEntries.Add(entry);
@@ -91,8 +94,8 @@ namespace WoWDeveloperAssistant
                         if (IsGameObjectAddonDeleteLine(lines[i]))
                             break;
 
-                        uint entry = GetEntryFromLine(lines[i]);
-                        if (entry == 0 || gameobjectEntries.Contains(entry))
+                        string entry = GetEntryFromLine(lines[i]);
+                        if (entry == "" || gameobjectEntries.Contains(entry))
                             continue;
 
                         gameobjectEntries.Add(entry);
@@ -101,37 +104,9 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            string creatureSelectQuery = "";
+            creaturesDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` IN (" + GetStringFromList(creatureEntries) + ")");
 
-            for (int i = 0; i < creatureEntries.Count(); i++)
-            {
-                if (i + 1 < creatureEntries.Count())
-                {
-                    creatureSelectQuery += creatureEntries[i] + ", ";
-                }
-                else
-                {
-                    creatureSelectQuery += creatureEntries[i];
-                }
-            }
-
-            creaturesDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` IN (" + creatureSelectQuery + ")");
-
-            string gameobjectSelectQuery = "";
-
-            for (int i = 0; i < gameobjectEntries.Count(); i++)
-            {
-                if (i + 1 < gameobjectEntries.Count())
-                {
-                    gameobjectSelectQuery += gameobjectEntries[i] + ", ";
-                }
-                else
-                {
-                    gameobjectSelectQuery += gameobjectEntries[i];
-                }
-            }
-
-            gameobjectsDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `gameobject` WHERE `id` IN (" + gameobjectSelectQuery + ")");
+            gameobjectsDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `gameobject` WHERE `id` IN (" + GetStringFromList(gameobjectEntries) + ")");
 
             foreach (DataRow row in creaturesDataRowCollection)
             {
@@ -182,9 +157,9 @@ namespace WoWDeveloperAssistant
                             break;
 
                         string linkedId = GetLinkedIdFromLine(lines[i]);
-                        uint entry = GetEntryFromLine(lines[i]);
+                        string entry = GetEntryFromLine(lines[i]);
                         Position spawnPos = GetPositionFromLine(lines[i]);
-                        if (linkedId == "" || entry == 0 || !spawnPos.IsValid())
+                        if (linkedId == "" || entry == "" || !spawnPos.IsValid())
                             continue;
 
                         if (!creaturesDataRowDictionary.ContainsKey(entry.ToString()))
@@ -253,6 +228,7 @@ namespace WoWDeveloperAssistant
                             continue;
                         }
 
+                        creatureAddonAllowedLinkedIds.Add(linkedId);
                         outputLines.Add(lines[i]);
                     }
                     while (!IsGameObjectDeleteLine(lines[i]));
@@ -275,9 +251,9 @@ namespace WoWDeveloperAssistant
                             break;
 
                         string linkedId = GetLinkedIdFromLine(lines[i]);
-                        uint entry = GetEntryFromLine(lines[i]);
+                        string entry = GetEntryFromLine(lines[i]);
                         Position spawnPos = GetPositionFromLine(lines[i]);
-                        if (linkedId == "" || entry == 0 || !spawnPos.IsValid())
+                        if (linkedId == "" || entry == "" || !spawnPos.IsValid())
                             continue;
 
                         if (!gameobjectDataRowDictionary.ContainsKey(entry.ToString()))
@@ -333,6 +309,9 @@ namespace WoWDeveloperAssistant
                         if (lines[i].StartsWith("-- (") || lines[i] == "" || IsGameObjectAddonInsertLine(lines[i]))
                             continue;
 
+                        if (!IsGameObjectAddonLine(lines[i]))
+                            break;
+
                         string linkedId = GetLinkedIdFromLine(lines[i]);
                         if (linkedId == "")
                             continue;
@@ -343,15 +322,26 @@ namespace WoWDeveloperAssistant
                             continue;
                         }
 
+                        gameobjectAddonAllowedLinkedIds.Add(linkedId);
                         outputLines.Add(lines[i]);
                     }
-                    while (lines[i] != "" && GetLinkedIdFromLine(lines[i]) != "");
+                    while (IsGameObjectAddonLine(lines[i]));
                 }
                 else
                 {
                     outputLines.Add(lines[i]);
                 }
             }
+
+            string clipboardOutput = "";
+
+            clipboardOutput += "DELETE FROM `creature` WHERE `linked_id` IN (" + GetStringFromList(creatureAllowedLinkedIds, true) + ");" + "\n";
+            clipboardOutput += "DELETE FROM `creature_addon` WHERE `linked_id` IN (" + GetStringFromList(creatureAddonAllowedLinkedIds, true) + ");" + "\n";
+
+            clipboardOutput += "DELETE FROM `gameobject` WHERE `linked_id` IN (" + GetStringFromList(gameobjectAllowedLinkedIds, true) + ");" + "\n";
+            clipboardOutput += "DELETE FROM `gameobject_addon` WHERE `linked_id` IN (" + GetStringFromList(gameobjectAddonAllowedLinkedIds, true) + ");" + "\n";
+
+            Clipboard.SetText(clipboardOutput);
 
             labelCreatures.Text = " Creatures removed using LinkedId: " + creaturesRemovedUsingLinkedIdCount + ", using PositionCompare: " + creaturesRemovedUsingPositionCompareCount + ", Total removed count: " + (creaturesRemovedUsingLinkedIdCount + creaturesRemovedUsingPositionCompareCount) + ", Addons removed: " + creatureAddonsRemoved;
             labelCreatures.Show();
@@ -365,6 +355,32 @@ namespace WoWDeveloperAssistant
             outputFile.Close();
         }
 
+
+        private static string GetStringFromList(List<string> list, bool linkedIdList = false)
+        {
+            string stringFromList = "";
+
+            for (int i = 0; i < list.Count(); i++)
+            {
+                if (i + 1 < list.Count())
+                {
+                    stringFromList += linkedIdList ? "'" + list[i] + "', " : list[i] + ", ";
+                }
+                else
+                {
+                    stringFromList += linkedIdList ? "'" + list[i] + "'" : list[i];
+                }
+            }
+
+            return stringFromList;
+        }
+        private static bool IsGameObjectAddonLine(string line)
+        {
+            if (line.Contains("spell_target_position") || line.Contains("creature_model_info"))
+                return false;
+            else
+                return true;
+        }
         private static bool CoorsIsEqual(float coorA, float coorB)
         {
             if (coorA == coorB || coorA + 1.0f == coorB || coorA - 1.0f == coorB ||
@@ -428,11 +444,11 @@ namespace WoWDeveloperAssistant
             return "";
         }
 
-        private static uint GetEntryFromLine(string line)
+        private static string GetEntryFromLine(string line)
         {
             var splittedLine = line.Split(',');
 
-            return Convert.ToUInt32(splittedLine[1]);
+            return splittedLine[1].Replace(" ", "");
         }
 
         private static bool IsGameObjectDeleteLine(string line)
