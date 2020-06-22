@@ -34,10 +34,6 @@ namespace WoWDeveloperAssistant
             {
                 creatureNamesDict = GetCreatureNamesFromDB();
             }
-            else
-            {
-                checkBox_DatabaseConsidering.Enabled = false;
-            }
         }
 
         private Dictionary<uint, string> GetCreatureNamesFromDB()
@@ -168,7 +164,7 @@ namespace WoWDeveloperAssistant
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked, checkBox_DatabaseConsidering.Checked);
+                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked, toolStripStatusLabel_FileStatus, this);
                 button_ImportFileForRemoving.Enabled = true;
                 this.Cursor = Cursors.Default;
             }
