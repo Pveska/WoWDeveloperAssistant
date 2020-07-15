@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 
@@ -35,22 +36,21 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             { "IsSummonedBy",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",     "Player* l_Player = p_Summoner->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
-                    { "SetSummonerGuid", "m_SummonerGuid = p_Summoner->GetObjectGuid();" }
+                    { "PlayerCheck", "Player* l_Player = p_Summoner->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(8) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(12) + "return;" }
                 }
             },
 
             { "QuestAccept",
                 new Dictionary<string, string>
                 {
-                    { "QuestIdSwitch", "switch (p_Quest->GetQuestId())" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eQuests::QuestName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "QuestIdSwitch", "switch (p_Quest->GetQuestId())" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eQuests::QuestName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "QuestReward",
                 new Dictionary<string, string>
                 {
-                    { "QuestIdSwitch", "switch (p_Quest->GetQuestId())" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eQuests::QuestName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "QuestIdSwitch", "switch (p_Quest->GetQuestId())" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eQuests::QuestName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
@@ -58,90 +58,91 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                 new Dictionary<string, string>
                 {
                     { "GloseGossipWindow",    "p_Player->PlayerTalkClass->SendCloseGossip();" },
-                    { "GossipOptionIdSwitch", "switch (p_Action)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case 0:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "GossipOptionIdSwitch", "switch (p_Action)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case 0:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "MoveInLineOfSight",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = p_Who->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
-                    { "DistanceCheck", "if (me->GetExactDist2d(p_Who) <= 10.0f)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "PlayerCheck",   "Player* l_Player = p_Who->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(8) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(12) + "return;" },
+                    { "DistanceCheck", "if (me->GetExactDist2d(p_Who) <= 10.0f)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "DoAction",
                 new Dictionary<string, string>
                 {
-                    { "DoActionIdSwitch", "switch (p_Action)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eActions::ActionName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "DoActionIdSwitch", "switch (p_Action)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eActions::ActionName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "SetData",
                 new Dictionary<string, string>
                 {
-                    { "SetDataIdSwitch", "switch (p_Value)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eDatas::DataName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "SetDataIdSwitch", "switch (p_Value)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eDatas::DataName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "OnSpellClick",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = p_Clicker->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
+                    { "PlayerCheck", "Player* l_Player = p_Clicker->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(8) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(12) + "return;" }
                 }
             },
 
             { "SpellHit",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = p_Caster->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
-                    { "SpellIdSwitch", "switch (p_Spell->Id)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eSpells::SpellName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "PlayerCheck",   "Player* l_Player = p_Caster->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(8) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(12) + "return;" },
+                    { "SpellIdSwitch", "switch (p_Spell->Id)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eSpells::SpellName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "OnSpellCasted",
                 new Dictionary<string, string>
                 {
-                    { "SpellIdSwitch", "switch (p_SpellInfo->Id)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eSpells::SpellName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "SpellIdSwitch", "switch (p_SpellInfo->Id)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eSpells::SpellName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "PassengerBoarded",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = p_Passenger->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
+                    { "PlayerCheck", "Player* l_Player = p_Passenger->ToPlayer();" + "\r\n" + Utils.AddSpacesCount(8) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(12) + "return;" }
                 }
             },
 
             { "MovementInform",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = ObjectAccessor::GetPlayer(*me, m_SummonerGuid);" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player)" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
-                    { "PointIdSwitch", "switch (p_PointId)" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case ePoints::PointName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" }
+                    { "PointIdSwitch", "switch (p_PointId)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case ePoints::PointName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 
             { "Reset",
                 new Dictionary<string, string>
                 {
-                    { "EventReset",   "events.Reset();" },
+                    { "EventReset", "events.Reset();" }
                 }
             },
 
             { "EnterCombat",
                 new Dictionary<string, string>
                 {
-                    { "ScheduleEvent", "events.ScheduleEvent(eEvents::EventName, 10000);" },
+                    { "ScheduleEvent", "events.ScheduleEvent(eEvents::EventName, 10000);" }
                 }
             },
 
             { "UpdateAI",
                 new Dictionary<string, string>
                 {
-                    { "PlayerCheck",   "Player* l_Player = ObjectAccessor::GetPlayer(*me, m_SummonerGuid);" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player || !l_Player->IsInWorld() || !l_Player->HasQuest(eQuests::QuestName))" + "\r\n" + Utils.AddSpacesCount(16) + "{" +  "\r\n" + Utils.AddSpacesCount(20) + "me->DespawnOrUnsummon();" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
-                    { "CombatChecks",  "if (!UpdateVictim())" + "\r\n" + Utils.AddSpacesCount(20) + "return;" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "events.Update(p_Diff);" + "\r\n\r\n" + Utils.AddSpacesCount(16) + "if (me->HasUnitState(UNIT_STATE_CASTING))" + "\r\n" + Utils.AddSpacesCount(20) + "return;" },
-                    { "EventsSwitch",  "switch (events.ExecuteEvent())" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "case eEvents::EventName:" + "\r\n" + Utils.AddSpacesCount(20) + "{" + "\r\n" + Utils.AddSpacesCount(24) + "events.ScheduleEvent(eEvents::Eventname, 10000);" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(20) + "}" + "\r\n" + Utils.AddSpacesCount(20) + "default:" + "\r\n" + Utils.AddSpacesCount(24) + "break;" + "\r\n" + Utils.AddSpacesCount(16) + "}" },
-                    { "DoMeleeAttack", "DoMeleeAttackIfReady();" }
+                    { "UpdateOperations",     "UpdateOperations(p_Diff);" },
+                    { "CheckPlayerOrDespawn", "CheckPlayerOrDespawn(p_Diff, eQuests::QuestId)" },
+                    { "DefaultPlayerCheck",   "if (me->isSummon())" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "if (UpdateCheckTimer(p_Diff))" + "\r\n" +  Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "Player* l_Player = me->GetAnyPlayerOwner();" + "\r\n" + Utils.AddSpacesCount(16) + "if (!l_Player || !l_Player->IsInWorld() || !l_Player->HasQuest(eQuests::QuestId))" + "\r\n" + Utils.AddSpacesCount(16) + "{" + "\r\n" + Utils.AddSpacesCount(20) + "me->DespawnOrUnsummon();" + "\r\n" + Utils.AddSpacesCount(16) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(8) + "}" },
+                    { "CombatChecks",         "if (!UpdateVictim())" + "\r\n" + Utils.AddSpacesCount(12) + "return;" + "\r\n\r\n" + Utils.AddSpacesCount(8) + "events.Update(p_Diff);" + "\r\n\r\n" + Utils.AddSpacesCount(8) + "if (me->HasUnitState(UNIT_STATE_CASTING))" + "\r\n" + Utils.AddSpacesCount(12) + "return;" },
+                    { "EventsSwitch",         "switch (events.ExecuteEvent())" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case eEvents::EventName:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "events.ScheduleEvent(eEvents::Eventname, 10000);" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" },
+                    { "DoMeleeAttack",        "DoMeleeAttackIfReady();" }
                 }
             },
         };
@@ -165,26 +166,40 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             if (defaultName == "")
                 return;
 
-            scriptName = "npc_" + defaultName.Replace(" ", "_").ToLower().Replace("'", "").Replace("-", "_") + "_" + objectEntry;
-            scriptBody = "/// " + defaultName + " - " + objectEntry + "\r\n";
-            scriptBody += "class " + scriptName + " : public CreatureScript" + "\r\n";
+            scriptName = "npc_" + NormilizeScriptName(defaultName) + "_" + objectEntry;
+            scriptBody = "/// @Creature - " + defaultName + " - " + objectEntry + "\r\n";
+            scriptBody += "struct " + scriptName + " : public " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "\r\n";
             scriptBody += "{" + "\r\n";
-            scriptBody += Utils.AddSpacesCount(4) + "public:" + "\r\n";
-            scriptBody += Utils.AddSpacesCount(8) + scriptName + "()" + " : CreatureScript(\"" + scriptName + "\")" + " { }" + "\r\n\r\n";
-            scriptBody += Utils.AddSpacesCount(8) + "struct " + scriptName + "AI" + " : public " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "\r\n";
-            scriptBody += Utils.AddSpacesCount(8) + "{" + "\r\n";
-            scriptBody += Utils.AddSpacesCount(12) + "explicit " + scriptName + "AI" + "(Creature* p_Creature) : " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }";
+            scriptBody += Utils.AddSpacesCount(4) + "explicit " + scriptName + "(Creature* p_Creature) : " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }";
             scriptBody += GetEnumsBody(hookBodiesTreeView);
             scriptBody += GetHooksBody(hooksListBox, hookBodiesTreeView);
-            scriptBody += "\r\n" + Utils.AddSpacesCount(8) + "};" + "\r\n\r\n";
-            scriptBody += Utils.AddSpacesCount(8) + "CreatureAI* GetAI(Creature* p_Creature) const override" + "\r\n";
-            scriptBody += Utils.AddSpacesCount(8) + "{" + "\r\n";
-            scriptBody += Utils.AddSpacesCount(12) + "return new " + scriptName + "AI(p_Creature);" + "\r\n";
-            scriptBody += Utils.AddSpacesCount(8) + "}" + "\r\n";
-            scriptBody += "};";
+            scriptBody += "\r\n" + "};" + "\r\n";
 
             Clipboard.SetText(scriptBody);
             MessageBox.Show("Template has been successfully builded and copied on your clipboard!");
+        }
+
+        private static string NormilizeScriptName(string line)
+        {
+            Regex nonWordRegex = new Regex(@"\W+");
+            string normilizedString = line;
+
+            normilizedString = normilizedString.Replace(" ", "_");
+
+            foreach (char character in normilizedString)
+            {
+                if (character == '_')
+                    continue;
+
+                if (nonWordRegex.IsMatch(character.ToString()))
+                {
+                    normilizedString = normilizedString.Replace(nonWordRegex.Match(character.ToString()).ToString(), "");
+                }
+            }
+
+            normilizedString = normilizedString.ToLower();
+
+            return normilizedString;
         }
 
         private static bool IsVehicleScript(ListBox listBox)
@@ -199,17 +214,17 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             if (IsHookBodiesContainItem("SpellIdSwitch", hookBodiesTreeView) ||
                 IsHookBodiesContainItem("EventsSwitch", hookBodiesTreeView))
             {
-                body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "enum eSpells" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(12) + "};";
+                body += "\r\n\r\n" + Utils.AddSpacesCount(4) + "enum eSpells" + "\r\n" + Utils.AddSpacesCount(4) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(4) + "};";
             }
 
             if (IsHookBodiesContainItem("PointIdSwitch", hookBodiesTreeView))
             {
-                body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "enum ePoints" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(12) + "};";
+                body += "\r\n\r\n" + Utils.AddSpacesCount(4) + "enum ePoints" + "\r\n" + Utils.AddSpacesCount(4) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(4) + "};";
             }
 
             if (IsHookBodiesContainItem("EventsSwitch", hookBodiesTreeView))
             {
-                body += "\r\n\r\n" + Utils.AddSpacesCount(12) + "enum eEvents" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(12) + "};";
+                body += "\r\n\r\n" + Utils.AddSpacesCount(4) + "enum eEvents" + "\r\n" + Utils.AddSpacesCount(4) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "\r\n" + Utils.AddSpacesCount(4) + "};";
             }
 
             return body;
@@ -226,8 +241,8 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
             foreach (var hook in hooksListBox.SelectedItems)
             {
-                body += "\r\n\r\n" + Utils.AddSpacesCount(12) + hooksDictionary[hook.ToString()];
-                body += "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16);
+                body += "\r\n\r\n" + Utils.AddSpacesCount(4) + hooksDictionary[hook.ToString()];
+                body += "\r\n" + Utils.AddSpacesCount(4) + "{" + "\r\n" + Utils.AddSpacesCount(8);
 
                 foreach (TreeNode parentNode in hookBodiesTreeView.Nodes)
                 {
@@ -242,7 +257,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                         {
                             if (moreThanOne)
                             {
-                                body += "\r\n\r\n" + Utils.AddSpacesCount(16);
+                                body += "\r\n\r\n" + Utils.AddSpacesCount(8);
                             }
 
                             body += hookBodiesDictionary[hook.ToString()][childNode.Text];
@@ -255,7 +270,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                     }
                 }
 
-                body += "\r\n" + Utils.AddSpacesCount(12) + "}";
+                body += "\r\n" + Utils.AddSpacesCount(4) + "}";
             }
 
             return body;
