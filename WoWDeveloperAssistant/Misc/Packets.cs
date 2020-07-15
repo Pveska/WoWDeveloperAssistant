@@ -146,8 +146,10 @@ namespace WoWDeveloperAssistant.Misc
             public static TimeSpan GetCastTimeFromLine(string line)
             {
                 Regex castTimeRegex = new Regex(@"CastTime:{1}\s*\d+");
-                if (castTimeRegex.IsMatch(line))
-                    return new TimeSpan(0, 0, 0, 0, Convert.ToInt32(castTimeRegex.Match(line).ToString().Replace("CastTime: ", "")));
+                int castTime = 0;
+                Int32.TryParse(castTimeRegex.Match(line).ToString().Replace("CastTime: ", ""), out castTime);
+                if (castTimeRegex.IsMatch(line) && castTime != 0)
+                    return new TimeSpan(0, 0, 0, 0, castTime);
 
                 return new TimeSpan();
             }
