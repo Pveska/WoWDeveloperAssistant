@@ -8,6 +8,7 @@ using WoWDeveloperAssistant.Database_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using WoWDeveloperAssistant.Achievements;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
+using WoWDeveloperAssistant.Conditions_Creator;
 
 namespace WoWDeveloperAssistant
 {
@@ -19,6 +20,7 @@ namespace WoWDeveloperAssistant
         private WaypointsCreator waypointsCreator;
         private CoreScriptTemplates coreScriptTemplate;
         private static Dictionary<uint, string> creatureNamesDict;
+        private ConditionsCreator conditionsCreator;
 
         public MainForm()
         {
@@ -27,6 +29,7 @@ namespace WoWDeveloperAssistant
             creatureScriptsCreator = new CreatureScriptsCreator(this);
             waypointsCreator = new WaypointsCreator(this);
             coreScriptTemplate = new CoreScriptTemplates(this);
+            conditionsCreator = new ConditionsCreator(this);
 
             creatureNamesDict = new Dictionary<uint, string>();
 
@@ -401,6 +404,66 @@ namespace WoWDeveloperAssistant
             {
                 SpellDestinationsParser.ParseSpellDestinations(openFileDialog.FileName, textBox_SpellDestinations.Text);
             }
+        }
+
+        private void comboBox_ConditionSourceType_DropDown(object sender, EventArgs e)
+        {
+            if (comboBox_ConditionSourceType.Items.Count == 0)
+            {
+                comboBox_ConditionSourceType.Items.AddRange(Enum.GetNames(typeof(Conditions.ConditionSourceTypes)));
+            }
+        }
+
+        private void comboBox_ConditionType_DropDown(object sender, EventArgs e)
+        {
+            if (comboBox_ConditionType.Items.Count == 0)
+            {
+                comboBox_ConditionType.Items.AddRange(Enum.GetNames(typeof(Conditions.ConditionTypes)));
+            }
+        }
+
+        private void comboBox_ConditionSourceType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceGroup);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceEntry);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceId);
+
+            if (comboBox_ConditionType.SelectedItem != null)
+            {
+                conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionTarget);
+            }
+
+            textBox_ElseGroup.Enabled = true;
+            comboBox_ConditionType.Enabled = true;
+        }
+
+        private void comboBox_ConditionType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox_ConditionSourceType.SelectedItem == null)
+                return;
+
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionType.SelectedItem.ToString(), textBox_ConditionValue1);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionType.SelectedItem.ToString(), textBox_ConditionValue2);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionType.SelectedItem.ToString(), textBox_ConditionValue3);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionTarget);
+            textBox_NegativeCondition.Enabled = true;
+            textBox_ScriptName.Enabled = true;
+            button_AddCondition.Enabled = true;
+            button_ClearConditions.Enabled = true;
+        }
+
+        private void button_AddCondition_Click(object sender, EventArgs e)
+        {
+            if (comboBox_ConditionSourceType.SelectedItem == null || comboBox_ConditionType.SelectedItem == null)
+                return;
+
+            conditionsCreator.CreateCondition();
+            textBox_ConditionsOutput.Enabled = true;
+        }
+
+        private void button_ClearConditions_Click(object sender, EventArgs e)
+        {
+            conditionsCreator.ClearConditions();
         }
     }
 }

@@ -167,7 +167,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                 return;
 
             scriptName = "npc_" + NormilizeScriptName(defaultName) + "_" + objectEntry;
-            scriptBody = "/// @Creature - " + defaultName + " - " + objectEntry + "\r\n";
+            scriptBody = "/// " + defaultName + " - " + objectEntry + "\r\n";
             scriptBody += "struct " + scriptName + " : public " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "\r\n";
             scriptBody += "{" + "\r\n";
             scriptBody += Utils.AddSpacesCount(4) + "explicit " + scriptName + "(Creature* p_Creature) : " + (IsVehicleScript(hooksListBox) ? "VehicleAI" : "ScriptedAI") + "(p_Creature) { }";
