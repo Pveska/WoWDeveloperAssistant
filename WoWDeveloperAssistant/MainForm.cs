@@ -424,6 +424,7 @@ namespace WoWDeveloperAssistant
 
         private void comboBox_ConditionSourceType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            conditionsCreator.ClearConditions();
             conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceGroup);
             conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceEntry);
             conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceId);

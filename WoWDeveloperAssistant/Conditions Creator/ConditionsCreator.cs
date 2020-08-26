@@ -39,7 +39,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             if (createdConditionsList.Count == 0)
             {
                 string deleteConditionQuery = "DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + condition.sourceType + " AND ";
-                deleteConditionQuery += condition.sourceGroup != "" ? "`SourceGroup` = " + condition.sourceGroup : "`SourceEntry` = " + condition.sourceEntry;
+                deleteConditionQuery += condition.sourceGroup != "0" ? "`SourceGroup` = " + condition.sourceGroup : "`SourceEntry` = " + condition.sourceEntry;
                 deleteConditionQuery += ";";
 
                 createdConditionsList.Add(deleteConditionQuery);
