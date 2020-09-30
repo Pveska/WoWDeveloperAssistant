@@ -25,6 +25,6 @@
         public short WindSettingsID;
         public int ZmpFileDataID;
         public int WdtFileDataID;
-        public int[] Flags = new int[2];
+        public uint[] Flags = new uint[2];
     }
 }

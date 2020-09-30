@@ -77,8 +77,6 @@ namespace DBFileReaderLib
 
         private void ReadRecords<T>(IDictionary<int, T> storage) where T : class, new()
         {
-            var startTime = DateTime.Now;
-
             var fieldCache = typeof(T).GetFields().Select(x => new FieldCache<T>(x)).ToArray();
 
             _reader.Enumerate((row) =>
@@ -88,9 +86,6 @@ namespace DBFileReaderLib
                 lock (storage)
                     storage.Add(row.Id, entry);
             });
-
-            var span = DateTime.Now.Subtract(startTime);
-            Console.WriteLine($"{  FileName.PadRight(33) } { TimeSpan.FromTicks(span.Ticks).ToString().PadRight(28) } { storage.Count.ToString().PadRight(19) }");
         }
     }
 }
