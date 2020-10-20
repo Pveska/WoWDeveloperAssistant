@@ -223,19 +223,16 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                                 Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
                                 Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                                 {
-                                    if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                    lock (creatureTextsDict)
                                     {
-                                        if (!IsCreatureHasAggroText(chatPacket.creatureEntry))
+                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
                                         {
-                                            lock (creatureTextsDict)
+                                            if (!IsCreatureHasAggroText(chatPacket.creatureEntry))
                                             {
                                                 creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        lock (creatureTextsDict)
+                                        else
                                         {
                                             creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
                                             creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
