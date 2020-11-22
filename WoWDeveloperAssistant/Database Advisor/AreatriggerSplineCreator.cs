@@ -31,22 +31,22 @@ namespace WoWDeveloperAssistant.Database_Advisor
                         {
                             i++;
 
-                            if (lines[i].Contains("Stationary Position: X:"))
+                            if (lines[i].Contains("StationaryPosition: X:"))
                             {
                                 string[] splittedLine = lines[i].Split(' ');
 
-                                summonPos.x = float.Parse(splittedLine[4], CultureInfo.InvariantCulture.NumberFormat);
-                                summonPos.y = float.Parse(splittedLine[6], CultureInfo.InvariantCulture.NumberFormat);
-                                summonPos.z = float.Parse(splittedLine[8], CultureInfo.InvariantCulture.NumberFormat);
+                                summonPos.x = float.Parse(splittedLine[3], CultureInfo.InvariantCulture.NumberFormat);
+                                summonPos.y = float.Parse(splittedLine[5], CultureInfo.InvariantCulture.NumberFormat);
+                                summonPos.z = float.Parse(splittedLine[7], CultureInfo.InvariantCulture.NumberFormat);
                             }
 
-                            if (lines[i].Contains("Points: X:"))
+                            if (lines[i].Contains("Points: X:") && lines[i].Contains("AreaTriggerUpdate"))
                             {
                                 string[] splittedLine = lines[i].Split(' ');
 
-                                float x = float.Parse(splittedLine[4], CultureInfo.InvariantCulture.NumberFormat);
-                                float y = float.Parse(splittedLine[6], CultureInfo.InvariantCulture.NumberFormat);
-                                float z = float.Parse(splittedLine[8], CultureInfo.InvariantCulture.NumberFormat);
+                                float x = float.Parse(splittedLine[5], CultureInfo.InvariantCulture.NumberFormat);
+                                float y = float.Parse(splittedLine[7], CultureInfo.InvariantCulture.NumberFormat);
+                                float z = float.Parse(splittedLine[9], CultureInfo.InvariantCulture.NumberFormat);
 
                                 var spline = new Position(x, y, z) - summonPos;
 
