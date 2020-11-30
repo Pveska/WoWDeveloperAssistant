@@ -367,7 +367,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static bool GetDisableGravityFromLine(string line)
             {
-                if (line.Contains("Movement Flags:") && line.Contains("DisableGravity"))
+                if (line.Contains("MovementFlags:") && line.Contains("MOVEMENTFLAG_DISABLE_GRAVITY"))
                     return true;
 
                 return false;
