@@ -55,10 +55,12 @@ namespace WoWDeveloperAssistant.Database_Advisor
                         lock (allDestPositions)
                             allDestPositions.Add(spellPacket.spellDestination);
 
-                        if (!uniqDestPositions.Contains(spellPacket.spellDestination))
+                        lock (uniqDestPositions)
                         {
-                            lock (uniqDestPositions)
+                            if (!uniqDestPositions.Contains(spellPacket.spellDestination) && !CheckIfNearPointExist(spellPacket.spellDestination, uniqDestPositions))
+                            {
                                 uniqDestPositions.Add(spellPacket.spellDestination);
+                            }
                         }
                     }
                 }
@@ -82,6 +84,17 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             Clipboard.SetText(outputLine);
             MessageBox.Show("Spell destinations has been successfully parsed and copied on your clipboard!");
+        }
+
+        private static bool CheckIfNearPointExist(Position point, List<Position> points)
+        {
+            foreach (Position pos in points)
+            {
+                if (pos.GetExactDist2d(point) <= 5.0f)
+                    return true;
+            }
+
+            return false;
         }
 
         public static void OpenFileDialog(OpenFileDialog fileDialog)

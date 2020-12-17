@@ -168,5 +168,17 @@ namespace WoWDeveloperAssistant.Misc
 
             return "";
         }
+
+        public static string GetSpellIdFromLine(string line)
+        {
+            Regex entryRegex = new Regex(@"SpellID:{1}\s*\d+");
+
+            if (entryRegex.IsMatch(line))
+            {
+                return entryRegex.Match(line).ToString().Replace("SpellID: ", "");
+            }
+
+            return "";
+        }
     }
 }

@@ -26,6 +26,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
                         Position summonPos = new Position(0.0f, 0.0f, 0.0f);
                         uint pathId = 0;
+                        string spellId = "";
 
                         do
                         {
@@ -53,12 +54,22 @@ namespace WoWDeveloperAssistant.Database_Advisor
                                 if (lines[i + 1].Contains("Points: X:"))
                                     outputLine += "(" + customEntry + ", " + pathId + ", " + spline.x.ToString().Replace(",", ".") + ", " + spline.y.ToString().Replace(",", ".") + ", " + spline.z.ToString().Replace(",", ".") + "),\n";
                                 else
-                                    outputLine += "(" + customEntry + ", " + pathId + ", " + spline.x.ToString().Replace(",", ".") + ", " + spline.y.ToString().Replace(",", ".") + ", " + spline.z.ToString().Replace(",", ".") + ");\n" + "\n";
+                                    outputLine += "(" + customEntry + ", " + pathId + ", " + spline.x.ToString().Replace(",", ".") + ", " + spline.y.ToString().Replace(",", ".") + ", " + spline.z.ToString().Replace(",", ".") + ");\n";
 
                                 pathId++;
                             }
+
+                            if (LineGetters.GetSpellIdFromLine(lines[i]) != "")
+                                spellId = LineGetters.GetSpellIdFromLine(lines[i]);
                         }
                         while (Packets.UpdateObjectPacket.IsLineValidForObjectParse(lines[i]));
+
+                        if (spellId != "")
+                        {
+                            outputLine += "-- SpellId: " + spellId + ";\n\n";
+                        }
+
+                        i--;
                     }
                 }
             }
