@@ -38,18 +38,14 @@ namespace WoWDeveloperAssistant.Conditions_Creator
 
             if (createdConditionsList.Count == 0)
             {
-                string deleteConditionQuery = "DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + condition.sourceType + " AND ";
-                deleteConditionQuery += condition.sourceGroup != "0" ? "`SourceGroup` = " + condition.sourceGroup : "`SourceEntry` = " + condition.sourceEntry;
-                deleteConditionQuery += ";";
-
-                createdConditionsList.Add(deleteConditionQuery);
+                createdConditionsList.Add("DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + condition.sourceType + " AND `SourceGroup` = " + condition.sourceGroup + " AND  `SourceEntry` = " + condition.sourceEntry + ";");
                 createdConditionsList.Add("INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ScriptName`, `Comment`) VALUES");
             }
 
             if (condition.scriptName == "")
             {
                 string conditionString = "(" + condition.sourceType + ", " + condition.sourceGroup + ", " + condition.sourceEntry + ", " + condition.sourceId + ", " + condition.elseGroup + ", " + condition.conditionType + ", " + condition.conditionTarget + ", " + condition.conditionValue1 + ", " + condition.conditionValue2 + ", " + condition.conditionValue3 + ", " + condition.negativeCondition + ", " + "\"\"" + ", " + GetCommentForCondition(condition) + ")";
-                
+
                 if (!createdConditionsList.Contains(conditionString))
                 {
                     createdConditionsList.Add(conditionString);
@@ -57,7 +53,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             }
             else
             {
-                string conditionString = "(" + condition.sourceType + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + "\"" + condition.scriptName + "\"" + ", " + GetCommentForCondition(condition) + ")";
+                string conditionString = "(" + condition.sourceType + ", " + condition.sourceGroup + ", " + condition.sourceEntry + ", " + condition.sourceId + ", " + condition.elseGroup + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + "\"" + condition.scriptName + "\"" + ", " + GetCommentForCondition(condition) + ")";
 
                 if (!createdConditionsList.Contains(conditionString))
                 {
@@ -198,9 +194,13 @@ namespace WoWDeveloperAssistant.Conditions_Creator
                 comment += Conditions.conditionTypeCommentsDictionary[(Conditions.ConditionTypes)condition.conditionType];
                 comment = comment.Replace("@conditionValue1", condition.conditionValue1).Replace("@conditionValue2", condition.conditionValue2).Replace("@conditionValue3", condition.conditionValue3);
             }
-            else
+            else if (condition.scriptName != "")
             {
                 comment += "satisfies script";
+            }
+            else if ((Conditions.ConditionTypes)condition.conditionType == Conditions.ConditionTypes.CONDITION_DISABLED)
+            {
+                comment = "Condition disabled";
             }
 
             comment += "\"";

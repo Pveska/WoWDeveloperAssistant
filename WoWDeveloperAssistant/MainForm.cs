@@ -466,5 +466,16 @@ namespace WoWDeveloperAssistant
         {
             conditionsCreator.ClearConditions();
         }
+
+        private void textBox_GossipMenuText_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_GossipMenuText.Text == "" || textBox_GossipMenuText.Text == "0")
+                return;
+
+            textBox_DatabaseAdvisorOutput.Text = GossipMenuAdvisor.GetTextForGossipMenu(textBox_GossipMenuText.Text);
+        }
     }
 }

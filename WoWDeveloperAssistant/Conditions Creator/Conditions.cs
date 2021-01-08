@@ -96,7 +96,11 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             CONDITION_INACCESSIBLE_LIST        = 105,
             CONDITION_ON_VEHICLE               = 106,
             CONDITION_CRITERIA_VALUE           = 107,
-            CONDITION_ESSENCE                  = 108
+            CONDITION_ESSENCE                  = 108,
+            CONDITION_INSTANCE_DATA_2          = 109,
+            CONDITION_PATCH_CONTENT            = 110,
+            CONDITION_DISABLED                 = 111,
+            CONDITION_ASHJRAKAMAS_LEVEL        = 112
         };
 
         public static Dictionary<string, Dictionary<string, bool>> textBoxAccessibilityDictionary = new Dictionary<string, Dictionary<string, bool>>
@@ -186,7 +190,11 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             { "CONDITION_INACCESSIBLE_LIST"       , CreateConditionTextBoxDictionary(false, false, false)     },
             { "CONDITION_ON_VEHICLE"              , CreateConditionTextBoxDictionary(true, true, false)       },
             { "CONDITION_CRITERIA_VALUE"          , CreateConditionTextBoxDictionary(true, true, true)        },
-            { "CONDITION_ESSENCE"                 , CreateConditionTextBoxDictionary(true, true, false)       }
+            { "CONDITION_ESSENCE"                 , CreateConditionTextBoxDictionary(true, true, false)       },
+            { "CONDITION_INSTANCE_DATA_2"         , CreateConditionTextBoxDictionary(true, true, true)        },
+            { "CONDITION_PATCH_CONTENT"           , CreateConditionTextBoxDictionary(true, false, false)      },
+            { "CONDITION_DISABLED"                , CreateConditionTextBoxDictionary(false, false, false)     },
+            { "CONDITION_ASHJRAKAMAS_LEVEL"       , CreateConditionTextBoxDictionary(true, true, false)       }
         };
 
         public static Dictionary<ConditionSourceTypes, string> sourceTypeCommentsDictionary = new Dictionary<ConditionSourceTypes, string>
@@ -216,11 +224,11 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             { ConditionSourceTypes.SOURCE_SPELL_PROC                 , "Proc occurs if @actor/target" },
             { ConditionSourceTypes.SOURCE_TERRAIN_SWAP               , "Terrain swap applies if player" },
             { ConditionSourceTypes.SOURCE_PHASE                      , "Phase @sourceGroup in zone @sourceEntry only shows if player" },
-            { ConditionSourceTypes.SOURCE_QUEST_SHOW_MARK            , "Leave comment for this condition here" },
+            { ConditionSourceTypes.SOURCE_QUEST_SHOW_MARK            , "Show quest mark for quest @sourceGroup if player" },
             { ConditionSourceTypes.SOURCE_AREATRIGGER_ACTION         , "Leave comment for this condition here" },
             { ConditionSourceTypes.SOURCE_LOOT_ITEM                  , "Leave comment for this condition here" },
             { ConditionSourceTypes.SOURCE_PLAYERCHOICE_RESPONSE      , "Leave comment for this condition here" },
-            { ConditionSourceTypes.SOURCE_GAMEOBJECT_INTERACT        , "Leave comment for this condition here" },
+            { ConditionSourceTypes.SOURCE_GAMEOBJECT_INTERACT        , "Player can interact with gameobject only if @he/@target" },
             { ConditionSourceTypes.SOURCE_GARRISON_MISSION           , "Leave comment for this condition here" },
             { ConditionSourceTypes.SOURCE_NPC_TRADESKILL             , "Leave comment for this condition here" },
         };
@@ -280,7 +288,12 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             { ConditionTypes.CONDITION_INACCESSIBLE_LIST       , "have creature target in inaccessible list" },
             { ConditionTypes.CONDITION_ON_VEHICLE              , "is on vehicle" },
             { ConditionTypes.CONDITION_CRITERIA_VALUE          , "have criteria @conditionValue1 value @conditionValue2 with comparision type @conditionValue3" },
-            { ConditionTypes.CONDITION_ESSENCE                 , "have essence with id @conditionValue1 on rank @conditionValue2" }
+            { ConditionTypes.CONDITION_ESSENCE                 , "have essence with id @conditionValue1 on rank @conditionValue2" },
+            { ConditionTypes.CONDITION_INSTANCE_DATA_2         , "located in instance with entry @conditionValue1 and data @conditionValue2 and type @conditionValue3" },
+            { ConditionTypes.CONDITION_PATCH_CONTENT           , "located in world with patch content @conditionValue1" },
+            { ConditionTypes.CONDITION_DISABLED                , "" },
+            { ConditionTypes.CONDITION_ASHJRAKAMAS_LEVEL       , "player have ashjrakamas level @conditionValue1 with comparision type @conditionValue2" }
+
         };
 
         public static Dictionary<string, bool> CreateSourceTextBoxDictionary(bool sourceGroup, bool sourceEntry, bool sourceId, bool conditionTarget)

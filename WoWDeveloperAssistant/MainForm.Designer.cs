@@ -29,18 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle31 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle32 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -49,6 +39,16 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle31 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle32 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -179,6 +179,9 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label_GossipMenuText = new System.Windows.Forms.Label();
+            this.textBox_GossipMenuText = new System.Windows.Forms.TextBox();
+            this.textBox_DatabaseAdvisorOutput = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
@@ -222,7 +225,7 @@
             this.tabPage_CreatureScriptsCreator.Controls.Add(this.toolStrip_CSC);
             this.tabPage_CreatureScriptsCreator.Location = new System.Drawing.Point(4, 29);
             this.tabPage_CreatureScriptsCreator.Name = "tabPage_CreatureScriptsCreator";
-            this.tabPage_CreatureScriptsCreator.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_CreatureScriptsCreator.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_CreatureScriptsCreator.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_CreatureScriptsCreator.TabIndex = 0;
             this.tabPage_CreatureScriptsCreator.Text = "Creature Scripts Creator";
@@ -275,8 +278,8 @@
             // SpellId
             // 
             this.SpellId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SpellId.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SpellId.DefaultCellStyle = dataGridViewCellStyle21;
             this.SpellId.HeaderText = "SpellId";
             this.SpellId.MaxInputLength = 10;
             this.SpellId.MinimumWidth = 8;
@@ -287,8 +290,8 @@
             // SpellName
             // 
             this.SpellName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SpellName.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SpellName.DefaultCellStyle = dataGridViewCellStyle22;
             this.SpellName.HeaderText = "SpellName";
             this.SpellName.MaxInputLength = 50;
             this.SpellName.MinimumWidth = 8;
@@ -299,8 +302,8 @@
             // CastTime
             // 
             this.CastTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CastTime.DefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastTime.DefaultCellStyle = dataGridViewCellStyle23;
             this.CastTime.HeaderText = "CastTime";
             this.CastTime.MaxInputLength = 10;
             this.CastTime.MinimumWidth = 8;
@@ -311,8 +314,8 @@
             // MinCastStartTime
             // 
             this.MinCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastStartTime.DefaultCellStyle = dataGridViewCellStyle24;
             this.MinCastStartTime.HeaderText = "MinCastStartTime";
             this.MinCastStartTime.MaxInputLength = 10;
             this.MinCastStartTime.MinimumWidth = 8;
@@ -323,8 +326,8 @@
             // MaxCastStartTime
             // 
             this.MaxCastStartTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle33;
+            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastStartTime.DefaultCellStyle = dataGridViewCellStyle25;
             this.MaxCastStartTime.HeaderText = "MaxCastStartTime";
             this.MaxCastStartTime.MaxInputLength = 10;
             this.MaxCastStartTime.MinimumWidth = 8;
@@ -335,8 +338,8 @@
             // MinCastRepeatTime
             // 
             this.MinCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle34;
+            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MinCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle26;
             this.MinCastRepeatTime.HeaderText = "MinCastRepeatTime";
             this.MinCastRepeatTime.MaxInputLength = 10;
             this.MinCastRepeatTime.MinimumWidth = 8;
@@ -347,8 +350,8 @@
             // MaxCastRepeatTime
             // 
             this.MaxCastRepeatTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle35;
+            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.MaxCastRepeatTime.DefaultCellStyle = dataGridViewCellStyle27;
             this.MaxCastRepeatTime.HeaderText = "MaxCastRepeatTime";
             this.MaxCastRepeatTime.MaxInputLength = 10;
             this.MaxCastRepeatTime.MinimumWidth = 8;
@@ -359,8 +362,8 @@
             // CastsCount
             // 
             this.CastsCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle36;
+            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CastsCount.DefaultCellStyle = dataGridViewCellStyle28;
             this.CastsCount.HeaderText = "CastsCount";
             this.CastsCount.MaxInputLength = 4;
             this.CastsCount.MinimumWidth = 8;
@@ -437,7 +440,7 @@
             this.toolStripButton_CSC_ImportSniff.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Import;
             this.toolStripButton_CSC_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_ImportSniff.Name = "toolStripButton_CSC_ImportSniff";
-            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(128, 29);
+            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(136, 29);
             this.toolStripButton_CSC_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_CSC_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
             // 
@@ -448,7 +451,7 @@
             this.toolStripButton_CSC_Search.Image = global::WoWDeveloperAssistant.Properties.Resources.PIC_Search;
             this.toolStripButton_CSC_Search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_Search.Name = "toolStripButton_CSC_Search";
-            this.toolStripButton_CSC_Search.Size = new System.Drawing.Size(84, 29);
+            this.toolStripButton_CSC_Search.Size = new System.Drawing.Size(92, 29);
             this.toolStripButton_CSC_Search.Text = "Search";
             this.toolStripButton_CSC_Search.Click += new System.EventHandler(this.toolStripButton_Search_Click);
             // 
@@ -484,7 +487,7 @@
             this.tabPage_WaypointsCreator.Controls.Add(this.toolStrip_WC);
             this.tabPage_WaypointsCreator.Location = new System.Drawing.Point(4, 29);
             this.tabPage_WaypointsCreator.Name = "tabPage_WaypointsCreator";
-            this.tabPage_WaypointsCreator.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_WaypointsCreator.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_WaypointsCreator.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_WaypointsCreator.TabIndex = 4;
             this.tabPage_WaypointsCreator.Text = "Waypoints Creator";
@@ -496,18 +499,18 @@
             this.grid_WC_Waypoints.AllowUserToDeleteRows = false;
             this.grid_WC_Waypoints.AllowUserToResizeColumns = false;
             this.grid_WC_Waypoints.AllowUserToResizeRows = false;
-            dataGridViewCellStyle21.NullValue = null;
-            this.grid_WC_Waypoints.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle29.NullValue = null;
+            this.grid_WC_Waypoints.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle29;
             this.grid_WC_Waypoints.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle22.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle22.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle22.NullValue = null;
-            dataGridViewCellStyle22.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle22.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle22.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.grid_WC_Waypoints.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle22;
+            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle30.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle30.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle30.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle30.NullValue = null;
+            dataGridViewCellStyle30.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle30.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle30.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.grid_WC_Waypoints.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle30;
             this.grid_WC_Waypoints.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid_WC_Waypoints.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.gridColumn_Id,
@@ -520,15 +523,15 @@
             this.gridColumn_HasScript,
             this.WaypointSource});
             this.grid_WC_Waypoints.ContextMenuStrip = this.contextMenuStrip_WC;
-            dataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle31.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle31.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle31.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle31.NullValue = null;
-            dataGridViewCellStyle31.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle31.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle31.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.grid_WC_Waypoints.DefaultCellStyle = dataGridViewCellStyle31;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle39.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle39.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle39.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle39.NullValue = null;
+            dataGridViewCellStyle39.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle39.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle39.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.grid_WC_Waypoints.DefaultCellStyle = dataGridViewCellStyle39;
             this.grid_WC_Waypoints.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.grid_WC_Waypoints.Enabled = false;
             this.grid_WC_Waypoints.Location = new System.Drawing.Point(1274, 49);
@@ -536,8 +539,8 @@
             this.grid_WC_Waypoints.Name = "grid_WC_Waypoints";
             this.grid_WC_Waypoints.RowHeadersWidth = 62;
             this.grid_WC_Waypoints.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle32.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grid_WC_Waypoints.RowsDefaultCellStyle = dataGridViewCellStyle32;
+            dataGridViewCellStyle40.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grid_WC_Waypoints.RowsDefaultCellStyle = dataGridViewCellStyle40;
             this.grid_WC_Waypoints.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.grid_WC_Waypoints.Size = new System.Drawing.Size(758, 886);
             this.grid_WC_Waypoints.TabIndex = 28;
@@ -545,8 +548,8 @@
             // 
             // gridColumn_Id
             // 
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle23;
+            dataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_Id.DefaultCellStyle = dataGridViewCellStyle31;
             this.gridColumn_Id.HeaderText = "Id";
             this.gridColumn_Id.MinimumWidth = 8;
             this.gridColumn_Id.Name = "gridColumn_Id";
@@ -556,9 +559,9 @@
             // 
             // gridColumn_PosX
             // 
-            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            dataGridViewCellStyle24.NullValue = null;
-            this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle24;
+            dataGridViewCellStyle32.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            dataGridViewCellStyle32.NullValue = null;
+            this.gridColumn_PosX.DefaultCellStyle = dataGridViewCellStyle32;
             this.gridColumn_PosX.HeaderText = "PosX";
             this.gridColumn_PosX.MinimumWidth = 8;
             this.gridColumn_PosX.Name = "gridColumn_PosX";
@@ -568,9 +571,9 @@
             // 
             // gridColumn_PosY
             // 
-            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            dataGridViewCellStyle25.NullValue = null;
-            this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle25;
+            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            dataGridViewCellStyle33.NullValue = null;
+            this.gridColumn_PosY.DefaultCellStyle = dataGridViewCellStyle33;
             this.gridColumn_PosY.HeaderText = "PosY";
             this.gridColumn_PosY.MinimumWidth = 8;
             this.gridColumn_PosY.Name = "gridColumn_PosY";
@@ -580,8 +583,8 @@
             // 
             // gridColumn_PosZ
             // 
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_PosZ.DefaultCellStyle = dataGridViewCellStyle34;
             this.gridColumn_PosZ.HeaderText = "PosZ";
             this.gridColumn_PosZ.MinimumWidth = 8;
             this.gridColumn_PosZ.Name = "gridColumn_PosZ";
@@ -591,8 +594,8 @@
             // 
             // gridColumn_Orientation
             // 
-            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle27;
+            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_Orientation.DefaultCellStyle = dataGridViewCellStyle35;
             this.gridColumn_Orientation.HeaderText = "Orientation";
             this.gridColumn_Orientation.MinimumWidth = 8;
             this.gridColumn_Orientation.Name = "gridColumn_Orientation";
@@ -601,8 +604,8 @@
             // 
             // gridColumn_WCTime
             // 
-            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_WCTime.DefaultCellStyle = dataGridViewCellStyle36;
             this.gridColumn_WCTime.HeaderText = "Time";
             this.gridColumn_WCTime.MinimumWidth = 8;
             this.gridColumn_WCTime.Name = "gridColumn_WCTime";
@@ -611,8 +614,8 @@
             // 
             // gridColumn_WCDelay
             // 
-            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle29;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_WCDelay.DefaultCellStyle = dataGridViewCellStyle37;
             this.gridColumn_WCDelay.HeaderText = "Delay";
             this.gridColumn_WCDelay.MinimumWidth = 8;
             this.gridColumn_WCDelay.Name = "gridColumn_WCDelay";
@@ -620,8 +623,8 @@
             // 
             // gridColumn_HasScript
             // 
-            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
-            this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle30;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
+            this.gridColumn_HasScript.DefaultCellStyle = dataGridViewCellStyle38;
             this.gridColumn_HasScript.HeaderText = "HasScript";
             this.gridColumn_HasScript.MinimumWidth = 8;
             this.gridColumn_HasScript.Name = "gridColumn_HasScript";
@@ -872,7 +875,7 @@
             this.tabPage_Output.Controls.Add(this.textBox_SQLOutput);
             this.tabPage_Output.Location = new System.Drawing.Point(4, 29);
             this.tabPage_Output.Name = "tabPage_Output";
-            this.tabPage_Output.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_Output.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_Output.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_Output.TabIndex = 1;
             this.tabPage_Output.Text = "SQL Output";
@@ -892,6 +895,9 @@
             // 
             // tabPage_DatabaseAdvisor
             // 
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_DatabaseAdvisorOutput);
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_GossipMenuText);
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.label_GossipMenuText);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_SpellDestinations);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_SpellDestinations);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBoxAreatriggerSplines);
@@ -902,7 +908,7 @@
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_CreatureFlags);
             this.tabPage_DatabaseAdvisor.Location = new System.Drawing.Point(4, 29);
             this.tabPage_DatabaseAdvisor.Name = "tabPage_DatabaseAdvisor";
-            this.tabPage_DatabaseAdvisor.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_DatabaseAdvisor.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_DatabaseAdvisor.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
@@ -985,7 +991,7 @@
             this.tabPage_DoubleSpawnsRemover.Controls.Add(this.button_ImportFileForRemoving);
             this.tabPage_DoubleSpawnsRemover.Location = new System.Drawing.Point(4, 29);
             this.tabPage_DoubleSpawnsRemover.Name = "tabPage_DoubleSpawnsRemover";
-            this.tabPage_DoubleSpawnsRemover.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_DoubleSpawnsRemover.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_DoubleSpawnsRemover.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_DoubleSpawnsRemover.TabIndex = 3;
             this.tabPage_DoubleSpawnsRemover.Text = "Double-Spawns Remover";
@@ -1062,7 +1068,7 @@
             this.coreScriptTemplates.Controls.Add(this.listBox_CoreScriptTemplates_Hooks);
             this.coreScriptTemplates.Location = new System.Drawing.Point(4, 29);
             this.coreScriptTemplates.Name = "coreScriptTemplates";
-            this.coreScriptTemplates.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.coreScriptTemplates.Padding = new System.Windows.Forms.Padding(3);
             this.coreScriptTemplates.Size = new System.Drawing.Size(2040, 955);
             this.coreScriptTemplates.TabIndex = 5;
             this.coreScriptTemplates.Text = "Core Script Templates";
@@ -1149,7 +1155,7 @@
             this.tabPage_Achievements.Controls.Add(this.label_Achievements_Id);
             this.tabPage_Achievements.Location = new System.Drawing.Point(4, 29);
             this.tabPage_Achievements.Name = "tabPage_Achievements";
-            this.tabPage_Achievements.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_Achievements.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_Achievements.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_Achievements.TabIndex = 6;
             this.tabPage_Achievements.Text = "Achievements";
@@ -1336,7 +1342,7 @@
             this.tabPage_Conditions_Creator.Controls.Add(this.label_ConditionSourceType);
             this.tabPage_Conditions_Creator.Location = new System.Drawing.Point(4, 29);
             this.tabPage_Conditions_Creator.Name = "tabPage_Conditions_Creator";
-            this.tabPage_Conditions_Creator.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage_Conditions_Creator.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_Conditions_Creator.Size = new System.Drawing.Size(2040, 955);
             this.tabPage_Conditions_Creator.TabIndex = 7;
             this.tabPage_Conditions_Creator.Text = "Conditions Creator";
@@ -1604,6 +1610,7 @@
             // statusStrip_LoadedFile
             // 
             this.statusStrip_LoadedFile.BackColor = System.Drawing.Color.LightGray;
+            this.statusStrip_LoadedFile.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip_LoadedFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel_FileStatus,
             this.toolStripStatusLabel_CurrentAction});
@@ -1629,6 +1636,34 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog_WSC";
+            // 
+            // label_GossipMenuText
+            // 
+            this.label_GossipMenuText.AutoSize = true;
+            this.label_GossipMenuText.Location = new System.Drawing.Point(5, 236);
+            this.label_GossipMenuText.Name = "label_GossipMenuText";
+            this.label_GossipMenuText.Size = new System.Drawing.Size(137, 20);
+            this.label_GossipMenuText.TabIndex = 8;
+            this.label_GossipMenuText.Text = "Gossip Menu Text";
+            // 
+            // textBox_GossipMenuText
+            // 
+            this.textBox_GossipMenuText.Location = new System.Drawing.Point(7, 259);
+            this.textBox_GossipMenuText.Name = "textBox_GossipMenuText";
+            this.textBox_GossipMenuText.Size = new System.Drawing.Size(140, 26);
+            this.textBox_GossipMenuText.TabIndex = 9;
+            this.textBox_GossipMenuText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox_GossipMenuText_KeyUp);
+            // 
+            // textBox_DatabaseAdvisorOutput
+            // 
+            this.textBox_DatabaseAdvisorOutput.Font = new System.Drawing.Font("Courier New", 9.75F);
+            this.textBox_DatabaseAdvisorOutput.Location = new System.Drawing.Point(172, 3);
+            this.textBox_DatabaseAdvisorOutput.Multiline = true;
+            this.textBox_DatabaseAdvisorOutput.Name = "textBox_DatabaseAdvisorOutput";
+            this.textBox_DatabaseAdvisorOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox_DatabaseAdvisorOutput.Size = new System.Drawing.Size(1865, 939);
+            this.textBox_DatabaseAdvisorOutput.TabIndex = 10;
+            this.textBox_DatabaseAdvisorOutput.WordWrap = false;
             // 
             // MainForm
             // 
@@ -1803,6 +1838,9 @@
         public System.Windows.Forms.TextBox textBox_ConditionsOutput;
         private System.Windows.Forms.Button button_AddCondition;
         private System.Windows.Forms.Button button_ClearConditions;
+        public System.Windows.Forms.TextBox textBox_DatabaseAdvisorOutput;
+        private System.Windows.Forms.TextBox textBox_GossipMenuText;
+        private System.Windows.Forms.Label label_GossipMenuText;
     }
 }
 
