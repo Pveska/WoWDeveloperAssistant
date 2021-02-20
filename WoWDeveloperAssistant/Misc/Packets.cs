@@ -176,29 +176,60 @@ namespace WoWDeveloperAssistant.Misc
                 return line.Contains("CasterGUID: TypeName: Creature;") || line.Contains("CasterGUID: TypeName: Vehicle;");
             }
 
-            public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion)
+            public static bool IsPlayerSpellCastLine(string line)
+            {
+                return line.Contains("CasterGUID: TypeName: Player;");
+            }
+
+            public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion, bool playerPacket = false)
             {
                 SpellStartPacket spellPacket = new SpellStartPacket("", 0, new TimeSpan(), LineGetters.GetTimeSpanFromLine(lines[index]), new Position());
 
-                if (IsCreatureSpellCastLine(lines[index + 1]))
+                if (playerPacket)
                 {
-                    do
+                    if (IsPlayerSpellCastLine(lines[index + 1]))
                     {
-                        if (LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true) != "")
-                            spellPacket.casterGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true);
+                        do
+                        {
+                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true) != "")
+                                spellPacket.casterGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true);
 
-                        if (GetSpellIdFromLine(lines[index]) != 0)
-                            spellPacket.spellId = GetSpellIdFromLine(lines[index]);
+                            if (GetSpellIdFromLine(lines[index]) != 0)
+                                spellPacket.spellId = GetSpellIdFromLine(lines[index]);
 
-                        if (GetCastTimeFromLine(lines[index]) != TimeSpan.Zero)
-                            spellPacket.spellCastTime = GetCastTimeFromLine(lines[index]);
+                            if (GetCastTimeFromLine(lines[index]) != TimeSpan.Zero)
+                                spellPacket.spellCastTime = GetCastTimeFromLine(lines[index]);
 
-                        if (GetSpellDestinationFromLine(lines[index]).IsValid())
-                            spellPacket.spellDestination = GetSpellDestinationFromLine(lines[index]);
+                            if (GetSpellDestinationFromLine(lines[index]).IsValid())
+                                spellPacket.spellDestination = GetSpellDestinationFromLine(lines[index]);
 
-                        index++;
+                            index++;
+                        }
+                        while (lines[index] != "");
                     }
-                    while (lines[index] != "");
+                }
+                else
+                {
+                    if (IsCreatureSpellCastLine(lines[index + 1]))
+                    {
+                        do
+                        {
+                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true) != "")
+                                spellPacket.casterGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true);
+
+                            if (GetSpellIdFromLine(lines[index]) != 0)
+                                spellPacket.spellId = GetSpellIdFromLine(lines[index]);
+
+                            if (GetCastTimeFromLine(lines[index]) != TimeSpan.Zero)
+                                spellPacket.spellCastTime = GetCastTimeFromLine(lines[index]);
+
+                            if (GetSpellDestinationFromLine(lines[index]).IsValid())
+                                spellPacket.spellDestination = GetSpellDestinationFromLine(lines[index]);
+
+                            index++;
+                        }
+                        while (lines[index] != "");
+                    }
                 }
 
                 return spellPacket;

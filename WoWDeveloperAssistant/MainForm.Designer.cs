@@ -108,6 +108,9 @@
             this.tabPage_Output = new System.Windows.Forms.TabPage();
             this.textBox_SQLOutput = new System.Windows.Forms.TextBox();
             this.tabPage_DatabaseAdvisor = new System.Windows.Forms.TabPage();
+            this.textBox_DatabaseAdvisorOutput = new System.Windows.Forms.TextBox();
+            this.textBox_GossipMenuText = new System.Windows.Forms.TextBox();
+            this.label_GossipMenuText = new System.Windows.Forms.Label();
             this.textBox_SpellDestinations = new System.Windows.Forms.TextBox();
             this.label_SpellDestinations = new System.Windows.Forms.Label();
             this.textBoxAreatriggerSplines = new System.Windows.Forms.TextBox();
@@ -179,9 +182,8 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label_GossipMenuText = new System.Windows.Forms.Label();
-            this.textBox_GossipMenuText = new System.Windows.Forms.TextBox();
-            this.textBox_DatabaseAdvisorOutput = new System.Windows.Forms.TextBox();
+            this.label_PlayerCasterSpells = new System.Windows.Forms.Label();
+            this.textBox_PlayerCastedSpells = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Spells)).BeginInit();
@@ -895,6 +897,8 @@
             // 
             // tabPage_DatabaseAdvisor
             // 
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_PlayerCastedSpells);
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.label_PlayerCasterSpells);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_DatabaseAdvisorOutput);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_GossipMenuText);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_GossipMenuText);
@@ -913,6 +917,34 @@
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
+            // 
+            // textBox_DatabaseAdvisorOutput
+            // 
+            this.textBox_DatabaseAdvisorOutput.Font = new System.Drawing.Font("Courier New", 9.75F);
+            this.textBox_DatabaseAdvisorOutput.Location = new System.Drawing.Point(172, 3);
+            this.textBox_DatabaseAdvisorOutput.Multiline = true;
+            this.textBox_DatabaseAdvisorOutput.Name = "textBox_DatabaseAdvisorOutput";
+            this.textBox_DatabaseAdvisorOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox_DatabaseAdvisorOutput.Size = new System.Drawing.Size(1865, 939);
+            this.textBox_DatabaseAdvisorOutput.TabIndex = 10;
+            this.textBox_DatabaseAdvisorOutput.WordWrap = false;
+            // 
+            // textBox_GossipMenuText
+            // 
+            this.textBox_GossipMenuText.Location = new System.Drawing.Point(7, 259);
+            this.textBox_GossipMenuText.Name = "textBox_GossipMenuText";
+            this.textBox_GossipMenuText.Size = new System.Drawing.Size(140, 26);
+            this.textBox_GossipMenuText.TabIndex = 9;
+            this.textBox_GossipMenuText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox_GossipMenuText_KeyUp);
+            // 
+            // label_GossipMenuText
+            // 
+            this.label_GossipMenuText.AutoSize = true;
+            this.label_GossipMenuText.Location = new System.Drawing.Point(5, 236);
+            this.label_GossipMenuText.Name = "label_GossipMenuText";
+            this.label_GossipMenuText.Size = new System.Drawing.Size(137, 20);
+            this.label_GossipMenuText.TabIndex = 8;
+            this.label_GossipMenuText.Text = "Gossip Menu Text";
             // 
             // textBox_SpellDestinations
             // 
@@ -1637,33 +1669,22 @@
             // 
             this.openFileDialog.FileName = "openFileDialog_WSC";
             // 
-            // label_GossipMenuText
+            // label_PlayerCasterSpells
             // 
-            this.label_GossipMenuText.AutoSize = true;
-            this.label_GossipMenuText.Location = new System.Drawing.Point(5, 236);
-            this.label_GossipMenuText.Name = "label_GossipMenuText";
-            this.label_GossipMenuText.Size = new System.Drawing.Size(137, 20);
-            this.label_GossipMenuText.TabIndex = 8;
-            this.label_GossipMenuText.Text = "Gossip Menu Text";
+            this.label_PlayerCasterSpells.AutoSize = true;
+            this.label_PlayerCasterSpells.Location = new System.Drawing.Point(6, 301);
+            this.label_PlayerCasterSpells.Name = "label_PlayerCasterSpells";
+            this.label_PlayerCasterSpells.Size = new System.Drawing.Size(154, 20);
+            this.label_PlayerCasterSpells.TabIndex = 11;
+            this.label_PlayerCasterSpells.Text = "Player Casted Spells";
             // 
-            // textBox_GossipMenuText
+            // textBox_PlayerCastedSpells
             // 
-            this.textBox_GossipMenuText.Location = new System.Drawing.Point(7, 259);
-            this.textBox_GossipMenuText.Name = "textBox_GossipMenuText";
-            this.textBox_GossipMenuText.Size = new System.Drawing.Size(140, 26);
-            this.textBox_GossipMenuText.TabIndex = 9;
-            this.textBox_GossipMenuText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox_GossipMenuText_KeyUp);
-            // 
-            // textBox_DatabaseAdvisorOutput
-            // 
-            this.textBox_DatabaseAdvisorOutput.Font = new System.Drawing.Font("Courier New", 9.75F);
-            this.textBox_DatabaseAdvisorOutput.Location = new System.Drawing.Point(172, 3);
-            this.textBox_DatabaseAdvisorOutput.Multiline = true;
-            this.textBox_DatabaseAdvisorOutput.Name = "textBox_DatabaseAdvisorOutput";
-            this.textBox_DatabaseAdvisorOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_DatabaseAdvisorOutput.Size = new System.Drawing.Size(1865, 939);
-            this.textBox_DatabaseAdvisorOutput.TabIndex = 10;
-            this.textBox_DatabaseAdvisorOutput.WordWrap = false;
+            this.textBox_PlayerCastedSpells.Location = new System.Drawing.Point(8, 324);
+            this.textBox_PlayerCastedSpells.Name = "textBox_PlayerCastedSpells";
+            this.textBox_PlayerCastedSpells.Size = new System.Drawing.Size(139, 26);
+            this.textBox_PlayerCastedSpells.TabIndex = 12;
+            this.textBox_PlayerCastedSpells.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_PlayerCastedSpells_KeyDown);
             // 
             // MainForm
             // 
@@ -1841,6 +1862,8 @@
         public System.Windows.Forms.TextBox textBox_DatabaseAdvisorOutput;
         private System.Windows.Forms.TextBox textBox_GossipMenuText;
         private System.Windows.Forms.Label label_GossipMenuText;
+        private System.Windows.Forms.TextBox textBox_PlayerCastedSpells;
+        private System.Windows.Forms.Label label_PlayerCasterSpells;
     }
 }
 

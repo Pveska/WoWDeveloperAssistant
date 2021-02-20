@@ -477,5 +477,21 @@ namespace WoWDeveloperAssistant
 
             textBox_DatabaseAdvisorOutput.Text = GossipMenuAdvisor.GetTextForGossipMenu(textBox_GossipMenuText.Text);
         }
+
+        private void textBox_PlayerCastedSpells_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_PlayerCastedSpells.Text == "")
+                return;
+
+            PlayerCastedSpellsParser.OpenFileDialog(openFileDialog);
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                textBox_DatabaseAdvisorOutput.Text = PlayerCastedSpellsParser.ParsePlayerCastedSpells(openFileDialog.FileName, textBox_PlayerCastedSpells.Text);
+            }
+        }
     }
 }
