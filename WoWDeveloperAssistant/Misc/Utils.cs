@@ -20,8 +20,9 @@ namespace WoWDeveloperAssistant.Misc
             BUILD_8_2_5   = 5,
             BUILD_8_3_0   = 6,
             BUILD_8_3_7   = 7,
-            BUILD_9_0_1   = 8, ///< Prepatch
-            BUILD_9_0_2   = 9, ///< Shadowlands
+            BUILD_9_0_1   = 8,
+            BUILD_9_0_2   = 9,
+            BUILD_9_0_5   = 10
         };
 
         public static string GetValueWithoutComma(this float value)
