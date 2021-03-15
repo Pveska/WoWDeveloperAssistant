@@ -1,7 +1,11 @@
-﻿namespace WoWDeveloperAssistant.DBC.Structures
+﻿using DBFileReaderLib.Attributes;
+
+namespace WoWDeveloperAssistant.DBC.Structures
 {
+    [DBFile("Criteria")]
     public sealed class CriteriaEntry
     {
+        [Index(true)]
         public uint ID;
         public short Type;
         public int Asset;
@@ -13,6 +17,6 @@
         public int FailAsset;
         public byte Flags;
         public short EligibilityWorldStateID;
-        public sbyte EligibilityWorldStateValue;
+        public sbyte EligibilityWorldStatevalue;
     }
 }

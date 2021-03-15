@@ -1,5 +1,7 @@
 ﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
+    [DBFile("ModifierTree")]
+
     public sealed class ModifierTreeEntry
     {
         public uint ID;

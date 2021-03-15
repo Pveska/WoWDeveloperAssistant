@@ -1,7 +1,11 @@
-﻿namespace WoWDeveloperAssistant.DBC.Structures
+﻿using DBFileReaderLib.Attributes;
+
+namespace WoWDeveloperAssistant.DBC.Structures
 {
+    [DBFile("CriteriaTree")]
     public sealed class CriteriaTreeEntry
     {
+        [Index(true)]
         public uint ID;
         public string Description;
         public uint Parent;

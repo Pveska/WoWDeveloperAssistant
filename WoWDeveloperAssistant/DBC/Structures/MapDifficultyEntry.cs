@@ -1,7 +1,12 @@
-﻿namespace WoWDeveloperAssistant.DBC.Structures
+﻿using DBFileReaderLib.Attributes;
+
+namespace WoWDeveloperAssistant.DBC.Structures
 {
+    [DBFile("MapDifficulty")]
+
     public class MapDifficultyEntry
     {
+        [Index(true)]
         public uint ID;
         public string Message;
         public int DifficultyID;

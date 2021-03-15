@@ -1,10 +1,15 @@
-﻿namespace WoWDeveloperAssistant.DBC.Structures
+﻿using DBFileReaderLib.Attributes;
+
+namespace WoWDeveloperAssistant.DBC.Structures
 {
-    public class AchievementEntry
+    [DBFile("Achievement")]
+
+    public sealed class AchievementEntry
     {
         public string Description;
         public string Title;
         public string Reward;
+        [Index(false)]
         public uint ID;
         public short InstanceID;
         public sbyte Faction;
@@ -18,5 +23,6 @@
         public int RewardItemID;
         public uint CriteriaTree;
         public short SharesCriteria;
+        public int CovenantID;
     }
 }

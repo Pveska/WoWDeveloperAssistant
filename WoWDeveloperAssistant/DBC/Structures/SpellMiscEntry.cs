@@ -1,9 +1,11 @@
 ﻿namespace WoWDeveloperAssistant.DBC.Structures
 {
+    [DBFile("SpellMisc")]
+
     public sealed class SpellMiscEntry
     {
         public uint ID;
-        public int[] Attributes = new int[14];
+        public int[] Attributes = new int[15];
         public byte DifficultyID;
         public ushort CastingTimeIndex;
         public ushort DurationIndex;
@@ -15,6 +17,9 @@
         public int SpellIconFileDataID;
         public int ActiveIconFileDataID;
         public int ContentTuningID;
+        public int ShowFutureSpellPlayerConditionId;
+        public int SpellVisualScript;
+        public int ActiveSpellVisualScript;
         public int SpellID;
     }
 }

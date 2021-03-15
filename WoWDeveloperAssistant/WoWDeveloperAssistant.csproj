@@ -55,6 +55,10 @@
     <StartupObject>WoWDeveloperAssistant.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DBFileReaderLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DBFileReaderLib\bin\Release\netstandard2.0\DBFileReaderLib.dll</HintPath>
+    </Reference>
     <Reference Include="MetroFramework">
       <HintPath>..\Packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>
     </Reference>
@@ -73,6 +77,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Web.DataVisualization" />
     <Reference Include="System.Web.DataVisualization.Design" />
     <Reference Include="System.Windows.Controls.DataVisualization.Toolkit">
@@ -112,11 +117,18 @@
     <Compile Include="Database Advisor\GossipMenuAdvisor.cs" />
     <Compile Include="Database Advisor\PlayerCastedSpellsParser.cs" />
     <Compile Include="Database Advisor\SpellDestinationsParser.cs" />
+    <Compile Include="DBC\DBC.cs" />
     <Compile Include="DBC\Structures\AchievementEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaTreeEntry.cs" />
+    <Compile Include="DBC\Structures\DBFileAttribute.cs" />
     <Compile Include="DBC\Structures\MapDifficultyEntry.cs" />
+    <Compile Include="DBC\Structures\MapEntry.cs" />
     <Compile Include="DBC\Structures\ModifierTreeEntry.cs" />
+    <Compile Include="DBC\Structures\SpellCastTimesEntry.cs" />
+    <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
+    <Compile Include="DBC\Structures\SpellMiscEntry.cs" />
+    <Compile Include="DBC\Structures\SpellNameEntry.cs" />
     <Compile Include="Misc\Aura.cs" />
     <Compile Include="Misc\Creature.cs" />
     <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />
@@ -127,14 +139,6 @@
     <Compile Include="Database Advisor\AreatriggerSplineCreator.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
-    <Compile Include="DBC\DBC.cs" />
-    <Compile Include="DBC\Misc\Configuration.cs" />
-    <Compile Include="DBC\Misc\Settings.cs" />
-    <Compile Include="DBC\Structures\MapEntry.cs" />
-    <Compile Include="DBC\Structures\SpellCastTimesEntry.cs" />
-    <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
-    <Compile Include="DBC\Structures\SpellMiscEntry.cs" />
-    <Compile Include="DBC\Structures\SpellNameEntry.cs" />
     <Compile Include="DoubleSpawnsRemover.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
@@ -210,12 +214,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DB2FileReaderLib\DBFileReaderLib.csproj">
-      <Project>{62800BCA-47BF-42F8-AD38-C828EDA81025}</Project>
-      <Name>DBFileReaderLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

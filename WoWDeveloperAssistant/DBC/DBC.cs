@@ -1,68 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using DBFileReaderLib;
-using WoWDeveloperAssistant.DBC.Misc;
 using WoWDeveloperAssistant.DBC.Structures;
-using WoWDeveloperAssistant.Misc;
+using WoWDeveloperAssistant.Properties;
 
 namespace WoWDeveloperAssistant.DBC
 {
     public static class DBC
     {
         private static bool loaded;
-        public static Storage<SpellEffectEntry> SpellEffect { get; set; }
-        public static Storage<SpellNameEntry> SpellName { get; set; }
-        public static Storage<SpellMiscEntry> SpellMisc { get; set; }
-        public static Storage<SpellCastTimesEntry> SpellCastTimes { get; set; }
-        public static Storage<MapEntry> Map { get; set; }
         public static Storage<AchievementEntry> Achievement { get; set; }
         public static Storage<CriteriaTreeEntry> CriteriaTree { get; set; }
         public static Storage<CriteriaEntry> Criteria { get; set; }
         public static Storage<ModifierTreeEntry> ModifierTree { get; set; }
+        public static Storage<MapEntry> Map { get; set; }
         public static Storage<MapDifficultyEntry> MapDifficulty { get; set; }
+        public static Storage<SpellEffectEntry> SpellEffect { get; set; }
+        public static Storage<SpellNameEntry> SpellName { get; set; }
 
-        private static string GetPath()
+        private static string GetDBCPath()
         {
-            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Settings.DBCPath, Settings.DBCLocale);
+            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "dbc", "enUS");
+        }
+
+        private static string GetDBCPath(string fileName)
+        {
+            return Path.Combine(GetDBCPath(), fileName);
+        }
+
+        public static bool IsLoaded()
+        {
+            return loaded;
         }
 
         public static void Load()
         {
-            if (!Directory.Exists(GetPath()))
-                return;
+            Parallel.ForEach(typeof(DBC).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic), dbc =>
+            {
+                Type type = dbc.PropertyType.GetGenericArguments()[0];
 
-            var dbReader = new DBReader(GetPath(), "SpellEffect.db2");
-            SpellEffect = dbReader.GetRecords<SpellEffectEntry>();
+                if (!type.IsClass)
+                    return;
 
-            dbReader = new DBReader(GetPath(), "SpellName.db2");
-            SpellName = dbReader.GetRecords<SpellNameEntry>();
+                var startTime = DateTime.Now;
+                var attr = type.GetCustomAttribute<DBFileAttribute>();
+                if (attr == null)
+                    return;
 
-            dbReader = new DBReader(GetPath(), "SpellMisc.db2");
-            SpellMisc = dbReader.GetRecords<SpellMiscEntry>();
+                string pathName = GetDBCPath(attr.FileName) + ".db2";
+                var instanceType = typeof(Storage<>).MakeGenericType(type);
+                var countGetter = instanceType.GetProperty("Count").GetGetMethod();
+                dynamic instance = Activator.CreateInstance(instanceType, pathName);
+                var recordCount = (int)countGetter.Invoke(instance, new object[] { });
 
-            dbReader = new DBReader(GetPath(), "SpellCastTimes.db2");
-            SpellCastTimes = dbReader.GetRecords<SpellCastTimesEntry>();
+                try
+                {
+                    var db2Reader = new DBReader($"{ GetDBCPath(attr.FileName) }.db2");
 
-            dbReader = new DBReader(GetPath(), "Map.db2");
-            Map = dbReader.GetRecords<MapEntry>();
-
-            dbReader = new DBReader(GetPath(), "Achievement.db2");
-            Achievement = dbReader.GetRecords<AchievementEntry>();
-
-            dbReader = new DBReader(GetPath(), "CriteriaTree.db2");
-            CriteriaTree = dbReader.GetRecords<CriteriaTreeEntry>();
-
-            dbReader = new DBReader(GetPath(), "Criteria.db2");
-            Criteria = dbReader.GetRecords<CriteriaEntry>();
-
-            dbReader = new DBReader(GetPath(), "ModifierTree.db2");
-            ModifierTree = dbReader.GetRecords<ModifierTreeEntry>();
-
-            dbReader = new DBReader(GetPath(), "MapDifficulty.db2");
-            MapDifficulty = dbReader.GetRecords<MapDifficultyEntry>();
+                    dbc.SetValue(dbc.GetValue(null), instance);
+                }
+                catch (TargetInvocationException tie)
+                {
+                    if (tie.InnerException is ArgumentException)
+                        throw new ArgumentException($"Failed to load {attr.FileName}.db2: {tie.InnerException.Message}");
+                    throw;
+                }
+            });
 
             if (SpellEffect != null && SpellEffectStores.Count == 0)
             {
@@ -73,26 +81,21 @@ namespace WoWDeveloperAssistant.DBC
                 }
             }
 
-            if (MapDifficulty != null && MapSpawnDifficultyStore.Count == 0)
+            if (MapDifficulty != null && MapDifficultyStores.Count == 0)
             {
                 foreach (var mapDifficulty in MapDifficulty)
                 {
-                    if (MapSpawnDifficultyStore.ContainsKey(mapDifficulty.Value.MapID))
-                        MapSpawnDifficultyStore[mapDifficulty.Value.MapID] = MapSpawnDifficultyStore[mapDifficulty.Value.MapID] + " " + mapDifficulty.Value.DifficultyID;
+                    if (MapDifficultyStores.ContainsKey(mapDifficulty.Value.MapID))
+                        MapDifficultyStores[mapDifficulty.Value.MapID] = MapDifficultyStores[mapDifficulty.Value.MapID] + " " + mapDifficulty.Value.DifficultyID;
                     else
-                        MapSpawnDifficultyStore.Add(mapDifficulty.Value.MapID, Convert.ToString(mapDifficulty.Value.DifficultyID));
+                        MapDifficultyStores.Add(mapDifficulty.Value.MapID, Convert.ToString(mapDifficulty.Value.DifficultyID));
                 }
             }
 
             loaded = true;
         }
 
-        public static bool IsLoaded()
-        {
-            return loaded;
-        }
-
+        public static readonly Dictionary<int, string> MapDifficultyStores = new Dictionary<int, string>();
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffectEntry> SpellEffectStores = new Dictionary<Tuple<uint, uint>, SpellEffectEntry>();
-        public static readonly Dictionary<int, string> MapSpawnDifficultyStore = new Dictionary<int, string>();
     }
 }
