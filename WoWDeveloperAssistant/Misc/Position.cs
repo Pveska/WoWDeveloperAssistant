@@ -41,6 +41,10 @@ namespace WoWDeveloperAssistant.Misc
         {
             return x != 0.0f && y != 0.0f;
         }
+        public float GetDistance(Position comparePos)
+        {
+            return (float)Math.Sqrt(Math.Pow((x - comparePos.x), 2) + Math.Pow((y - comparePos.y), 2) + Math.Pow((z - comparePos.z), 2));
+        }
 
         public static double GetExactDist2dSq(Position mainPos, Position comparePos)
         {

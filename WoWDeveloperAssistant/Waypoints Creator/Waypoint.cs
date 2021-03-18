@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WoWDeveloperAssistant.Misc;
+using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
@@ -16,12 +17,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public TimeSpan orientationSetTime;
         public List<WaypointScript> scripts;
         public uint idFromParse;
+        public MoveType moveType;
 
         public Waypoint()
-        { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); idFromParse = 0; }
+        { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); idFromParse = 0; moveType = MoveType.MOVE_MAX; }
 
-        public Waypoint(Position movePos, float ori, uint delay, Position startPos, uint moveTime, TimeSpan moveStartTime, TimeSpan oriTime, List<WaypointScript> scripts, uint id)
-        { movePosition = movePos; orientation = ori; this.delay = delay; startPosition = startPos; this.moveTime = moveTime; this.moveStartTime = moveStartTime; orientationSetTime = oriTime; this.scripts = scripts; idFromParse = id; }
+        public Waypoint(Position movePos, float ori, uint delay, Position startPos, uint moveTime, TimeSpan moveStartTime, TimeSpan oriTime, List<WaypointScript> scripts, uint id, MoveType moveType)
+        { movePosition = movePos; orientation = ori; this.delay = delay; startPosition = startPos; this.moveTime = moveTime; this.moveStartTime = moveStartTime; orientationSetTime = oriTime; this.scripts = scripts; idFromParse = id; this.moveType = moveType; }
 
         public bool HasOrientation()
         {
@@ -60,6 +62,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             waypoint.moveStartTime = moveStartTime;
             waypoint.orientationSetTime = orientationSetTime;
             waypoint.scripts = new List<WaypointScript>();
+            waypoint.moveType = moveType;
 
             foreach (WaypointScript script in scripts)
             {
