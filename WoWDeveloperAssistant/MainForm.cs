@@ -263,6 +263,7 @@ namespace WoWDeveloperAssistant
 
         private void listBox_WCCreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
+            waypointsCreator.RemoveGuidsWithExistingDataFromListBox();
             waypointsCreator.FillWaypointsGrid();
         }
 
