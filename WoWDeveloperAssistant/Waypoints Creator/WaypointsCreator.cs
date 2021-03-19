@@ -392,20 +392,15 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void RemoveGuidsWithExistingDataFromListBox()
         {
-            int currIndex = mainForm.listBox_WC_CreatureGuids.SelectedIndex;
-            bool needToUpdateUi = false;
+            List<string> linkedIdsToRemove = IsGuidListBoxChanged();
 
-            var items = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().Where(x => !IsCreatureAlreadyHaveData(x.ToString())).ToArray();
-
-            if (items.Count() != mainForm.listBox_WC_CreatureGuids.Items.Count)
+            if (linkedIdsToRemove.Count != 0)
             {
+                int currIndex = mainForm.listBox_WC_CreatureGuids.SelectedIndex;
+                var items = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().Where(x => !linkedIdsToRemove.Contains(creaturesDict[x.ToString()].GetLinkedId())).ToArray();
+
                 mainForm.listBox_WC_CreatureGuids.Items.Clear();
                 mainForm.listBox_WC_CreatureGuids.Items.AddRange(items);
-                needToUpdateUi = true;
-            }
-
-            if (needToUpdateUi)
-            {
                 mainForm.listBox_WC_CreatureGuids.Refresh();
 
                 if (currIndex <= mainForm.listBox_WC_CreatureGuids.Items.Count - 1)
@@ -428,19 +423,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string linkedId = creaturesDict[guid].GetLinkedId();
             bool alreadyHaveWaypointsOrRelatedToFormation = false;
 
-            string addonSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` = '" + linkedId + "';";
             string formationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` = '" + linkedId + "' OR " + "`memberLinkedId` = '" + linkedId + "';";
-            var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
             var creatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(formationSqlQuery) : null;
-
-            if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
-            {
-                foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
-                {
-                    if (Convert.ToInt32(row.ItemArray[0]) > 0)
-                        alreadyHaveWaypointsOrRelatedToFormation = true;
-                }
-            }
 
             if (creatureFormationDs != null && creatureFormationDs.Tables["table"].Rows.Count > 0)
             {
@@ -448,11 +432,93 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 {
                     if (Convert.ToString(row.ItemArray[0]) == linkedId ||
                         Convert.ToString(row.ItemArray[1]) == linkedId)
+                    {
                         alreadyHaveWaypointsOrRelatedToFormation = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!alreadyHaveWaypointsOrRelatedToFormation)
+            {
+                string addonSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` = '" + linkedId + "';";
+                var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
+
+                if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
+                {
+                    foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
+                    {
+                        if (Convert.ToInt32(row.ItemArray[0]) > 0)
+                        {
+                            alreadyHaveWaypointsOrRelatedToFormation = true;
+                            break;
+                        }
+                    }
                 }
             }
 
             return alreadyHaveWaypointsOrRelatedToFormation;
+        }
+
+        private List<string> IsGuidListBoxChanged()
+        {
+            List<string> foundLinkedIds = new List<string>();
+
+            string linkedIds = GetLinkedIdsFromGuids();
+
+            string formationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` IN (" + linkedIds + ") OR " + "`memberLinkedId` IN (" + linkedIds + ");";
+            string addonSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` IN (" + linkedIds + ");";
+
+            var creatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(formationSqlQuery) : null;
+            var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
+
+            if (creatureFormationsDs != null && creatureFormationsDs.Tables["table"].Rows.Count > 0)
+            {
+                foreach (DataRow row in creatureFormationsDs.Tables["table"].Rows)
+                {
+                    if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
+                    {
+                        foundLinkedIds.Add(row.ItemArray[0].ToString());
+                    }
+
+                    if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[1].ToString()))
+                    {
+                        foundLinkedIds.Add(row.ItemArray[1].ToString());
+                    }
+                }
+            }
+
+            if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
+            {
+                foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
+                {
+                    if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
+                    {
+                        foundLinkedIds.Add(row.ItemArray[0].ToString());
+                    }
+                }
+            }
+
+            return foundLinkedIds;
+        }
+
+        private string GetLinkedIdsFromGuids()
+        {
+            string linkedIds = "";
+
+            for (int i = 0; i < mainForm.listBox_WC_CreatureGuids.Items.Count; i++)
+            {
+                if (i + 1 < mainForm.listBox_WC_CreatureGuids.Items.Count)
+                {
+                    linkedIds += "'" + creaturesDict[mainForm.listBox_WC_CreatureGuids.Items[i].ToString()].GetLinkedId() + "', ";
+                }
+                else
+                {
+                    linkedIds += "'" + creaturesDict[mainForm.listBox_WC_CreatureGuids.Items[i].ToString()].GetLinkedId() + "'";
+                }
+            }
+
+            return linkedIds;
         }
 
         public void FillWaypointsGrid()
