@@ -1,9 +1,0 @@
-E:\WowDeveloperAssiatant\DBFileReaderLib\bin\Debug\netstandard2.0\DBFileReaderLib.deps.json
-E:\WowDeveloperAssiatant\DBFileReaderLib\bin\Debug\netstandard2.0\DBFileReaderLib.dll
-E:\WowDeveloperAssiatant\DBFileReaderLib\bin\Debug\netstandard2.0\DBFileReaderLib.pdb
-E:\WowDeveloperAssiatant\DBFileReaderLib\obj\Debug\netstandard2.0\DBFileReaderLib.csprojAssemblyReference.cache
-E:\WowDeveloperAssiatant\DBFileReaderLib\obj\Debug\netstandard2.0\DBFileReaderLib.AssemblyInfoInputs.cache
-E:\WowDeveloperAssiatant\DBFileReaderLib\obj\Debug\netstandard2.0\DBFileReaderLib.AssemblyInfo.cs
-E:\WowDeveloperAssiatant\DBFileReaderLib\obj\Debug\netstandard2.0\DBFileReaderLib.csproj.CoreCompileInputs.cache
-E:\WowDeveloperAssiatant\DBFileReaderLib\obj\Debug\netstandard2.0\DBFileReaderLib.dll
-E:\WowDeveloperAssiatant\DBFileReaderLib\obj\Debug\netstandard2.0\DBFileReaderLib.pdb
