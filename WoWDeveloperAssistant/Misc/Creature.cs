@@ -21,7 +21,7 @@ namespace WoWDeveloperAssistant.Misc
         public List<Waypoint> waypoints;
         public List<Aura> auras;
         public Dictionary<uint, Spell> castedSpells;
-        private TimeSpan lastUpdatePacketTime;
+        public TimeSpan lastUpdatePacketTime;
         public bool IsFlying;
 
         public Creature(UpdateObjectPacket updatePacket)

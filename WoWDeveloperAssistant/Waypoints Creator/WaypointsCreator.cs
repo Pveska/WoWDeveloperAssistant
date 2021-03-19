@@ -366,7 +366,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.listBox_WC_CreatureGuids.Items.Clear();
             mainForm.grid_WC_Waypoints.Rows.Clear();
 
-            foreach (Creature creature in creaturesDict.Values)
+            foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
             {
                 if (!creature.HasWaypoints() || IsCreatureAlreadyHaveData(creature.guid))
                     continue;
@@ -397,7 +397,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             var items = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().Where(x => !IsCreatureAlreadyHaveData(x.ToString())).ToArray();
 
-            if (items.Length != mainForm.listBox_WC_CreatureGuids.Items.Count)
+            if (items.Count() != mainForm.listBox_WC_CreatureGuids.Items.Count)
             {
                 mainForm.listBox_WC_CreatureGuids.Items.Clear();
                 mainForm.listBox_WC_CreatureGuids.Items.AddRange(items);
@@ -406,7 +406,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (needToUpdateUi)
             {
-                mainForm.listBox_WC_CreatureGuids.Update();
+                mainForm.listBox_WC_CreatureGuids.Refresh();
 
                 if (currIndex <= mainForm.listBox_WC_CreatureGuids.Items.Count - 1)
                 {
