@@ -467,7 +467,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string linkedIds = GetLinkedIdsFromGuids();
 
             string formationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` IN (" + linkedIds + ") OR " + "`memberLinkedId` IN (" + linkedIds + ");";
-            string addonSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` IN (" + linkedIds + ") AND `path_id` != 0;";
+            string addonSqlQuery = "SELECT `linked_id` FROM `creature_addon` WHERE `linked_id` IN (" + linkedIds + ") AND `path_id` != 0;";
 
             var creatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(formationSqlQuery) : null;
             var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
@@ -492,7 +492,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
                 {
-                    if (row.ItemArray[0].ToString() != "" && row.ItemArray[0].ToString() != "0" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
+                    if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
                     {
                         foundLinkedIds.Add(row.ItemArray[0].ToString());
                     }

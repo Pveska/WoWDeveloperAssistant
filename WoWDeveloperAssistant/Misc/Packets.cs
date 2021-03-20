@@ -604,8 +604,8 @@ namespace WoWDeveloperAssistant.Misc
 
             public enum MoveType
             {
-                MOVE_RUN    = 0,
-                MOVE_WALK   = 1,
+                MOVE_WALK   = 0,
+                MOVE_RUN    = 1,
                 MOVE_FLIGHT = 4,
                 MOVE_MAX    = 5
             };
