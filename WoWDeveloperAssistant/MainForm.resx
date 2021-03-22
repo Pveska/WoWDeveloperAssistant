@@ -159,6 +159,9 @@
   <metadata name="contextMenuStrip_WC.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1268, 30</value>
   </metadata>
+  <metadata name="contextMenuStrip_WC_Guids.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>2456, 35</value>
+  </metadata>
   <metadata name="toolStrip_WC.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1087, 23</value>
   </metadata>

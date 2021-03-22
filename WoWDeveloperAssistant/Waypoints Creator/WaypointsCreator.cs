@@ -363,26 +363,48 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void FillListBoxWithGuids()
         {
-            mainForm.listBox_WC_CreatureGuids.Items.Clear();
-            mainForm.grid_WC_Waypoints.Rows.Clear();
+            bool dataFoundOnCurrentList = false;
 
-            foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
+            if (mainForm.listBox_WC_CreatureGuids.Items.Count != 0)
             {
-                if (!creature.HasWaypoints() || IsCreatureAlreadyHaveData(creature.guid))
-                    continue;
-
                 if (mainForm.toolStripTextBox_WC_Entry.Text != "" && mainForm.toolStripTextBox_WC_Entry.Text != "0")
                 {
-                    if (mainForm.toolStripTextBox_WC_Entry.Text == creature.entry.ToString() ||
-                        mainForm.toolStripTextBox_WC_Entry.Text == creature.guid ||
-                        mainForm.toolStripTextBox_WC_Entry.Text == creature.GetLinkedId())
+                    for (int i = 0; i < mainForm.listBox_WC_CreatureGuids.Items.Count; i++)
+                    {
+                        if (mainForm.listBox_WC_CreatureGuids.Items[i].ToString() == mainForm.toolStripTextBox_WC_Entry.Text ||
+                            creaturesDict[mainForm.listBox_WC_CreatureGuids.Items[i].ToString()].GetLinkedId() == mainForm.toolStripTextBox_WC_Entry.Text)
+                        {
+                            dataFoundOnCurrentList = true;
+                            mainForm.listBox_WC_CreatureGuids.SetSelected(i, true);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!dataFoundOnCurrentList)
+            {
+                mainForm.listBox_WC_CreatureGuids.Items.Clear();
+                mainForm.grid_WC_Waypoints.Rows.Clear();
+
+                foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
+                {
+                    if (!creature.HasWaypoints() || IsCreatureAlreadyHaveDataOnDb(creature.guid))
+                        continue;
+
+                    if (mainForm.toolStripTextBox_WC_Entry.Text != "" && mainForm.toolStripTextBox_WC_Entry.Text != "0")
+                    {
+                        if (mainForm.toolStripTextBox_WC_Entry.Text == creature.entry.ToString() ||
+                            mainForm.toolStripTextBox_WC_Entry.Text == creature.guid ||
+                            mainForm.toolStripTextBox_WC_Entry.Text == creature.GetLinkedId())
+                        {
+                            mainForm.listBox_WC_CreatureGuids.Items.Add(creature.guid);
+                        }
+                    }
+                    else
                     {
                         mainForm.listBox_WC_CreatureGuids.Items.Add(creature.guid);
                     }
-                }
-                else
-                {
-                    mainForm.listBox_WC_CreatureGuids.Items.Add(creature.guid);
                 }
             }
 
@@ -392,33 +414,69 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void RemoveGuidsWithExistingDataFromListBox()
         {
-            List<string> linkedIdsToRemove = IsGuidListBoxChanged();
+            if (mainForm.listBox_WC_CreatureGuids.SelectedIndex == -1)
+            {
+                mainForm.listBox_WC_CreatureGuids.SetSelected(0, true);
+            }
+
+            List<string> linkedIdsToRemove = GetExistedLinkedIdsFromListBox();
+            List<object> listBoxOriginalItems = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().ToList();
+            string currentSelectedGuid = mainForm.listBox_WC_CreatureGuids.Items[mainForm.listBox_WC_CreatureGuids.SelectedIndex].ToString();
 
             if (linkedIdsToRemove.Count != 0)
             {
-                int currIndex = mainForm.listBox_WC_CreatureGuids.SelectedIndex;
-                var items = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().Where(x => !linkedIdsToRemove.Contains(creaturesDict[x.ToString()].GetLinkedId())).ToArray();
+                object[] items = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().Where(x => !linkedIdsToRemove.Contains(creaturesDict[x.ToString()].GetLinkedId())).ToArray();
+                bool guidFound = false;
 
                 mainForm.listBox_WC_CreatureGuids.Items.Clear();
                 mainForm.listBox_WC_CreatureGuids.Items.AddRange(items);
-                mainForm.listBox_WC_CreatureGuids.Refresh();
 
-                if (currIndex <= mainForm.listBox_WC_CreatureGuids.Items.Count - 1)
+                for (int i = 0; i < mainForm.listBox_WC_CreatureGuids.Items.Count; i++)
                 {
-                    mainForm.listBox_WC_CreatureGuids.SetSelected(currIndex, true);
+                    if (mainForm.listBox_WC_CreatureGuids.Items[i].ToString() == currentSelectedGuid)
+                    {
+                        guidFound = true;
+                        mainForm.listBox_WC_CreatureGuids.SetSelected(i, true);
+                        break;
+                    }
                 }
-                else if (mainForm.listBox_WC_CreatureGuids.Items.Count == 1)
+
+                if (!guidFound)
                 {
-                    mainForm.listBox_WC_CreatureGuids.SetSelected(0, true);
+                    for (int i = 0; i < listBoxOriginalItems.Count; i++)
+                    {
+                        if (listBoxOriginalItems[i].ToString() == currentSelectedGuid)
+                        {
+                            for (int j = i + 1; j < listBoxOriginalItems.Count; j++)
+                            {
+                                if (mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().FirstOrDefault(x => x.ToString() == listBoxOriginalItems[j].ToString()) != null)
+                                {
+                                    for (int l = 0; l < mainForm.listBox_WC_CreatureGuids.Items.Count; l++)
+                                    {
+                                        if (mainForm.listBox_WC_CreatureGuids.Items[l].ToString() == listBoxOriginalItems[j].ToString())
+                                        {
+                                            guidFound = true;
+                                            mainForm.listBox_WC_CreatureGuids.SetSelected(l, true);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (guidFound)
+                                    break;
+                            }
+                        }
+
+                        if (guidFound)
+                            break;
+                    }
                 }
-                else
-                {
-                    mainForm.listBox_WC_CreatureGuids.ClearSelected();
-                }
+
+                mainForm.listBox_WC_CreatureGuids.Refresh();
             }
         }
 
-        public bool IsCreatureAlreadyHaveData(string guid)
+        public bool IsCreatureAlreadyHaveDataOnDb(string guid)
         {
             string linkedId = creaturesDict[guid].GetLinkedId();
             bool alreadyHaveWaypointsOrRelatedToFormation = false;
@@ -460,7 +518,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return alreadyHaveWaypointsOrRelatedToFormation;
         }
 
-        private List<string> IsGuidListBoxChanged()
+        private List<string> GetExistedLinkedIdsFromListBox()
         {
             List<string> foundLinkedIds = new List<string>();
 
@@ -474,29 +532,38 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (creatureFormationsDs != null && creatureFormationsDs.Tables["table"].Rows.Count > 0)
             {
-                foreach (DataRow row in creatureFormationsDs.Tables["table"].Rows)
+                Parallel.ForEach(creatureFormationsDs.Tables["table"].Rows.Cast<DataRow>().AsEnumerable(), row =>
                 {
                     if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
                     {
-                        foundLinkedIds.Add(row.ItemArray[0].ToString());
+                        lock (foundLinkedIds)
+                        {
+                            foundLinkedIds.Add(row.ItemArray[0].ToString());
+                        }
                     }
 
                     if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[1].ToString()))
                     {
-                        foundLinkedIds.Add(row.ItemArray[1].ToString());
+                        lock (foundLinkedIds)
+                        {
+                            foundLinkedIds.Add(row.ItemArray[1].ToString());
+                        }
                     }
-                }
+                });
             }
 
             if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
             {
-                foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
+                Parallel.ForEach(creatureAddonDs.Tables["table"].Rows.Cast<DataRow>().AsEnumerable(), row =>
                 {
                     if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
                     {
-                        foundLinkedIds.Add(row.ItemArray[0].ToString());
+                        lock (foundLinkedIds)
+                        {
+                            foundLinkedIds.Add(row.ItemArray[0].ToString());
+                        }
                     }
-                }
+                });
             }
 
             return foundLinkedIds;
@@ -506,19 +573,25 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             string linkedIds = "";
 
-            for (int i = 0; i < mainForm.listBox_WC_CreatureGuids.Items.Count; i++)
+            foreach (object item in mainForm.listBox_WC_CreatureGuids.Items)
             {
-                if (i + 1 < mainForm.listBox_WC_CreatureGuids.Items.Count)
-                {
-                    linkedIds += "'" + creaturesDict[mainForm.listBox_WC_CreatureGuids.Items[i].ToString()].GetLinkedId() + "', ";
-                }
-                else
-                {
-                    linkedIds += "'" + creaturesDict[mainForm.listBox_WC_CreatureGuids.Items[i].ToString()].GetLinkedId() + "'";
-                }
+                linkedIds += "'" + creaturesDict[item.ToString()].GetLinkedId() + "', ";
             }
 
-            return linkedIds;
+            return linkedIds.Remove(linkedIds.Length - 2);
+        }
+
+        public void RemoveGuidsBeforeSelectedOne()
+        {
+            if (mainForm.listBox_WC_CreatureGuids.SelectedIndex == -1 || mainForm.listBox_WC_CreatureGuids.SelectedIndex == 0)
+                return;
+
+            for (int i = mainForm.listBox_WC_CreatureGuids.SelectedIndex - 1; i >= 0; i--)
+            {
+                mainForm.listBox_WC_CreatureGuids.Items.RemoveAt(i);
+            }
+
+            mainForm.listBox_WC_CreatureGuids.Refresh();
         }
 
         public void FillWaypointsGrid()

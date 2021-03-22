@@ -494,5 +494,10 @@ namespace WoWDeveloperAssistant
                 textBox_DatabaseAdvisorOutput.Text = PlayerCastedSpellsParser.ParsePlayerCastedSpells(openFileDialog.FileName, textBox_PlayerCastedSpells.Text);
             }
         }
+
+        private void removeGuidsBeforeSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.RemoveGuidsBeforeSelectedOne();
+        }
     }
 }
