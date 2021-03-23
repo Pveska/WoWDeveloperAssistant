@@ -12,20 +12,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            checkBox_WC_Vector.Checked = Properties.Settings.Default.Vector;
-            checkBox_WC_Scripts.Checked = Properties.Settings.Default.Scripts;
+            checkBox_CreateVector.Checked = Properties.Settings.Default.Vector;
+            checkBox_ParseWaypointScripts.Checked = Properties.Settings.Default.Scripts;
+            checkBox_DoNotAddCritterGuids.Checked = Properties.Settings.Default.Critters;
         }
 
-        private void button_WC_Ok_Click(object sender, EventArgs e)
+        private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Properties.Settings.Default.Vector = checkBox_WC_Vector.Checked;
-            Properties.Settings.Default.Scripts = checkBox_WC_Scripts.Checked;
-            Close();
-        }
-
-        private void button_WC_Cancel_Click(object sender, EventArgs e)
-        {
-            Close();
+            Properties.Settings.Default.Vector = checkBox_CreateVector.Checked;
+            Properties.Settings.Default.Scripts = checkBox_ParseWaypointScripts.Checked;
+            Properties.Settings.Default.Critters = checkBox_DoNotAddCritterGuids.Checked;
         }
     }
 }

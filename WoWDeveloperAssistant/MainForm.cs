@@ -82,7 +82,7 @@ namespace WoWDeveloperAssistant
 
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (dataGridView_Spells.Rows.Count > 0)
+            if (dataGridView_CreatureScriptsCreator_Spells.Rows.Count > 0)
             {
                 creatureScriptsCreator.FillSQLOutput();
             }
@@ -95,9 +95,9 @@ namespace WoWDeveloperAssistant
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in dataGridView_Spells.SelectedRows)
+            foreach (DataGridViewRow row in dataGridView_CreatureScriptsCreator_Spells.SelectedRows)
             {
-                dataGridView_Spells.Rows.Remove(row);
+                dataGridView_CreatureScriptsCreator_Spells.Rows.Remove(row);
             }
         }
 
@@ -146,7 +146,7 @@ namespace WoWDeveloperAssistant
         {
             if (e.KeyCode == Keys.Enter)
             {
-                CreatureFlagsAdvisor.GetCreatureFlags(textBox_CreatureFlags.Text);
+                CreatureFlagsAdvisor.GetCreatureFlags(textBox_DatabaseAdvisor_CreatureFlags.Text);
             }
         }
 
@@ -154,7 +154,7 @@ namespace WoWDeveloperAssistant
         {
             if (e.KeyCode == Keys.Enter)
             {
-                QuestFlagsAdvisor.GetQuestFlags(textBox_QuestFlags.Text);
+                QuestFlagsAdvisor.GetQuestFlags(textBox_DatabaseAdvisor_QuestFlags.Text);
             }
         }
 
@@ -163,46 +163,46 @@ namespace WoWDeveloperAssistant
             DoubleSpawnsRemover.OpenFileDialog(openFileDialog);
 
             this.Cursor = Cursors.WaitCursor;
-            button_ImportFileForRemoving.Enabled = false;
+            button_DoubleSpawnsRemover_ImportFile.Enabled = false;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_CreaturesRemoved, label_GameobjectsRemoved, checkBox_CreaturesRemover.Checked, checkBox_GameobjectsRemover.Checked, toolStripStatusLabel_FileStatus, this);
+                DoubleSpawnsRemover.RemoveDoubleSpawnsFromFile(openFileDialog.FileName, label_DoubleSpawnsRemover_CreaturesRemoved, label_DoubleSpawnsRemover_GameobjectsRemoved, checkBox_DoubleSpawnsRemover_Creatures.Checked, checkBox_DoubleSpawnsRemover_Gameobjects.Checked, toolStripStatusLabel_FileStatus, this);
                 toolStripStatusLabel_FileStatus.Text =openFileDialog.FileName + " is selected for input.";
-                button_ImportFileForRemoving.Enabled = true;
+                button_DoubleSpawnsRemover_ImportFile.Enabled = true;
                 this.Cursor = Cursors.Default;
             }
             else
             {
-                label_CreaturesRemoved.Text = "No creatures removed";
-                label_GameobjectsRemoved.Text = "No gameobjects removed";
+                label_DoubleSpawnsRemover_CreaturesRemoved.Text = "No creatures removed";
+                label_DoubleSpawnsRemover_GameobjectsRemoved.Text = "No gameobjects removed";
             }
 
-            button_ImportFileForRemoving.Enabled = true;
+            button_DoubleSpawnsRemover_ImportFile.Enabled = true;
             this.Cursor = Cursors.Default;
         }
 
         private void checkBox_CreaturesRemover_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_CreaturesRemover.Checked)
+            if (checkBox_DoubleSpawnsRemover_Creatures.Checked)
             {
-                button_ImportFileForRemoving.Enabled = true;
+                button_DoubleSpawnsRemover_ImportFile.Enabled = true;
             }
-            else if (!checkBox_CreaturesRemover.Checked && !checkBox_GameobjectsRemover.Checked)
+            else if (!checkBox_DoubleSpawnsRemover_Creatures.Checked && !checkBox_DoubleSpawnsRemover_Gameobjects.Checked)
             {
-                button_ImportFileForRemoving.Enabled = false;
+                button_DoubleSpawnsRemover_ImportFile.Enabled = false;
             }
         }
 
         private void checkBox_GameobjectsRemover_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_GameobjectsRemover.Checked)
+            if (checkBox_DoubleSpawnsRemover_Gameobjects.Checked)
             {
-                button_ImportFileForRemoving.Enabled = true;
+                button_DoubleSpawnsRemover_ImportFile.Enabled = true;
             }
-            else if (!checkBox_GameobjectsRemover.Checked && !checkBox_CreaturesRemover.Checked)
+            else if (!checkBox_DoubleSpawnsRemover_Gameobjects.Checked && !checkBox_DoubleSpawnsRemover_Creatures.Checked)
             {
-                button_ImportFileForRemoving.Enabled = false;
+                button_DoubleSpawnsRemover_ImportFile.Enabled = false;
             }
         }
 
@@ -214,7 +214,7 @@ namespace WoWDeveloperAssistant
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    AreatriggerSplineCreator.ParseSplinesForAreatrigger(openFileDialog.FileName, textBoxAreatriggerSplines.Text);
+                    AreatriggerSplineCreator.ParseSplinesForAreatrigger(openFileDialog.FileName, textBox_DatabaseAdvisor_AreatriggerSplines.Text);
                 }
             }
         }
@@ -236,7 +236,7 @@ namespace WoWDeveloperAssistant
                 {
                     toolStripStatusLabel_CurrentAction.Text = "";
                     toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_WC_LoadSniff.Enabled = true;
+                    toolStripButton_WaypointsCreator_LoadSniff.Enabled = true;
                     Cursor = Cursors.Default;
                 }
             }
@@ -305,7 +305,7 @@ namespace WoWDeveloperAssistant
 
         private void ListBox_CoreScriptTemplates_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox_CoreScriptTemplates_Entry.Enabled = true;
+            textBox_CoreScriptTemplates_ObjectId.Enabled = true;
             coreScriptTemplate.FillTreeWithHookBodies();
         }
 
@@ -314,7 +314,7 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_CoreScriptTemplates_Entry.Text == "" || textBox_CoreScriptTemplates_Entry.Text == "0")
+            if (textBox_CoreScriptTemplates_ObjectId.Text == "" || textBox_CoreScriptTemplates_ObjectId.Text == "0")
                 return;
 
             coreScriptTemplate.CreateTemplate();
@@ -325,7 +325,7 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBoxAchievements_Id.Text == "" || textBoxAchievements_Id.Text == "0")
+            if (textBox_Achievements_AchievementId.Text == "" || textBox_Achievements_AchievementId.Text == "0")
                 return;
 
             treeView_Achievements_ChildNodes.Nodes.Clear();
@@ -396,71 +396,71 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_SpellDestinations.Text == "" || textBox_SpellDestinations.Text == "0")
+            if (textBox_DatabaseAdvisor_SpellDestinations.Text == "" || textBox_DatabaseAdvisor_SpellDestinations.Text == "0")
                 return;
 
             SpellDestinationsParser.OpenFileDialog(openFileDialog);
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                SpellDestinationsParser.ParseSpellDestinations(openFileDialog.FileName, textBox_SpellDestinations.Text);
+                SpellDestinationsParser.ParseSpellDestinations(openFileDialog.FileName, textBox_DatabaseAdvisor_SpellDestinations.Text);
             }
         }
 
         private void comboBox_ConditionSourceType_DropDown(object sender, EventArgs e)
         {
-            if (comboBox_ConditionSourceType.Items.Count == 0)
+            if (comboBox_ConditionsCreator_ConditionSourceType.Items.Count == 0)
             {
-                comboBox_ConditionSourceType.Items.AddRange(Enum.GetNames(typeof(Conditions.ConditionSourceTypes)));
+                comboBox_ConditionsCreator_ConditionSourceType.Items.AddRange(Enum.GetNames(typeof(Conditions.ConditionSourceTypes)));
             }
         }
 
         private void comboBox_ConditionType_DropDown(object sender, EventArgs e)
         {
-            if (comboBox_ConditionType.Items.Count == 0)
+            if (comboBox_ConditionsCreator_ConditionType.Items.Count == 0)
             {
-                comboBox_ConditionType.Items.AddRange(Enum.GetNames(typeof(Conditions.ConditionTypes)));
+                comboBox_ConditionsCreator_ConditionType.Items.AddRange(Enum.GetNames(typeof(Conditions.ConditionTypes)));
             }
         }
 
         private void comboBox_ConditionSourceType_SelectedIndexChanged(object sender, EventArgs e)
         {
             conditionsCreator.ClearConditions();
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceGroup);
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceEntry);
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_SourceId);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionsCreator_SourceGroup);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionsCreator_SourceEntry);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionsCreator_SourceId);
 
-            if (comboBox_ConditionType.SelectedItem != null)
+            if (comboBox_ConditionsCreator_ConditionType.SelectedItem != null)
             {
-                conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionTarget);
+                conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionsCreator_ConditionTarget);
             }
 
-            textBox_ElseGroup.Enabled = true;
-            comboBox_ConditionType.Enabled = true;
+            textBox_ConditionsCreator_ElseGroup.Enabled = true;
+            comboBox_ConditionsCreator_ConditionType.Enabled = true;
         }
 
         private void comboBox_ConditionType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox_ConditionSourceType.SelectedItem == null)
+            if (comboBox_ConditionsCreator_ConditionSourceType.SelectedItem == null)
                 return;
 
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionType.SelectedItem.ToString(), textBox_ConditionValue1);
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionType.SelectedItem.ToString(), textBox_ConditionValue2);
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionType.SelectedItem.ToString(), textBox_ConditionValue3);
-            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionTarget);
-            textBox_NegativeCondition.Enabled = true;
-            textBox_ScriptName.Enabled = true;
-            button_AddCondition.Enabled = true;
-            button_ClearConditions.Enabled = true;
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionType.SelectedItem.ToString(), textBox_ConditionsCreator_ConditionValue1);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionType.SelectedItem.ToString(), textBox_ConditionsCreator_ConditionValue2);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionType.SelectedItem.ToString(), textBox_ConditionsCreator_ConditionValue3);
+            conditionsCreator.ChangeTextBoxAccessibility(comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString(), textBox_ConditionsCreator_ConditionTarget);
+            textBox_ConditionsCreator_NegativeCondition.Enabled = true;
+            textBox_ConditionsCreator_ScriptName.Enabled = true;
+            button_ConditionsCreator_AddCondition.Enabled = true;
+            button_ConditionsCreator_ClearConditions.Enabled = true;
         }
 
         private void button_AddCondition_Click(object sender, EventArgs e)
         {
-            if (comboBox_ConditionSourceType.SelectedItem == null || comboBox_ConditionType.SelectedItem == null)
+            if (comboBox_ConditionsCreator_ConditionSourceType.SelectedItem == null || comboBox_ConditionsCreator_ConditionType.SelectedItem == null)
                 return;
 
             conditionsCreator.CreateCondition();
-            textBox_ConditionsOutput.Enabled = true;
+            textBox_ConditionsCreator_Output.Enabled = true;
         }
 
         private void button_ClearConditions_Click(object sender, EventArgs e)
@@ -473,10 +473,10 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_GossipMenuText.Text == "" || textBox_GossipMenuText.Text == "0")
+            if (textBox_DatabaseAdvisor_GossipMenuText.Text == "" || textBox_DatabaseAdvisor_GossipMenuText.Text == "0")
                 return;
 
-            textBox_DatabaseAdvisorOutput.Text = GossipMenuAdvisor.GetTextForGossipMenu(textBox_GossipMenuText.Text);
+            textBox_DatabaseAdvisor_Output.Text = GossipMenuAdvisor.GetTextForGossipMenu(textBox_DatabaseAdvisor_GossipMenuText.Text);
         }
 
         private void textBox_PlayerCastedSpells_KeyDown(object sender, KeyEventArgs e)
@@ -484,14 +484,14 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_PlayerCastedSpells.Text == "")
+            if (textBox_DatabaseAdvisor_PlayerCastedSpells.Text == "")
                 return;
 
             PlayerCastedSpellsParser.OpenFileDialog(openFileDialog);
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                textBox_DatabaseAdvisorOutput.Text = PlayerCastedSpellsParser.ParsePlayerCastedSpells(openFileDialog.FileName, textBox_PlayerCastedSpells.Text);
+                textBox_DatabaseAdvisor_Output.Text = PlayerCastedSpellsParser.ParsePlayerCastedSpells(openFileDialog.FileName, textBox_DatabaseAdvisor_PlayerCastedSpells.Text);
             }
         }
 

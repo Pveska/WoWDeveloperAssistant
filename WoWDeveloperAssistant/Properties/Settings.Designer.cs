@@ -12,7 +12,7 @@ namespace WoWDeveloperAssistant.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -61,7 +61,7 @@ namespace WoWDeveloperAssistant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("dev_735_world")]
+        [global::System.Configuration.DefaultSettingValueAttribute("world_shadowlands")]
         public string Database {
             get {
                 return ((string)(this["Database"]));
@@ -116,6 +116,30 @@ namespace WoWDeveloperAssistant.Properties {
             }
             set {
                 this["Scripts"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("enUS")]
+        public string DBCLocale {
+            get {
+                return ((string)(this["DBCLocale"]));
+            }
+            set {
+                this["DBCLocale"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Critters {
+            get {
+                return ((bool)(this["Critters"]));
+            }
+            set {
+                this["Critters"] = value;
             }
         }
     }

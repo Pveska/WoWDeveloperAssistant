@@ -66,9 +66,9 @@ namespace WoWDeveloperAssistant.Conditions_Creator
 
         private void CheckIfConditionAlreadyExistedInDb()
         {
-            uint sourceType = (uint)Enum.Parse(typeof(Conditions.ConditionSourceTypes), mainForm.comboBox_ConditionSourceType.SelectedItem.ToString());
-            string sourceGroup = mainForm.textBox_SourceGroup.Text;
-            string sourceEntry = mainForm.textBox_SourceEntry.Text;
+            uint sourceType = (uint)Enum.Parse(typeof(Conditions.ConditionSourceTypes), mainForm.comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString());
+            string sourceGroup = mainForm.textBox_ConditionsCreator_SourceGroup.Text;
+            string sourceEntry = mainForm.textBox_ConditionsCreator_SourceEntry.Text;
 
             string checkConditionInDbQuery = "SELECT * FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + sourceType + " AND ";
             checkConditionInDbQuery += sourceGroup != "" ? "`SourceGroup` = " + sourceGroup : "`SourceEntry` = " + sourceEntry;
@@ -83,7 +83,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
                     existedConditionsInDbList.Add("Conditions that already existed in database with the same Source Type and Group or Entry:");
                 }
 
-                mainForm.textBox_ConditionsOutput.Text = "Conditions that already existed in database with the same Source Type and Group or Entry:";
+                mainForm.textBox_ConditionsCreator_Output.Text = "Conditions that already existed in database with the same Source Type and Group or Entry:";
 
                 foreach (DataRow row in conditionsDs.Tables["table"].Rows)
                 {
@@ -125,16 +125,16 @@ namespace WoWDeveloperAssistant.Conditions_Creator
 
         private void UpdateOutputTexbox()
         {
-            mainForm.textBox_ConditionsOutput.Clear();
+            mainForm.textBox_ConditionsCreator_Output.Clear();
 
             if (existedConditionsInDbList.Count != 0)
             {
                 foreach (string condition in existedConditionsInDbList)
                 {
-                    mainForm.textBox_ConditionsOutput.Text += condition + "\r\n";
+                    mainForm.textBox_ConditionsCreator_Output.Text += condition + "\r\n";
                 }
 
-                mainForm.textBox_ConditionsOutput.Text += "\r\n";
+                mainForm.textBox_ConditionsCreator_Output.Text += "\r\n";
             }
 
             if (createdConditionsList.Count != 0)
@@ -145,16 +145,16 @@ namespace WoWDeveloperAssistant.Conditions_Creator
                     {
                         if (i + 1 < createdConditionsList.Count)
                         {
-                            mainForm.textBox_ConditionsOutput.Text += createdConditionsList[i] + "," + "\r\n";
+                            mainForm.textBox_ConditionsCreator_Output.Text += createdConditionsList[i] + "," + "\r\n";
                         }
                         else
                         {
-                            mainForm.textBox_ConditionsOutput.Text += createdConditionsList[i] + ";";
+                            mainForm.textBox_ConditionsCreator_Output.Text += createdConditionsList[i] + ";";
                         }
                     }
                     else
                     {
-                        mainForm.textBox_ConditionsOutput.Text += createdConditionsList[i] + "\r\n";
+                        mainForm.textBox_ConditionsCreator_Output.Text += createdConditionsList[i] + "\r\n";
                     }
                 }
             }

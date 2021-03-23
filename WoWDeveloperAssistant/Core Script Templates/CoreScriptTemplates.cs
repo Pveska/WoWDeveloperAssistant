@@ -75,7 +75,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
         public void CreateTemplate()
         {
-            uint objectEntry = Convert.ToUInt32(mainForm.textBox_CoreScriptTemplates_Entry.Text);
+            uint objectEntry = Convert.ToUInt32(mainForm.textBox_CoreScriptTemplates_ObjectId.Text);
 
             switch (GetScriptType(mainForm.comboBox_CoreScriptTemplates_ScriptType.SelectedIndex))
             {

@@ -12,7 +12,7 @@
       <Value Profile="(Default)">root</Value>
     </Setting>
     <Setting Name="Database" Type="System.String" Scope="User">
-      <Value Profile="(Default)">dev_735_world</Value>
+      <Value Profile="(Default)">world_shadowlands</Value>
     </Setting>
     <Setting Name="Port" Type="System.String" Scope="User">
       <Value Profile="(Default)">3306</Value>
@@ -24,6 +24,12 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Scripts" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DBCLocale" Type="System.String" Scope="User">
+      <Value Profile="(Default)">enUS</Value>
+    </Setting>
+    <Setting Name="Critters" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>

@@ -24,55 +24,55 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
         public void FillSpellsGrid()
         {
-            if (mainForm.listBox_CreatureGuids.SelectedItem == null)
+            if (mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem == null)
                 return;
 
-            Creature creature = creaturesDict[mainForm.listBox_CreatureGuids.SelectedItem.ToString()];
+            Creature creature = creaturesDict[mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem.ToString()];
             List<Spell> spellsList = new List<Spell>(from spell in creature.castedSpells.Values orderby spell.spellStartCastTimes.Count != 0 ? spell.spellStartCastTimes.Min() : new TimeSpan() ascending select spell);
 
-            mainForm.dataGridView_Spells.Rows.Clear();
+            mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Clear();
 
-            if (mainForm.checkBox_OnlyCombatSpells.Checked)
+            if (mainForm.checkBox_CreatureScriptsCreator_OnlyCombatSpells.Checked)
             {
                 foreach (var spell in spellsList.Where(spell => spell.isCombatSpell))
                 {
-                    mainForm.dataGridView_Spells.Rows.Add(spell.spellId, spell.name, spell.spellStartCastTimes.Min().ToFormattedString(), spell.combatCastTimings.minCastTime.ToFormattedString(), spell.combatCastTimings.maxCastTime.ToFormattedString(), spell.combatCastTimings.minRepeatTime.ToFormattedString(), spell.combatCastTimings.maxRepeatTime.ToFormattedString(), spell.castTimes, spell);
+                    mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Add(spell.spellId, spell.name, spell.spellStartCastTimes.Min().ToFormattedString(), spell.combatCastTimings.minCastTime.ToFormattedString(), spell.combatCastTimings.maxCastTime.ToFormattedString(), spell.combatCastTimings.minRepeatTime.ToFormattedString(), spell.combatCastTimings.maxRepeatTime.ToFormattedString(), spell.castTimes, spell);
                 }
             }
             else
             {
                 foreach (Spell spell in spellsList)
                 {
-                    mainForm.dataGridView_Spells.Rows.Add(spell.spellId, spell.name, spell.combatCastTimings.minCastTime.ToFormattedString(), 0, 0, 0, 0, spell.castTimes, spell);
+                    mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Add(spell.spellId, spell.name, spell.combatCastTimings.minCastTime.ToFormattedString(), 0, 0, 0, 0, spell.castTimes, spell);
                 }
             }
 
-            mainForm.dataGridView_Spells.Enabled = true;
+            mainForm.dataGridView_CreatureScriptsCreator_Spells.Enabled = true;
         }
 
         public void FillListBoxWithGuids()
         {
-            mainForm.listBox_CreatureGuids.Items.Clear();
-            mainForm.dataGridView_Spells.Rows.Clear();
+            mainForm.listBox_CreatureScriptCreator_CreatureGuids.Items.Clear();
+            mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Clear();
 
-            foreach (var creature in creaturesDict.Values.Where(creature => !mainForm.checkBox_OnlyCombatSpells.Checked || creature.HasCombatSpells()).Where(creature => creature.castedSpells.Count != 0))
+            foreach (var creature in creaturesDict.Values.Where(creature => !mainForm.checkBox_CreatureScriptsCreator_OnlyCombatSpells.Checked || creature.HasCombatSpells()).Where(creature => creature.castedSpells.Count != 0))
             {
-                if (mainForm.toolStripTextBox_CSC_CreatureEntry.Text != "" && mainForm.toolStripTextBox_CSC_CreatureEntry.Text != "0")
+                if (mainForm.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Text != "" && mainForm.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Text != "0")
                 {
-                    if (mainForm.toolStripTextBox_CSC_CreatureEntry.Text == creature.entry.ToString() ||
-                        mainForm.toolStripTextBox_CSC_CreatureEntry.Text == creature.guid)
+                    if (mainForm.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Text == creature.entry.ToString() ||
+                        mainForm.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Text == creature.guid)
                     {
-                        mainForm.listBox_CreatureGuids.Items.Add(creature.guid);
+                        mainForm.listBox_CreatureScriptCreator_CreatureGuids.Items.Add(creature.guid);
                     }
                 }
                 else
                 {
-                    mainForm.listBox_CreatureGuids.Items.Add(creature.guid);
+                    mainForm.listBox_CreatureScriptCreator_CreatureGuids.Items.Add(creature.guid);
                 }
             }
 
-            mainForm.listBox_CreatureGuids.Refresh();
-            mainForm.listBox_CreatureGuids.Enabled = true;
+            mainForm.listBox_CreatureScriptCreator_CreatureGuids.Refresh();
+            mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = true;
         }
 
         public bool GetDataFromSniffFile(string fileName)
@@ -336,7 +336,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
         public void FillSQLOutput()
         {
-            Creature creature = creaturesDict[mainForm.listBox_CreatureGuids.SelectedItem.ToString()];
+            Creature creature = creaturesDict[mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem.ToString()];
             int i = 0;
 
             var SQLtext = "UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` = " + creature.entry + ";\r\n";
@@ -355,9 +355,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 i++;
             }
 
-            for (int l = 0; l < mainForm.dataGridView_Spells.RowCount; l++, i++)
+            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++, i++)
             {
-                Spell spell = (Spell) mainForm.dataGridView_Spells[8, l].Value;
+                Spell spell = (Spell) mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
 
                 if (spell.isDeathSpell)
                 {
@@ -375,7 +375,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     SQLtext += "(" + creature.entry + ", 0, " + i + ", 0, 0, 0, 100, 0, '', " + Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000 + ", " + Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000 + ", 11, " + spell.spellId + ", 0, " + (spell.needConeDelay ? (Math.Floor(spell.spellCastTime.TotalSeconds) + 1) * 1000 : 0) + ", 0, 0, 0, " + spell.GetTargetType() + ", 0, 0, 0, 0, 0, 0, 0, '" + creature.name + " - IC - Cast " + spell.name + "')";
                 }
 
-                if (l < mainForm.dataGridView_Spells.RowCount - 1)
+                if (l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount - 1)
                 {
                     SQLtext += ",\r\n";
                 }
@@ -385,7 +385,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 }
             }
 
-            mainForm.textBox_SQLOutput.Text = SQLtext;
+            mainForm.textBox_SqlOutput.Text = SQLtext;
         }
 
         public static uint GetCreatureEntryByGuid(string creatureGuid)
@@ -431,13 +431,13 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         {
             mainForm.Cursor = Cursors.WaitCursor;
             mainForm.toolStripButton_CSC_ImportSniff.Enabled = false;
-            mainForm.toolStripButton_CSC_Search.Enabled = false;
-            mainForm.toolStripTextBox_CSC_CreatureEntry.Enabled = false;
-            mainForm.listBox_CreatureGuids.Enabled = false;
-            mainForm.listBox_CreatureGuids.Items.Clear();
-            mainForm.listBox_CreatureGuids.DataSource = null;
-            mainForm.dataGridView_Spells.Enabled = false;
-            mainForm.dataGridView_Spells.Rows.Clear();
+            mainForm.toolStripButton_CreatureScriptsCreator_Search.Enabled = false;
+            mainForm.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Enabled = false;
+            mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = false;
+            mainForm.listBox_CreatureScriptCreator_CreatureGuids.Items.Clear();
+            mainForm.listBox_CreatureScriptCreator_CreatureGuids.DataSource = null;
+            mainForm.dataGridView_CreatureScriptsCreator_Spells.Enabled = false;
+            mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Clear();
             mainForm.toolStripStatusLabel_FileStatus.Text = "Loading File...";
         }
 
@@ -445,8 +445,8 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         {
             mainForm.toolStripStatusLabel_CurrentAction.Text = "";
             mainForm.toolStripButton_CSC_ImportSniff.Enabled = true;
-            mainForm.toolStripButton_CSC_Search.Enabled = true;
-            mainForm.toolStripTextBox_CSC_CreatureEntry.Enabled = true;
+            mainForm.toolStripButton_CreatureScriptsCreator_Search.Enabled = true;
+            mainForm.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Enabled = true;
             mainForm.toolStripStatusLabel_FileStatus.Text = mainForm.openFileDialog.FileName + " is selected for input.";
             mainForm.Cursor = Cursors.Default;
         }

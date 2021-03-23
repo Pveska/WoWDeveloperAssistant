@@ -773,7 +773,8 @@ namespace WoWDeveloperAssistant.Misc
 
                     do
                     {
-                        if (lines[index].Contains("FacingGUID: TypeName: Player; Full:"))
+                        if (lines[index].Contains("FacingGUID: TypeName: Player; Full:") ||
+                            lines[index].Contains("FacingGUID: TypeName: Creature; Full:"))
                         {
                             movePacket.creatureGuid = "";
                             break;

@@ -15,7 +15,7 @@ namespace WoWDeveloperAssistant.Achievements
                 DBC.DBC.Load();
             }
 
-            DBC.DBC.Achievement.TryGetValue(int.Parse(mainForm.textBoxAchievements_Id.Text), out var achievement);
+            DBC.DBC.Achievement.TryGetValue(int.Parse(mainForm.textBox_Achievements_AchievementId.Text), out var achievement);
             if (achievement == null)
                 return;
 
@@ -23,14 +23,14 @@ namespace WoWDeveloperAssistant.Achievements
             if (criteriaTree == null)
                 return;
 
-            mainForm.label_Achievement_Name.Text = "Achievement Name: " + achievement.Description;
-            mainForm.label_Achievements_Faction.Text = "Achievement Faction: " + (AchievementEnums.AchievementFaction) achievement.Faction;
-            mainForm.label_Achievements_Flags.Text = "Achievement Flags: " + GetAchievementFlagNames(achievement.Flags);
+            mainForm.label_Achievements_AchievementName.Text = "Achievement Name: " + achievement.Description;
+            mainForm.label_Achievements_AchievementFaction.Text = "Achievement Faction: " + (AchievementEnums.AchievementFaction) achievement.Faction;
+            mainForm.label_Achievements_AchievementFlags.Text = "Achievement Flags: " + GetAchievementFlagNames(achievement.Flags);
 
             mainForm.label_Achievements_CriteriaTreeId.Text = "CriteriaTree Id: " + achievement.CriteriaTree;
             mainForm.label_Achievements_CriteriaTreeName.Text = "CriteriaTree Name: " + criteriaTree.Description;
-            mainForm.label_Achievements_CriteriaTree_Amount.Text = "CriteriaTree Amount: " + criteriaTree.Amount;
-            mainForm.label_Achievement_CriteriaTree_Operator.Text = "CriteriaTree Operator: " + (AchievementEnums.CriteriaTreeOperator)criteriaTree.Operator;
+            mainForm.label_Achievements_CriteriaTreeAmount.Text = "CriteriaTree Amount: " + criteriaTree.Amount;
+            mainForm.label_Achievement_CriteriaTreeOperator.Text = "CriteriaTree Operator: " + (AchievementEnums.CriteriaTreeOperator)criteriaTree.Operator;
             FillTreeWithCriteriaTreeChildNodes(achievement.CriteriaTree, mainForm.treeView_Achievements_ChildNodes);
         }
 

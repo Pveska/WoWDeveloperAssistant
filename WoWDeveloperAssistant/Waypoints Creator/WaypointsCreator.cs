@@ -365,17 +365,17 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             bool dataFoundOnCurrentList = false;
 
-            if (mainForm.listBox_WC_CreatureGuids.Items.Count != 0)
+            if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Count != 0)
             {
-                if (mainForm.toolStripTextBox_WC_Entry.Text != "" && mainForm.toolStripTextBox_WC_Entry.Text != "0")
+                if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "" && mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "0")
                 {
-                    for (int i = 0; i < mainForm.listBox_WC_CreatureGuids.Items.Count; i++)
+                    for (int i = 0; i < mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Count; i++)
                     {
-                        if (mainForm.listBox_WC_CreatureGuids.Items[i].ToString() == mainForm.toolStripTextBox_WC_Entry.Text ||
-                            creaturesDict[mainForm.listBox_WC_CreatureGuids.Items[i].ToString()].GetLinkedId() == mainForm.toolStripTextBox_WC_Entry.Text)
+                        if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items[i].ToString() == mainForm.toolStripTextBox_WaypointsCreator_Entry.Text ||
+                            creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.Items[i].ToString()].GetLinkedId() == mainForm.toolStripTextBox_WaypointsCreator_Entry.Text)
                         {
                             dataFoundOnCurrentList = true;
-                            mainForm.listBox_WC_CreatureGuids.SetSelected(i, true);
+                            mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(i, true);
                             break;
                         }
                     }
@@ -384,59 +384,59 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (!dataFoundOnCurrentList)
             {
-                mainForm.listBox_WC_CreatureGuids.Items.Clear();
-                mainForm.grid_WC_Waypoints.Rows.Clear();
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Clear();
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
 
                 foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
                 {
                     if (!creature.HasWaypoints() || IsCreatureAlreadyHaveDataOnDb(creature.guid))
                         continue;
 
-                    if (mainForm.toolStripTextBox_WC_Entry.Text != "" && mainForm.toolStripTextBox_WC_Entry.Text != "0")
+                    if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "" && mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "0")
                     {
-                        if (mainForm.toolStripTextBox_WC_Entry.Text == creature.entry.ToString() ||
-                            mainForm.toolStripTextBox_WC_Entry.Text == creature.guid ||
-                            mainForm.toolStripTextBox_WC_Entry.Text == creature.GetLinkedId())
+                        if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text == creature.entry.ToString() ||
+                            mainForm.toolStripTextBox_WaypointsCreator_Entry.Text == creature.guid ||
+                            mainForm.toolStripTextBox_WaypointsCreator_Entry.Text == creature.GetLinkedId())
                         {
-                            mainForm.listBox_WC_CreatureGuids.Items.Add(creature.guid);
+                            mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Add(creature.guid);
                         }
                     }
                     else
                     {
-                        mainForm.listBox_WC_CreatureGuids.Items.Add(creature.guid);
+                        mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Add(creature.guid);
                     }
                 }
             }
 
-            mainForm.listBox_WC_CreatureGuids.Refresh();
-            mainForm.listBox_WC_CreatureGuids.Enabled = true;
+            mainForm.listBox_WaypointsCreator_CreatureGuids.Refresh();
+            mainForm.listBox_WaypointsCreator_CreatureGuids.Enabled = true;
         }
 
         public void RemoveGuidsWithExistingDataFromListBox()
         {
-            if (mainForm.listBox_WC_CreatureGuids.SelectedIndex == -1)
+            if (mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex == -1)
             {
-                mainForm.listBox_WC_CreatureGuids.SetSelected(0, true);
+                mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(0, true);
             }
 
             List<string> linkedIdsToRemove = GetExistedLinkedIdsFromListBox();
-            List<object> listBoxOriginalItems = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().ToList();
-            string currentSelectedGuid = mainForm.listBox_WC_CreatureGuids.Items[mainForm.listBox_WC_CreatureGuids.SelectedIndex].ToString();
+            List<object> listBoxOriginalItems = mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().ToList();
+            string currentSelectedGuid = mainForm.listBox_WaypointsCreator_CreatureGuids.Items[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex].ToString();
 
             if (linkedIdsToRemove.Count != 0)
             {
-                object[] items = mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().Where(x => !linkedIdsToRemove.Contains(creaturesDict[x.ToString()].GetLinkedId())).ToArray();
+                object[] items = mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().Where(x => !linkedIdsToRemove.Contains(creaturesDict[x.ToString()].GetLinkedId())).ToArray();
                 bool guidFound = false;
 
-                mainForm.listBox_WC_CreatureGuids.Items.Clear();
-                mainForm.listBox_WC_CreatureGuids.Items.AddRange(items);
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Clear();
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Items.AddRange(items);
 
-                for (int i = 0; i < mainForm.listBox_WC_CreatureGuids.Items.Count; i++)
+                for (int i = 0; i < mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Count; i++)
                 {
-                    if (mainForm.listBox_WC_CreatureGuids.Items[i].ToString() == currentSelectedGuid)
+                    if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items[i].ToString() == currentSelectedGuid)
                     {
                         guidFound = true;
-                        mainForm.listBox_WC_CreatureGuids.SetSelected(i, true);
+                        mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(i, true);
                         break;
                     }
                 }
@@ -449,14 +449,14 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         {
                             for (int j = i + 1; j < listBoxOriginalItems.Count; j++)
                             {
-                                if (mainForm.listBox_WC_CreatureGuids.Items.Cast<object>().FirstOrDefault(x => x.ToString() == listBoxOriginalItems[j].ToString()) != null)
+                                if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().FirstOrDefault(x => x.ToString() == listBoxOriginalItems[j].ToString()) != null)
                                 {
-                                    for (int l = 0; l < mainForm.listBox_WC_CreatureGuids.Items.Count; l++)
+                                    for (int l = 0; l < mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Count; l++)
                                     {
-                                        if (mainForm.listBox_WC_CreatureGuids.Items[l].ToString() == listBoxOriginalItems[j].ToString())
+                                        if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items[l].ToString() == listBoxOriginalItems[j].ToString())
                                         {
                                             guidFound = true;
-                                            mainForm.listBox_WC_CreatureGuids.SetSelected(l, true);
+                                            mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(l, true);
                                             break;
                                         }
                                     }
@@ -472,7 +472,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 }
 
-                mainForm.listBox_WC_CreatureGuids.Refresh();
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Refresh();
             }
         }
 
@@ -573,7 +573,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             string linkedIds = "";
 
-            foreach (object item in mainForm.listBox_WC_CreatureGuids.Items)
+            foreach (object item in mainForm.listBox_WaypointsCreator_CreatureGuids.Items)
             {
                 linkedIds += "'" + creaturesDict[item.ToString()].GetLinkedId() + "', ";
             }
@@ -583,25 +583,25 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void RemoveGuidsBeforeSelectedOne()
         {
-            if (mainForm.listBox_WC_CreatureGuids.SelectedIndex == -1 || mainForm.listBox_WC_CreatureGuids.SelectedIndex == 0)
+            if (mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex == -1 || mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex == 0)
                 return;
 
-            for (int i = mainForm.listBox_WC_CreatureGuids.SelectedIndex - 1; i >= 0; i--)
+            for (int i = mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex - 1; i >= 0; i--)
             {
-                mainForm.listBox_WC_CreatureGuids.Items.RemoveAt(i);
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Items.RemoveAt(i);
             }
 
-            mainForm.listBox_WC_CreatureGuids.Refresh();
+            mainForm.listBox_WaypointsCreator_CreatureGuids.Refresh();
         }
 
         public void FillWaypointsGrid()
         {
-            if (mainForm.listBox_WC_CreatureGuids.SelectedItem == null)
+            if (mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem == null)
                 return;
 
-            Creature creature = creaturesDict[mainForm.listBox_WC_CreatureGuids.SelectedItem.ToString()];
+            Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
 
-            mainForm.grid_WC_Waypoints.Rows.Clear();
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
 
             uint index = 1;
 
@@ -610,60 +610,60 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in creature.waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
                 index++;
             }
 
             GraphPath();
 
-            mainForm.grid_WC_Waypoints.Enabled = true;
+            mainForm.grid_WaypointsCreator_Waypoints.Enabled = true;
         }
 
         public void GraphPath()
         {
-            Creature creature = creaturesDict[mainForm.listBox_WC_CreatureGuids.SelectedItem.ToString()];
+            Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
 
-            mainForm.chart_WC.BackColor = Color.White;
-            mainForm.chart_WC.ChartAreas[0].BackColor = Color.White;
-            mainForm.chart_WC.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-            mainForm.chart_WC.ChartAreas[0].AxisY.ScaleView.ZoomReset();
-            mainForm.chart_WC.ChartAreas[0].AxisY.IsReversed = true;
-            mainForm.chart_WC.Titles.Clear();
-            mainForm.chart_WC.Titles.Add(creature.name + " Entry: " + creature.entry);
-            mainForm.chart_WC.Titles[0].Font = new Font("Arial", 16, FontStyle.Bold);
-            mainForm.chart_WC.Titles[0].ForeColor = Color.Blue;
-            mainForm.chart_WC.Titles.Add("Linked Id: " + creature.GetLinkedId());
-            mainForm.chart_WC.Titles[1].Font = new Font("Arial", 16, FontStyle.Bold);
-            mainForm.chart_WC.Titles[1].ForeColor = Color.Blue;
-            mainForm.chart_WC.Series.Clear();
-            mainForm.chart_WC.Series.Add("Path");
-            mainForm.chart_WC.Series["Path"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            mainForm.chart_WC.Series.Add("Line");
-            mainForm.chart_WC.Series["Line"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            mainForm.chart_WaypointsCreator_Path.BackColor = Color.White;
+            mainForm.chart_WaypointsCreator_Path.ChartAreas[0].BackColor = Color.White;
+            mainForm.chart_WaypointsCreator_Path.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+            mainForm.chart_WaypointsCreator_Path.ChartAreas[0].AxisY.ScaleView.ZoomReset();
+            mainForm.chart_WaypointsCreator_Path.ChartAreas[0].AxisY.IsReversed = true;
+            mainForm.chart_WaypointsCreator_Path.Titles.Clear();
+            mainForm.chart_WaypointsCreator_Path.Titles.Add(creature.name + " Entry: " + creature.entry);
+            mainForm.chart_WaypointsCreator_Path.Titles[0].Font = new Font("Arial", 16, FontStyle.Bold);
+            mainForm.chart_WaypointsCreator_Path.Titles[0].ForeColor = Color.Blue;
+            mainForm.chart_WaypointsCreator_Path.Titles.Add("Linked Id: " + creature.GetLinkedId());
+            mainForm.chart_WaypointsCreator_Path.Titles[1].Font = new Font("Arial", 16, FontStyle.Bold);
+            mainForm.chart_WaypointsCreator_Path.Titles[1].ForeColor = Color.Blue;
+            mainForm.chart_WaypointsCreator_Path.Series.Clear();
+            mainForm.chart_WaypointsCreator_Path.Series.Add("Path");
+            mainForm.chart_WaypointsCreator_Path.Series["Path"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            mainForm.chart_WaypointsCreator_Path.Series.Add("Line");
+            mainForm.chart_WaypointsCreator_Path.Series["Line"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
 
-            for (var i = 0; i < mainForm.grid_WC_Waypoints.RowCount; i++)
+            for (var i = 0; i < mainForm.grid_WaypointsCreator_Waypoints.RowCount; i++)
             {
-                double posX = Convert.ToDouble(mainForm.grid_WC_Waypoints[1, i].Value);
-                double posY = Convert.ToDouble(mainForm.grid_WC_Waypoints[2, i].Value);
+                double posX = Convert.ToDouble(mainForm.grid_WaypointsCreator_Waypoints[1, i].Value);
+                double posY = Convert.ToDouble(mainForm.grid_WaypointsCreator_Waypoints[2, i].Value);
 
-                mainForm.chart_WC.Series["Path"].Points.AddXY(posX, posY);
-                mainForm.chart_WC.Series["Path"].Points[i].Color = Color.Blue;
-                mainForm.chart_WC.Series["Path"].Points[i].Label = Convert.ToString(i + 1);
-                mainForm.chart_WC.Series["Line"].Points.AddXY(posX, posY);
-                mainForm.chart_WC.Series["Line"].Points[i].Color = Color.Cyan;
+                mainForm.chart_WaypointsCreator_Path.Series["Path"].Points.AddXY(posX, posY);
+                mainForm.chart_WaypointsCreator_Path.Series["Path"].Points[i].Color = Color.Blue;
+                mainForm.chart_WaypointsCreator_Path.Series["Path"].Points[i].Label = Convert.ToString(i + 1);
+                mainForm.chart_WaypointsCreator_Path.Series["Line"].Points.AddXY(posX, posY);
+                mainForm.chart_WaypointsCreator_Path.Series["Line"].Points[i].Color = Color.Cyan;
             }
         }
 
         public void CutFromGrid()
         {
-            foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.SelectedRows)
+            foreach (DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.SelectedRows)
             {
-                mainForm.grid_WC_Waypoints.Rows.Remove(row);
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Remove(row);
             }
 
-            for (int i = 0; i < mainForm.grid_WC_Waypoints.Rows.Count; i++)
+            for (int i = 0; i < mainForm.grid_WaypointsCreator_Waypoints.Rows.Count; i++)
             {
-                mainForm.grid_WC_Waypoints[0, i].Value = i + 1;
+                mainForm.grid_WaypointsCreator_Waypoints[0, i].Value = i + 1;
             }
 
             GraphPath();
@@ -671,7 +671,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void CreateSQL()
         {
-            Creature creature = creaturesDict[mainForm.listBox_WC_CreatureGuids.SelectedItem.ToString()];
+            Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
             string sqlQuery = "SELECT * FROM `creature_addon` WHERE `linked_id` = '" + creature.GetLinkedId() + "';";
             string creatureAddon;
             bool addonFound = false;
@@ -687,7 +687,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 creatureAddon = "('" + creature.GetLinkedId() + "', @PATH, 0, 0, 1, 0, 0, 0, 0, '', -1); " + "\r\n";
             }
 
-            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
+            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
 
             if (Properties.Settings.Default.Scripts && waypoints.GetScriptsCount() != 0)
             {
@@ -719,8 +719,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             for (int i = 0; i < waypoints.Count; i++)
             {
                 Waypoint waypoint = waypoints[i];
-                float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WC_Waypoints[4, i].Value.ToString());
-                uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WC_Waypoints[6, i].Value.ToString());
+                float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WaypointsCreator_Waypoints[4, i].Value.ToString());
+                uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WaypointsCreator_Waypoints[6, i].Value.ToString());
 
                 if (i < (waypoints.Count - 1))
                 {
@@ -785,7 +785,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 SQLtext = SQLtext + "};" + "\r\n";
 
-                mainForm.textBox_SQLOutput.Text = SQLtext;
+                mainForm.textBox_SqlOutput.Text = SQLtext;
             }
         }
 
@@ -795,13 +795,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             do
             {
-                foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
+                foreach (DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows)
                 {
                     Waypoint currentWaypoint = (Waypoint)row.Cells[8].Value;
                     Waypoint nextWaypoint;
                     try
                     {
-                        nextWaypoint = (Waypoint)mainForm.grid_WC_Waypoints.Rows[row.Index + 1].Cells[8].Value;
+                        nextWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[row.Index + 1].Cells[8].Value;
                     }
                     catch
                     {
@@ -812,16 +812,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     if (currentWaypoint.movePosition.GetExactDist2d(nextWaypoint.movePosition) <= 5.0f &&
                         !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
                     {
-                        mainForm.grid_WC_Waypoints.Rows.RemoveAt(row.Index + 1);
+                        mainForm.grid_WaypointsCreator_Waypoints.Rows.RemoveAt(row.Index + 1);
                         break;
                     }
                 }
             }
             while (canLoop);
 
-            for (int i = 0; i < mainForm.grid_WC_Waypoints.Rows.Count; i++)
+            for (int i = 0; i < mainForm.grid_WaypointsCreator_Waypoints.Rows.Count; i++)
             {
-                mainForm.grid_WC_Waypoints[0, i].Value = i + 1;
+                mainForm.grid_WaypointsCreator_Waypoints[0, i].Value = i + 1;
             }
 
             GraphPath();
@@ -831,7 +831,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             List<Waypoint> waypointsList = new List<Waypoint>();
 
-            foreach (DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows)
+            foreach (DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows)
             {
                 Waypoint waypoint = (Waypoint)row.Cells[8].Value;
 
@@ -849,13 +849,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            mainForm.grid_WC_Waypoints.Rows.Clear();
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
 
             uint index = 1;
 
             foreach (Waypoint wp in waypointsList)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
                 index++;
             }
 
@@ -889,18 +889,18 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void CreateReturnPath()
         {
-            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WC_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
+            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
 
             waypoints.Reverse();
 
             waypoints.RemoveAt(0);
             waypoints.RemoveAt(waypoints.Count - 1);
 
-            int index = mainForm.grid_WC_Waypoints.Rows.Count + 1;
+            int index = mainForm.grid_WaypointsCreator_Waypoints.Rows.Count + 1;
 
             foreach (Waypoint wp in waypoints)
             {
-                mainForm.grid_WC_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
                 index++;
             }
 
@@ -929,23 +929,23 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void ImportStarted()
         {
             mainForm.Cursor = Cursors.WaitCursor;
-            mainForm.toolStripButton_WC_LoadSniff.Enabled = false;
-            mainForm.toolStripButton_WC_Search.Enabled = false;
-            mainForm.toolStripTextBox_WC_Entry.Enabled = false;
-            mainForm.listBox_WC_CreatureGuids.Enabled = false;
-            mainForm.listBox_WC_CreatureGuids.Items.Clear();
-            mainForm.listBox_WC_CreatureGuids.DataSource = null;
-            mainForm.grid_WC_Waypoints.Enabled = false;
-            mainForm.grid_WC_Waypoints.Rows.Clear();
+            mainForm.toolStripButton_WaypointsCreator_LoadSniff.Enabled = false;
+            mainForm.toolStripButton_WaypointsCreator_Search.Enabled = false;
+            mainForm.toolStripTextBox_WaypointsCreator_Entry.Enabled = false;
+            mainForm.listBox_WaypointsCreator_CreatureGuids.Enabled = false;
+            mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Clear();
+            mainForm.listBox_WaypointsCreator_CreatureGuids.DataSource = null;
+            mainForm.grid_WaypointsCreator_Waypoints.Enabled = false;
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
             mainForm.toolStripStatusLabel_FileStatus.Text = "Loading File...";
         }
 
         public void ImportSuccessful()
         {
             mainForm.toolStripStatusLabel_CurrentAction.Text = "";
-            mainForm.toolStripButton_WC_LoadSniff.Enabled = true;
-            mainForm.toolStripButton_WC_Search.Enabled = true;
-            mainForm.toolStripTextBox_WC_Entry.Enabled = true;
+            mainForm.toolStripButton_WaypointsCreator_LoadSniff.Enabled = true;
+            mainForm.toolStripButton_WaypointsCreator_Search.Enabled = true;
+            mainForm.toolStripTextBox_WaypointsCreator_Entry.Enabled = true;
             mainForm.toolStripStatusLabel_FileStatus.Text = mainForm.openFileDialog.FileName + " is selected for input.";
             mainForm.Cursor = Cursors.Default;
         }

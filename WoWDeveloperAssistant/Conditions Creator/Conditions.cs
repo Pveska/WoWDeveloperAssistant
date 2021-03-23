@@ -332,18 +332,18 @@ namespace WoWDeveloperAssistant.Conditions_Creator
 
             public Condition(MainForm mainForm)
             {
-                sourceType = (uint)Enum.Parse(typeof(Conditions.ConditionSourceTypes), mainForm.comboBox_ConditionSourceType.SelectedItem.ToString());
-                sourceGroup = mainForm.textBox_SourceGroup.Text != "" ? mainForm.textBox_SourceGroup.Text : "0";
-                sourceEntry = mainForm.textBox_SourceEntry.Text != "" ? mainForm.textBox_SourceEntry.Text : "0";
-                sourceId = mainForm.textBox_SourceId.Text != "" ? mainForm.textBox_SourceId.Text : "0";
-                elseGroup = mainForm.textBox_ElseGroup.Text != "" ? mainForm.textBox_ElseGroup.Text : "0";
-                conditionType = (uint)Enum.Parse(typeof(Conditions.ConditionTypes), mainForm.comboBox_ConditionType.SelectedItem.ToString());
-                conditionTarget = mainForm.textBox_ConditionTarget.Text != "" ? mainForm.textBox_ConditionTarget.Text : "0";
-                conditionValue1 = mainForm.textBox_ConditionValue1.Text != "" ? mainForm.textBox_ConditionValue1.Text : "0";
-                conditionValue2 = mainForm.textBox_ConditionValue2.Text != "" ? mainForm.textBox_ConditionValue2.Text : "0";
-                conditionValue3 = mainForm.textBox_ConditionValue3.Text != "" ? mainForm.textBox_ConditionValue3.Text : "0";
-                negativeCondition = mainForm.textBox_NegativeCondition.Text != "" ? mainForm.textBox_NegativeCondition.Text : "0";
-                scriptName = mainForm.textBox_ScriptName.Text;
+                sourceType = (uint)Enum.Parse(typeof(Conditions.ConditionSourceTypes), mainForm.comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString());
+                sourceGroup = mainForm.textBox_ConditionsCreator_SourceGroup.Text != "" ? mainForm.textBox_ConditionsCreator_SourceGroup.Text : "0";
+                sourceEntry = mainForm.textBox_ConditionsCreator_SourceEntry.Text != "" ? mainForm.textBox_ConditionsCreator_SourceEntry.Text : "0";
+                sourceId = mainForm.textBox_ConditionsCreator_SourceId.Text != "" ? mainForm.textBox_ConditionsCreator_SourceId.Text : "0";
+                elseGroup = mainForm.textBox_ConditionsCreator_ElseGroup.Text != "" ? mainForm.textBox_ConditionsCreator_ElseGroup.Text : "0";
+                conditionType = (uint)Enum.Parse(typeof(Conditions.ConditionTypes), mainForm.comboBox_ConditionsCreator_ConditionType.SelectedItem.ToString());
+                conditionTarget = mainForm.textBox_ConditionsCreator_ConditionTarget.Text != "" ? mainForm.textBox_ConditionsCreator_ConditionTarget.Text : "0";
+                conditionValue1 = mainForm.textBox_ConditionsCreator_ConditionValue1.Text != "" ? mainForm.textBox_ConditionsCreator_ConditionValue1.Text : "0";
+                conditionValue2 = mainForm.textBox_ConditionsCreator_ConditionValue2.Text != "" ? mainForm.textBox_ConditionsCreator_ConditionValue2.Text : "0";
+                conditionValue3 = mainForm.textBox_ConditionsCreator_ConditionValue3.Text != "" ? mainForm.textBox_ConditionsCreator_ConditionValue3.Text : "0";
+                negativeCondition = mainForm.textBox_ConditionsCreator_NegativeCondition.Text != "" ? mainForm.textBox_ConditionsCreator_NegativeCondition.Text : "0";
+                scriptName = mainForm.textBox_ConditionsCreator_ScriptName.Text;
             }
         }
     }
