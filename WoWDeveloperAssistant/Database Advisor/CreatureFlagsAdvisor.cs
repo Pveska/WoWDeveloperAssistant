@@ -59,43 +59,43 @@ namespace WoWDeveloperAssistant.Database_Advisor
             UNIT_NPC_FLAG2_CONTRIBUTION_COLLECTOR       = 0x00000100
         };
 
-        private enum UnitFlags : long
+        public enum UnitFlags : long
         {
-            UNIT_FLAG_SERVER_CONTROLLED     = 0x00000001,
-            UNIT_FLAG_NON_ATTACKABLE        = 0x00000002,
-            UNIT_FLAG_REMOVE_CLIENT_CONTROL = 0x00000004,
-            UNIT_FLAG_PVP_ATTACKABLE        = 0x00000008,
-            UNIT_FLAG_RENAME                = 0x00000010,
-            UNIT_FLAG_PREPARATION           = 0x00000020,
-            UNIT_FLAG_UNK_6                 = 0x00000040,
-            UNIT_FLAG_NOT_ATTACKABLE_1      = 0x00000080,
-            UNIT_FLAG_IMMUNE_TO_PC          = 0x00000100,
-            UNIT_FLAG_IMMUNE_TO_NPC         = 0x00000200,
-            UNIT_FLAG_LOOTING               = 0x00000400,
-            UNIT_FLAG_PET_IN_COMBAT         = 0x00000800,
-            UNIT_FLAG_PVP                   = 0x00001000,
-            UNIT_FLAG_SILENCED              = 0x00002000,
-            UNIT_FLAG_CANNOT_SWIM           = 0x00004000,
-            UNIT_FLAG_UNK_15                = 0x00008000,
-            UNIT_FLAG_UNK_16                = 0x00010000,
-            UNIT_FLAG_PACIFIED              = 0x00020000,
-            UNIT_FLAG_STUNNED               = 0x00040000,
-            UNIT_FLAG_IN_COMBAT             = 0x00080000,
-            UNIT_FLAG_TAXI_FLIGHT           = 0x00100000,
-            UNIT_FLAG_DISARMED              = 0x00200000,
-            UNIT_FLAG_CONFUSED              = 0x00400000,
-            UNIT_FLAG_FLEEING               = 0x00800000,
-            UNIT_FLAG_PLAYER_CONTROLLED     = 0x01000000,
-            UNIT_FLAG_NOT_SELECTABLE        = 0x02000000,
-            UNIT_FLAG_SKINNABLE             = 0x04000000,
-            UNIT_FLAG_MOUNT                 = 0x08000000,
-            UNIT_FLAG_UNK_28                = 0x10000000,
-            UNIT_FLAG_UNK_29                = 0x20000000,
-            UNIT_FLAG_SHEATHE               = 0x40000000,
-            UNIT_FLAG_IMMUNE                = 0x80000000
+            UNIT_FLAG_SERVER_CONTROLLED      = 0x00000001,
+            UNIT_FLAG_NON_ATTACKABLE         = 0x00000002,
+            UNIT_FLAG_REMOVE_CLIENT_CONTROL  = 0x00000004,
+            UNIT_FLAG_PVP_ATTACKABLE         = 0x00000008,
+            UNIT_FLAG_RENAME                 = 0x00000010,
+            UNIT_FLAG_PREPARATION            = 0x00000020,
+            UNIT_FLAG_UNK_6                  = 0x00000040,
+            UNIT_FLAG_NOT_ATTACKABLE_1       = 0x00000080,
+            UNIT_FLAG_IMMUNE_TO_PC           = 0x00000100,
+            UNIT_FLAG_IMMUNE_TO_NPC          = 0x00000200,
+            UNIT_FLAG_LOOTING                = 0x00000400,
+            UNIT_FLAG_PET_IN_COMBAT          = 0x00000800,
+            UNIT_FLAG_PVP                    = 0x00001000,
+            UNIT_FLAG_SILENCED               = 0x00002000,
+            UNIT_FLAG_CANNOT_SWIM            = 0x00004000,
+            UNIT_FLAG_CAN_USE_SWIM_ANIMATION = 0x00008000,
+            UNIT_FLAG_UNK_16                 = 0x00010000,
+            UNIT_FLAG_PACIFIED               = 0x00020000,
+            UNIT_FLAG_STUNNED                = 0x00040000,
+            UNIT_FLAG_IN_COMBAT              = 0x00080000,
+            UNIT_FLAG_TAXI_FLIGHT            = 0x00100000,
+            UNIT_FLAG_DISARMED               = 0x00200000,
+            UNIT_FLAG_CONFUSED               = 0x00400000,
+            UNIT_FLAG_FLEEING                = 0x00800000,
+            UNIT_FLAG_PLAYER_CONTROLLED      = 0x01000000,
+            UNIT_FLAG_NOT_SELECTABLE         = 0x02000000,
+            UNIT_FLAG_SKINNABLE              = 0x04000000,
+            UNIT_FLAG_MOUNT                  = 0x08000000,
+            UNIT_FLAG_UNK_28                 = 0x10000000,
+            UNIT_FLAG_UNK_29                 = 0x20000000,
+            UNIT_FLAG_SHEATHE                = 0x40000000,
+            UNIT_FLAG_IMMUNE                 = 0x80000000
         };
 
-        private enum UnitFlags2 : long
+        enum UnitFlags2 : long
         {
             UNIT_FLAG2_FEIGN_DEATH                  = 0x00000001,
             UNIT_FLAG2_UNK1                         = 0x00000002,
@@ -131,7 +131,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             UNIT_FLAG2_UNK15                        = 0x80000000
         };
 
-        private enum UnitFlags3 : long
+        enum UnitFlags3 : long
         {
             UNIT_FLAG3_UNK1                         = 0x00000001,
             UNIT_FLAG3_UNK2                         = 0x00000002,
@@ -167,7 +167,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             UNIT_FLAG3_UNK32                        = 0x80000000
         };
 
-        private enum DynamicFlags : long
+        enum DynamicFlags : long
         {
             UNIT_DYNFLAG_NONE                       = 0x0000,
             UNIT_DYNFLAG_UNK_1                      = 0x0001,
@@ -180,7 +180,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             UNIT_DYNFLAG_REFER_A_FRIEND             = 0x0080
         };
 
-        private enum FlagsExtra : long
+        enum FlagsExtra : long
         {
             CREATURE_FLAG_EXTRA_INSTANCE_BIND         = 0x00000001,
             CREATURE_FLAG_EXTRA_CIVILIAN              = 0x00000002,
@@ -207,7 +207,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE  = 0x80000000
         };
 
-        private enum TypeFlags : long
+        enum TypeFlags : long
         {
             CREATURE_TYPE_FLAG_TAMEABLE_PET                         = 0x00000001,
             CREATURE_TYPE_FLAG_GHOST_VISIBLE                        = 0x00000002,
@@ -240,9 +240,9 @@ namespace WoWDeveloperAssistant.Database_Advisor
             CREATURE_TYPE_FLAG_DO_NOT_SHEATHE                       = 0x10000000,
             CREATURE_TYPE_FLAG_DO_NOT_TARGET_ON_INTERACTION         = 0x20000000,
             CREATURE_TYPE_FLAG_DO_NOT_RENDER_OBJECT_NAME            = 0x40000000,
-            CREATURE_TYPE_FLAG_UNIT_IS_QUEST_BOSS                   = 0x80000000 
+            CREATURE_TYPE_FLAG_UNIT_IS_QUEST_BOSS                   = 0x80000000
         };
-        private enum TypeFlags2 : long
+        enum TypeFlags2 : long
         {
             CREATURE_TYPEFLAGS_2_UNK1           = 0x00000001,
             CREATURE_TYPEFLAGS_2_UNK2           = 0x00000002,

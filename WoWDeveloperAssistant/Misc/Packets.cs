@@ -4,7 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
+using WoWDeveloperAssistant.Database_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
+using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Misc
@@ -49,6 +51,8 @@ namespace WoWDeveloperAssistant.Misc
                     packetType = PacketTypes.SMSG_AURA_UPDATE;
                 else if (line.Contains("SMSG_EMOTE"))
                     packetType = PacketTypes.SMSG_EMOTE;
+                else if (line.Contains("SMSG_ATTACK_STOP"))
+                    packetType = PacketTypes.SMSG_ATTACK_STOP;
 
                 return packetType;
             }
@@ -99,6 +103,15 @@ namespace WoWDeveloperAssistant.Misc
                     case PacketTypes.SMSG_EMOTE:
                     {
                         if (parsedPacketsList.Cast<EmotePacket>().Any(emotePacket => emotePacket.guid == guid))
+                        {
+                            return true;
+                        }
+
+                        break;
+                    }
+                    case PacketTypes.SMSG_ATTACK_STOP:
+                    {
+                        if (parsedPacketsList.Cast<AttackStopPacket>().Any(attackStopPacket => attackStopPacket.creatureGuid == guid))
                         {
                             return true;
                         }
@@ -303,9 +316,10 @@ namespace WoWDeveloperAssistant.Misc
             public uint? standState;
             public bool hasDisableGravity;
             public uint moveTime;
+            public UnitFlags unitFlags;
 
-            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, uint moveTime)
-            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.moveTime = moveTime; }
+            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, uint moveTime, UnitFlags unitFlags)
+            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.moveTime = moveTime; this.unitFlags = unitFlags; }
 
             public static bool IsLineValidForObjectParse(string line)
             {
@@ -468,6 +482,15 @@ namespace WoWDeveloperAssistant.Misc
                 return 0;
             }
 
+            public static uint GetUnitFlagsFromLine(string line)
+            {
+                Regex durationRegex = new Regex(@"\(UnitData\) Flags:{1}\s{1}\w+");
+                if (durationRegex.IsMatch(line))
+                    return Convert.ToUInt32(durationRegex.Match(line).ToString().Replace("(UnitData) Flags: ", ""));
+
+                return 0;
+            }
+
             public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
@@ -477,7 +500,7 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0);
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0);
 
                         do
                         {
@@ -515,6 +538,9 @@ namespace WoWDeveloperAssistant.Misc
                             if (GetDurationFromLine(lines[index]) != 0)
                                 updatePacket.moveTime = GetDurationFromLine(lines[index]);
 
+                            if (GetUnitFlagsFromLine(lines[index]) != 0)
+                                updatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
+
                             index++;
                         }
                         while (IsLineValidForObjectParse(lines[index]));
@@ -522,20 +548,27 @@ namespace WoWDeveloperAssistant.Misc
                         if (updatePacket.creatureEntry == 0 || updatePacket.creatureGuid == "")
                             continue;
 
-                        if (!updatePacket.hasDisableGravity && MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime) != 0.0f)
+                        if (Properties.Settings.Default.CombatMovement && (updatePacket.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
                         {
-                            if (MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime) >= 4.2)
+                            updatePacket.waypoints.Clear();
+                        }
+                        else
+                        {
+                            if (!updatePacket.hasDisableGravity && MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime) != 0.0f)
                             {
-                                for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                if (MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime) >= 4.2)
                                 {
-                                    updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_RUN;
+                                    for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                    {
+                                        updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_RUN;
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                else
                                 {
-                                    updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_WALK;
+                                    for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                    {
+                                        updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_WALK;
+                                    }
                                 }
                             }
                         }
@@ -548,7 +581,7 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if (lines[index].Contains("UpdateType: Values") && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0);
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0);
 
                         do
                         {
@@ -569,6 +602,9 @@ namespace WoWDeveloperAssistant.Misc
 
                             if (GetDisableGravityFromLine(lines[index]))
                                 updatePacket.hasDisableGravity = true;
+
+                            if (GetUnitFlagsFromLine(lines[index]) != 0)
+                                updatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
 
                             index++;
                         }
@@ -769,12 +805,12 @@ namespace WoWDeveloperAssistant.Misc
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
                     Position lastPosition = new Position();
-                    bool isFlying = false; ;
+                    bool isFlying = false;
 
                     do
                     {
-                        if (lines[index].Contains("FacingGUID: TypeName: Player; Full:") ||
-                            lines[index].Contains("FacingGUID: TypeName: Creature; Full:"))
+                        if (Properties.Settings.Default.CombatMovement && (lines[index].Contains("FacingGUID: TypeName: Player; Full:") ||
+                            lines[index].Contains("FacingGUID: TypeName: Creature; Full:")))
                         {
                             movePacket.creatureGuid = "";
                             break;

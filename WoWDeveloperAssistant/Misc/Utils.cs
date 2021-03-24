@@ -188,6 +188,15 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        public static void AddSourceFromAttackStopPacket(this SortedDictionary<long, Packet> dict, AttackStopPacket attackStopPacket, long index)
+        {
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_ATTACK_STOP && packet.index == index))
+            {
+                packet.parsedPacketsList.Add(attackStopPacket);
+                return;
+            }
+        }
+
         public static bool ContainPacketWithIndex(this IEnumerable<Packet> list, long index)
         {
             return list.Any(packet => packet.index == index);

@@ -32,6 +32,8 @@
             this.checkBox_CreateVector = new System.Windows.Forms.CheckBox();
             this.checkBox_ParseWaypointScripts = new System.Windows.Forms.CheckBox();
             this.checkBox_DoNotAddCritterGuids = new System.Windows.Forms.CheckBox();
+            this.checkBox_CheckExistedDataOnDb = new System.Windows.Forms.CheckBox();
+            this.checkBox_SkipCombatMovement = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_CreateVector
@@ -70,12 +72,38 @@
             this.checkBox_DoNotAddCritterGuids.Text = "Do not add critter guids";
             this.checkBox_DoNotAddCritterGuids.UseVisualStyleBackColor = true;
             // 
+            // checkBox_CheckExistedDataOnDb
+            // 
+            this.checkBox_CheckExistedDataOnDb.AutoSize = true;
+            this.checkBox_CheckExistedDataOnDb.Checked = true;
+            this.checkBox_CheckExistedDataOnDb.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_CheckExistedDataOnDb.Location = new System.Drawing.Point(13, 102);
+            this.checkBox_CheckExistedDataOnDb.Name = "checkBox_CheckExistedDataOnDb";
+            this.checkBox_CheckExistedDataOnDb.Size = new System.Drawing.Size(284, 24);
+            this.checkBox_CheckExistedDataOnDb.TabIndex = 25;
+            this.checkBox_CheckExistedDataOnDb.Text = "Check if creature already have data";
+            this.checkBox_CheckExistedDataOnDb.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_SkipCombatMovement
+            // 
+            this.checkBox_SkipCombatMovement.AutoSize = true;
+            this.checkBox_SkipCombatMovement.Checked = true;
+            this.checkBox_SkipCombatMovement.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_SkipCombatMovement.Location = new System.Drawing.Point(13, 132);
+            this.checkBox_SkipCombatMovement.Name = "checkBox_SkipCombatMovement";
+            this.checkBox_SkipCombatMovement.Size = new System.Drawing.Size(201, 24);
+            this.checkBox_SkipCombatMovement.TabIndex = 26;
+            this.checkBox_SkipCombatMovement.Text = "Skip combat movement";
+            this.checkBox_SkipCombatMovement.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(300, 105);
+            this.ClientSize = new System.Drawing.Size(300, 165);
+            this.Controls.Add(this.checkBox_SkipCombatMovement);
+            this.Controls.Add(this.checkBox_CheckExistedDataOnDb);
             this.Controls.Add(this.checkBox_DoNotAddCritterGuids);
             this.Controls.Add(this.checkBox_ParseWaypointScripts);
             this.Controls.Add(this.checkBox_CreateVector);
@@ -99,5 +127,7 @@
         private System.Windows.Forms.CheckBox checkBox_CreateVector;
         private System.Windows.Forms.CheckBox checkBox_ParseWaypointScripts;
         private System.Windows.Forms.CheckBox checkBox_DoNotAddCritterGuids;
+        private System.Windows.Forms.CheckBox checkBox_CheckExistedDataOnDb;
+        private System.Windows.Forms.CheckBox checkBox_SkipCombatMovement;
     }
 }

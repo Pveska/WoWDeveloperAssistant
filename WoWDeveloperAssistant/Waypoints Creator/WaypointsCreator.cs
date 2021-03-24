@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
 using static WoWDeveloperAssistant.Misc.Packets;
+using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
@@ -37,6 +38,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> spellPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> auraPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> emotePacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> attackStopPacketsDict = new SortedDictionary<long, Packet>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -109,6 +111,18 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         }
                     }
                 }
+                else if (Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_ATTACK_STOP)
+                {
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    if (sendTime != TimeSpan.Zero)
+                    {
+                        lock (attackStopPacketsDict)
+                        {
+                            if (!attackStopPacketsDict.ContainsKey(index))
+                                attackStopPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_ATTACK_STOP, sendTime, index, new List<object>()));
+                        }
+                    }
+                }
             });
 
             creaturesDict.Clear();
@@ -145,7 +159,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, packet.index, buildVersion);
                 if (movePacket.creatureGuid != "" && (movePacket.HasWaypoints() || movePacket.HasOrientation() || movePacket.HasJump()))
                 {
-
                     lock (movementPacketsDict)
                     {
                         movementPacketsDict.AddSourceFromMovementPacket(movePacket, packet.index);
@@ -180,6 +193,25 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 }
             });
+
+            if (Properties.Settings.Default.CombatMovement)
+            {
+                mainForm.SetCurrentStatus("Parsing SMSG_ATTACK_STOP packets...");
+
+                Parallel.ForEach(attackStopPacketsDict.Values.AsEnumerable(), packet =>
+                {
+                    AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, packet.index, buildVersion);
+                    if (attackStopPacket.creatureGuid == "")
+                        return;
+
+                    lock (attackStopPacketsDict)
+                    {
+                        attackStopPacketsDict.AddSourceFromAttackStopPacket(attackStopPacket, packet.index);
+                    }
+                });
+
+                RemoveCombatMovementForCreatures(attackStopPacketsDict, updateObjectPacketsDict);
+            }
 
             if (Properties.Settings.Default.Scripts)
             {
@@ -361,6 +393,45 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return true;
         }
 
+        private void RemoveCombatMovementForCreatures(SortedDictionary<long, Packet> attackStopPackets, SortedDictionary<long, Packet> updateObjectPackets)
+        {
+            foreach (Creature creature in creaturesDict.Values)
+            {
+                if (creature.HasWaypoints())
+                {
+                    List<Waypoint> newWaypoints = new List<Waypoint>();
+
+                    List<int> attackStopPacketTimes = attackStopPackets.Where(x => x.Value.HasCreatureWithGuid(creature.guid)).Select(x => (int)x.Value.sendTime.TotalSeconds).ToList();
+
+                    foreach (Waypoint waypoint in creature.waypoints)
+                    {
+                        if (!attackStopPacketTimes.Contains((int)waypoint.moveStartTime.TotalSeconds) && (GetUnitFlagsForWaypoint(updateObjectPackets, waypoint, creature.guid) & UnitFlags.UNIT_FLAG_IN_COMBAT) == 0)
+                        {
+                            newWaypoints.Add(waypoint);
+                        }
+                    }
+
+                    creature.waypoints = newWaypoints;
+                }
+            }
+        }
+
+        private UnitFlags GetUnitFlagsForWaypoint(SortedDictionary<long, Packet> updateObjectPacketsDict, Waypoint waypoint, string guid)
+        {
+            List<Packet> updateObjectPackets = updateObjectPacketsDict.Values.Where(x => x.HasCreatureWithGuid(guid)).OrderBy(x => (int)x.sendTime.TotalSeconds).ToList();
+            if (updateObjectPackets.Count() != 0)
+            {
+                for (int i = updateObjectPackets.Count() - 1; i >= 0; i--)
+                {
+                    UpdateObjectPacket updatePacket = (UpdateObjectPacket)updateObjectPackets[i].parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
+                    if ((int)updatePacket.packetSendTime.TotalSeconds < (int)waypoint.moveStartTime.TotalSeconds)
+                        return updatePacket.unitFlags;
+                }
+            }
+
+            return 0;
+        }
+
         public void FillListBoxWithGuids()
         {
             bool dataFoundOnCurrentList = false;
@@ -389,7 +460,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
                 {
-                    if (!creature.HasWaypoints() || IsCreatureAlreadyHaveDataOnDb(creature.guid))
+                    if (!creature.HasWaypoints() || (Properties.Settings.Default.CheckDataOnDb && IsCreatureAlreadyHaveDataOnDb(creature.guid)) ||
+                        (Properties.Settings.Default.Critters && creature.IsCritter()))
                         continue;
 
                     if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "" && mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "0")

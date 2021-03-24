@@ -142,5 +142,29 @@ namespace WoWDeveloperAssistant.Properties {
                 this["Critters"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CheckDataOnDb {
+            get {
+                return ((bool)(this["CheckDataOnDb"]));
+            }
+            set {
+                this["CheckDataOnDb"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CombatMovement {
+            get {
+                return ((bool)(this["CombatMovement"]));
+            }
+            set {
+                this["CombatMovement"] = value;
+            }
+        }
     }
 }

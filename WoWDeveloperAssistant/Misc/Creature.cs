@@ -22,7 +22,7 @@ namespace WoWDeveloperAssistant.Misc
         public List<Aura> auras;
         public Dictionary<uint, Spell> castedSpells;
         public TimeSpan lastUpdatePacketTime;
-        public bool IsFlying;
+        public bool hasDisableGravity;
 
         public Creature(UpdateObjectPacket updatePacket)
         {
@@ -38,7 +38,7 @@ namespace WoWDeveloperAssistant.Misc
             waypoints = updatePacket.waypoints;
             auras = new List<Aura>();
             lastUpdatePacketTime = updatePacket.packetSendTime;
-            IsFlying = updatePacket.hasDisableGravity;
+            hasDisableGravity = updatePacket.hasDisableGravity;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -75,8 +75,8 @@ namespace WoWDeveloperAssistant.Misc
                 }
             }
 
-            if (!IsFlying && updatePacket.hasDisableGravity)
-                IsFlying = updatePacket.hasDisableGravity;
+            if (!hasDisableGravity && updatePacket.hasDisableGravity)
+                hasDisableGravity = updatePacket.hasDisableGravity;
         }
 
         public void UpdateSpells(SpellStartPacket spellPacket)
@@ -378,6 +378,21 @@ namespace WoWDeveloperAssistant.Misc
                 default:
                     return false;
             }
+        }
+
+        public bool IsCritter()
+        {
+            if (!Properties.Settings.Default.UsingDB)
+                return false;
+
+            var creatureTemplateWdbDs = SQLModule.DatabaseSelectQuery("SELECT `Type` FROM `creature_template_wdb` WHERE `entry` = " + entry + ";");
+
+            if (creatureTemplateWdbDs != null && creatureTemplateWdbDs.Tables["table"].Rows.Count > 0)
+            {
+                return creatureTemplateWdbDs.Tables["table"].Rows[0].ItemArray[0].ToString() == "8";
+            }
+
+            return false;
         }
     }
 }
