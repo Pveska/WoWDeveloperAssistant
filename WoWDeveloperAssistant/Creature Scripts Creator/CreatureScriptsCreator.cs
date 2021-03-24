@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
@@ -77,10 +78,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
         public bool GetDataFromSniffFile(string fileName)
         {
-            mainForm.SetCurrentStatus("Loading DBC...");
-
-            DBC.DBC.Load();
-
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
@@ -330,7 +327,42 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 creature.Value.CreateDeathSpells();
             });
 
+            if (mainForm.checkBox_CreatureScriptsCreator_CreateDataFile.Checked)
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.dat"), FileMode.OpenOrCreate))
+                {
+                    Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>();
+
+                    dictToSerialize.Add(0, creaturesDict);
+                    dictToSerialize.Add(1, creatureTextsDict);
+                    dictToSerialize.Add(2, buildVersion);
+
+                    binaryFormatter.Serialize(fileStream, dictToSerialize);
+                }
+            }
+
             mainForm.SetCurrentStatus("");
+            return true;
+        }
+
+        public bool GetPacketsFromDataFile(string fileName)
+        {
+            mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
+
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
+
+            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+            {
+                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
+            }
+
+            creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
+            creatureTextsDict = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
+            buildVersion = (BuildVersions)dictFromSerialize[2];
+
             return true;
         }
 
@@ -419,8 +451,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed Sniff File (*.txt)|*.txt";
-            mainForm.openFileDialog.FileName = "*.txt";
+            mainForm.openFileDialog.Filter = "Parsed Sniff or Data File (*.txt;*.dat)|*.txt;*.dat";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
             mainForm.openFileDialog.Multiselect = false;

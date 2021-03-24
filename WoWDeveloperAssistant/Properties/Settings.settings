@@ -26,9 +26,6 @@
     <Setting Name="Scripts" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="DBCLocale" Type="System.String" Scope="User">
-      <Value Profile="(Default)">enUS</Value>
-    </Setting>
     <Setting Name="Critters" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

@@ -8,6 +8,7 @@ using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Misc
 {
+    [Serializable]
     public class Creature
     {
         public string guid;

@@ -2,6 +2,7 @@
 
 namespace WoWDeveloperAssistant.Misc
 {
+    [Serializable]
     public struct Position
     {
         public bool Equals(Position other)

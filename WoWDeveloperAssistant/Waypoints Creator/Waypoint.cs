@@ -6,6 +6,7 @@ using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
+    [Serializable]
     public class Waypoint : ICloneable
     {
         public Position movePosition;

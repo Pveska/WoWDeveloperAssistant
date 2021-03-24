@@ -109,17 +109,33 @@ namespace WoWDeveloperAssistant
             {
                 creatureScriptsCreator.ImportStarted();
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) &&
-                    creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                if (!DBC.DBC.IsLoaded())
                 {
-                    creatureScriptsCreator.ImportSuccessful();
+                    SetCurrentStatus("Loading DBC...");
+                    DBC.DBC.Load();
                 }
-                else
+
+                if (openFileDialog.FileName.Contains("txt"))
                 {
-                    toolStripStatusLabel_CurrentAction.Text = "";
-                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_CSC_ImportSniff.Enabled = true;
-                    this.Cursor = Cursors.Default;
+                    if (IsTxtFileValidForParse(openFileDialog.FileName) &&
+                    creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                    {
+                        creatureScriptsCreator.ImportSuccessful();
+                    }
+                    else
+                    {
+                        toolStripStatusLabel_CurrentAction.Text = "";
+                        toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                        toolStripButton_CSC_ImportSniff.Enabled = true;
+                        Cursor = Cursors.Default;
+                    }
+                }
+                else if (openFileDialog.FileName.Contains("dat"))
+                {
+                    if (creatureScriptsCreator.GetPacketsFromDataFile(openFileDialog.FileName))
+                    {
+                        creatureScriptsCreator.ImportSuccessful();
+                    }
                 }
             }
         }
@@ -227,17 +243,33 @@ namespace WoWDeveloperAssistant
             {
                 waypointsCreator.ImportStarted();
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) &&
-                    waypointsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                if (!DBC.DBC.IsLoaded())
                 {
-                    waypointsCreator.ImportSuccessful();
+                    SetCurrentStatus("Loading DBC...");
+                    DBC.DBC.Load();
                 }
-                else
+
+                if (openFileDialog.FileName.Contains("txt"))
                 {
-                    toolStripStatusLabel_CurrentAction.Text = "";
-                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_WaypointsCreator_LoadSniff.Enabled = true;
-                    Cursor = Cursors.Default;
+                    if (IsTxtFileValidForParse(openFileDialog.FileName) &&
+                    waypointsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                    {
+                        waypointsCreator.ImportSuccessful();
+                    }
+                    else
+                    {
+                        toolStripStatusLabel_CurrentAction.Text = "";
+                        toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                        toolStripButton_CSC_ImportSniff.Enabled = true;
+                        Cursor = Cursors.Default;
+                    }
+                }
+                else if (openFileDialog.FileName.Contains("dat"))
+                {
+                    if (waypointsCreator.GetPacketsFromDataFile(openFileDialog.FileName))
+                    {
+                        waypointsCreator.ImportSuccessful();
+                    }
                 }
             }
         }
@@ -263,7 +295,11 @@ namespace WoWDeveloperAssistant
 
         private void listBox_WCCreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
-            waypointsCreator.RemoveGuidsWithExistingDataFromListBox();
+            if (Properties.Settings.Default.CheckDataOnDb)
+            {
+                waypointsCreator.RemoveGuidsWithExistingDataFromListBox();
+            }
+
             waypointsCreator.FillWaypointsGrid();
         }
 

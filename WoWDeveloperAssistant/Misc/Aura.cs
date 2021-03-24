@@ -2,6 +2,7 @@
 
 namespace WoWDeveloperAssistant.Misc
 {
+    [Serializable]
     public struct Aura
     {
         public uint slot;

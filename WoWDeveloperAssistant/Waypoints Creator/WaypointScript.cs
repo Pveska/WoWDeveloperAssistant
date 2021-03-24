@@ -5,6 +5,7 @@ using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
+    [Serializable]
     public class WaypointScript : ICloneable
     {
         public enum ScriptType : byte

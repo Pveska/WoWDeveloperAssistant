@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using DBFileReaderLib;
 using WoWDeveloperAssistant.DBC.Structures;
-using WoWDeveloperAssistant.Properties;
 
 namespace WoWDeveloperAssistant.DBC
 {

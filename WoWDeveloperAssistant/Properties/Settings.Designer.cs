@@ -121,18 +121,6 @@ namespace WoWDeveloperAssistant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("enUS")]
-        public string DBCLocale {
-            get {
-                return ((string)(this["DBCLocale"]));
-            }
-            set {
-                this["DBCLocale"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool Critters {
             get {

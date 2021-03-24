@@ -6,6 +6,7 @@ using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
+    [Serializable]
     public class Spell
     {
         public uint spellId;
@@ -19,6 +20,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         public CombatCastTimings combatCastTimings;
         public bool isDeathSpell;
 
+        [Serializable]
         public struct CombatCastTimings
         {
             public TimeSpan minCastTime;

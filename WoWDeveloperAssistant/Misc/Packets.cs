@@ -13,6 +13,7 @@ namespace WoWDeveloperAssistant.Misc
 {
     public static class Packets
     {
+        [Serializable]
         public struct Packet
         {
             public PacketTypes packetType;
@@ -136,6 +137,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct SpellStartPacket
         {
             public string casterGuid;
@@ -249,6 +251,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         };
 
+        [Serializable]
         public struct ChatPacket
         {
             public string creatureGuid;
@@ -300,6 +303,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct UpdateObjectPacket
         {
             public uint creatureEntry;
@@ -628,6 +632,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct MonsterMovePacket
         {
             public string creatureGuid;
@@ -809,6 +814,152 @@ namespace WoWDeveloperAssistant.Misc
 
                     do
                     {
+                        if (LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true) != "")
+                            movePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
+
+                        if (GetStartPositionFromLine(lines[index]).IsValid())
+                            movePacket.startPos = GetStartPositionFromLine(lines[index]);
+
+                        if (GetMoveTimeFromLine(lines[index]) != 0)
+                            movePacket.moveTime = GetMoveTimeFromLine(lines[index]);
+
+                        if (GetFaceDirectionFromLine(lines[index]) != 0.0f)
+                            movePacket.creatureOrientation = GetFaceDirectionFromLine(lines[index]);
+
+                        if (GetFlyingFromLine(lines[index]) != false)
+                            isFlying = GetFlyingFromLine(lines[index]);
+
+                        if (GetPointPositionFromLine(lines[index]).IsValid())
+                        {
+                            if (ConsistsOfPoints(lines[index], lines[index + 1]))
+                            {
+                                uint pointId = 1;
+
+                                do
+                                {
+                                    if (GetPointPositionFromLine(lines[index]).IsValid())
+                                    {
+                                        movePacket.waypoints.Add(new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                        pointId++;
+                                    }
+
+                                    index++;
+                                }
+                                while (lines[index] != "");
+                            }
+                            else
+                            {
+                                if (GetPointPositionFromLine(lines[index]).IsValid())
+                                    lastPosition = GetPointPositionFromLine(lines[index]);
+
+                                uint pointId = 1;
+
+                                do
+                                {
+                                    if (GetWayPointPositionFromLine(lines[index]).IsValid())
+                                    {
+                                        movePacket.waypoints.Add(new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                        pointId++;
+                                    }
+
+                                    if (GetJumpGravityFromLine(lines[index]) != 0.0f)
+                                    {
+                                        movePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
+                                    }
+
+                                    index++;
+                                }
+                                while (lines[index] != "");
+                            }
+
+                            if (lastPosition.IsValid())
+                            {
+                                if (movePacket.jumpInfo.jumpGravity != 0.0f)
+                                {
+                                    movePacket.jumpInfo.moveTime = movePacket.moveTime;
+                                    movePacket.jumpInfo.jumpPos = lastPosition;
+                                }
+                                else
+                                {
+                                    movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                }
+                            }
+
+                            break;
+                        }
+
+                        index++;
+                    }
+                    while (lines[index] != "");
+
+                    if (!isFlying && GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime) != 0.0f)
+                    {
+                        if (GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime) >= 4.2)
+                        {
+                            for (int i = 0; i < movePacket.waypoints.Count; i++)
+                            {
+                                movePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < movePacket.waypoints.Count; i++)
+                            {
+                                movePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
+                            }
+                        }
+                    }
+                }
+
+                return movePacket;
+            }
+
+            public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, SortedDictionary<long, Packet> updateObjectPacketsDict)
+            {
+                MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+
+                if (LineGetters.IsCreatureLine(lines[index + 1]))
+                {
+                    if (Properties.Settings.Default.CombatMovement && LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true) != "")
+                    {
+                        string guid = LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true);
+                        bool combatFlagFound = false;
+                        bool isCombatMovement = false;
+
+                        List<Packet> updateObjectPackets = updateObjectPacketsDict.Values.Where(x => x.HasCreatureWithGuid(guid)).OrderBy(x => (uint)x.sendTime.TotalSeconds).ToList();
+
+                        foreach (Packet packet in updateObjectPackets)
+                        {
+                            UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
+                            if ((updatePacket.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
+                            {
+                                combatFlagFound = true;
+                                break;
+                            }
+                        }
+
+                        if (combatFlagFound)
+                        {
+                            for (int i = updateObjectPackets.Count() - 1; i >= 0; i--)
+                            {
+                                UpdateObjectPacket updatePacket = (UpdateObjectPacket)updateObjectPackets[i].parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
+                                if ((uint)updatePacket.packetSendTime.TotalSeconds < (uint)movePacket.packetSendTime.TotalSeconds && (updatePacket.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
+                                {
+                                    isCombatMovement = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isCombatMovement)
+                            return movePacket;
+                    }
+
+                    Position lastPosition = new Position();
+                    bool isFlying = false;
+
+                    do
+                    {
                         if (Properties.Settings.Default.CombatMovement && (lines[index].Contains("FacingGUID: TypeName: Player; Full:") ||
                             lines[index].Contains("FacingGUID: TypeName: Creature; Full:")))
                         {
@@ -917,6 +1068,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct AttackStopPacket
         {
             public string creatureGuid;
@@ -958,6 +1110,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct TimePacket
         {
             public string hours;
@@ -965,6 +1118,7 @@ namespace WoWDeveloperAssistant.Misc
             public string seconds;
         }
 
+        [Serializable]
         public struct AIReactionPacket
         {
             public string creatureGuid;
@@ -995,6 +1149,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct AuraUpdatePacket
         {
             public string unitGuid;
@@ -1102,6 +1257,7 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        [Serializable]
         public struct EmotePacket
         {
             public string guid;

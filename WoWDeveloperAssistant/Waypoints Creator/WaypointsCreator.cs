@@ -10,14 +10,15 @@ using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
     public class WaypointsCreator
     {
         private MainForm mainForm;
-        private BuildVersions buildVersion;
         private Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
+        private BuildVersions buildVersion;
 
         public WaypointsCreator(MainForm mainForm)
         {
@@ -26,10 +27,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public bool GetDataFromSniffFile(string fileName)
         {
-            mainForm.SetCurrentStatus("Loading DBC...");
-
-            DBC.DBC.Load();
-
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
@@ -156,7 +153,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             Parallel.ForEach(movementPacketsDict.Values.AsEnumerable(), packet =>
             {
-                MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, packet.index, buildVersion);
+                MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, packet.index, buildVersion, updateObjectPacketsDict);
                 if (movePacket.creatureGuid != "" && (movePacket.HasWaypoints() || movePacket.HasOrientation() || movePacket.HasJump()))
                 {
                     lock (movementPacketsDict)
@@ -389,7 +386,40 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 });
             }
 
+            if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.dat"), FileMode.OpenOrCreate))
+                {
+                    Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>();
+
+                    dictToSerialize.Add(0, creaturesDict);
+                    dictToSerialize.Add(1, buildVersion);
+
+                    binaryFormatter.Serialize(fileStream, dictToSerialize);
+                }
+            }
+
             mainForm.SetCurrentStatus("");
+            return true;
+        }
+
+        public bool GetPacketsFromDataFile(string fileName)
+        {
+            mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
+
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
+
+            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+            {
+                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
+            }
+
+            creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
+            buildVersion = (BuildVersions)dictFromSerialize[1];
+
             return true;
         }
 
@@ -399,37 +429,27 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 if (creature.HasWaypoints())
                 {
-                    List<Waypoint> newWaypoints = new List<Waypoint>();
+                    List<uint> attackStopPacketTimes = attackStopPackets.Where(x => x.Value.HasCreatureWithGuid(creature.guid)).Select(x => (uint)x.Value.sendTime.TotalSeconds).ToList();
+                    if (attackStopPacketTimes.Count == 0)
+                        return;
 
-                    List<int> attackStopPacketTimes = attackStopPackets.Where(x => x.Value.HasCreatureWithGuid(creature.guid)).Select(x => (int)x.Value.sendTime.TotalSeconds).ToList();
+                    List<Waypoint> newWaypoints = new List<Waypoint>();
 
                     foreach (Waypoint waypoint in creature.waypoints)
                     {
-                        if (!attackStopPacketTimes.Contains((int)waypoint.moveStartTime.TotalSeconds) && (GetUnitFlagsForWaypoint(updateObjectPackets, waypoint, creature.guid) & UnitFlags.UNIT_FLAG_IN_COMBAT) == 0)
+                        if (!attackStopPacketTimes.Contains((uint)waypoint.moveStartTime.TotalSeconds))
                         {
                             newWaypoints.Add(waypoint);
                         }
                     }
 
-                    creature.waypoints = newWaypoints;
+                    if (creature.waypoints.Count != newWaypoints.Count)
+                    {
+                        creature.waypoints = newWaypoints;
+
+                    }
                 }
             }
-        }
-
-        private UnitFlags GetUnitFlagsForWaypoint(SortedDictionary<long, Packet> updateObjectPacketsDict, Waypoint waypoint, string guid)
-        {
-            List<Packet> updateObjectPackets = updateObjectPacketsDict.Values.Where(x => x.HasCreatureWithGuid(guid)).OrderBy(x => (int)x.sendTime.TotalSeconds).ToList();
-            if (updateObjectPackets.Count() != 0)
-            {
-                for (int i = updateObjectPackets.Count() - 1; i >= 0; i--)
-                {
-                    UpdateObjectPacket updatePacket = (UpdateObjectPacket)updateObjectPackets[i].parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
-                    if ((int)updatePacket.packetSendTime.TotalSeconds < (int)waypoint.moveStartTime.TotalSeconds)
-                        return updatePacket.unitFlags;
-                }
-            }
-
-            return 0;
         }
 
         public void FillListBoxWithGuids()
@@ -990,8 +1010,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed Sniff File (*.txt)|*.txt";
-            mainForm.openFileDialog.FileName = "*.txt";
+            mainForm.openFileDialog.Filter = "Parsed Sniff or Data File (*.txt;*.dat)|*.txt;*.dat";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
             mainForm.openFileDialog.Multiselect = false;
