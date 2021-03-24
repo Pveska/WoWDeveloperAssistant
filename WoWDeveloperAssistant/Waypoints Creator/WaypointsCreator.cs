@@ -407,7 +407,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public bool GetPacketsFromDataFile(string fileName)
         {
-            mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
+            mainForm.SetCurrentStatus("Current status: Getting packets from data file...");
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
