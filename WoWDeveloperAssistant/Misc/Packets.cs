@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
-using WoWDeveloperAssistant.Database_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 using static WoWDeveloperAssistant.Misc.Utils;
@@ -1269,18 +1268,18 @@ namespace WoWDeveloperAssistant.Misc
 
             public static string GetGuidFromLine(string line)
             {
-                Regex guidRegex = new Regex(@"GUID: Full:{1}\s*\w{20,}");
+                Regex guidRegex = new Regex(@"GUID: TypeName: Creature; Full:{1}\s*\w{20,}");
                 if (guidRegex.IsMatch(line))
-                    return guidRegex.Match(line).ToString().Replace("GUID: Full: ", "");
+                    return guidRegex.Match(line).ToString().Replace("GUID: TypeName: Creature; Full: ", "");
 
                 return "";
             }
 
             public static uint GetEmoteIdFromLine(string line)
             {
-                Regex emoteRegex = new Regex(@"Emote ID:{1}\s{1}\d+");
+                Regex emoteRegex = new Regex(@"EmoteID:{1}\s{1}\d+");
                 if (emoteRegex.IsMatch(line))
-                    return Convert.ToUInt32(emoteRegex.Match(line).ToString().Replace("Emote ID: ", ""));
+                    return Convert.ToUInt32(emoteRegex.Match(line).ToString().Replace("EmoteID: ", ""));
 
                 return 0;
             }

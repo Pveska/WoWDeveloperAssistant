@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
 using static WoWDeveloperAssistant.Misc.Packets;
-using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
