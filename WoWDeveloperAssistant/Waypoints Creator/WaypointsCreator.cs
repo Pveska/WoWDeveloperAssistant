@@ -875,9 +875,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
 
                 SQLtext = SQLtext + "};" + "\r\n";
-
-                mainForm.textBox_SqlOutput.Text = SQLtext;
             }
+
+            mainForm.textBox_SqlOutput.Text = SQLtext;
         }
 
         public void RemoveNearestPoints()
