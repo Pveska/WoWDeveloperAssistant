@@ -269,11 +269,11 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             { ConditionTypes.CONDITION_TYPE_MASK               , "have type mask @conditionValue1" },
             { ConditionTypes.CONDITION_RELATION_TO             , "have relation to target @conditionValue1 and type @conditionValue2" },
             { ConditionTypes.CONDITION_REACTION_TO             , "have reaction to target @conditionValue1 with rank @conditionValue2" },
-            { ConditionTypes.CONDITION_DISTANCE_TO             , "have distance @conditionValue2 yards to target @conditionValue1 with comparision type @conditionValue3" },
+            { ConditionTypes.CONDITION_DISTANCE_TO             , "have distance @conditionValue2 yards to target @conditionValue1 with comparison type @conditionValue3" },
             { ConditionTypes.CONDITION_ALIVE                   , "alive" },
-            { ConditionTypes.CONDITION_HP_VAL                  , "have hp value @conditionValue1 with comparision type @conditionValue2" },
-            { ConditionTypes.CONDITION_HP_PCT                  , "have hp pct @conditionValue1 with comparision type @conditionValue2" },
-            { ConditionTypes.CONDITION_HAS_BUILDING_TYPE       , "have activeted building @conditionValue1 in garrison" },
+            { ConditionTypes.CONDITION_HP_VAL                  , "have hp value @conditionValue1 with comparison type @conditionValue2" },
+            { ConditionTypes.CONDITION_HP_PCT                  , "have hp pct @conditionValue1 with comparison type @conditionValue2" },
+            { ConditionTypes.CONDITION_HAS_BUILDING_TYPE       , "have activated building @conditionValue1 in garrison" },
             { ConditionTypes.CONDITION_HAS_GARRISON_LEVEL      , "have garrison level @conditionValue1" },
             { ConditionTypes.CONDITION_IN_WATER                , "in water" },
             { ConditionTypes.CONDITION_HAS_KNOWLEDGE_LEVEL     , "have artifact knowledge level @conditionValue1" },
@@ -287,12 +287,12 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             { ConditionTypes.CONDITION_WORLD_QUEST_ACTIVE      , "have world quest @conditionValue1 active" },
             { ConditionTypes.CONDITION_INACCESSIBLE_LIST       , "have creature target in inaccessible list" },
             { ConditionTypes.CONDITION_ON_VEHICLE              , "is on vehicle" },
-            { ConditionTypes.CONDITION_CRITERIA_VALUE          , "have criteria @conditionValue1 value @conditionValue2 with comparision type @conditionValue3" },
+            { ConditionTypes.CONDITION_CRITERIA_VALUE          , "have criteria @conditionValue1 value @conditionValue2 with comparison type @conditionValue3" },
             { ConditionTypes.CONDITION_ESSENCE                 , "have essence with id @conditionValue1 on rank @conditionValue2" },
             { ConditionTypes.CONDITION_INSTANCE_DATA_2         , "located in instance with entry @conditionValue1 and data @conditionValue2 and type @conditionValue3" },
             { ConditionTypes.CONDITION_PATCH_CONTENT           , "located in world with patch content @conditionValue1" },
             { ConditionTypes.CONDITION_DISABLED                , "" },
-            { ConditionTypes.CONDITION_ASHJRAKAMAS_LEVEL       , "player have ashjrakamas level @conditionValue1 with comparision type @conditionValue2" }
+            { ConditionTypes.CONDITION_ASHJRAKAMAS_LEVEL       , "player have ashjrakamas level @conditionValue1 with comparison type @conditionValue2" }
 
         };
 
