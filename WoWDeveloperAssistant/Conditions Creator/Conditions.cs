@@ -299,19 +299,19 @@ namespace WoWDeveloperAssistant.Conditions_Creator
         public static Dictionary<string, bool> CreateSourceTextBoxDictionary(bool sourceGroup, bool sourceEntry, bool sourceId, bool conditionTarget)
         {
             Dictionary<string, bool> textBoxDictionary = new Dictionary<string, bool>();
-            textBoxDictionary.Add("textBox_SourceGroup", sourceGroup);
-            textBoxDictionary.Add("textBox_SourceEntry", sourceEntry);
-            textBoxDictionary.Add("textBox_SourceId", sourceId);
-            textBoxDictionary.Add("textBox_ConditionTarget", conditionTarget);
+            textBoxDictionary.Add("textBox_ConditionsCreator_SourceGroup", sourceGroup);
+            textBoxDictionary.Add("textBox_ConditionsCreator_SourceEntry", sourceEntry);
+            textBoxDictionary.Add("textBox_ConditionsCreator_SourceId", sourceId);
+            textBoxDictionary.Add("textBox_ConditionsCreator_ConditionTarget", conditionTarget);
             return textBoxDictionary;
         }
 
         public static Dictionary<string, bool> CreateConditionTextBoxDictionary(bool conditionValue1, bool conditionValue2, bool conditionValue3)
         {
             Dictionary<string, bool> textBoxDictionary = new Dictionary<string, bool>();
-            textBoxDictionary.Add("textBox_ConditionValue1", conditionValue1);
-            textBoxDictionary.Add("textBox_ConditionValue2", conditionValue2);
-            textBoxDictionary.Add("textBox_ConditionValue3", conditionValue3);
+            textBoxDictionary.Add("textBox_ConditionsCreator_ConditionValue1", conditionValue1);
+            textBoxDictionary.Add("textBox_ConditionsCreator_ConditionValue2", conditionValue2);
+            textBoxDictionary.Add("textBox_ConditionsCreator_ConditionValue3", conditionValue3);
             return textBoxDictionary;
         }
 
