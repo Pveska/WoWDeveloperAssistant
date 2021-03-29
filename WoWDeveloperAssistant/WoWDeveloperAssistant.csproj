@@ -117,6 +117,7 @@
     <Compile Include="Database Advisor\GossipMenuAdvisor.cs" />
     <Compile Include="Database Advisor\PlayerCastedSpellsParser.cs" />
     <Compile Include="Database Advisor\SpellDestinationsParser.cs" />
+    <Compile Include="Database Advisor\WaypointsHelper.cs" />
     <Compile Include="DBC\DBC.cs" />
     <Compile Include="DBC\Structures\AchievementEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaEntry.cs" />

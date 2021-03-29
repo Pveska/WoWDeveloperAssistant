@@ -535,5 +535,15 @@ namespace WoWDeveloperAssistant
         {
             waypointsCreator.RemoveGuidsBeforeSelectedOne();
         }
+
+        private void createReturnPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WaypointsHelper.CreateReturnPath(textBox_DatabaseAdvisor_Output);
+        }
+
+        private void recalculatePointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WaypointsHelper.RecalculatePointIds(textBox_DatabaseAdvisor_Output);
+        }
     }
 }
