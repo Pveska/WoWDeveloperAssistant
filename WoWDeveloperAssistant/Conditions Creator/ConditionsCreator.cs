@@ -70,9 +70,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             string sourceGroup = mainForm.textBox_ConditionsCreator_SourceGroup.Text;
             string sourceEntry = mainForm.textBox_ConditionsCreator_SourceEntry.Text;
 
-            string checkConditionInDbQuery = "SELECT * FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + sourceType + " AND ";
-            checkConditionInDbQuery += sourceGroup != "" ? "`SourceGroup` = " + sourceGroup : "`SourceEntry` = " + sourceEntry;
-            checkConditionInDbQuery += ";";
+            string checkConditionInDbQuery = "SELECT * FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + sourceType + " AND `SourceGroup` = " + sourceGroup + " AND `SourceEntry` = " + sourceEntry + ";";
 
             var conditionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(checkConditionInDbQuery) : null;
 

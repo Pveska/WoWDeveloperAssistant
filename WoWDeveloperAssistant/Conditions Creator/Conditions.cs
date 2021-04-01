@@ -265,7 +265,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             { ConditionTypes.CONDITION_QUEST_COMPLETE          , "completed quest @conditionValue1" },
             { ConditionTypes.CONDITION_NEAR_CREATURE           , "have creature with entry @conditionValue1 within @conditionValue2 yards" },
             { ConditionTypes.CONDITION_NEAR_GAMEOBJECT         , "have gameobject with entry @conditionValue1 within @conditionValue2 yards" },
-            { ConditionTypes.CONDITION_OBJECT_ENTRY            , "have entry or guid with value @conditionValue1" },
+            { ConditionTypes.CONDITION_OBJECT_ENTRY            , "have entry or guid with value @conditionValue2" },
             { ConditionTypes.CONDITION_TYPE_MASK               , "have type mask @conditionValue1" },
             { ConditionTypes.CONDITION_RELATION_TO             , "have relation to target @conditionValue1 and type @conditionValue2" },
             { ConditionTypes.CONDITION_REACTION_TO             , "have reaction to target @conditionValue1 with rank @conditionValue2" },
