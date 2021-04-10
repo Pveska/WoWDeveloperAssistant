@@ -55,8 +55,7 @@
     <StartupObject>WoWDeveloperAssistant.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DBFileReaderLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="DBFileReaderLib">
       <HintPath>..\DBFileReaderLib\bin\Release\netstandard2.0\DBFileReaderLib.dll</HintPath>
     </Reference>
     <Reference Include="MetroFramework">
