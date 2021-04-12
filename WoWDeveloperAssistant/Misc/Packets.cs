@@ -34,7 +34,8 @@ namespace WoWDeveloperAssistant.Misc
                 SMSG_ATTACK_STOP     = 6,
                 SMSG_AURA_UPDATE     = 7,
                 SMSG_EMOTE           = 8,
-                SMSG_SPELL_GO        = 9
+                SMSG_SPELL_GO        = 9,
+                SMSG_SET_AI_ANIM_KIT = 10
             }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
@@ -53,6 +54,8 @@ namespace WoWDeveloperAssistant.Misc
                     packetType = PacketTypes.SMSG_EMOTE;
                 else if (line.Contains("SMSG_ATTACK_STOP"))
                     packetType = PacketTypes.SMSG_ATTACK_STOP;
+                else if (line.Contains("SMSG_SET_AI_ANIM_KIT"))
+                    packetType = PacketTypes.SMSG_SET_AI_ANIM_KIT;
 
                 return packetType;
             }
@@ -112,6 +115,15 @@ namespace WoWDeveloperAssistant.Misc
                     case PacketTypes.SMSG_ATTACK_STOP:
                     {
                         if (parsedPacketsList.Cast<AttackStopPacket>().Any(attackStopPacket => attackStopPacket.creatureGuid == guid))
+                        {
+                            return true;
+                        }
+
+                        break;
+                    }
+                    case PacketTypes.SMSG_SET_AI_ANIM_KIT:
+                    {
+                        if (parsedPacketsList.Cast<SetAiAnimKitPacket>().Any(animKitPacket => animKitPacket.guid == guid))
                         {
                             return true;
                         }
@@ -1301,6 +1313,54 @@ namespace WoWDeveloperAssistant.Misc
                 while (lines[index] != "");
 
                 return emotePacket;
+            }
+        }
+
+        [Serializable]
+        public struct SetAiAnimKitPacket
+        {
+            public string guid;
+            public uint? aiAnimKitId;
+            public TimeSpan packetSendTime;
+
+            public SetAiAnimKitPacket(string guid, uint animKitId, TimeSpan time)
+            { this.guid = guid; aiAnimKitId = animKitId; packetSendTime = time; }
+
+            public static string GetGuidFromLine(string line)
+            {
+                Regex guidRegex = new Regex(@"Unit: TypeName: Creature; Full:{1}\s*\w{20,}");
+                if (guidRegex.IsMatch(line))
+                    return guidRegex.Match(line).ToString().Replace("Unit: TypeName: Creature; Full: ", "");
+
+                return "";
+            }
+
+            public static uint? GetAiAnimKitIdFromLine(string line)
+            {
+                Regex emoteRegex = new Regex(@"AiAnimKitId:{1}\s{1}\d+");
+                if (emoteRegex.IsMatch(line))
+                    return Convert.ToUInt32(emoteRegex.Match(line).ToString().Replace("AiAnimKitId: ", ""));
+
+                return null;
+            }
+
+            public static SetAiAnimKitPacket ParseSetAiAnimKitPacket(string[] lines, long index, BuildVersions buildVersion)
+            {
+                SetAiAnimKitPacket animPacket = new SetAiAnimKitPacket("", 0, LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    if (GetGuidFromLine(lines[index]) != "")
+                        animPacket.guid = GetGuidFromLine(lines[index]);
+
+                    if (GetAiAnimKitIdFromLine(lines[index]) != null)
+                        animPacket.aiAnimKitId = GetAiAnimKitIdFromLine(lines[index]);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return animPacket;
             }
         }
     }

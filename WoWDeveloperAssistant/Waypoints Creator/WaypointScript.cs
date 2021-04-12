@@ -80,6 +80,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return new WaypointScript(0, 0, ScriptType.Emote, emotePacket.emoteId, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, emotePacket.packetSendTime);
         }
 
+        public static WaypointScript GetScriptsFromSetAiAnimKitPacket(SetAiAnimKitPacket animKitPacket)
+        {
+            return new WaypointScript(0, 0, ScriptType.SetAnimKit, (uint)animKitPacket.aiAnimKitId, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, animKitPacket.packetSendTime);
+        }
+
         public object Clone()
         {
             return MemberwiseClone();

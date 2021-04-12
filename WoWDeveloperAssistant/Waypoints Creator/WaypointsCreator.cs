@@ -35,6 +35,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> auraPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> emotePacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> attackStopPacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> animKitPacketsDict = new SortedDictionary<long, Packet>();
 
             buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -104,6 +105,18 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         {
                             if (!emotePacketsDict.ContainsKey(index))
                                 emotePacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_EMOTE, sendTime, index, new List<object>()));
+                        }
+                    }
+                }
+                else if (Properties.Settings.Default.Scripts && Packet.GetPacketTypeFromLine(lines[index]) == Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT)
+                {
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    if (sendTime != TimeSpan.Zero)
+                    {
+                        lock (animKitPacketsDict)
+                        {
+                            if (!animKitPacketsDict.ContainsKey(index))
+                                animKitPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT, sendTime, index, new List<object>()));
                         }
                     }
                 }
@@ -262,6 +275,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
+                mainForm.SetCurrentStatus("Parsing SMSG_SET_AI_ANIM_KIT packets...");
+
+                Parallel.ForEach(animKitPacketsDict.Values.AsEnumerable(), packet =>
+                {
+                    SetAiAnimKitPacket animKitPacket = SetAiAnimKitPacket.ParseSetAiAnimKitPacket(lines, packet.index, buildVersion);
+                    if (animKitPacket.guid == "" || animKitPacket.aiAnimKitId == null)
+                        return;
+
+                    lock (animKitPacketsDict)
+                    {
+                        animKitPacketsDict.AddSourceFromSetAiAnimKitPacket(animKitPacket, packet.index);
+                    }
+                });
+
                 mainForm.SetCurrentStatus("Creating waypoint scripts for creatures...");
 
                 Parallel.ForEach(creaturesDict.Values.AsEnumerable(), creature =>
@@ -291,6 +318,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         }
 
                         foreach (var packet in emotePacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
+                        {
+                            creaturePacketsDict.Add(packet.index, packet);
+                        }
+
+                        foreach (var packet in animKitPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
                             creaturePacketsDict.Add(packet.index, packet);
                         }
@@ -375,6 +407,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                                     {
                                         EmotePacket emotePacket = (EmotePacket)packet.parsedPacketsList.First();
                                         scriptsList.Add(WaypointScript.GetScriptsFromEmotePacket(emotePacket));
+                                    }
+
+                                    break;
+                                }
+                                case Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT:
+                                {
+                                    if (scriptsParsingStarted)
+                                    {
+                                        SetAiAnimKitPacket animKitPacket = (SetAiAnimKitPacket)packet.parsedPacketsList.First();
+                                        scriptsList.Add(WaypointScript.GetScriptsFromSetAiAnimKitPacket(animKitPacket));
                                     }
 
                                     break;
