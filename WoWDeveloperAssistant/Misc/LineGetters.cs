@@ -8,7 +8,7 @@ namespace WoWDeveloperAssistant.Misc
 {
     public static class LineGetters
     {
-        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool updateAuraGuid = false)
+        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false)
         {
             if (!line.Contains("TypeName: Creature; Full:") && !line.Contains("TypeName: Vehicle; Full:") && !line.Contains("TypeName: Player; Full:"))
                 return "";
@@ -151,6 +151,8 @@ namespace WoWDeveloperAssistant.Misc
                         return BuildVersions.BUILD_9_0_2;
                     else if (line.Contains("V9_0_5"))
                         return BuildVersions.BUILD_9_0_5;
+                    else if (line.Contains("V9_1_0"))
+                        return BuildVersions.BUILD_9_1_0;
 
                     return BuildVersions.BUILD_UNKNOWN;
                 }

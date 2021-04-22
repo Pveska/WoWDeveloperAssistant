@@ -52,6 +52,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (updatePacket.standState != null)
                 waypointScripts.Add(new WaypointScript(0, 0, ScriptType.SetField, 117, (uint)updatePacket.standState, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, updatePacket.packetSendTime));
 
+            if (updatePacket.jumpInfo.IsValid())
+                waypointScripts.Add(new WaypointScript(0, 0, ScriptType.Jump, updatePacket.jumpInfo.moveTime, 0, 0, updatePacket.jumpInfo.jumpPos.x, updatePacket.jumpInfo.jumpPos.y, updatePacket.jumpInfo.jumpPos.z, updatePacket.jumpInfo.jumpGravity, 0, updatePacket.packetSendTime));
+
             return waypointScripts;
         }
 

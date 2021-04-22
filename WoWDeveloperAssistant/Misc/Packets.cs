@@ -172,8 +172,7 @@ namespace WoWDeveloperAssistant.Misc
             public static TimeSpan GetCastTimeFromLine(string line)
             {
                 Regex castTimeRegex = new Regex(@"CastTime:{1}\s*\d+");
-                int castTime = 0;
-                Int32.TryParse(castTimeRegex.Match(line).ToString().Replace("CastTime: ", ""), out castTime);
+                int.TryParse(castTimeRegex.Match(line).ToString().Replace("CastTime: ", ""), out int castTime);
                 if (castTimeRegex.IsMatch(line) && castTime != 0)
                     return new TimeSpan(0, 0, 0, 0, castTime);
 
@@ -332,9 +331,10 @@ namespace WoWDeveloperAssistant.Misc
             public bool hasDisableGravity;
             public uint moveTime;
             public UnitFlags unitFlags;
+            public MonsterMovePacket.JumpInfo jumpInfo;
 
-            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, uint moveTime, UnitFlags unitFlags)
-            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.moveTime = moveTime; this.unitFlags = unitFlags; }
+            public UpdateObjectPacket(uint entry, string guid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, uint moveTime, UnitFlags unitFlags, MonsterMovePacket.JumpInfo jumpInfo)
+            { creatureEntry = entry; creatureGuid = guid; creatureName = name; creatureCurrentHealth = curHealth; creatureMaxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; }
 
             public static bool IsLineValidForObjectParse(string line)
             {
@@ -506,6 +506,15 @@ namespace WoWDeveloperAssistant.Misc
                 return 0;
             }
 
+            public static float GetJumpGravityFromLine(string line)
+            {
+                Regex jumpGravityRegex = new Regex(@"JumpGravity:{1}\s+.+");
+                if (jumpGravityRegex.IsMatch(line))
+                    return float.Parse((jumpGravityRegex.Match(line).ToString().Replace("JumpGravity: ", "")), CultureInfo.InvariantCulture.NumberFormat);
+
+                return 0.0f;
+            }
+
             public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
@@ -515,7 +524,7 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0);
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0, new MonsterMovePacket.JumpInfo());
 
                         do
                         {
@@ -551,10 +560,19 @@ namespace WoWDeveloperAssistant.Misc
                                 updatePacket.hasDisableGravity = true;
 
                             if (GetDurationFromLine(lines[index]) != 0)
+                            {
                                 updatePacket.moveTime = GetDurationFromLine(lines[index]);
+                                updatePacket.jumpInfo.moveTime = GetDurationFromLine(lines[index]);
+                            }
 
                             if (GetUnitFlagsFromLine(lines[index]) != 0)
                                 updatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
+
+                            if (GetJumpGravityFromLine(lines[index]) != 0.0f)
+                            {
+                                updatePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
+                                updatePacket.jumpInfo.jumpPos = updatePacket.waypoints.Last().movePosition;
+                            }
 
                             index++;
                         }
@@ -569,20 +587,37 @@ namespace WoWDeveloperAssistant.Misc
                         }
                         else
                         {
-                            if (!updatePacket.hasDisableGravity && MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime) != 0.0f)
+                            float velocity = MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime);
+
+                            if (velocity != 0.0f)
                             {
-                                if (MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime) >= 4.2)
+                                for (int i = 0; i < updatePacket.waypoints.Count; i++)
                                 {
-                                    for (int i = 0; i < updatePacket.waypoints.Count; i++)
-                                    {
-                                        updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_RUN;
-                                    }
+                                    updatePacket.waypoints[i].velocity = velocity;
+                                    updatePacket.waypoints[i].moveTime = updatePacket.moveTime;
+                                    updatePacket.waypoints[i].moveStartTime = updatePacket.packetSendTime;
+                                    updatePacket.waypoints[i].startPosition = updatePacket.spawnPosition;
                                 }
-                                else
+
+                                if (!updatePacket.hasDisableGravity && velocity != 0.0f)
                                 {
-                                    for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                    if (updatePacket.jumpInfo.IsValid())
                                     {
-                                        updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_WALK;
+                                        updatePacket.waypoints.Clear();
+                                    }
+                                    else if (velocity >= 4.2)
+                                    {
+                                        for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                        {
+                                            updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_RUN;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int i = 0; i < updatePacket.waypoints.Count; i++)
+                                        {
+                                            updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_WALK;
+                                        }
                                     }
                                 }
                             }
@@ -596,7 +631,7 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if (lines[index].Contains("UpdateType: Values") && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0);
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0, new MonsterMovePacket.JumpInfo());
 
                         do
                         {
@@ -903,20 +938,30 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     while (lines[index] != "");
 
-                    if (!isFlying && GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime) != 0.0f)
+                    float velocity = GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime);
+
+                    if (velocity != 0.0f)
                     {
-                        if (GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime) >= 4.2)
+                        for (int i = 0; i < movePacket.waypoints.Count; i++)
                         {
-                            for (int i = 0; i < movePacket.waypoints.Count; i++)
-                            {
-                                movePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
-                            }
+                            movePacket.waypoints[i].velocity = velocity;
                         }
-                        else
+
+                        if (!isFlying)
                         {
-                            for (int i = 0; i < movePacket.waypoints.Count; i++)
+                            if (velocity >= 4.2)
                             {
-                                movePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
+                                for (int i = 0; i < movePacket.waypoints.Count; i++)
+                                {
+                                    movePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < movePacket.waypoints.Count; i++)
+                                {
+                                    movePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
+                                }
                             }
                         }
                     }
@@ -1056,20 +1101,35 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     while (lines[index] != "");
 
-                    if (!isFlying && GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime) != 0.0f)
+                    float velocity = GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime);
+
+                    if (velocity != 0.0f)
                     {
-                        if (GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime) >= 4.2)
+
+                        for (int i = 0; i < movePacket.waypoints.Count; i++)
                         {
-                            for (int i = 0; i < movePacket.waypoints.Count; i++)
-                            {
-                                movePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
-                            }
+                            movePacket.waypoints[i].velocity = velocity;
                         }
-                        else
+
+                        if (!isFlying)
                         {
-                            for (int i = 0; i < movePacket.waypoints.Count; i++)
+                            if (movePacket.jumpInfo.IsValid())
                             {
-                                movePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
+                                movePacket.waypoints.Clear();
+                            }
+                            else if (velocity >= 4.2)
+                            {
+                                for (int i = 0; i < movePacket.waypoints.Count; i++)
+                                {
+                                    movePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < movePacket.waypoints.Count; i++)
+                                {
+                                    movePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
+                                }
                             }
                         }
                     }

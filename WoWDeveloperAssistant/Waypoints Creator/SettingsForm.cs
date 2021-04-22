@@ -15,8 +15,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             checkBox_CreateVector.Checked = Properties.Settings.Default.Vector;
             checkBox_ParseWaypointScripts.Checked = Properties.Settings.Default.Scripts;
             checkBox_DoNotAddCritterGuids.Checked = Properties.Settings.Default.Critters;
-            checkBox_CheckExistedDataOnDb.Checked = Properties.Settings.Default.CheckDataOnDb;
+            checkBox_CheckExistedPathOnDb.Checked = Properties.Settings.Default.CheckPathOnDb;
             checkBox_SkipCombatMovement.Checked = Properties.Settings.Default.CombatMovement;
+            checkBox_CheckCreatureOnDb.Checked = Properties.Settings.Default.CheckCreatureOnDB;
         }
 
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -24,8 +25,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             Properties.Settings.Default.Vector = checkBox_CreateVector.Checked;
             Properties.Settings.Default.Scripts = checkBox_ParseWaypointScripts.Checked;
             Properties.Settings.Default.Critters = checkBox_DoNotAddCritterGuids.Checked;
-            Properties.Settings.Default.CheckDataOnDb = checkBox_CheckExistedDataOnDb.Checked;
+            Properties.Settings.Default.CheckPathOnDb = checkBox_CheckExistedPathOnDb.Checked;
             Properties.Settings.Default.CombatMovement = checkBox_SkipCombatMovement.Checked;
+            Properties.Settings.Default.CheckCreatureOnDB = checkBox_CheckCreatureOnDb.Checked;
         }
     }
 }

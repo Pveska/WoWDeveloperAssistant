@@ -12,7 +12,7 @@ namespace WoWDeveloperAssistant.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -109,7 +109,7 @@ namespace WoWDeveloperAssistant.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool Scripts {
             get {
                 return ((bool)(this["Scripts"]));
@@ -134,12 +134,12 @@ namespace WoWDeveloperAssistant.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CheckDataOnDb {
+        public bool CheckPathOnDb {
             get {
-                return ((bool)(this["CheckDataOnDb"]));
+                return ((bool)(this["CheckPathOnDb"]));
             }
             set {
-                this["CheckDataOnDb"] = value;
+                this["CheckPathOnDb"] = value;
             }
         }
         
@@ -152,6 +152,18 @@ namespace WoWDeveloperAssistant.Properties {
             }
             set {
                 this["CombatMovement"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CheckCreatureOnDB {
+            get {
+                return ((bool)(this["CheckCreatureOnDB"]));
+            }
+            set {
+                this["CheckCreatureOnDB"] = value;
             }
         }
     }

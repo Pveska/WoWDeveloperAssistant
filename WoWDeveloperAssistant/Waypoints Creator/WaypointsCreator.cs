@@ -15,16 +15,15 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 {
     public class WaypointsCreator
     {
-        private MainForm mainForm;
+        private readonly MainForm mainForm;
         private Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
-        private BuildVersions buildVersion;
 
         public WaypointsCreator(MainForm mainForm)
         {
             this.mainForm = mainForm;
         }
 
-        public bool GetDataFromSniffFile(string fileName)
+        public bool GetDataFromSniffFile(string fileName, bool multiSelect)
         {
             mainForm.SetCurrentStatus("Getting lines...");
 
@@ -37,7 +36,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> attackStopPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> animKitPacketsDict = new SortedDictionary<long, Packet>();
 
-            buildVersion = LineGetters.GetBuildVersion(lines);
+            BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
             {
                 MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
@@ -134,7 +133,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             });
 
-            creaturesDict.Clear();
+            if (!multiSelect)
+            {
+                creaturesDict.Clear();
+            }
 
             mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
 
@@ -152,10 +154,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         if (!creaturesDict.ContainsKey(updatePacket.creatureGuid))
                         {
                             creaturesDict.Add(updatePacket.creatureGuid, new Creature(updatePacket));
+                            creaturesDict[updatePacket.creatureGuid].SortWaypoints();
                         }
                         else
                         {
                             creaturesDict[updatePacket.creatureGuid].UpdateCreature(updatePacket);
+                            creaturesDict[updatePacket.creatureGuid].SortWaypoints();
                         }
                     }
                 });
@@ -219,7 +223,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
-                RemoveCombatMovementForCreatures(attackStopPacketsDict, updateObjectPacketsDict);
+                RemoveCombatMovementForCreatures(attackStopPacketsDict);
             }
 
             if (Properties.Settings.Default.Scripts)
@@ -427,18 +431,28 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 });
             }
 
-            if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
+            if (!multiSelect)
             {
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-
-                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.dat"), FileMode.OpenOrCreate))
+                if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
                 {
-                    Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>();
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
 
-                    dictToSerialize.Add(0, creaturesDict);
-                    dictToSerialize.Add(1, buildVersion);
+                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.dat"), FileMode.OpenOrCreate))
+                    {
+                        binaryFormatter.Serialize(fileStream, creaturesDict);
+                    }
+                }
+            }
+            else
+            {
+                if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
+                {
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
 
-                    binaryFormatter.Serialize(fileStream, dictToSerialize);
+                    using (FileStream fileStream = new FileStream("multi_selected_waypoint_packets.dat", FileMode.OpenOrCreate))
+                    {
+                        binaryFormatter.Serialize(fileStream, creaturesDict);
+                    }
                 }
             }
 
@@ -446,25 +460,37 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return true;
         }
 
-        public bool GetPacketsFromDataFile(string fileName)
+        public bool GetPacketsFromDataFile(string fileName, bool multiSelect)
         {
             mainForm.SetCurrentStatus("Current status: Getting packets from data file...");
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
-            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
 
-            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+            if (!multiSelect)
             {
-                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
+                using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+                {
+                    creaturesDict = (Dictionary<string, Creature>)binaryFormatter.Deserialize(fileStream);
+                }
             }
-
-            creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
-            buildVersion = (BuildVersions)dictFromSerialize[1];
+            else
+            {
+                using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+                {
+                    foreach (var creature in (Dictionary<string, Creature>)binaryFormatter.Deserialize(fileStream))
+                    {
+                        if (!creaturesDict.ContainsKey(creature.Key))
+                        {
+                            creaturesDict.Add(creature.Key, creature.Value);
+                        }
+                    }
+                }
+            }
 
             return true;
         }
 
-        private void RemoveCombatMovementForCreatures(SortedDictionary<long, Packet> attackStopPackets, SortedDictionary<long, Packet> updateObjectPackets)
+        private void RemoveCombatMovementForCreatures(SortedDictionary<long, Packet> attackStopPackets)
         {
             foreach (Creature creature in creaturesDict.Values)
             {
@@ -521,8 +547,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
                 {
-                    if (!creature.HasWaypoints() || (Properties.Settings.Default.CheckDataOnDb && IsCreatureAlreadyHaveDataOnDb(creature.guid)) ||
-                        (Properties.Settings.Default.Critters && creature.IsCritter()))
+                    if (!creature.HasWaypoints() || (Properties.Settings.Default.CheckPathOnDb && IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid)) ||
+                        (Properties.Settings.Default.Critters && creature.IsCritter()) || (Properties.Settings.Default.CheckCreatureOnDB && !IsCreatureExistOnDb(creature.guid)))
                         continue;
 
                     if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "" && mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "0")
@@ -609,7 +635,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
         }
 
-        public bool IsCreatureAlreadyHaveDataOnDb(string guid)
+        public bool IsCreatureAlreadyHavePathOrFormationOnDb(string guid)
         {
             string linkedId = creaturesDict[guid].GetLinkedId();
             bool alreadyHaveWaypointsOrRelatedToFormation = false;
@@ -649,6 +675,19 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             return alreadyHaveWaypointsOrRelatedToFormation;
+        }
+
+        public bool IsCreatureExistOnDb(string guid)
+        {
+            string linkedId = creaturesDict[guid].GetLinkedId();
+
+            string creatureQuery = "SELECT `linked_id` FROM `creature` WHERE `linked_id` = '" + linkedId + "';";
+            var creatureDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureQuery) : null;
+
+            if (creatureDs != null && creatureDs.Tables["table"].Rows.Count > 0)
+                return true;
+
+            return false;
         }
 
         private List<string> GetExistedLinkedIdsFromListBox()
@@ -725,6 +764,185 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             mainForm.listBox_WaypointsCreator_CreatureGuids.Refresh();
+        }
+
+        public void AddRandomMovement()
+        {
+            string output = "";
+
+            foreach (object item in mainForm.listBox_WaypointsCreator_CreatureGuids.Items)
+            {
+                if (IsCreatureAlreadyHavePathOrFormationOnDb(item.ToString()))
+                    continue;
+
+                Creature creature = creaturesDict[item.ToString()];
+                List<Waypoint> waypoints = creature.waypoints;
+
+                Dictionary<uint, uint> moveTypesCount = new Dictionary<uint, uint>();
+
+                foreach (uint moveType in waypoints.Select(x => x.moveType).Distinct())
+                {
+                    moveTypesCount.Add(moveType, (uint)waypoints.Where(x => x.moveType == (MonsterMovePacket.MoveType)moveType).Count());
+                }
+
+                uint averagedMoveType = moveTypesCount.First(x => x.Value == moveTypesCount.Values.Max()).Key;
+
+                List<float> moveDistances = new List<float>();
+
+                foreach (Waypoint waypoint in waypoints)
+                {
+                    moveDistances.Add(creature.spawnPosition.GetExactDist2d(waypoint.movePosition));
+                }
+
+                int averagedMoveDistance = (int)moveDistances.Average();
+
+                if (averagedMoveDistance < 5)
+                {
+                    averagedMoveDistance = 5;
+                }
+                else if (averagedMoveDistance > 5 && averagedMoveDistance < 10)
+                {
+                    averagedMoveDistance = 10;
+                }
+                else
+                {
+                    averagedMoveDistance = 10;
+                }
+
+                if (averagedMoveType == 0)
+                {
+                    output += "UPDATE `creature` SET `MovementType` = 1, `spawndist` = " + averagedMoveDistance + " WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + " -- Name: " + creature.name + ", Entry: " + creature.entry + " - Ground creature with walk type .go cre lid " + creature.GetLinkedId() + "\r\n";
+                }
+                else if (averagedMoveType == 1)
+                {
+                    output += "UPDATE `creature` SET `MovementType` = 20, `spawndist` = " + averagedMoveDistance + " WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + " -- Name: " + creature.name + ", Entry: " + creature.entry + " - Ground creature with run type .go cre lid " + creature.GetLinkedId() + "\r\n";
+                }
+                else if (averagedMoveType == 4)
+                {
+                    output += "UPDATE `creature` SET `MovementType` = 1, `spawndist` = " + averagedMoveDistance + " WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + " -- Name: " + creature.name + ", Entry: " + creature.entry + " - Flying creature .go cre lid " + creature.GetLinkedId() + "\r\n";
+                }
+            }
+
+            mainForm.textBox_SqlOutput.Text = output;
+        }
+
+        public void UpdateInhabitTypeAndSpeed()
+        {
+            string output = "";
+
+            foreach (uint entry in creaturesDict.Select(x => x.Value.entry).Distinct())
+            {
+                if (creaturesDict.Where(x => x.Value.entry == entry && x.Value.HasWaypoints()).Count() == 0)
+                    continue;
+
+                List<float> averagedWalkVelocities = new List<float>();
+                List<float> averagedRunVelocities = new List<float>();
+                List<float> averagedFlyVelocities = new List<float>();
+
+                foreach (var creature in creaturesDict.Where(x => x.Value.entry == entry && x.Value.HasWaypoints()))
+                {
+                    if (creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_WALK).Count() > 0)
+                    {
+                        averagedWalkVelocities.Add(creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_WALK).Select(x => x.velocity).Average());
+                    }
+
+                    if (creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_RUN).Count() > 0)
+                    {
+                        averagedRunVelocities.Add(creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_RUN).Select(x => x.velocity).Average());
+                    }
+
+                    if (creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT).Count() > 0)
+                    {
+                        averagedFlyVelocities.Add(creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT).Select(x => x.velocity).Average());
+                    }
+                }
+
+                int dbInhabitType = averagedFlyVelocities.Count > 0 ? 4 : 3;
+
+                string dbSpeed = "";
+
+                string possibleSpeeds = "";
+
+                if (averagedWalkVelocities.Count > 0)
+                {
+                    possibleSpeeds += "Walk: (" + GetPossibleSpeedsString(averagedWalkVelocities, MonsterMovePacket.MoveType.MOVE_WALK) + ")";
+                    dbSpeed += "'speed_walk` = " + GetDbSpeedFromVelocity(averagedWalkVelocities.Average(), MonsterMovePacket.MoveType.MOVE_WALK).ToString().Replace(",", ".");
+                }
+
+                if (averagedRunVelocities.Count > 0)
+                {
+                    if (averagedWalkVelocities.Count > 0)
+                    {
+                        possibleSpeeds += " Run: (" + GetPossibleSpeedsString(averagedRunVelocities, MonsterMovePacket.MoveType.MOVE_RUN) + ")";
+                        dbSpeed += ", 'speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
+                    }
+                    else
+                    {
+                        possibleSpeeds += "Run: (" + GetPossibleSpeedsString(averagedRunVelocities, MonsterMovePacket.MoveType.MOVE_RUN) + ")";
+                        dbSpeed += "'speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
+                    }
+                }
+
+                if (averagedFlyVelocities.Count > 0)
+                {
+                    if (averagedWalkVelocities.Count > 0 || averagedRunVelocities.Count > 0)
+                    {
+                        possibleSpeeds += " Fly: (" + GetPossibleSpeedsString(averagedFlyVelocities, MonsterMovePacket.MoveType.MOVE_FLIGHT) + ")";
+                        dbSpeed += ", 'speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
+                    }
+                    else
+                    {
+                        possibleSpeeds += "Fly: (" + GetPossibleSpeedsString(averagedFlyVelocities, MonsterMovePacket.MoveType.MOVE_FLIGHT) + ")";
+                        dbSpeed += "'speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_FLIGHT).ToString().Replace(",", ".");
+                    }
+                }
+
+                output += "UPDATE `creature_template` SET `InhabitType` = " + dbInhabitType + ", " + dbSpeed + " WHERE `entry` = " + entry + ";" + " -- Creature Name: " + MainForm.GetCreatureNameByEntry(entry) + ", Possible speeds was: " + possibleSpeeds + "\r\n";
+            }
+
+            mainForm.textBox_SqlOutput.Text = output;
+        }
+
+        private float GetDbSpeedFromVelocity(float velocity, MonsterMovePacket.MoveType moveType)
+        {
+            switch (moveType)
+            {
+                case MonsterMovePacket.MoveType.MOVE_WALK:
+                {
+                    return (float)(Math.Round((velocity / 2.5f), 1));
+                }
+                case MonsterMovePacket.MoveType.MOVE_RUN:
+                {
+                    return (float)(Math.Round((velocity / 7.0f), 1));
+                }
+                case MonsterMovePacket.MoveType.MOVE_FLIGHT:
+                {
+                    return (float)(Math.Round((velocity / 7.0f), 1));
+                }
+                default:
+                    return 0.0f;
+            }
+        }
+
+        private string GetPossibleSpeedsString(List<float> speeds, MonsterMovePacket.MoveType moveType)
+        {
+            string speedsString = "";
+
+            for (int i = 0; i < speeds.Count; i++)
+            {
+                string dbSpeed = GetDbSpeedFromVelocity(speeds[i], moveType).ToString();
+
+                if (i + 1 < speeds.Count)
+                {
+                    speedsString += dbSpeed.Length > 1 ? dbSpeed.Replace(",", ".") + "f, " : dbSpeed.Replace(",", ".") + ".0f, ";
+                }
+                else
+                {
+                    speedsString += dbSpeed.Length > 1 ? dbSpeed.Replace(",", ".") + "f" : dbSpeed.Replace(",", ".") + ".0f";
+                }
+            }
+
+            return speedsString;
         }
 
         public void FillWaypointsGrid()
@@ -1054,7 +1272,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.openFileDialog.Filter = "Parsed Sniff or Data File (*.txt;*.dat)|*.txt;*.dat";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
-            mainForm.openFileDialog.Multiselect = false;
+            mainForm.openFileDialog.Multiselect = true;
             mainForm.openFileDialog.CheckFileExists = true;
         }
 
@@ -1072,13 +1290,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.toolStripStatusLabel_FileStatus.Text = "Loading File...";
         }
 
-        public void ImportSuccessful()
+        public void ImportSuccessful(bool multiSelect)
         {
             mainForm.toolStripStatusLabel_CurrentAction.Text = "";
             mainForm.toolStripButton_WaypointsCreator_LoadSniff.Enabled = true;
             mainForm.toolStripButton_WaypointsCreator_Search.Enabled = true;
             mainForm.toolStripTextBox_WaypointsCreator_Entry.Enabled = true;
-            mainForm.toolStripStatusLabel_FileStatus.Text = mainForm.openFileDialog.FileName + " is selected for input.";
+            mainForm.toolStripStatusLabel_FileStatus.Text = multiSelect ? "More than 1 file is selected for input" : mainForm.openFileDialog.FileName + " is selected for input.";
             mainForm.Cursor = Cursors.Default;
         }
     }

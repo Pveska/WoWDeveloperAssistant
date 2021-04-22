@@ -13,10 +13,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
     public class CreatureScriptsCreator
     {
-        private MainForm mainForm;
+        private readonly MainForm mainForm;
         public static Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
         public static Dictionary<uint, List<CreatureText>> creatureTextsDict = new Dictionary<uint, List<CreatureText>>();
-        public static BuildVersions buildVersion = BuildVersions.BUILD_UNKNOWN;
 
         public CreatureScriptsCreator(MainForm mainForm)
         {
@@ -83,7 +82,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             var lines = File.ReadAllLines(fileName);
             Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
 
-            buildVersion = LineGetters.GetBuildVersion(lines);
+            BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
             {
                 MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
@@ -333,11 +332,11 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                 using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.dat"), FileMode.OpenOrCreate))
                 {
-                    Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>();
-
-                    dictToSerialize.Add(0, creaturesDict);
-                    dictToSerialize.Add(1, creatureTextsDict);
-                    dictToSerialize.Add(2, buildVersion);
+                    Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
+                    {
+                        { 0, creaturesDict },
+                        { 1, creatureTextsDict }
+                    };
 
                     binaryFormatter.Serialize(fileStream, dictToSerialize);
                 }
@@ -361,7 +360,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
             creatureTextsDict = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
-            buildVersion = (BuildVersions)dictFromSerialize[2];
 
             return true;
         }

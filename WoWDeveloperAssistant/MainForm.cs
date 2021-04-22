@@ -16,11 +16,11 @@ namespace WoWDeveloperAssistant
     {
         public bool importSuccessful = false;
 
-        private CreatureScriptsCreator creatureScriptsCreator;
-        private WaypointsCreator waypointsCreator;
-        private CoreScriptTemplates coreScriptTemplate;
+        private readonly CreatureScriptsCreator creatureScriptsCreator;
+        private readonly WaypointsCreator waypointsCreator;
+        private readonly CoreScriptTemplates coreScriptTemplate;
         private static Dictionary<uint, string> creatureNamesDict;
-        private ConditionsCreator conditionsCreator;
+        private readonly ConditionsCreator conditionsCreator;
 
         public MainForm()
         {
@@ -249,12 +249,59 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (openFileDialog.FileName.Contains("txt"))
+                if (openFileDialog.FileNames.Length == 1)
                 {
-                    if (IsTxtFileValidForParse(openFileDialog.FileName) &&
-                    waypointsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                    if (openFileDialog.FileName.Contains("txt"))
                     {
-                        waypointsCreator.ImportSuccessful();
+                        if (IsTxtFileValidForParse(openFileDialog.FileName) &&
+                        waypointsCreator.GetDataFromSniffFile(openFileDialog.FileName, false))
+                        {
+                            waypointsCreator.ImportSuccessful(false);
+                        }
+                        else
+                        {
+                            toolStripStatusLabel_CurrentAction.Text = "";
+                            toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                            toolStripButton_CSC_ImportSniff.Enabled = true;
+                            Cursor = Cursors.Default;
+                        }
+                    }
+                    else if (openFileDialog.FileName.Contains("dat"))
+                    {
+                        if (waypointsCreator.GetPacketsFromDataFile(openFileDialog.FileName, false))
+                        {
+                            waypointsCreator.ImportSuccessful(false);
+                        }
+                    }
+                }
+                else
+                {
+                    uint successfulFilesParsedCount = 0;
+
+                    foreach (var fileName in openFileDialog.FileNames)
+                    {
+                        if (fileName.Contains("txt"))
+                        {
+                            if (IsTxtFileValidForParse(fileName))
+                            {
+                                if (waypointsCreator.GetDataFromSniffFile(fileName, true))
+                                {
+                                    successfulFilesParsedCount++;
+                                }
+                            }
+                        }
+                        else if (fileName.Contains("dat"))
+                        {
+                            if (waypointsCreator.GetPacketsFromDataFile(fileName, true))
+                            {
+                                successfulFilesParsedCount++;
+                            }
+                        }
+                    }
+
+                    if (successfulFilesParsedCount != 0)
+                    {
+                        waypointsCreator.ImportSuccessful(true);
                     }
                     else
                     {
@@ -262,13 +309,6 @@ namespace WoWDeveloperAssistant
                         toolStripStatusLabel_FileStatus.Text = "No File Loaded";
                         toolStripButton_CSC_ImportSniff.Enabled = true;
                         Cursor = Cursors.Default;
-                    }
-                }
-                else if (openFileDialog.FileName.Contains("dat"))
-                {
-                    if (waypointsCreator.GetPacketsFromDataFile(openFileDialog.FileName))
-                    {
-                        waypointsCreator.ImportSuccessful();
                     }
                 }
             }
@@ -295,7 +335,7 @@ namespace WoWDeveloperAssistant
 
         private void listBox_WCCreatureGuids_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.CheckDataOnDb)
+            if (Properties.Settings.Default.CheckPathOnDb)
             {
                 waypointsCreator.RemoveGuidsWithExistingDataFromListBox();
             }
@@ -544,6 +584,21 @@ namespace WoWDeveloperAssistant
         private void recalculatePointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WaypointsHelper.RecalculatePointIds(textBox_DatabaseAdvisor_Output);
+        }
+
+        private void createRandomMovementsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.AddRandomMovement();
+        }
+
+        private void updateInhabitTypeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.UpdateInhabitTypeAndSpeed();
+        }
+
+        private void button_DatabaseAdvisor_FindDoublePaths_Click(object sender, EventArgs e)
+        {
+            DoublePathsFinder.FindDoublePaths(textBox_DatabaseAdvisor_Output);
         }
     }
 }

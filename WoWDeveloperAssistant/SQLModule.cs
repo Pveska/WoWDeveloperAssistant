@@ -10,14 +10,20 @@ namespace WoWDeveloperAssistant
         public static DataSet DatabaseSelectQuery(string query)
         {
             DataSet dataSet = new DataSet();
-            MySqlConnection sqlConnection = new MySqlConnection();
-            sqlConnection.ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.Database;
+            MySqlConnection sqlConnection = new MySqlConnection
+            {
+                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.Database
+            };
+
             try
             {
                 sqlConnection.Open();
                 MySqlCommand myCommand = new MySqlCommand(query, sqlConnection);
-                MySqlDataAdapter DataAdapter = new MySqlDataAdapter();
-                DataAdapter.SelectCommand = myCommand;
+                MySqlDataAdapter DataAdapter = new MySqlDataAdapter
+                {
+                    SelectCommand = myCommand
+                };
+
                 DataAdapter.Fill(dataSet, "table");
                 return dataSet;
             }
@@ -36,14 +42,20 @@ namespace WoWDeveloperAssistant
         public static DataSet HotfixSelectQuery(string query)
         {
             DataSet dataSet = new DataSet();
-            MySqlConnection sqlConnection = new MySqlConnection();
-            sqlConnection.ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = hotfix";
+            MySqlConnection sqlConnection = new MySqlConnection
+            {
+                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = hotfix"
+            };
+
             try
             {
                 sqlConnection.Open();
                 MySqlCommand myCommand = new MySqlCommand(query, sqlConnection);
-                MySqlDataAdapter DataAdapter = new MySqlDataAdapter();
-                DataAdapter.SelectCommand = myCommand;
+                MySqlDataAdapter DataAdapter = new MySqlDataAdapter
+                {
+                    SelectCommand = myCommand
+                };
+
                 DataAdapter.Fill(dataSet, "table");
                 return dataSet;
             }
@@ -61,8 +73,11 @@ namespace WoWDeveloperAssistant
 
         public static bool TryConnectToDB(string hostName, string port, string userName, string password, string databaseName)
         {
-            MySqlConnection sqlConnection = new MySqlConnection();
-            sqlConnection.ConnectionString = "server = " + hostName + "; port = " + port + "; user id = " + userName + "; password = " + password + "; database = " + databaseName;
+            MySqlConnection sqlConnection = new MySqlConnection
+            {
+                ConnectionString = "server = " + hostName + "; port = " + port + "; user id = " + userName + "; password = " + password + "; database = " + databaseName
+            };
+
             try
             {
                 sqlConnection.Open();

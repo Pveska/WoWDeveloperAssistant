@@ -19,6 +19,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public List<WaypointScript> scripts;
         public uint idFromParse;
         public MoveType moveType;
+        public float velocity;
 
         public Waypoint()
         { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); idFromParse = 0; moveType = MoveType.MOVE_MAX; }
