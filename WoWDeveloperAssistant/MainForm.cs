@@ -596,9 +596,15 @@ namespace WoWDeveloperAssistant
             waypointsCreator.UpdateInhabitTypeAndSpeed();
         }
 
-        private void button_DatabaseAdvisor_FindDoublePaths_Click(object sender, EventArgs e)
+        private void textBox_DatabaseAdvisor_FindDoublePaths_KeyDown(object sender, KeyEventArgs e)
         {
-            DoublePathsFinder.FindDoublePaths(textBox_DatabaseAdvisor_Output);
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_DatabaseAdvisor_FindDoublePaths.Text == "")
+                return;
+
+            DoublePathsFinder.FindDoublePaths(textBox_DatabaseAdvisor_Output, textBox_DatabaseAdvisor_FindDoublePaths.Text);
         }
     }
 }

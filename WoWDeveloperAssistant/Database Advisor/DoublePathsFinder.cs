@@ -10,7 +10,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 {
     public static class DoublePathsFinder
     {
-        public static void FindDoublePaths(TextBox textBox)
+        public static void FindDoublePaths(TextBox textBox, string zoneId)
         {
             string output = "";
 
@@ -18,7 +18,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             if (Properties.Settings.Default.UsingDB)
             {
-                DataSet creatureAddonDs = SQLModule.DatabaseSelectQuery("SELECT `linked_id`, `path_id` FROM `creature_addon` WHERE `path_id` > 0 AND `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `linked_id` != 0);");
+                DataSet creatureAddonDs = SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `path_id` FROM `creature_addon` WHERE `path_id` > 0 AND `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `linked_id` != 0 AND `zoneId` = {zoneId});");
 
                 if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
                 {
@@ -32,11 +32,9 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
             else
-                return;
-
-            if (output.Length > 0)
             {
-                output += "\r\n";
+                textBox.Text = "Can't find any double path for this zone!";
+                return;
             }
 
             Dictionary<uint, List<Position>> pathDictionary = new Dictionary<uint, List<Position>>();
@@ -159,6 +157,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
             if (doublePathsCount > 0)
             {
                 output += $"Total count of double paths: {doublePathsCount}" + "\r\n";
+            }
+            else
+            {
+                output += "Can't find any double path for this zone!";
             }
 
             textBox.Text = output;

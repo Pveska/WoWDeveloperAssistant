@@ -200,6 +200,13 @@ namespace WoWDeveloperAssistant
                             continue;
                     }
                     while (!IsCreatureAddonDeleteLine(lines[i]));
+
+                    i--;
+
+                    if (creatureAllowedLinkedIds.Count > 0)
+                    {
+                        outputLines.Add("");
+                    }
                 }
                 else if (IsCreatureAddonInsertLine(lines[i]) && creaturesRemover)
                 {
@@ -232,6 +239,13 @@ namespace WoWDeveloperAssistant
                         outputLines.Add(lines[i]);
                     }
                     while (!IsGameObjectDeleteLine(lines[i]));
+
+                    i--;
+
+                    if (creatureAddonAllowedLinkedIds.Count > 0)
+                    {
+                        outputLines.Add("");
+                    }
                 }
                 else if (IsGameObjectInsertLine(lines[i]) && gameobjectsRemover)
                 {
@@ -294,6 +308,13 @@ namespace WoWDeveloperAssistant
                             continue;
                     }
                     while (!IsGameObjectAddonDeleteLine(lines[i]));
+
+                    i--;
+
+                    if (gameobjectAllowedLinkedIds.Count > 0)
+                    {
+                        outputLines.Add("");
+                    }
                 }
                 else if (IsGameObjectAddonInsertLine(lines[i]) && gameobjectsRemover)
                 {
@@ -326,22 +347,69 @@ namespace WoWDeveloperAssistant
                         outputLines.Add(lines[i]);
                     }
                     while (IsGameObjectAddonLine(lines[i]));
+
+                    i--;
+
+                    if (gameobjectAddonAllowedLinkedIds.Count > 0)
+                    {
+                        outputLines.Add("");
+                    }
                 }
                 else
                 {
-                    outputLines.Add(lines[i]);
+                    if (lines[i] == "")
+                    {
+                        if (outputLines.Count > 1 && outputLines[outputLines.Count - 1] != "")
+                        {
+                            outputLines.Add(lines[i]);
+                        }
+                    }
+                    else
+                    {
+                        outputLines.Add(lines[i]);
+                    }
                 }
             }
 
-            string clipboardOutput = "";
+            if (creatureAllowedLinkedIds.Count != 0)
+            {
+                outputLines[outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `creature`")))] = $"DELETE FROM `creature` WHERE `linked_id` IN ({GetStringFromList(creatureAllowedLinkedIds, true)});";
+            }
+            else
+            {
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `creature`"))));
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("INSERT INTO `creature`"))));
+            }
 
-            clipboardOutput += "DELETE FROM `creature` WHERE `linked_id` IN (" + GetStringFromList(creatureAllowedLinkedIds, true) + ");" + "\n";
-            clipboardOutput += "DELETE FROM `creature_addon` WHERE `linked_id` IN (" + GetStringFromList(creatureAddonAllowedLinkedIds, true) + ");" + "\n";
+            if (creatureAddonAllowedLinkedIds.Count != 0)
+            {
+                outputLines[outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `creature_addon`")))] = $"DELETE FROM `creature_addon` WHERE `linked_id` IN ({GetStringFromList(creatureAddonAllowedLinkedIds, true)});";
+            }
+            else
+            {
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `creature_addon`"))));
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("INSERT INTO `creature_addon`"))));
+            }
 
-            clipboardOutput += "DELETE FROM `gameobject` WHERE `linked_id` IN (" + GetStringFromList(gameobjectAllowedLinkedIds, true) + ");" + "\n";
-            clipboardOutput += "DELETE FROM `gameobject_addon` WHERE `linked_id` IN (" + GetStringFromList(gameobjectAddonAllowedLinkedIds, true) + ");" + "\n";
+            if (gameobjectAllowedLinkedIds.Count != 0)
+            {
+                outputLines[outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `gameobject`")))] = $"DELETE FROM `gameobject` WHERE `linked_id` IN ({GetStringFromList(gameobjectAllowedLinkedIds, true)});";
+            }
+            else
+            {
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `gameobject`"))));
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("INSERT INTO `gameobject`"))));
+            }
 
-            Clipboard.SetText(clipboardOutput);
+            if (gameobjectAddonAllowedLinkedIds.Count != 0)
+            {
+                outputLines[outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `gameobject_addon`")))] = $"DELETE FROM `gameobject_addon` WHERE `linked_id` IN ({GetStringFromList(gameobjectAddonAllowedLinkedIds, true)});";
+            }
+            else
+            {
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `gameobject_addon`"))));
+                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("INSERT INTO `gameobject_addon`"))));
+            }
 
             labelCreatures.Text = " Creatures removed using LinkedId: " + creaturesRemovedUsingLinkedIdCount + ", using PositionCompare: " + creaturesRemovedUsingPositionCompareCount + ", Total removed count: " + (creaturesRemovedUsingLinkedIdCount + creaturesRemovedUsingPositionCompareCount) + ", Addons removed: " + creatureAddonsRemoved;
             labelCreatures.Show();
