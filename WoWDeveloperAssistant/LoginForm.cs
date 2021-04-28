@@ -15,8 +15,9 @@ namespace WoWDeveloperAssistant
             textBox_Host.Text = Properties.Settings.Default.Host;
             textBox_UserName.Text = Properties.Settings.Default.Username;
             textBox_Password.Text = Properties.Settings.Default.Password;
-            textBox_DB.Text = Properties.Settings.Default.Database;
+            textBox_DB.Text = Properties.Settings.Default.WorldDatabase;
             textBox_Port.Text = Properties.Settings.Default.Port;
+            textBox_HotfixDatabase.Text = Properties.Settings.Default.HotfixDatabase;
         }
 
         private void button_Login_Click(object sender, EventArgs e)
@@ -28,9 +29,10 @@ namespace WoWDeveloperAssistant
                     Properties.Settings.Default.Host = textBox_Host.Text;
                     Properties.Settings.Default.Username = textBox_UserName.Text;
                     Properties.Settings.Default.Password = textBox_Password.Text;
-                    Properties.Settings.Default.Database = textBox_DB.Text;
+                    Properties.Settings.Default.WorldDatabase = textBox_DB.Text;
                     Properties.Settings.Default.Port = textBox_Port.Text;
                     Properties.Settings.Default.UsingDB = true;
+                    Properties.Settings.Default.HotfixDatabase = textBox_HotfixDatabase.Text;
                     Properties.Settings.Default.Save();
                 }
 

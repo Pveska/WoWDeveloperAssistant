@@ -11,7 +11,7 @@
     <Setting Name="Password" Type="System.String" Scope="User">
       <Value Profile="(Default)">root</Value>
     </Setting>
-    <Setting Name="Database" Type="System.String" Scope="User">
+    <Setting Name="WorldDatabase" Type="System.String" Scope="User">
       <Value Profile="(Default)">world_shadowlands</Value>
     </Setting>
     <Setting Name="Port" Type="System.String" Scope="User">
@@ -37,6 +37,9 @@
     </Setting>
     <Setting Name="CheckCreatureOnDB" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HotfixDatabase" Type="System.String" Scope="User">
+      <Value Profile="(Default)">hotfix_shadowlands</Value>
     </Setting>
   </Settings>
 </SettingsFile>

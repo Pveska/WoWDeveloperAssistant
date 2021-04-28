@@ -62,12 +62,12 @@ namespace WoWDeveloperAssistant.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("world_shadowlands")]
-        public string Database {
+        public string WorldDatabase {
             get {
-                return ((string)(this["Database"]));
+                return ((string)(this["WorldDatabase"]));
             }
             set {
-                this["Database"] = value;
+                this["WorldDatabase"] = value;
             }
         }
         
@@ -164,6 +164,18 @@ namespace WoWDeveloperAssistant.Properties {
             }
             set {
                 this["CheckCreatureOnDB"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("hotfix_shadowlands")]
+        public string HotfixDatabase {
+            get {
+                return ((string)(this["HotfixDatabase"]));
+            }
+            set {
+                this["HotfixDatabase"] = value;
             }
         }
     }

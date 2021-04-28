@@ -70,11 +70,11 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     return output;
                 }
 
-                foreach (DataRow roadcastTextRow in broadcastTextDs.Tables["table"].Rows)
+                foreach (string textRow in broadcastTextDs.Tables["table"].Rows[0].ItemArray)
                 {
-                    if (roadcastTextRow[0].ToString() != "")
+                    if (textRow != "")
                     {
-                        output += roadcastTextRow[0].ToString() + "\r\n";
+                        output += textRow + "\r\n";
                     }
                 }
             }

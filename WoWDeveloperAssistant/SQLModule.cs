@@ -12,7 +12,7 @@ namespace WoWDeveloperAssistant
             DataSet dataSet = new DataSet();
             MySqlConnection sqlConnection = new MySqlConnection
             {
-                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.Database
+                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.WorldDatabase
             };
 
             try
@@ -44,7 +44,7 @@ namespace WoWDeveloperAssistant
             DataSet dataSet = new DataSet();
             MySqlConnection sqlConnection = new MySqlConnection
             {
-                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = hotfix"
+                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.HotfixDatabase
             };
 
             try
