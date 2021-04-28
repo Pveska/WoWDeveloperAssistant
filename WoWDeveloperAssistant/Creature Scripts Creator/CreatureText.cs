@@ -3,6 +3,7 @@ using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
+    [Serializable]
     public class CreatureText
     {
         public string creatureText;
