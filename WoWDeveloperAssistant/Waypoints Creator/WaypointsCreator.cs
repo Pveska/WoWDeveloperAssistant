@@ -866,7 +866,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 if (averagedWalkVelocities.Count > 0)
                 {
                     possibleSpeeds += "Walk: (" + GetPossibleSpeedsString(averagedWalkVelocities, MonsterMovePacket.MoveType.MOVE_WALK) + ")";
-                    dbSpeed += "'speed_walk` = " + GetDbSpeedFromVelocity(averagedWalkVelocities.Average(), MonsterMovePacket.MoveType.MOVE_WALK).ToString().Replace(",", ".");
+                    dbSpeed += "`speed_walk` = " + GetDbSpeedFromVelocity(averagedWalkVelocities.Average(), MonsterMovePacket.MoveType.MOVE_WALK).ToString().Replace(",", ".");
                 }
 
                 if (averagedRunVelocities.Count > 0)
@@ -874,12 +874,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     if (averagedWalkVelocities.Count > 0)
                     {
                         possibleSpeeds += " Run: (" + GetPossibleSpeedsString(averagedRunVelocities, MonsterMovePacket.MoveType.MOVE_RUN) + ")";
-                        dbSpeed += ", 'speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
+                        dbSpeed += ", `speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
                     }
                     else
                     {
                         possibleSpeeds += "Run: (" + GetPossibleSpeedsString(averagedRunVelocities, MonsterMovePacket.MoveType.MOVE_RUN) + ")";
-                        dbSpeed += "'speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
+                        dbSpeed += "`speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
                     }
                 }
 
@@ -888,12 +888,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     if (averagedWalkVelocities.Count > 0 || averagedRunVelocities.Count > 0)
                     {
                         possibleSpeeds += " Fly: (" + GetPossibleSpeedsString(averagedFlyVelocities, MonsterMovePacket.MoveType.MOVE_FLIGHT) + ")";
-                        dbSpeed += ", 'speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
+                        dbSpeed += ", `speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
                     }
                     else
                     {
                         possibleSpeeds += "Fly: (" + GetPossibleSpeedsString(averagedFlyVelocities, MonsterMovePacket.MoveType.MOVE_FLIGHT) + ")";
-                        dbSpeed += "'speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_FLIGHT).ToString().Replace(",", ".");
+                        dbSpeed += "`speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_FLIGHT).ToString().Replace(",", ".");
                     }
                 }
 
