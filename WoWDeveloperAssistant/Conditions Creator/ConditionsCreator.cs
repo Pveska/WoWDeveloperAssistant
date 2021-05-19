@@ -38,7 +38,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
 
             if (createdConditionsList.Count == 0)
             {
-                createdConditionsList.Add("DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + condition.sourceType + " AND `SourceGroup` = " + condition.sourceGroup + " AND  `SourceEntry` = " + condition.sourceEntry + ";");
+                createdConditionsList.Add("DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + condition.sourceType + " AND `SourceGroup` = " + condition.sourceGroup + " AND `SourceEntry` = " + condition.sourceEntry + ";");
                 createdConditionsList.Add("INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ScriptName`, `Comment`) VALUES");
             }
 
@@ -67,8 +67,8 @@ namespace WoWDeveloperAssistant.Conditions_Creator
         private void CheckIfConditionAlreadyExistedInDb()
         {
             uint sourceType = (uint)Enum.Parse(typeof(Conditions.ConditionSourceTypes), mainForm.comboBox_ConditionsCreator_ConditionSourceType.SelectedItem.ToString());
-            string sourceGroup = mainForm.textBox_ConditionsCreator_SourceGroup.Text;
-            string sourceEntry = mainForm.textBox_ConditionsCreator_SourceEntry.Text;
+            string sourceGroup = mainForm.textBox_ConditionsCreator_SourceGroup.Text != "" ? mainForm.textBox_ConditionsCreator_SourceGroup.Text : "0";
+            string sourceEntry = mainForm.textBox_ConditionsCreator_SourceEntry.Text != "" ? mainForm.textBox_ConditionsCreator_SourceEntry.Text : "0";
 
             string checkConditionInDbQuery = "SELECT * FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + sourceType + " AND `SourceGroup` = " + sourceGroup + " AND `SourceEntry` = " + sourceEntry + ";";
 

@@ -114,6 +114,8 @@
             this.tabPage_SqlOutput = new System.Windows.Forms.TabPage();
             this.textBox_SqlOutput = new System.Windows.Forms.TextBox();
             this.tabPage_DatabaseAdvisor = new System.Windows.Forms.TabPage();
+            this.textBox_DatabaseAdvisor_FindDoublePaths = new System.Windows.Forms.TextBox();
+            this.label_DatabaseAdvisor_FindDoublePaths = new System.Windows.Forms.Label();
             this.textBox_DatabaseAdvisor_PlayerCastedSpells = new System.Windows.Forms.TextBox();
             this.label_DatabaseAdvisor_PlayerCasterSpells = new System.Windows.Forms.Label();
             this.textBox_DatabaseAdvisor_Output = new System.Windows.Forms.TextBox();
@@ -193,8 +195,6 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label_DatabaseAdvisor_FindDoublePaths = new System.Windows.Forms.Label();
-            this.textBox_DatabaseAdvisor_FindDoublePaths = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -487,7 +487,6 @@
             // 
             this.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Enabled = false;
-            this.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.MaxLength = 40;
             this.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Name = "toolStripTextBox_CreatureScriptsCreator_CreatureEntry";
             this.toolStripTextBox_CreatureScriptsCreator_CreatureEntry.Size = new System.Drawing.Size(100, 34);
@@ -879,7 +878,7 @@
             this.toolStripButton_WaypointsCreator_LoadSniff});
             this.toolStrip_WaypointsCreator.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_WaypointsCreator.Name = "toolStrip_WaypointsCreator";
-            this.toolStrip_WaypointsCreator.Size = new System.Drawing.Size(2034, 38);
+            this.toolStrip_WaypointsCreator.Size = new System.Drawing.Size(2034, 34);
             this.toolStrip_WaypointsCreator.TabIndex = 24;
             this.toolStrip_WaypointsCreator.Text = "toolStrip_WaypointsCreator";
             // 
@@ -899,7 +898,6 @@
             // 
             this.toolStripTextBox_WaypointsCreator_Entry.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripTextBox_WaypointsCreator_Entry.Enabled = false;
-            this.toolStripTextBox_WaypointsCreator_Entry.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox_WaypointsCreator_Entry.MaxLength = 40;
             this.toolStripTextBox_WaypointsCreator_Entry.Name = "toolStripTextBox_WaypointsCreator_Entry";
             this.toolStripTextBox_WaypointsCreator_Entry.Size = new System.Drawing.Size(103, 34);
@@ -990,6 +988,23 @@
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
+            // 
+            // textBox_DatabaseAdvisor_FindDoublePaths
+            // 
+            this.textBox_DatabaseAdvisor_FindDoublePaths.Location = new System.Drawing.Point(8, 392);
+            this.textBox_DatabaseAdvisor_FindDoublePaths.Name = "textBox_DatabaseAdvisor_FindDoublePaths";
+            this.textBox_DatabaseAdvisor_FindDoublePaths.Size = new System.Drawing.Size(139, 26);
+            this.textBox_DatabaseAdvisor_FindDoublePaths.TabIndex = 14;
+            this.textBox_DatabaseAdvisor_FindDoublePaths.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_DatabaseAdvisor_FindDoublePaths_KeyDown);
+            // 
+            // label_DatabaseAdvisor_FindDoublePaths
+            // 
+            this.label_DatabaseAdvisor_FindDoublePaths.AutoSize = true;
+            this.label_DatabaseAdvisor_FindDoublePaths.Location = new System.Drawing.Point(6, 369);
+            this.label_DatabaseAdvisor_FindDoublePaths.Name = "label_DatabaseAdvisor_FindDoublePaths";
+            this.label_DatabaseAdvisor_FindDoublePaths.Size = new System.Drawing.Size(136, 20);
+            this.label_DatabaseAdvisor_FindDoublePaths.TabIndex = 13;
+            this.label_DatabaseAdvisor_FindDoublePaths.Text = "Find double paths";
             // 
             // textBox_DatabaseAdvisor_PlayerCastedSpells
             // 
@@ -1782,23 +1797,6 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
-            // 
-            // label_DatabaseAdvisor_FindDoublePaths
-            // 
-            this.label_DatabaseAdvisor_FindDoublePaths.AutoSize = true;
-            this.label_DatabaseAdvisor_FindDoublePaths.Location = new System.Drawing.Point(6, 369);
-            this.label_DatabaseAdvisor_FindDoublePaths.Name = "label_DatabaseAdvisor_FindDoublePaths";
-            this.label_DatabaseAdvisor_FindDoublePaths.Size = new System.Drawing.Size(136, 20);
-            this.label_DatabaseAdvisor_FindDoublePaths.TabIndex = 13;
-            this.label_DatabaseAdvisor_FindDoublePaths.Text = "Find double paths";
-            // 
-            // textBox_DatabaseAdvisor_FindDoublePaths
-            // 
-            this.textBox_DatabaseAdvisor_FindDoublePaths.Location = new System.Drawing.Point(8, 392);
-            this.textBox_DatabaseAdvisor_FindDoublePaths.Name = "textBox_DatabaseAdvisor_FindDoublePaths";
-            this.textBox_DatabaseAdvisor_FindDoublePaths.Size = new System.Drawing.Size(139, 26);
-            this.textBox_DatabaseAdvisor_FindDoublePaths.TabIndex = 14;
-            this.textBox_DatabaseAdvisor_FindDoublePaths.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_DatabaseAdvisor_FindDoublePaths_KeyDown);
             // 
             // MainForm
             // 
