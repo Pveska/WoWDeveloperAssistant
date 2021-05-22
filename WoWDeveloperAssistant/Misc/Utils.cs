@@ -227,6 +227,11 @@ namespace WoWDeveloperAssistant.Misc
             return $"{span.Hours:00}:{span.Minutes:00}:{span.Seconds:00}";
         }
 
+        public static string ToFormattedStringWithMilliseconds(this TimeSpan span)
+        {
+            return $"{span.Hours:00}:{span.Minutes:00}:{span.Seconds:00}:{span.Milliseconds}";
+        }
+
         public static TimeSpan GetMinTimeSpanFromList(IEnumerable<TimeSpan> timeSpanList)
         {
             List<TimeSpan> sortedList = new List<TimeSpan>(from time in timeSpanList orderby time.TotalSeconds ascending select time);

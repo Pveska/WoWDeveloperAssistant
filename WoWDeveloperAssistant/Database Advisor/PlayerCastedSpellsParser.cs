@@ -24,7 +24,8 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             string outputLine = "";
             Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
-            Dictionary<uint, TimeSpan> spellsDictionary = new Dictionary<uint, TimeSpan>();
+            List<SpellStartPacket> spellsList = new List<SpellStartPacket>();
+            Dictionary<uint, uint> spellsCastedCount = new Dictionary<uint, uint>();
 
             BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
             if (buildVersion == BuildVersions.BUILD_UNKNOWN)
@@ -55,23 +56,36 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     if (spellPacket.spellId == 0 || spellPacket.casterGuid != playerGuid)
                         return;
 
-                    lock (spellsDictionary)
+                    lock (spellsList)
                     {
-                        if (!spellsDictionary.ContainsKey(spellPacket.spellId))
+                        int spellIndex = spellsList.FindIndex(x => x.spellId == spellPacket.spellId);
+
+                        if (spellIndex == -1)
                         {
-                            spellsDictionary.Add(spellPacket.spellId, spellPacket.spellCastStartTime);
+                            spellsList.Add(spellPacket);
+                            spellsCastedCount.Add(spellPacket.spellId, 1);
+                        }
+                        else
+                        {
+                            if (spellsList[spellIndex].spellCastStartTime > spellPacket.spellCastStartTime)
+                            {
+                                spellsList.RemoveAt(spellIndex);
+                                spellsList.Add(spellPacket);
+                            }
+
+                            spellsCastedCount[spellPacket.spellId] += 1;
                         }
                     }
                 }
             });
 
-            spellsDictionary = spellsDictionary.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            spellsList = spellsList.OrderBy(x => x.spellCastStartTime).ToList();
 
             outputLine += "Spells casted by player with guid \"" + playerGuid + "\"" + "\r\n";
 
-            foreach (var spell in spellsDictionary)
+            foreach (SpellStartPacket spell in spellsList)
             {
-                outputLine += "Spell Id: " + spell.Key + " (" + Spell.GetSpellName(spell.Key) + "), Cast Time: " + spell.Value.ToString() + "\r\n";
+                outputLine += "Spell Id: " + spell.spellId + " (" + Spell.GetSpellName(spell.spellId) + "), Cast Time: " + spell.spellCastStartTime.ToFormattedStringWithMilliseconds() + ", Casted times: " + spellsCastedCount[spell.spellId] + "\r\n";
             }
 
             return outputLine;
