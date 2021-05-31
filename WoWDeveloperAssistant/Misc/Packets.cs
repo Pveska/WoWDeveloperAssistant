@@ -979,36 +979,29 @@ namespace WoWDeveloperAssistant.Misc
                     if (Properties.Settings.Default.CombatMovement && LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true) != "")
                     {
                         string guid = LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true);
-                        bool combatFlagFound = false;
-                        bool isCombatMovement = false;
 
                         List<Packet> updateObjectPackets = updateObjectPacketsDict.Values.Where(x => x.HasCreatureWithGuid(guid)).OrderBy(x => (uint)x.sendTime.TotalSeconds).ToList();
 
-                        foreach (Packet packet in updateObjectPackets)
+                        foreach (Packet packet in updateObjectPacketsDict.Values.Where(x => x.HasCreatureWithGuid(guid)).OrderBy(x => (uint)x.sendTime.TotalSeconds))
                         {
-                            UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
-                            if ((updatePacket.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
+                            UpdateObjectPacket updatePacketFirst = (UpdateObjectPacket)packet.parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
+                            if ((updatePacketFirst.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
                             {
-                                combatFlagFound = true;
+                                for (int i = updateObjectPackets.Count() - 1; i >= 0; i--)
+                                {
+                                    UpdateObjectPacket updatePacketSecond = (UpdateObjectPacket)updateObjectPackets[i].parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
+                                    if ((uint)updatePacketSecond.packetSendTime.TotalSeconds < (uint)movePacket.packetSendTime.TotalSeconds)
+                                    {
+                                        if ((updatePacketSecond.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
+                                            return movePacket;
+                                        else
+                                            break;
+                                    }
+                                }
+
                                 break;
                             }
                         }
-
-                        if (combatFlagFound)
-                        {
-                            for (int i = updateObjectPackets.Count() - 1; i >= 0; i--)
-                            {
-                                UpdateObjectPacket updatePacket = (UpdateObjectPacket)updateObjectPackets[i].parsedPacketsList.First(x => ((UpdateObjectPacket)x).creatureGuid == guid);
-                                if ((uint)updatePacket.packetSendTime.TotalSeconds < (uint)movePacket.packetSendTime.TotalSeconds && (updatePacket.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
-                                {
-                                    isCombatMovement = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (isCombatMovement)
-                            return movePacket;
                     }
 
                     Position lastPosition = new Position();
