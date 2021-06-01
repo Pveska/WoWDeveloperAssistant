@@ -14,7 +14,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             { "IsSummonedBy",      "void IsSummonedBy(Unit* p_Summoner) override"                                                            },
             { "QuestAccept",       "void sQuestAccept(Player* p_Player, Quest const* p_Quest) override"                                      },
             { "QuestReward",       "void sQuestReward(Player* p_Player, Quest const* p_Quest, uint32 /*p_Option*/) override"                 },
-            { "GossipSelect",      "void sGossipSelect(Player* p_Player, uint32 /*p_Sender*/, uint32 p_Action) override"                     },
+            { "GossipSelect",      "void sGossipSelect(Player* p_Player, uint32 /*p_MenuId*/, uint32 p_GossipListId) override"               },
             { "GossipHello",       "void sGossipHello(Player* p_Player) override"                                                            },
             { "MoveInLineOfSight", "void MoveInLineOfSight(Unit* p_Who) override"                                                            },
             { "DoAction",          "void DoAction(int32 const p_Action) override"                                                            },
