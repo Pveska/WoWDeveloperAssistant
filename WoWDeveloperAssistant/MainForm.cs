@@ -606,5 +606,20 @@ namespace WoWDeveloperAssistant
 
             DoublePathsFinder.FindDoublePaths(textBox_DatabaseAdvisor_Output, textBox_DatabaseAdvisor_FindDoublePaths.Text);
         }
+
+        private void getAddonsFromSqlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddonsHelper.OpenFileDialog(openFileDialog);
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                AddonsHelper.GetAddonsFromSql(openFileDialog.FileName, textBox_DatabaseAdvisor_Output);
+            }
+        }
+
+        private void buildUpdatePhaseStringToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
