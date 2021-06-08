@@ -58,7 +58,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                 new Dictionary<string, string>
                 {
                     { "GloseGossipWindow",    "p_Player->PlayerTalkClass->SendCloseGossip();" },
-                    { "GossipOptionIdSwitch", "switch (p_Action)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case 0:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
+                    { "GossipOptionIdSwitch", "switch (p_GossipListId)" + "\r\n" + Utils.AddSpacesCount(8) + "{" + "\r\n" + Utils.AddSpacesCount(12) + "case 0:" + "\r\n" + Utils.AddSpacesCount(12) + "{" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(12) + "}" + "\r\n" + Utils.AddSpacesCount(12) + "default:" + "\r\n" + Utils.AddSpacesCount(16) + "break;" + "\r\n" + Utils.AddSpacesCount(8) + "}" }
                 }
             },
 

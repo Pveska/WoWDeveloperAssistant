@@ -616,10 +616,5 @@ namespace WoWDeveloperAssistant
                 AddonsHelper.GetAddonsFromSql(openFileDialog.FileName, textBox_DatabaseAdvisor_Output);
             }
         }
-
-        private void buildUpdatePhaseStringToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
