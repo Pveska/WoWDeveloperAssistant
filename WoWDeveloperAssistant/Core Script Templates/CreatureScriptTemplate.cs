@@ -146,6 +146,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
                 }
             },
         };
+
         public static void CreateTemplate(uint objectEntry, ListBox hooksListBox, TreeView hookBodiesTreeView)
         {
             string scriptBody = "";
@@ -179,7 +180,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             MessageBox.Show("Template has been successfully builded and copied on your clipboard!");
         }
 
-        private static string NormilizeScriptName(string line)
+        public static string NormilizeScriptName(string line)
         {
             Regex nonWordRegex = new Regex(@"\W+");
             string normilizedString = line;

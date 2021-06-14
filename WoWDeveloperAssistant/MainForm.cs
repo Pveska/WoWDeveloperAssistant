@@ -616,5 +616,10 @@ namespace WoWDeveloperAssistant
                 AddonsHelper.GetAddonsFromSql(openFileDialog.FileName, textBox_DatabaseAdvisor_Output);
             }
         }
+
+        private void createCoreScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            creatureScriptsCreator.CreateCoreScript();
+        }
     }
 }

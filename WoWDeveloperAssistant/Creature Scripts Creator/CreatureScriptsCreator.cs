@@ -8,6 +8,9 @@ using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Data;
+using WoWDeveloperAssistant.Core_Script_Templates;
+using System.Text.RegularExpressions;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
@@ -387,7 +390,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++, i++)
             {
-                Spell spell = (Spell) mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+                Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
 
                 if (spell.isDeathSpell)
                 {
@@ -418,6 +421,227 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.textBox_SqlOutput.Text = SQLtext;
         }
 
+        public void CreateCoreScript()
+        {
+            if (mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount == 0)
+                return;
+
+            Creature creature = creaturesDict[mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem.ToString()];
+
+            string scriptBody = "";
+            string defaultName = "";
+            string scriptName = "";
+
+            string creatureNameQuery = $"SELECT `Name1` FROM `creature_template_wdb` WHERE `entry` = {creature.entry};";
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
+
+            if (creatureNameDs != null)
+            {
+                foreach (DataRow row in creatureNameDs.Tables["table"].Rows)
+                {
+                    defaultName = row[0].ToString();
+                }
+            }
+
+            if (defaultName == "")
+                return;
+
+            scriptName = $"npc_{CreatureScriptTemplate.NormilizeScriptName(defaultName)}_{creature.entry}";
+            scriptBody = $"/// {defaultName} - {creature.entry}" + "\r\n";
+            scriptBody += $"struct {scriptName} : public ScriptedAI" + "\r\n";
+            scriptBody += "{" + "\r\n";
+            scriptBody += $"{AddSpacesCount(4)}explicit {scriptName}(Creature* p_Creature) : ScriptedAI(p_Creature) {{ }}";
+            scriptBody += GetEnumsBody();
+            scriptBody += GetHooksBody(creature);
+            scriptBody += "\r\n" + "};" + "\r\n";
+
+            Clipboard.SetText(scriptBody);
+        }
+
+        private string GetEnumsBody()
+        {
+            string body = "";
+
+            body += $"\r\n\r\n{AddSpacesCount(4)}enum eSpells\r\n{AddSpacesCount(4)}{{";
+
+            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
+            {
+                Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+
+                if (l == 0)
+                {
+                    body += $"\r\n{AddSpacesCount(8)}{NormilizeName(spell.name)} = {spell.spellId}";
+                }
+                else
+                {
+                    body += $",\r\n{AddSpacesCount(8)}{NormilizeName(spell.name)} = {spell.spellId}";
+                }
+            }
+
+            body += $"\r\n{AddSpacesCount(4)}}};";
+
+            bool hasCombatSpells = false;
+
+            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
+            {
+                if (!((Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value).isDeathSpell)
+                {
+                    hasCombatSpells = true;
+                }
+            }
+
+            if (hasCombatSpells)
+            {
+                body += $"\r\n\r\n{AddSpacesCount(4)}enum eEvents\r\n{AddSpacesCount(4)}{{";
+
+                for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
+                {
+                    Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+
+                    if (!spell.isDeathSpell && l == 0)
+                    {
+                        body += $"\r\n{AddSpacesCount(8)}Cast{NormilizeName(spell.name)} = {l + 1}";
+                    }
+                    else if (!spell.isDeathSpell && l > 0)
+                    {
+                        body += $",\r\n{AddSpacesCount(8)}Cast{NormilizeName(spell.name)} = {l + 1}";
+                    }
+                }
+
+                body += $"\r\n{AddSpacesCount(4)}}};";
+            }
+
+            return body;
+        }
+
+        private string GetHooksBody(Creature creature)
+        {
+            string body = "";
+
+            /// Reset
+            body += $"\r\n\r\n{AddSpacesCount(4)}void Reset() override";
+            body += $"\r\n{AddSpacesCount(4)}{{\r\n{AddSpacesCount(8)}events.Reset();\r\n{AddSpacesCount(4)}}}";
+
+            /// EnterCombat
+            body += $"\r\n\r\n{AddSpacesCount(4)}void EnterCombat(Unit* /*p_Victim*/) override";
+            body += $"\r\n{AddSpacesCount(4)}{{";
+
+            if (IsCreatureHasAggroText(creature.entry))
+            {
+                body += $"\r\n{AddSpacesCount(8)}if (roll_chance_i({GetCreatureTexts(creature.entry).Count(x => x.isAggroText) * 10}))\r\n{AddSpacesCount(8)}{{\r\n{AddSpacesCount(12)}Talk(0);\r\n{AddSpacesCount(8)}}}";
+            }
+
+            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
+            {
+                Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+
+                if (!spell.isDeathSpell && l == 0)
+                {
+                    if (IsCreatureHasAggroText(creature.entry))
+                    {
+                        body += $"\r\n\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000}));";
+                    }
+                    else
+                    {
+                        body += $"\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000}));";
+                    }
+                }
+                else if (!spell.isDeathSpell && l > 0)
+                {
+                    body += $"\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000}));";
+                }
+            }
+
+            body += $"\r\n{AddSpacesCount(4)}}}";
+
+            /// JustDied
+            if (IsCreatureHasDeathText(creature.entry))
+            {
+                body += $"\r\n\r\n{AddSpacesCount(4)}void JustDied(Unit* /*p_Killer*/) override";
+                body += $"\r\n{AddSpacesCount(4)}{{\r\n{AddSpacesCount(8)}if (roll_chance_i({GetCreatureTexts(creature.entry).Count(x => x.isDeathText) * 10}))\r\n{AddSpacesCount(8)}{{\r\n{AddSpacesCount(12)}Talk(1);\r\n{AddSpacesCount(8)}}}";
+                body += $"\r\n{AddSpacesCount(4)}}}";
+            }
+
+            /// UpdateAI
+            body += $"\r\n\r\n{AddSpacesCount(4)}void UpdateAI(uint32 const p_Diff) override";
+            body += $"\r\n{AddSpacesCount(4)}{{\r\n{AddSpacesCount(8)}if (!UpdateVictim())\r\n{AddSpacesCount(12)}return;\r\n\r\n{AddSpacesCount(8)}events.Update(p_Diff);\r\n\r\n{AddSpacesCount(8)}if (me->HasUnitState(UNIT_STATE_CASTING))\r\n{AddSpacesCount(12)}return;";
+            body += $"\r\n\r\n{AddSpacesCount(8)}switch (events.ExecuteEvent())\r\n{AddSpacesCount(8)}{{";
+
+            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
+            {
+                Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+
+                if (!spell.isDeathSpell && l + 1 < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount)
+                {
+                    body += $"\r\n{AddSpacesCount(12)}case eEvents::Cast{NormilizeName(spell.name)}:\r\n{AddSpacesCount(12)}{{\r\n{AddSpacesCount(16)}" + (spell.GetTargetType() == 1 ? "DoCast" : "DoCastVictim") + $"(eSpells::{NormilizeName(spell.name)});";
+
+                    if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds))
+                    {
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds)});";
+                    }
+                    else if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == 0 && Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) == 0)
+                    {
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, 0);";
+                    }
+                    else
+                    {
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000}));";
+                    }
+
+                    body += $"\r\n{AddSpacesCount(16)}break;";
+                    body += $"\r\n{AddSpacesCount(12)}}}";
+                }
+                else if (!spell.isDeathSpell && l + 1 >= mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount)
+                {
+                    body += $"\r\n{AddSpacesCount(12)}case eEvents::Cast{NormilizeName(spell.name)}:\r\n{AddSpacesCount(12)}{{\r\n{AddSpacesCount(16)}" + (spell.GetTargetType() == 1 ? "DoCast" : "DoCastVictim") + $"(eSpells::{NormilizeName(spell.name)});";
+
+                    if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds))
+                    {
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds)});";
+                    }
+                    else if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == 0 && Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) == 0)
+                    {
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, 0);";
+                    }
+                    else
+                    {
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000}));";
+                    }
+
+                    body += $"\r\n{AddSpacesCount(16)}break;";
+                    body += $"\r\n{AddSpacesCount(12)}}}";
+                    body += $"\r\n{AddSpacesCount(12)}default:\r\n{AddSpacesCount(16)}break;";
+                }
+            }
+
+            body += $"\r\n{AddSpacesCount(8)}}}";
+            body += $"\r\n\r\n{AddSpacesCount(8)}DoMeleeAttackIfReady();";
+            body += $"\r\n{AddSpacesCount(4)}}}";
+
+            return body;
+        }
+
+        private static string NormilizeName(string line)
+        {
+            Regex nonWordRegex = new Regex(@"\W+");
+            string normilizedString = line;
+
+            normilizedString = normilizedString.Replace(" ", "");
+
+            foreach (char character in normilizedString)
+            {
+                if (character == ' ')
+                    continue;
+
+                if (nonWordRegex.IsMatch(character.ToString()))
+                {
+                    normilizedString = normilizedString.Replace(nonWordRegex.Match(character.ToString()).ToString(), "");
+                }
+            }
+
+            return normilizedString;
+        }
+
         public static uint GetCreatureEntryByGuid(string creatureGuid)
         {
             if (creaturesDict.ContainsKey(creatureGuid))
@@ -426,7 +650,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             return 0;
         }
 
-        public static bool IsCreatureHasAggroText(uint creatureEntry)
+        private static bool IsCreatureHasAggroText(uint creatureEntry)
         {
             if (creatureTextsDict.ContainsKey(creatureEntry))
             {
@@ -436,7 +660,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             return false;
         }
 
-        public static bool IsCreatureHasDeathText(uint creatureEntry)
+        private static bool IsCreatureHasDeathText(uint creatureEntry)
         {
             if (creatureTextsDict.ContainsKey(creatureEntry))
             {
@@ -444,6 +668,16 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             }
 
             return false;
+        }
+
+        private static List<CreatureText> GetCreatureTexts(uint creatureEntry)
+        {
+            if (creatureTextsDict.ContainsKey(creatureEntry))
+            {
+                return creatureTextsDict[creatureEntry];
+            }
+
+            return null;
         }
 
         public void OpenFileDialog()

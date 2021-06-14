@@ -196,6 +196,7 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.createCoreScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -414,26 +415,27 @@
             this.contextMenuStrip_CreatureScriptsCreator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cutToolStripMenuItem,
             this.toolStripSeparator,
-            this.createSQLToolStripMenuItem});
+            this.createSQLToolStripMenuItem,
+            this.createCoreScriptToolStripMenuItem});
             this.contextMenuStrip_CreatureScriptsCreator.Name = "contextMenuStrip1";
-            this.contextMenuStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(172, 74);
+            this.contextMenuStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(222, 106);
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(171, 32);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(240, 32);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(168, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(237, 6);
             // 
             // createSQLToolStripMenuItem
             // 
             this.createSQLToolStripMenuItem.Name = "createSQLToolStripMenuItem";
-            this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(171, 32);
+            this.createSQLToolStripMenuItem.Size = new System.Drawing.Size(240, 32);
             this.createSQLToolStripMenuItem.Text = "Create SQL";
             this.createSQLToolStripMenuItem.Click += new System.EventHandler(this.createSQLToolStripMenuItem_Click);
             // 
@@ -460,7 +462,7 @@
             this.toolStripSeparator_CSC});
             this.toolStrip_CreatureScriptsCreator.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_CreatureScriptsCreator.Name = "toolStrip_CreatureScriptsCreator";
-            this.toolStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(2034, 34);
+            this.toolStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(2034, 38);
             this.toolStrip_CreatureScriptsCreator.TabIndex = 1;
             this.toolStrip_CreatureScriptsCreator.Text = "toolStrip_CreatureScriptsCreator";
             // 
@@ -469,7 +471,7 @@
             this.toolStripButton_CSC_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_CSC_ImportSniff.Image")));
             this.toolStripButton_CSC_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_ImportSniff.Name = "toolStripButton_CSC_ImportSniff";
-            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(128, 29);
+            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(128, 33);
             this.toolStripButton_CSC_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_CSC_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
             // 
@@ -880,7 +882,7 @@
             this.toolStripButton_WaypointsCreator_LoadSniff});
             this.toolStrip_WaypointsCreator.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_WaypointsCreator.Name = "toolStrip_WaypointsCreator";
-            this.toolStrip_WaypointsCreator.Size = new System.Drawing.Size(2034, 38);
+            this.toolStrip_WaypointsCreator.Size = new System.Drawing.Size(2034, 34);
             this.toolStrip_WaypointsCreator.TabIndex = 24;
             this.toolStrip_WaypointsCreator.Text = "toolStrip_WaypointsCreator";
             // 
@@ -1809,6 +1811,13 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
+            // createCoreScriptToolStripMenuItem
+            // 
+            this.createCoreScriptToolStripMenuItem.Name = "createCoreScriptToolStripMenuItem";
+            this.createCoreScriptToolStripMenuItem.Size = new System.Drawing.Size(240, 32);
+            this.createCoreScriptToolStripMenuItem.Text = "Create core script";
+            this.createCoreScriptToolStripMenuItem.Click += new System.EventHandler(this.createCoreScriptToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -2001,6 +2010,7 @@
         private System.Windows.Forms.TextBox textBox_DatabaseAdvisor_FindDoublePaths;
         private System.Windows.Forms.Label label_DatabaseAdvisor_FindDoublePaths;
         private System.Windows.Forms.ToolStripMenuItem getAddonsFromSqlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createCoreScriptToolStripMenuItem;
     }
 }
 
