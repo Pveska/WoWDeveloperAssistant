@@ -571,7 +571,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                     if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds))
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds)});";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000});";
                     }
                     else if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == 0 && Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) == 0)
                     {
@@ -591,7 +591,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                     if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds))
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds)});";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000});";
                     }
                     else if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == 0 && Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) == 0)
                     {
