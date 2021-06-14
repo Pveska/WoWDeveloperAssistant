@@ -218,20 +218,19 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                         {
                             if (creature.Value.entry == chatPacket.creatureEntry)
                             {
+                                CreatureText text = new CreatureText(chatPacket, true);
+
                                 if (Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
                                 Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
                                 Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                                 {
                                     lock (creatureTextsDict)
                                     {
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
                                         {
-                                            if (!IsCreatureHasAggroText(chatPacket.creatureEntry))
-                                            {
-                                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                            }
+                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
                                         }
-                                        else
+                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
                                         {
                                             creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
                                             creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
@@ -243,19 +242,14 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                                 Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
                                 Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                                 {
-                                    if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                    lock (creatureTextsDict)
                                     {
-                                        if (!IsCreatureHasDeathText(chatPacket.creatureEntry))
+
+                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
                                         {
-                                            lock (creatureTextsDict)
-                                            {
-                                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                            }
+                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
                                         }
-                                    }
-                                    else
-                                    {
-                                        lock (creatureTextsDict)
+                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
                                         {
                                             creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
                                             creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
