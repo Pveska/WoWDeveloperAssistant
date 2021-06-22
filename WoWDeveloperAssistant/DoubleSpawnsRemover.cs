@@ -408,7 +408,11 @@ namespace WoWDeveloperAssistant
             else
             {
                 outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("DELETE FROM `gameobject_addon`"))));
-                outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("INSERT INTO `gameobject_addon`"))));
+
+                if (outputLines.Contains("INSERT INTO `gameobject_addon`"))
+                {
+                    outputLines.RemoveAt(outputLines.IndexOf(outputLines.First(x => x.Contains("INSERT INTO `gameobject_addon`"))));
+                }
             }
 
             labelCreatures.Text = " Creatures removed using LinkedId: " + creaturesRemovedUsingLinkedIdCount + ", using PositionCompare: " + creaturesRemovedUsingPositionCompareCount + ", Total removed count: " + (creaturesRemovedUsingLinkedIdCount + creaturesRemovedUsingPositionCompareCount) + ", Addons removed: " + creatureAddonsRemoved;
