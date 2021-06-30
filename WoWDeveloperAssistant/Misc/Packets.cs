@@ -574,6 +574,11 @@ namespace WoWDeveloperAssistant.Misc
                                 updatePacket.jumpInfo.jumpPos = updatePacket.waypoints.Last().movePosition;
                             }
 
+                            if (MonsterMovePacket.GetFlyingFromLine(lines[index]))
+                            {
+                                updatePacket.hasDisableGravity = true;
+                            }
+
                             index++;
                         }
                         while (IsLineValidForObjectParse(lines[index]));
