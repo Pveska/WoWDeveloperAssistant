@@ -1033,6 +1033,7 @@
             this.textBox_DatabaseAdvisor_Output.ContextMenuStrip = this.contextMenuStrip_DatabaseAdvisor;
             this.textBox_DatabaseAdvisor_Output.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.textBox_DatabaseAdvisor_Output.Location = new System.Drawing.Point(189, 3);
+            this.textBox_DatabaseAdvisor_Output.MaxLength = 1000000;
             this.textBox_DatabaseAdvisor_Output.Multiline = true;
             this.textBox_DatabaseAdvisor_Output.Name = "textBox_DatabaseAdvisor_Output";
             this.textBox_DatabaseAdvisor_Output.ScrollBars = System.Windows.Forms.ScrollBars.Both;
