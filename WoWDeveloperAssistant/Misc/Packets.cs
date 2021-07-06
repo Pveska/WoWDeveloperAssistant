@@ -19,9 +19,10 @@ namespace WoWDeveloperAssistant.Misc
             public TimeSpan sendTime;
             public long index;
             public List<object> parsedPacketsList;
+            public long number;
 
-            public Packet(PacketTypes type, TimeSpan time, long index, List<object> parsedList)
-            { packetType = type; sendTime = time; this.index = index; parsedPacketsList = parsedList; }
+            public Packet(PacketTypes type, TimeSpan time, long index, List<object> parsedList, long number)
+            { packetType = type; sendTime = time; this.index = index; parsedPacketsList = parsedList; this.number = number; }
 
             public enum PacketTypes : byte
             {
@@ -522,7 +523,7 @@ namespace WoWDeveloperAssistant.Misc
                 return 0.0f;
             }
 
-            public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion)
+            public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                 List<UpdateObjectPacket> updatePacketsList = new List<UpdateObjectPacket>();
@@ -541,7 +542,9 @@ namespace WoWDeveloperAssistant.Misc
 
                                 do
                                 {
-                                    updatePacket.waypoints.Add(new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, updatePacket.hasDisableGravity ? MonsterMovePacket.MoveType.MOVE_FLIGHT : MonsterMovePacket.MoveType.MOVE_MAX));
+                                    Waypoint wp = new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, updatePacket.hasDisableGravity ? MonsterMovePacket.MoveType.MOVE_FLIGHT : MonsterMovePacket.MoveType.MOVE_MAX);
+                                    wp.packetNumber = packetNumber;
+                                    updatePacket.waypoints.Add(wp);
                                     pointId++;
                                     index++;
                                 }
@@ -861,7 +864,7 @@ namespace WoWDeveloperAssistant.Misc
                 return GetWaypointsDistance(waypoints, startPosition) / moveTime * 1000;
             }
 
-            public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion)
+            public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
             {
                 MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
 
@@ -897,7 +900,9 @@ namespace WoWDeveloperAssistant.Misc
                                 {
                                     if (GetPointPositionFromLine(lines[index]).IsValid())
                                     {
-                                        movePacket.waypoints.Add(new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                        Waypoint wp = new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = packetNumber;
+                                        movePacket.waypoints.Add(wp);
                                         pointId++;
                                     }
 
@@ -916,7 +921,9 @@ namespace WoWDeveloperAssistant.Misc
                                 {
                                     if (GetWayPointPositionFromLine(lines[index]).IsValid())
                                     {
-                                        movePacket.waypoints.Add(new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                        Waypoint wp = new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = packetNumber;
+                                        movePacket.waypoints.Add(wp);
                                         pointId++;
                                     }
 
@@ -939,7 +946,9 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                                 else
                                 {
-                                    movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                    Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                    wp.packetNumber = packetNumber;
+                                    movePacket.waypoints.Add(wp);
                                 }
                             }
 
@@ -982,7 +991,7 @@ namespace WoWDeveloperAssistant.Misc
                 return movePacket;
             }
 
-            public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, SortedDictionary<long, Packet> updateObjectPacketsDict)
+            public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, SortedDictionary<long, Packet> updateObjectPacketsDict, long packetNumber)
             {
                 MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
 
@@ -1053,7 +1062,9 @@ namespace WoWDeveloperAssistant.Misc
                                 {
                                     if (GetPointPositionFromLine(lines[index]).IsValid())
                                     {
-                                        movePacket.waypoints.Add(new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                        Waypoint wp = new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = packetNumber;
+                                        movePacket.waypoints.Add(wp);
                                         pointId++;
                                     }
 
@@ -1072,7 +1083,9 @@ namespace WoWDeveloperAssistant.Misc
                                 {
                                     if (GetWayPointPositionFromLine(lines[index]).IsValid())
                                     {
-                                        movePacket.waypoints.Add(new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                        Waypoint wp = new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = packetNumber;
+                                        movePacket.waypoints.Add(wp);
                                         pointId++;
                                     }
 
@@ -1095,7 +1108,9 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                                 else
                                 {
-                                    movePacket.waypoints.Add(new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX));
+                                    Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                    wp.packetNumber = packetNumber;
+                                    movePacket.waypoints.Add(wp);
                                 }
                             }
 

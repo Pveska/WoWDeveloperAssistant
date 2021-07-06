@@ -136,7 +136,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 if (value.Value == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
                 {
-                    Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion).AsEnumerable(), packet =>
+                    Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion, 0).AsEnumerable(), packet =>
                     {
                         lock (creaturesDict)
                         {
@@ -270,7 +270,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 {
                     case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
                     {
-                        MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion);
+                        MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion, 0);
                         if (movePacket.creatureGuid == "")
                             return;
 

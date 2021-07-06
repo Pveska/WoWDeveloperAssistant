@@ -190,5 +190,14 @@ namespace WoWDeveloperAssistant.Misc
 
             return "";
         }
+
+        public static long GetPacketNumberFromLine(string line)
+        {
+            Regex numberRegex = new Regex(@"Number:{1}\s{1}\w+");
+            if (numberRegex.IsMatch(line))
+                return Convert.ToInt64(numberRegex.Match(line).ToString().Replace("Number: ", ""));
+
+            return 0;
+        }
     }
 }
