@@ -201,9 +201,9 @@ namespace WoWDeveloperAssistant.Misc
                 return line.Contains("CasterGUID: TypeName: Creature;") || line.Contains("CasterGUID: TypeName: Vehicle;");
             }
 
-            public static bool IsPlayerSpellCastLine(string line)
+            public static bool IsPlayerSpellCastLine(string firstLine, string secondLine)
             {
-                return line.Contains("CasterGUID: TypeName: Player;");
+                return firstLine.Contains("CasterGUID: TypeName: Player;") || secondLine.Contains("CasterUnit: TypeName: Player;");
             }
 
             public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion, bool playerPacket = false)
@@ -212,12 +212,17 @@ namespace WoWDeveloperAssistant.Misc
 
                 if (playerPacket)
                 {
-                    if (IsPlayerSpellCastLine(lines[index + 1]))
+                    if (IsPlayerSpellCastLine(lines[index + 1], lines[index + 2]))
                     {
+                        string casterGuid = "";
+
                         do
                         {
-                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true) != "")
-                                spellPacket.casterGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true);
+                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true) != "" && casterGuid == "")
+                                casterGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, casterGuid: true);
+
+                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, casterUnit: true) != "" && casterGuid == "")
+                                casterGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, casterUnit: true);
 
                             if (GetSpellIdFromLine(lines[index]) != 0)
                                 spellPacket.spellId = GetSpellIdFromLine(lines[index]);
@@ -231,6 +236,8 @@ namespace WoWDeveloperAssistant.Misc
                             index++;
                         }
                         while (lines[index] != "");
+
+                        spellPacket.casterGuid = casterGuid;
                     }
                 }
                 else
