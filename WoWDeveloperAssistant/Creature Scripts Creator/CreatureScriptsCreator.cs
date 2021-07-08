@@ -78,285 +78,295 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = true;
         }
 
-        public bool GetDataFromSniffFile(string fileName)
+        public bool GetDataFromSniffFile(string[] fileNames)
         {
-            mainForm.SetCurrentStatus("Getting lines...");
-
-            var lines = File.ReadAllLines(fileName);
-            Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
-
-            BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
-            if (buildVersion == BuildVersions.BUILD_UNKNOWN)
+            foreach (string fileName in fileNames)
             {
-                MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                return false;
-            }
+                mainForm.SetCurrentStatus("Getting lines...");
 
-            creaturesDict.Clear();
+                var lines = File.ReadAllLines(fileName);
+                Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
 
-            mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
+                BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
+                if (buildVersion == BuildVersions.BUILD_UNKNOWN)
+                {
+                    MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    return false;
+                }
 
-            Parallel.For(0, lines.Length, index =>
-            {
-                if (lines[index].Contains("SMSG_UPDATE_OBJECT") && !packetIndexes.ContainsKey(index))
+                if (fileNames.Length == 1)
                 {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
+                    creaturesDict.Clear();
                 }
-                else if (lines[index].Contains("SMSG_AI_REACTION") && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_AI_REACTION);
-                }
-                else if (lines[index].Contains("SMSG_SPELL_START") && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
-                }
-                else if (lines[index].Contains("SMSG_CHAT") && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
-                }
-                else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_ON_MONSTER_MOVE);
-                }
-                else if (lines[index].Contains("SMSG_ATTACK_STOP") && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_ATTACK_STOP);
-                }
-            });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
+                mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
 
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                if (value.Value == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
+                Parallel.For(0, lines.Length, index =>
                 {
-                    Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion, 0).AsEnumerable(), packet =>
+                    if (lines[index].Contains("SMSG_UPDATE_OBJECT") && !packetIndexes.ContainsKey(index))
                     {
-                        lock (creaturesDict)
-                        {
-                            if (!creaturesDict.ContainsKey(packet.creatureGuid))
-                            {
-                                creaturesDict.Add(packet.creatureGuid, new Creature(packet));
-                            }
-                            else
-                            {
-                                creaturesDict[packet.creatureGuid].UpdateCreature(packet);
-                            }
-                        }
-                    });
-                }
-            });
-
-            mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
-
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                if (value.Value == Packet.PacketTypes.SMSG_SPELL_START)
-                {
-                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, value.Key, buildVersion);
-                    if (spellPacket.spellId == 0)
-                        return;
-
-                    lock (creaturesDict)
-                    {
-                        if (creaturesDict.ContainsKey(spellPacket.casterGuid))
-                        {
-                            if (!creaturesDict[spellPacket.casterGuid].castedSpells.ContainsKey(spellPacket.spellId))
-                                creaturesDict[spellPacket.casterGuid].castedSpells.Add(spellPacket.spellId, new Spell(spellPacket));
-                            else
-                                creaturesDict[spellPacket.casterGuid].UpdateSpells(spellPacket);
-                        }
+                        lock (packetIndexes)
+                            packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
                     }
-                }
-            });
-
-            mainForm.SetCurrentStatus("Parsing SMSG_AI_REACTION packets...");
-
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                if (value.Value == Packet.PacketTypes.SMSG_AI_REACTION)
-                {
-                    AIReactionPacket reactionPacket = AIReactionPacket.ParseAIReactionPacket(lines, value.Key, buildVersion);
-                    if (reactionPacket.creatureGuid == "")
-                        return;
-
-                    lock (creaturesDict)
+                    else if (lines[index].Contains("SMSG_AI_REACTION") && !packetIndexes.ContainsKey(index))
                     {
-                        if (creaturesDict.ContainsKey(reactionPacket.creatureGuid))
-                        {
-                            if (creaturesDict[reactionPacket.creatureGuid].combatStartTime == TimeSpan.Zero ||
-                                creaturesDict[reactionPacket.creatureGuid].combatStartTime < reactionPacket.packetSendTime)
-                            {
-                                creaturesDict[reactionPacket.creatureGuid].combatStartTime = reactionPacket.packetSendTime;
-                            }
-
-                            creaturesDict[reactionPacket.creatureGuid].UpdateCombatSpells(reactionPacket);
-                        }
+                        lock (packetIndexes)
+                            packetIndexes.Add(index, Packet.PacketTypes.SMSG_AI_REACTION);
                     }
-                }
-            });
-
-            mainForm.SetCurrentStatus("Parsing SMSG_CHAT packets...");
-
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                if (value.Value == Packet.PacketTypes.SMSG_CHAT)
-                {
-                    ChatPacket chatPacket = ChatPacket.ParseChatPacket(lines, value.Key, buildVersion);
-                    if (chatPacket.creatureGuid == "")
-                        return;
-
-                    lock (creaturesDict)
+                    else if (lines[index].Contains("SMSG_SPELL_START") && !packetIndexes.ContainsKey(index))
                     {
-                        Parallel.ForEach(creaturesDict, creature =>
-                        {
-                            if (creature.Value.entry == chatPacket.creatureEntry)
-                            {
-                                CreatureText text = new CreatureText(chatPacket, true);
+                        lock (packetIndexes)
+                            packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
+                    }
+                    else if (lines[index].Contains("SMSG_CHAT") && !packetIndexes.ContainsKey(index))
+                    {
+                        lock (packetIndexes)
+                            packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
+                    }
+                    else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") && !packetIndexes.ContainsKey(index))
+                    {
+                        lock (packetIndexes)
+                            packetIndexes.Add(index, Packet.PacketTypes.SMSG_ON_MONSTER_MOVE);
+                    }
+                    else if (lines[index].Contains("SMSG_ATTACK_STOP") && !packetIndexes.ContainsKey(index))
+                    {
+                        lock (packetIndexes)
+                            packetIndexes.Add(index, Packet.PacketTypes.SMSG_ATTACK_STOP);
+                    }
+                });
 
-                                if (Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
+
+                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                {
+                    if (value.Value == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
+                    {
+                        Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion, 0).AsEnumerable(), packet =>
+                        {
+                            lock (creaturesDict)
+                            {
+                                if (!creaturesDict.ContainsKey(packet.creatureGuid))
                                 {
-                                    lock (creatureTextsDict)
-                                    {
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
-                                        {
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                        }
-                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
-                                        {
-                                            creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                        }
-                                    }
+                                    creaturesDict.Add(packet.creatureGuid, new Creature(packet));
                                 }
-
-                                if (Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                                else
                                 {
-                                    lock (creatureTextsDict)
-                                    {
-
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
-                                        {
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                        }
-                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
-                                        {
-                                            creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                        }
-                                    }
+                                    creaturesDict[packet.creatureGuid].UpdateCreature(packet);
                                 }
                             }
                         });
                     }
-                }
-            });
+                });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE and SMSG_ATTACK_STOP packets...");
+                mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
 
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                switch (value.Value)
+                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
                 {
-                    case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
+                    if (value.Value == Packet.PacketTypes.SMSG_SPELL_START)
                     {
-                        MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion, 0);
-                        if (movePacket.creatureGuid == "")
+                        SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, value.Key, buildVersion);
+                        if (spellPacket.spellId == 0)
                             return;
 
                         lock (creaturesDict)
                         {
-                            if (creaturesDict.ContainsKey(movePacket.creatureGuid))
+                            if (creaturesDict.ContainsKey(spellPacket.casterGuid))
                             {
-                                creaturesDict[movePacket.creatureGuid].UpdateSpellsByMovementPacket(movePacket);
+                                if (!creaturesDict[spellPacket.casterGuid].castedSpells.ContainsKey(spellPacket.spellId))
+                                    creaturesDict[spellPacket.casterGuid].castedSpells.Add(spellPacket.spellId, new Spell(spellPacket));
+                                else
+                                    creaturesDict[spellPacket.casterGuid].UpdateSpells(spellPacket);
                             }
                         }
-
-                        break;
                     }
-                    case Packet.PacketTypes.SMSG_ATTACK_STOP:
+                });
+
+                mainForm.SetCurrentStatus("Parsing SMSG_AI_REACTION packets...");
+
+                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                {
+                    if (value.Value == Packet.PacketTypes.SMSG_AI_REACTION)
                     {
-                        AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
-                        if (attackStopPacket.creatureGuid == "")
+                        AIReactionPacket reactionPacket = AIReactionPacket.ParseAIReactionPacket(lines, value.Key, buildVersion);
+                        if (reactionPacket.creatureGuid == "")
                             return;
 
                         lock (creaturesDict)
                         {
-                            if (creaturesDict.ContainsKey(attackStopPacket.creatureGuid))
+                            if (creaturesDict.ContainsKey(reactionPacket.creatureGuid))
                             {
-                                creaturesDict[attackStopPacket.creatureGuid].UpdateSpellsByAttackStopPacket(attackStopPacket);
-
-                                if (attackStopPacket.nowDead)
+                                if (creaturesDict[reactionPacket.creatureGuid].combatStartTime == TimeSpan.Zero ||
+                                    creaturesDict[reactionPacket.creatureGuid].combatStartTime < reactionPacket.packetSendTime)
                                 {
-                                    creaturesDict[attackStopPacket.creatureGuid].deathTime = attackStopPacket.packetSendTime;
+                                    creaturesDict[reactionPacket.creatureGuid].combatStartTime = reactionPacket.packetSendTime;
+                                }
+
+                                creaturesDict[reactionPacket.creatureGuid].UpdateCombatSpells(reactionPacket);
+                            }
+                        }
+                    }
+                });
+
+                mainForm.SetCurrentStatus("Parsing SMSG_CHAT packets...");
+
+                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                {
+                    if (value.Value == Packet.PacketTypes.SMSG_CHAT)
+                    {
+                        ChatPacket chatPacket = ChatPacket.ParseChatPacket(lines, value.Key, buildVersion);
+                        if (chatPacket.creatureGuid == "")
+                            return;
+
+                        lock (creaturesDict)
+                        {
+                            Parallel.ForEach(creaturesDict, creature =>
+                            {
+                                if (creature.Value.entry == chatPacket.creatureEntry)
+                                {
+                                    CreatureText text = new CreatureText(chatPacket, true);
+
+                                    if (Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                                    Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                                    Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                                    {
+                                        lock (creatureTextsDict)
+                                        {
+                                            if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
+                                            {
+                                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                                            }
+                                            else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                            {
+                                                creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                                            }
+                                        }
+                                    }
+
+                                    if (Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                                    Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                                    Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                                    {
+                                        lock (creatureTextsDict)
+                                        {
+
+                                            if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
+                                            {
+                                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                                            }
+                                            else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                                            {
+                                                creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE and SMSG_ATTACK_STOP packets...");
+
+                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                {
+                    switch (value.Value)
+                    {
+                        case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
+                        {
+                            MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion, 0);
+                            if (movePacket.creatureGuid == "")
+                                return;
+
+                            lock (creaturesDict)
+                            {
+                                if (creaturesDict.ContainsKey(movePacket.creatureGuid))
+                                {
+                                    creaturesDict[movePacket.creatureGuid].UpdateSpellsByMovementPacket(movePacket);
                                 }
                             }
-                        }
 
-                        break;
+                            break;
+                        }
+                        case Packet.PacketTypes.SMSG_ATTACK_STOP:
+                        {
+                            AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
+                            if (attackStopPacket.creatureGuid == "")
+                                return;
+
+                            lock (creaturesDict)
+                            {
+                                if (creaturesDict.ContainsKey(attackStopPacket.creatureGuid))
+                                {
+                                    creaturesDict[attackStopPacket.creatureGuid].UpdateSpellsByAttackStopPacket(attackStopPacket);
+
+                                    if (attackStopPacket.nowDead)
+                                    {
+                                        creaturesDict[attackStopPacket.creatureGuid].deathTime = attackStopPacket.packetSendTime;
+                                    }
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                });
+
+                Parallel.ForEach(creaturesDict, creature =>
+                {
+                    creature.Value.RemoveNonCombatCastTimes();
+                });
+
+                Parallel.ForEach(creaturesDict, creature =>
+                {
+                    creature.Value.CreateCombatCastTimings();
+                });
+
+                Parallel.ForEach(creaturesDict, creature =>
+                {
+                    creature.Value.CreateDeathSpells();
+                });
+
+                if (mainForm.checkBox_CreatureScriptsCreator_CreateDataFile.Checked)
+                {
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.dat"), FileMode.OpenOrCreate))
+                    {
+                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
+                        {
+                            { 0, creaturesDict },
+                            { 1, creatureTextsDict }
+                        };
+
+                        binaryFormatter.Serialize(fileStream, dictToSerialize);
                     }
                 }
-            });
 
-            Parallel.ForEach(creaturesDict, creature =>
-            {
-                creature.Value.RemoveNonCombatCastTimes();
-            });
-
-            Parallel.ForEach(creaturesDict, creature =>
-            {
-                creature.Value.CreateCombatCastTimings();
-            });
-
-            Parallel.ForEach(creaturesDict, creature =>
-            {
-                creature.Value.CreateDeathSpells();
-            });
-
-            if (mainForm.checkBox_CreatureScriptsCreator_CreateDataFile.Checked)
-            {
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-
-                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.dat"), FileMode.OpenOrCreate))
-                {
-                    Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
-                    {
-                        { 0, creaturesDict },
-                        { 1, creatureTextsDict }
-                    };
-
-                    binaryFormatter.Serialize(fileStream, dictToSerialize);
-                }
+                mainForm.SetCurrentStatus("");
             }
 
-            mainForm.SetCurrentStatus("");
             return true;
         }
 
-        public bool GetPacketsFromDataFile(string fileName)
+        public bool GetPacketsFromDataFile(string[] fileNames)
         {
-            mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
-
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
-
-            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+            foreach (string fileName in fileNames)
             {
-                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
-            }
+                mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
-            creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
-            creatureTextsDict = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
+
+                using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+                {
+                    dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
+                }
+
+                creaturesDict.Union((Dictionary<string, Creature>)dictFromSerialize[0]);
+                creatureTextsDict.Union((Dictionary<uint, List<CreatureText>>)dictFromSerialize[1]);
+            }
 
             return true;
         }
@@ -680,7 +690,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.openFileDialog.Filter = "Parsed Sniff or Data File (*.txt;*.dat)|*.txt;*.dat";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
-            mainForm.openFileDialog.Multiselect = false;
+            mainForm.openFileDialog.Multiselect = true;
             mainForm.openFileDialog.CheckFileExists = true;
         }
 

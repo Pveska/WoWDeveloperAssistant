@@ -118,7 +118,7 @@ namespace WoWDeveloperAssistant
                 if (openFileDialog.FileName.Contains("txt"))
                 {
                     if (IsTxtFileValidForParse(openFileDialog.FileName) &&
-                    creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileName))
+                    creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileNames))
                     {
                         creatureScriptsCreator.ImportSuccessful();
                     }
@@ -132,7 +132,7 @@ namespace WoWDeveloperAssistant
                 }
                 else if (openFileDialog.FileName.Contains("dat"))
                 {
-                    if (creatureScriptsCreator.GetPacketsFromDataFile(openFileDialog.FileName))
+                    if (creatureScriptsCreator.GetPacketsFromDataFile(openFileDialog.FileNames))
                     {
                         creatureScriptsCreator.ImportSuccessful();
                     }
