@@ -364,8 +364,16 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
                 }
 
-                creaturesDict.Union((Dictionary<string, Creature>)dictFromSerialize[0]);
-                creatureTextsDict.Union((Dictionary<uint, List<CreatureText>>)dictFromSerialize[1]);
+                if (fileNames.Length > 1)
+                {
+                    creaturesDict.Union((Dictionary<string, Creature>)dictFromSerialize[0]);
+                    creatureTextsDict.Union((Dictionary<uint, List<CreatureText>>)dictFromSerialize[1]);
+                }
+                else
+                {
+                    creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
+                    creatureTextsDict = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
+                }
             }
 
             return true;
