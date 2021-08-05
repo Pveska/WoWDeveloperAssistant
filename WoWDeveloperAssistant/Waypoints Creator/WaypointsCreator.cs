@@ -640,18 +640,37 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string linkedId = creaturesDict[guid].GetLinkedId();
             bool alreadyHaveWaypointsOrRelatedToFormation = false;
 
-            string formationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` = '" + linkedId + "' OR " + "`memberLinkedId` = '" + linkedId + "';";
-            var creatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(formationSqlQuery) : null;
+            string oldFormationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` = '" + linkedId + "' OR " + "`memberLinkedId` = '" + linkedId + "';";
+            var oldCreatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(oldFormationSqlQuery) : null;
 
-            if (creatureFormationDs != null && creatureFormationDs.Tables["table"].Rows.Count > 0)
+            if (oldCreatureFormationDs != null && oldCreatureFormationDs.Tables["table"].Rows.Count > 0)
             {
-                foreach (DataRow row in creatureFormationDs.Tables["table"].Rows)
+                foreach (DataRow row in oldCreatureFormationDs.Tables["table"].Rows)
                 {
                     if (Convert.ToString(row.ItemArray[0]) == linkedId ||
                         Convert.ToString(row.ItemArray[1]) == linkedId)
                     {
                         alreadyHaveWaypointsOrRelatedToFormation = true;
                         break;
+                    }
+                }
+            }
+
+            if (!alreadyHaveWaypointsOrRelatedToFormation)
+            {
+                string newFormationSqlQuery = "SELECT `LeaderLinkedId`, `MemberLinkedId` FROM `creature_group_members` WHERE `LeaderLinkedId` = '" + linkedId + "' OR " + "`MemberLinkedId` = '" + linkedId + "';";
+                var newCreatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(newFormationSqlQuery) : null;
+
+                if (newCreatureFormationDs != null && newCreatureFormationDs.Tables["table"].Rows.Count > 0)
+                {
+                    foreach (DataRow row in newCreatureFormationDs.Tables["table"].Rows)
+                    {
+                        if (Convert.ToString(row.ItemArray[0]) == linkedId ||
+                            Convert.ToString(row.ItemArray[1]) == linkedId)
+                        {
+                            alreadyHaveWaypointsOrRelatedToFormation = true;
+                            break;
+                        }
                     }
                 }
             }
