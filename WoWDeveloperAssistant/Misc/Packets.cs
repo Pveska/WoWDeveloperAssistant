@@ -1031,7 +1031,7 @@ namespace WoWDeveloperAssistant.Misc
                     do
                     {
                         if (Properties.Settings.Default.CombatMovement && (lines[index].Contains("FacingGUID: TypeName: Player; Full:") ||
-                            lines[index].Contains("FacingGUID: TypeName: Creature; Full:")))
+                            lines[index].Contains("FacingGUID: TypeName: Creature; Full:") || lines[index].Contains("FacingGUID: TypeName: Vehicle; Full:")))
                         {
                             movePacket.creatureGuid = "";
                             break;
