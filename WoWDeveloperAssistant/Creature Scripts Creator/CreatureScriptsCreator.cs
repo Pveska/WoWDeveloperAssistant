@@ -103,32 +103,34 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                 Parallel.For(0, lines.Length, index =>
                 {
-                    if (lines[index].Contains("SMSG_UPDATE_OBJECT") && !packetIndexes.ContainsKey(index))
+                    Packet.PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+
+                    if (packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && !packetIndexes.ContainsKey(index))
                     {
                         lock (packetIndexes)
                             packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
                     }
-                    else if (lines[index].Contains("SMSG_AI_REACTION") && !packetIndexes.ContainsKey(index))
+                    else if (packetType == Packet.PacketTypes.SMSG_AI_REACTION && !packetIndexes.ContainsKey(index))
                     {
                         lock (packetIndexes)
                             packetIndexes.Add(index, Packet.PacketTypes.SMSG_AI_REACTION);
                     }
-                    else if (lines[index].Contains("SMSG_SPELL_START") && !packetIndexes.ContainsKey(index))
+                    else if (packetType == Packet.PacketTypes.SMSG_SPELL_START && !packetIndexes.ContainsKey(index))
                     {
                         lock (packetIndexes)
                             packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
                     }
-                    else if (lines[index].Contains("SMSG_CHAT") && !packetIndexes.ContainsKey(index))
+                    else if (packetType == Packet.PacketTypes.SMSG_CHAT && !packetIndexes.ContainsKey(index))
                     {
                         lock (packetIndexes)
                             packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
                     }
-                    else if (lines[index].Contains("SMSG_ON_MONSTER_MOVE") && !packetIndexes.ContainsKey(index))
+                    else if (packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && !packetIndexes.ContainsKey(index))
                     {
                         lock (packetIndexes)
                             packetIndexes.Add(index, Packet.PacketTypes.SMSG_ON_MONSTER_MOVE);
                     }
-                    else if (lines[index].Contains("SMSG_ATTACK_STOP") && !packetIndexes.ContainsKey(index))
+                    else if (packetType == Packet.PacketTypes.SMSG_ATTACK_STOP && !packetIndexes.ContainsKey(index))
                     {
                         lock (packetIndexes)
                             packetIndexes.Add(index, Packet.PacketTypes.SMSG_ATTACK_STOP);
@@ -137,11 +139,11 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                 mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
 
-                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                foreach(var value in packetIndexes)
                 {
                     if (value.Value == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
                     {
-                        Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion, 0).AsEnumerable(), packet =>
+                        Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion, 0), packet =>
                         {
                             lock (creaturesDict)
                             {
@@ -156,11 +158,11 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                             }
                         });
                     }
-                });
+                }
 
                 mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
 
-                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                Parallel.ForEach(packetIndexes, value =>
                 {
                     if (value.Value == Packet.PacketTypes.SMSG_SPELL_START)
                     {
@@ -183,7 +185,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                 mainForm.SetCurrentStatus("Parsing SMSG_AI_REACTION packets...");
 
-                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                Parallel.ForEach(packetIndexes, value =>
                 {
                     if (value.Value == Packet.PacketTypes.SMSG_AI_REACTION)
                     {
@@ -209,7 +211,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                 mainForm.SetCurrentStatus("Parsing SMSG_CHAT packets...");
 
-                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                Parallel.ForEach(packetIndexes, value =>
                 {
                     if (value.Value == Packet.PacketTypes.SMSG_CHAT)
                     {
@@ -269,7 +271,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                 mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE and SMSG_ATTACK_STOP packets...");
 
-                Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+                Parallel.ForEach(packetIndexes, value =>
                 {
                     switch (value.Value)
                     {

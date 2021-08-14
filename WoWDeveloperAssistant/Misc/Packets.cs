@@ -57,6 +57,10 @@ namespace WoWDeveloperAssistant.Misc
                     packetType = PacketTypes.SMSG_ATTACK_STOP;
                 else if (line.Contains("SMSG_SET_AI_ANIM_KIT"))
                     packetType = PacketTypes.SMSG_SET_AI_ANIM_KIT;
+                else if (line.Contains("SMSG_AI_REACTION"))
+                    packetType = PacketTypes.SMSG_AI_REACTION;
+                else if (line.Contains("SMSG_CHAT"))
+                    packetType = PacketTypes.SMSG_CHAT;
 
                 return packetType;
             }
@@ -533,6 +537,7 @@ namespace WoWDeveloperAssistant.Misc
                     if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
                         UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0, new MonsterMovePacket.JumpInfo());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0, new MonsterMovePacket.JumpInfo());
 
                         do
                         {
@@ -551,42 +556,116 @@ namespace WoWDeveloperAssistant.Misc
                                 while (lines[index].Contains("Points:"));
                             }
 
-                            if (GetMapIdFromLine(lines[index]) != null)
-                                updatePacket.mapId = GetMapIdFromLine(lines[index]);
-
-                            if (GetSpawnPositionFromLine(lines[index], lines[index + 1]).IsValid())
-                                updatePacket.spawnPosition = GetSpawnPositionFromLine(lines[index], lines[index + 1]);
-
-                            if (GetEntryFromLine(lines[index]) != 0)
-                                updatePacket.creatureEntry = GetEntryFromLine(lines[index]);
-
-                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, objectFieldGuid: true) != "")
-                                updatePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, objectFieldGuid: true);
-
-                            if (GetMaxHealthFromLine(lines[index]) != 0)
-                                updatePacket.creatureMaxHealth = GetMaxHealthFromLine(lines[index]);
-
-                            if (GetDisableGravityFromLine(lines[index]))
-                                updatePacket.hasDisableGravity = true;
-
-                            if (GetDurationFromLine(lines[index]) != 0)
+                            if (updatePacket.mapId == null)
                             {
-                                updatePacket.moveTime = GetDurationFromLine(lines[index]);
-                                updatePacket.jumpInfo.moveTime = GetDurationFromLine(lines[index]);
+                                tempUpdatePacket.mapId = GetMapIdFromLine(lines[index]);
+
+                                if (tempUpdatePacket.mapId != null)
+                                {
+                                    updatePacket.mapId = tempUpdatePacket.mapId;
+                                }
                             }
 
-                            if (GetUnitFlagsFromLine(lines[index]) != 0)
-                                updatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
-
-                            if (GetJumpGravityFromLine(lines[index]) != 0.0f)
+                            if (!updatePacket.spawnPosition.IsValid())
                             {
-                                updatePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
-                                updatePacket.jumpInfo.jumpPos = updatePacket.waypoints.Last().movePosition;
+                                tempUpdatePacket.spawnPosition = GetSpawnPositionFromLine(lines[index], lines[index + 1]);
+
+                                if (tempUpdatePacket.spawnPosition.IsValid())
+                                {
+                                    updatePacket.spawnPosition = tempUpdatePacket.spawnPosition;
+                                }
                             }
 
-                            if (MonsterMovePacket.GetFlyingFromLine(lines[index]))
+                            if (updatePacket.creatureEntry == 0)
                             {
-                                updatePacket.hasDisableGravity = true;
+                                tempUpdatePacket.creatureEntry = GetEntryFromLine(lines[index]);
+
+                                if (tempUpdatePacket.creatureEntry != 0)
+                                {
+                                    updatePacket.creatureEntry = tempUpdatePacket.creatureEntry;
+                                }
+                            }
+
+                            if (updatePacket.creatureGuid == "")
+                            {
+                                tempUpdatePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, objectFieldGuid: true);
+
+                                if (tempUpdatePacket.creatureGuid != "")
+                                {
+                                    updatePacket.creatureGuid = tempUpdatePacket.creatureGuid;
+                                }
+                            }
+
+                            if (updatePacket.creatureMaxHealth == 0)
+                            {
+                                tempUpdatePacket.creatureMaxHealth = GetMaxHealthFromLine(lines[index]);
+
+                                if (tempUpdatePacket.creatureMaxHealth != 0)
+                                {
+                                    updatePacket.creatureMaxHealth = tempUpdatePacket.creatureEntry;
+                                }
+                            }
+
+                            if (!updatePacket.hasDisableGravity)
+                            {
+                                tempUpdatePacket.hasDisableGravity = GetDisableGravityFromLine(lines[index]);
+
+                                if (tempUpdatePacket.hasDisableGravity)
+                                {
+                                    updatePacket.hasDisableGravity = tempUpdatePacket.hasDisableGravity;
+                                }
+                            }
+
+                            if (updatePacket.moveTime == 0 || updatePacket.jumpInfo.moveTime == 0)
+                            {
+                                tempUpdatePacket.moveTime = GetDurationFromLine(lines[index]);
+
+                                if (tempUpdatePacket.moveTime != 0)
+                                {
+                                    updatePacket.moveTime = tempUpdatePacket.moveTime;
+                                    updatePacket.jumpInfo.moveTime = tempUpdatePacket.moveTime;
+                                }
+                            }
+
+                            if (updatePacket.unitFlags == 0)
+                            {
+                                tempUpdatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
+
+                                if (tempUpdatePacket.unitFlags != 0)
+                                {
+                                    updatePacket.unitFlags = tempUpdatePacket.unitFlags;
+                                }
+                            }
+
+                            if (updatePacket.jumpInfo.jumpGravity == 0.0f)
+                            {
+                                tempUpdatePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
+
+                                if (tempUpdatePacket.jumpInfo.jumpGravity != 0.0f)
+                                {
+                                    updatePacket.jumpInfo.jumpGravity = tempUpdatePacket.jumpInfo.jumpGravity;
+                                    updatePacket.jumpInfo.jumpPos = updatePacket.waypoints.Last().movePosition;
+                                }
+                            }
+
+                            if (updatePacket.unitFlags == 0)
+                            {
+                                tempUpdatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
+
+                                if (tempUpdatePacket.unitFlags != 0)
+                                {
+                                    updatePacket.unitFlags = tempUpdatePacket.unitFlags;
+                                }
+                            }
+
+                            if (!updatePacket.hasDisableGravity)
+                            {
+                                tempUpdatePacket.hasDisableGravity = MonsterMovePacket.GetFlyingFromLine(lines[index]);
+
+                                if (tempUpdatePacket.hasDisableGravity)
+                                {
+                                    updatePacket.hasDisableGravity = tempUpdatePacket.hasDisableGravity;
+                                }
                             }
 
                             index++;
@@ -647,29 +726,80 @@ namespace WoWDeveloperAssistant.Misc
                     else if (lines[index].Contains("UpdateType: Values") && LineGetters.IsCreatureLine(lines[index + 1]))
                     {
                         UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0, new MonsterMovePacket.JumpInfo());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, 0, new MonsterMovePacket.JumpInfo());
 
                         do
                         {
-                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion) != "")
-                                updatePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion);
 
-                            if (GetHealthFromLine(lines[index]) == 0)
-                                updatePacket.creatureCurrentHealth = GetHealthFromLine(lines[index]);
+                            if (updatePacket.creatureGuid == "")
+                            {
+                                tempUpdatePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion);
 
-                            if (GetEmoteStateFromLine(lines[index]) != null)
-                                updatePacket.emoteStateId = GetEmoteStateFromLine(lines[index]);
+                                if (tempUpdatePacket.creatureGuid != "")
+                                {
+                                    updatePacket.creatureGuid = tempUpdatePacket.creatureGuid;
+                                }
+                            }
 
-                            if (GetSheatheStateFromLine(lines[index]) != null)
-                                updatePacket.sheatheState = GetSheatheStateFromLine(lines[index]);
+                            if (updatePacket.creatureMaxHealth == 0)
+                            {
+                                tempUpdatePacket.creatureMaxHealth = GetMaxHealthFromLine(lines[index]);
 
-                            if (GetStandStateFromLine(lines[index]) != null)
-                                updatePacket.standState = GetStandStateFromLine(lines[index]);
+                                if (tempUpdatePacket.creatureMaxHealth != 0)
+                                {
+                                    updatePacket.creatureMaxHealth = tempUpdatePacket.creatureEntry;
+                                }
+                            }
 
-                            if (GetDisableGravityFromLine(lines[index]))
-                                updatePacket.hasDisableGravity = true;
+                            if (!updatePacket.hasDisableGravity)
+                            {
+                                tempUpdatePacket.hasDisableGravity = GetDisableGravityFromLine(lines[index]);
 
-                            if (GetUnitFlagsFromLine(lines[index]) != 0)
-                                updatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
+                                if (tempUpdatePacket.hasDisableGravity)
+                                {
+                                    updatePacket.hasDisableGravity = tempUpdatePacket.hasDisableGravity;
+                                }
+                            }
+
+                            if (updatePacket.unitFlags == 0)
+                            {
+                                tempUpdatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
+
+                                if (tempUpdatePacket.unitFlags != 0)
+                                {
+                                    updatePacket.unitFlags = tempUpdatePacket.unitFlags;
+                                }
+                            }
+
+                            if (updatePacket.emoteStateId == null)
+                            {
+                                tempUpdatePacket.emoteStateId = GetEmoteStateFromLine(lines[index]);
+
+                                if (tempUpdatePacket.emoteStateId != 0)
+                                {
+                                    updatePacket.emoteStateId = tempUpdatePacket.emoteStateId;
+                                }
+                            }
+
+                            if (updatePacket.sheatheState == null)
+                            {
+                                tempUpdatePacket.sheatheState = GetSheatheStateFromLine(lines[index]);
+
+                                if (tempUpdatePacket.sheatheState != 0)
+                                {
+                                    updatePacket.sheatheState = tempUpdatePacket.sheatheState;
+                                }
+                            }
+
+                            if (updatePacket.standState == null)
+                            {
+                                tempUpdatePacket.standState = GetStandStateFromLine(lines[index]);
+
+                                if (tempUpdatePacket.standState != 0)
+                                {
+                                    updatePacket.standState = tempUpdatePacket.standState;
+                                }
+                            }
 
                             index++;
                         }
@@ -867,6 +997,9 @@ namespace WoWDeveloperAssistant.Misc
             public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
             {
                 MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+                MonsterMovePacket tempMovePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+                bool tempFlying = false;
+                Position tempPointPosition = new Position();
 
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
@@ -875,80 +1008,128 @@ namespace WoWDeveloperAssistant.Misc
 
                     do
                     {
-                        if (LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true) != "")
-                            movePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
-
-                        if (GetStartPositionFromLine(lines[index]).IsValid())
-                            movePacket.startPos = GetStartPositionFromLine(lines[index]);
-
-                        if (GetMoveTimeFromLine(lines[index]) != 0)
-                            movePacket.moveTime = GetMoveTimeFromLine(lines[index]);
-
-                        if (GetFaceDirectionFromLine(lines[index]) != 0.0f)
-                            movePacket.creatureOrientation = GetFaceDirectionFromLine(lines[index]);
-
-                        if (GetFlyingFromLine(lines[index]) != false)
-                            isFlying = GetFlyingFromLine(lines[index]);
-
-                        if (GetPointPositionFromLine(lines[index]).IsValid())
+                        if (movePacket.creatureGuid == "")
                         {
-                            if (ConsistsOfPoints(lines[index], lines[index + 1]))
+                            tempMovePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
+
+                            if (tempMovePacket.creatureGuid != "")
                             {
-                                uint pointId = 1;
-
-                                do
-                                {
-                                    if (GetPointPositionFromLine(lines[index]).IsValid())
-                                    {
-                                        Waypoint wp = new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
-                                        wp.packetNumber = packetNumber;
-                                        movePacket.waypoints.Add(wp);
-                                        pointId++;
-                                    }
-
-                                    index++;
-                                }
-                                while (lines[index] != "");
+                                movePacket.creatureGuid = tempMovePacket.creatureGuid;
                             }
-                            else
+                        }
+
+                        if (!movePacket.startPos.IsValid())
+                        {
+                            tempMovePacket.startPos = GetStartPositionFromLine(lines[index]);
+
+                            if (tempMovePacket.startPos.IsValid())
                             {
-                                if (GetPointPositionFromLine(lines[index]).IsValid())
-                                    lastPosition = GetPointPositionFromLine(lines[index]);
-
-                                uint pointId = 1;
-
-                                do
-                                {
-                                    if (GetWayPointPositionFromLine(lines[index]).IsValid())
-                                    {
-                                        Waypoint wp = new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
-                                        wp.packetNumber = packetNumber;
-                                        movePacket.waypoints.Add(wp);
-                                        pointId++;
-                                    }
-
-                                    if (GetJumpGravityFromLine(lines[index]) != 0.0f)
-                                    {
-                                        movePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
-                                    }
-
-                                    index++;
-                                }
-                                while (lines[index] != "");
+                                movePacket.startPos = tempMovePacket.startPos;
                             }
+                        }
 
-                            if (lastPosition.IsValid())
+                        if (movePacket.moveTime == 0)
+                        {
+                            tempMovePacket.moveTime = GetMoveTimeFromLine(lines[index]);
+
+                            if (tempMovePacket.moveTime != 0)
                             {
-                                if (movePacket.jumpInfo.jumpGravity != 0.0f)
+                                movePacket.moveTime = tempMovePacket.moveTime;
+                            }
+                        }
+
+                        if (movePacket.creatureOrientation == 0.0f)
+                        {
+                            tempMovePacket.creatureOrientation = GetFaceDirectionFromLine(lines[index]);
+
+                            if (tempMovePacket.creatureOrientation != 0.0f)
+                            {
+                                movePacket.creatureOrientation = tempMovePacket.creatureOrientation;
+                            }
+                        }
+
+                        if (!isFlying)
+                        {
+                            tempFlying = GetFlyingFromLine(lines[index]);
+
+                            if (tempFlying)
+                            {
+                                isFlying = tempFlying;
+                            }
+                        }
+
+                        if (!tempPointPosition.IsValid())
+                        {
+                            tempPointPosition = GetPointPositionFromLine(lines[index]);
+
+                            if (tempPointPosition.IsValid())
+                            {
+                                if (ConsistsOfPoints(lines[index], lines[index + 1]))
                                 {
-                                    movePacket.jumpInfo.moveTime = movePacket.moveTime;
-                                    movePacket.jumpInfo.jumpPos = lastPosition;
+                                    uint pointId = 1;
+
+                                    do
+                                    {
+                                        Position point = GetPointPositionFromLine(lines[index]);
+
+                                        if (point.IsValid())
+                                        {
+                                            Waypoint wp = new Waypoint(point, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                            wp.packetNumber = packetNumber;
+                                            movePacket.waypoints.Add(wp);
+                                            pointId++;
+                                        }
+
+                                        index++;
+                                    }
+                                    while (lines[index] != "");
                                 }
                                 else
                                 {
-                                    Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
-                                    wp.packetNumber = packetNumber;
-                                    movePacket.waypoints.Add(wp);
+                                    lastPosition = tempPointPosition;
+
+                                    uint pointId = 1;
+
+                                    do
+                                    {
+                                        Position waypoint = GetWayPointPositionFromLine(lines[index]);
+
+                                        if (waypoint.IsValid())
+                                        {
+                                            Waypoint wp = new Waypoint(waypoint, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                            wp.packetNumber = packetNumber;
+                                            movePacket.waypoints.Add(wp);
+                                            pointId++;
+                                        }
+
+                                        if (movePacket.jumpInfo.jumpGravity == 0.0f)
+                                        {
+                                            tempMovePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
+
+                                            if (tempMovePacket.jumpInfo.jumpGravity != 0.0f)
+                                            {
+                                                movePacket.jumpInfo.jumpGravity = tempMovePacket.jumpInfo.jumpGravity;
+                                            }
+                                        }
+
+                                        index++;
+                                    }
+                                    while (lines[index] != "");
+                                }
+
+                                if (lastPosition.IsValid())
+                                {
+                                    if (movePacket.jumpInfo.jumpGravity != 0.0f)
+                                    {
+                                        movePacket.jumpInfo.moveTime = movePacket.moveTime;
+                                        movePacket.jumpInfo.jumpPos = lastPosition;
+                                    }
+                                    else
+                                    {
+                                        Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = packetNumber;
+                                        movePacket.waypoints.Add(wp);
+                                    }
                                 }
                             }
 
@@ -958,6 +1139,9 @@ namespace WoWDeveloperAssistant.Misc
                         index++;
                     }
                     while (lines[index] != "");
+
+                    if (movePacket.creatureGuid == "")
+                        return movePacket;
 
                     float velocity = GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime);
 
@@ -994,6 +1178,9 @@ namespace WoWDeveloperAssistant.Misc
             public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, SortedDictionary<long, Packet> updateObjectPacketsDict, long packetNumber)
             {
                 MonsterMovePacket movePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+                MonsterMovePacket tempMovePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+                bool tempFlying = false;
+                Position tempPointPosition = new Position();
 
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
@@ -1037,80 +1224,128 @@ namespace WoWDeveloperAssistant.Misc
                             break;
                         }
 
-                        if (LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true) != "")
-                            movePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
-
-                        if (GetStartPositionFromLine(lines[index]).IsValid())
-                            movePacket.startPos = GetStartPositionFromLine(lines[index]);
-
-                        if (GetMoveTimeFromLine(lines[index]) != 0)
-                            movePacket.moveTime = GetMoveTimeFromLine(lines[index]);
-
-                        if (GetFaceDirectionFromLine(lines[index]) != 0.0f)
-                            movePacket.creatureOrientation = GetFaceDirectionFromLine(lines[index]);
-
-                        if (GetFlyingFromLine(lines[index]) != false)
-                            isFlying = GetFlyingFromLine(lines[index]);
-
-                        if (GetPointPositionFromLine(lines[index]).IsValid())
+                        if (movePacket.creatureGuid == "")
                         {
-                            if (ConsistsOfPoints(lines[index], lines[index + 1]))
+                            tempMovePacket.creatureGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
+
+                            if (tempMovePacket.creatureGuid != "")
                             {
-                                uint pointId = 1;
-
-                                do
-                                {
-                                    if (GetPointPositionFromLine(lines[index]).IsValid())
-                                    {
-                                        Waypoint wp = new Waypoint(GetPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
-                                        wp.packetNumber = packetNumber;
-                                        movePacket.waypoints.Add(wp);
-                                        pointId++;
-                                    }
-
-                                    index++;
-                                }
-                                while (lines[index] != "");
+                                movePacket.creatureGuid = tempMovePacket.creatureGuid;
                             }
-                            else
+                        }
+
+                        if (!movePacket.startPos.IsValid())
+                        {
+                            tempMovePacket.startPos = GetStartPositionFromLine(lines[index]);
+
+                            if (tempMovePacket.startPos.IsValid())
                             {
-                                if (GetPointPositionFromLine(lines[index]).IsValid())
-                                    lastPosition = GetPointPositionFromLine(lines[index]);
-
-                                uint pointId = 1;
-
-                                do
-                                {
-                                    if (GetWayPointPositionFromLine(lines[index]).IsValid())
-                                    {
-                                        Waypoint wp = new Waypoint(GetWayPointPositionFromLine(lines[index]), 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
-                                        wp.packetNumber = packetNumber;
-                                        movePacket.waypoints.Add(wp);
-                                        pointId++;
-                                    }
-
-                                    if (GetJumpGravityFromLine(lines[index]) != 0.0f)
-                                    {
-                                        movePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
-                                    }
-
-                                    index++;
-                                }
-                                while (lines[index] != "");
+                                movePacket.startPos = tempMovePacket.startPos;
                             }
+                        }
 
-                            if (lastPosition.IsValid())
+                        if (movePacket.moveTime == 0)
+                        {
+                            tempMovePacket.moveTime = GetMoveTimeFromLine(lines[index]);
+
+                            if (tempMovePacket.moveTime != 0)
                             {
-                                if (movePacket.jumpInfo.jumpGravity != 0.0f)
+                                movePacket.moveTime = tempMovePacket.moveTime;
+                            }
+                        }
+
+                        if (movePacket.creatureOrientation == 0.0f)
+                        {
+                            tempMovePacket.creatureOrientation = GetFaceDirectionFromLine(lines[index]);
+
+                            if (tempMovePacket.creatureOrientation != 0.0f)
+                            {
+                                movePacket.creatureOrientation = tempMovePacket.creatureOrientation;
+                            }
+                        }
+
+                        if (!isFlying)
+                        {
+                            tempFlying = GetFlyingFromLine(lines[index]);
+
+                            if (tempFlying)
+                            {
+                                isFlying = tempFlying;
+                            }
+                        }
+
+                        if (!tempPointPosition.IsValid())
+                        {
+                            tempPointPosition = GetPointPositionFromLine(lines[index]);
+
+                            if (tempPointPosition.IsValid())
+                            {
+                                if (ConsistsOfPoints(lines[index], lines[index + 1]))
                                 {
-                                    movePacket.jumpInfo.moveTime = movePacket.moveTime;
-                                    movePacket.jumpInfo.jumpPos = lastPosition;
+                                    uint pointId = 1;
+
+                                    do
+                                    {
+                                        Position point = GetPointPositionFromLine(lines[index]);
+
+                                        if (point.IsValid())
+                                        {
+                                            Waypoint wp = new Waypoint(point, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                            wp.packetNumber = packetNumber;
+                                            movePacket.waypoints.Add(wp);
+                                            pointId++;
+                                        }
+
+                                        index++;
+                                    }
+                                    while (lines[index] != "");
                                 }
                                 else
                                 {
-                                    Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
-                                    wp.packetNumber = packetNumber;
-                                    movePacket.waypoints.Add(wp);
+                                    lastPosition = tempPointPosition;
+
+                                    uint pointId = 1;
+
+                                    do
+                                    {
+                                        Position waypoint = GetWayPointPositionFromLine(lines[index]);
+
+                                        if (waypoint.IsValid())
+                                        {
+                                            Waypoint wp = new Waypoint(waypoint, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                            wp.packetNumber = packetNumber;
+                                            movePacket.waypoints.Add(wp);
+                                            pointId++;
+                                        }
+
+                                        if (movePacket.jumpInfo.jumpGravity == 0.0f)
+                                        {
+                                            tempMovePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
+
+                                            if (tempMovePacket.jumpInfo.jumpGravity != 0.0f)
+                                            {
+                                                movePacket.jumpInfo.jumpGravity = tempMovePacket.jumpInfo.jumpGravity;
+                                            }
+                                        }
+
+                                        index++;
+                                    }
+                                    while (lines[index] != "");
+                                }
+
+                                if (lastPosition.IsValid())
+                                {
+                                    if (movePacket.jumpInfo.jumpGravity != 0.0f)
+                                    {
+                                        movePacket.jumpInfo.moveTime = movePacket.moveTime;
+                                        movePacket.jumpInfo.jumpPos = lastPosition;
+                                    }
+                                    else
+                                    {
+                                        Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = packetNumber;
+                                        movePacket.waypoints.Add(wp);
+                                    }
                                 }
                             }
 
@@ -1120,6 +1355,9 @@ namespace WoWDeveloperAssistant.Misc
                         index++;
                     }
                     while (lines[index] != "");
+
+                    if (movePacket.creatureGuid == "")
+                        return movePacket;
 
                     float velocity = GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime);
 
