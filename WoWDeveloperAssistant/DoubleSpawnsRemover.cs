@@ -448,7 +448,7 @@ namespace WoWDeveloperAssistant
         }
         private static bool IsGameObjectAddonLine(string line)
         {
-            if (line.Contains("spell_target_position") || line.Contains("creature_model_info"))
+            if (line.Contains("spell_target_position") || line.Contains("creature_model_info") || line.Contains("creature_template_addon"))
                 return false;
             else
                 return true;
