@@ -648,16 +648,6 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                             }
 
-                            if (updatePacket.unitFlags == 0)
-                            {
-                                tempUpdatePacket.unitFlags = (UnitFlags)GetUnitFlagsFromLine(lines[index]);
-
-                                if (tempUpdatePacket.unitFlags != 0)
-                                {
-                                    updatePacket.unitFlags = tempUpdatePacket.unitFlags;
-                                }
-                            }
-
                             if (!updatePacket.hasDisableGravity)
                             {
                                 tempUpdatePacket.hasDisableGravity = MonsterMovePacket.GetFlyingFromLine(lines[index]);
@@ -798,6 +788,16 @@ namespace WoWDeveloperAssistant.Misc
                                 if (tempUpdatePacket.standState != 0)
                                 {
                                     updatePacket.standState = tempUpdatePacket.standState;
+                                }
+                            }
+
+                            if (updatePacket.creatureCurrentHealth == -1)
+                            {
+                                tempUpdatePacket.creatureCurrentHealth = GetHealthFromLine(lines[index]);
+
+                                if (tempUpdatePacket.creatureCurrentHealth == 0)
+                                {
+                                    updatePacket.creatureCurrentHealth = tempUpdatePacket.creatureCurrentHealth;
                                 }
                             }
 
