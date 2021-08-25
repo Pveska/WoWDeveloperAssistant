@@ -144,9 +144,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
 
-            foreach(Packet packet in updateObjectPacketsDict.Values)
+            foreach (Packet packet in updateObjectPacketsDict.Values)
             {
-                foreach(UpdateObjectPacket updatePacket in UpdateObjectPacket.ParseObjectUpdatePacket(lines, packet.index, buildVersion, packet.number))
+                foreach (UpdateObjectPacket updatePacket in UpdateObjectPacket.ParseObjectUpdatePacket(lines, packet.index, buildVersion, packet.number))
                 {
                     updateObjectPacketsDict.AddSourceFromUpdatePacket(updatePacket, packet.index);
 
