@@ -774,7 +774,7 @@ namespace WoWDeveloperAssistant.Misc
                             {
                                 tempUpdatePacket.emoteStateId = GetEmoteStateFromLine(lines[index]);
 
-                                if (tempUpdatePacket.emoteStateId != 0)
+                                if (tempUpdatePacket.emoteStateId != null)
                                 {
                                     updatePacket.emoteStateId = tempUpdatePacket.emoteStateId;
                                     index++;
@@ -786,7 +786,7 @@ namespace WoWDeveloperAssistant.Misc
                             {
                                 tempUpdatePacket.sheatheState = GetSheatheStateFromLine(lines[index]);
 
-                                if (tempUpdatePacket.sheatheState != 0)
+                                if (tempUpdatePacket.sheatheState != null)
                                 {
                                     updatePacket.sheatheState = tempUpdatePacket.sheatheState;
                                     index++;
@@ -798,7 +798,7 @@ namespace WoWDeveloperAssistant.Misc
                             {
                                 tempUpdatePacket.standState = GetStandStateFromLine(lines[index]);
 
-                                if (tempUpdatePacket.standState != 0)
+                                if (tempUpdatePacket.standState != null)
                                 {
                                     updatePacket.standState = tempUpdatePacket.standState;
                                     index++;
