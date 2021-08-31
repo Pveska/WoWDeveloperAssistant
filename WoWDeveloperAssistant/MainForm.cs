@@ -621,5 +621,17 @@ namespace WoWDeveloperAssistant
         {
             creatureScriptsCreator.CreateCoreScript();
         }
+
+        private void textBox_ModifierTrees_ModifierTreeId_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_ModifierTrees_ModifierTreeId.Text == "" || textBox_ModifierTrees_ModifierTreeId.Text == "0")
+                return;
+
+            treeView_ModifierTrees_ModifierTrees.Nodes.Clear();
+            ModifierTreesHandler.ShowModifierTreeRequirements(this);
+        }
     }
 }

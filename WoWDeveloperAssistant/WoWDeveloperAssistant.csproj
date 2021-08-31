@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Achievements\AchievementEnums.cs" />
     <Compile Include="Achievements\AchievementsHandler.cs" />
+    <Compile Include="Achievements\ModifierTreesHandler.cs" />
     <Compile Include="Conditions Creator\Conditions.cs" />
     <Compile Include="Conditions Creator\ConditionsCreator.cs" />
     <Compile Include="Core Script Templates\CoreScriptTemplates.cs" />

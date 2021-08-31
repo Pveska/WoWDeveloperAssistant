@@ -226,10 +226,25 @@ namespace WoWDeveloperAssistant.Achievements
                 node.Nodes.Add("Operator: " + (AchievementEnums.ModifierTreeOperator)nodeIter.Value.Operator);
                 node.Nodes.Add("Amount: " + nodeIter.Value.Amount);
                 node.Nodes.Add("Type: " + (AchievementEnums.CriteriaAdditionalCondition)nodeIter.Value.Type);
-                node.Nodes.Add("Asset: " + nodeIter.Value.Asset);
-                node.Nodes.Add("SecondaryAsset: " + nodeIter.Value.SecondaryAsset);
-                node.Nodes.Add("TertiaryAsset: " + nodeIter.Value.TertiaryAsset);
-                FillTreeWithModifiersChildNodes((uint)nodeIter.Key, node);
+
+                if (nodeIter.Value.Type == 73)
+                {
+                    ModifierTreeEntry modifierTree = DBC.DBC.ModifierTree[(int)nodeIter.Value.Asset];
+                    TreeNode testnode = new TreeNode(modifierTree.ID.ToString());
+                    testnode.Nodes.Add("Operator: " + (AchievementEnums.ModifierTreeOperator)modifierTree.Operator);
+                    testnode.Nodes.Add("Amount: " + modifierTree.Amount);
+                    testnode.Nodes.Add("Type: " + (AchievementEnums.CriteriaAdditionalCondition)modifierTree.Type);
+                    FillTreeWithModifiersChildNodes(modifierTree.ID, testnode);
+                    node.Nodes.Add(testnode);
+                }
+                else
+                {
+                    node.Nodes.Add("Asset: " + nodeIter.Value.Asset);
+                    node.Nodes.Add("SecondaryAsset: " + nodeIter.Value.SecondaryAsset);
+                    node.Nodes.Add("TertiaryAsset: " + nodeIter.Value.TertiaryAsset);
+                    FillTreeWithModifiersChildNodes((uint)nodeIter.Key, node);
+                }
+
                 treeNode.Nodes.Add(node);
             }
         }
