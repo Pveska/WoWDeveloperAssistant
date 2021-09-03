@@ -1341,6 +1341,8 @@ namespace WoWDeveloperAssistant.Misc
                                         index++;
                                     }
                                     while (lines[index] != "");
+
+                                    index--;
                                 }
 
                                 if (lastPosition.IsValid())
