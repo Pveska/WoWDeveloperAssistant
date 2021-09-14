@@ -381,6 +381,56 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             return true;
         }
 
+        public void GenerateCombatAISQL()
+        {
+            Creature creature = creaturesDict[mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem.ToString()];
+            int i = 0;
+
+            var SQLtext = "UPDATE `creature_template` SET `AIName` = 'LegionCombatAI' WHERE `entry` = " + creature.entry + ";\r\n";
+            SQLtext += "DELETE FROM `combat_ai_events` WHERE `entry` = " + creature.entry + ";\r\n";
+            SQLtext += "INSERT INTO `combat_ai_events` (`entry`, `id`, `start_min`, `start_max`, `repeat_min`, `repeat_max`, `repeat_fail`, `spell_id`, `event_check`, `event_flags`, `attack_dist`, `difficulty_mask`, `comment`) VALUES\r\n";
+
+            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++, i++)
+            {
+                Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+
+                double startMin = Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000;
+                double startMax = Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000;
+                double repeatMin = Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000;
+                double repeatMax = Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000;
+
+                if (spell.isDeathSpell)
+                {
+                    if (spell.ShouldBeCastedBeforeDeath())
+                    {
+                        SQLtext += "(" + creature.entry + ", " + i + ", " + 1000 + ", " + 1000 + ", " + 0 + ", " + 0 + ", 1000, " + spell.spellId + ", " +
+                         spell.GetCombatAITargetType() + "4, " + Spell.GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast On Death " + spell.name + ")";
+                    }
+                    else
+                    {
+                        SQLtext += "(" + creature.entry + ", " + i + ", " + 1000 + ", " + 1000 + ", " + 0 + ", " + 0 + ", 1000, " + spell.spellId + ", " +
+                         spell.GetCombatAITargetType() + "2, " + Spell.GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast After Death " + spell.name + ")";
+                    }
+                }
+                else
+                {
+                    SQLtext += "(" + creature.entry + ", " + i + ", " + startMin + ", " + startMax + ", " + repeatMin + ", " + repeatMax + ", 1000, " + spell.spellId + ", " +
+                        spell.GetCombatAITargetType() + ", 0, " + Spell.GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast: " + spell.name + "\")";
+                }
+
+                if (l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount - 1)
+                {
+                    SQLtext += ",\r\n";
+                }
+                else
+                {
+                    SQLtext += ";\r\n";
+                }
+            }
+
+            mainForm.textBox_SqlOutput.Text = SQLtext;
+        }
+
         public void FillSQLOutput()
         {
             Creature creature = creaturesDict[mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem.ToString()];

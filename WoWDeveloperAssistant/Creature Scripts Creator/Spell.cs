@@ -118,6 +118,17 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             return "Unknown";
         }
 
+        public static double GetSpellRadius(uint spellId)
+        {
+            if (DBC.DBC.SpellMisc.ContainsKey((int)spellId))
+            {
+                int rangeId = DBC.DBC.SpellMisc[(int)spellId].RangeIndex;
+                return (double)DBC.DBC.SpellRadius[rangeId].RangeMax[1];
+            }
+
+            return 0.0;
+        }
+
         public void UpdateIfNeeded(Packets.SpellStartPacket spellPacket)
         {
             if (spellId == spellPacket.spellId)
@@ -221,6 +232,25 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     return;
                 }
             });
+        }
+        public uint GetCombatAITargetType()
+        {
+            for (uint i = 0; i < 32; i++)
+            {
+                var spellEffectTuple = Tuple.Create(spellId, i);
+
+                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                {
+                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
+
+                    if (IsSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
+                        return 4;
+                    if (IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
+                        return 1;
+                }
+            }
+
+            return 99;
         }
 
         public uint GetTargetType()

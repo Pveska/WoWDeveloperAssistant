@@ -19,6 +19,8 @@ namespace WoWDeveloperAssistant.DBC
         public static Storage<MapDifficultyEntry> MapDifficulty { get; set; }
         public static Storage<SpellEffectEntry> SpellEffect { get; set; }
         public static Storage<SpellNameEntry> SpellName { get; set; }
+        public static Storage<SpellMiscEntry> SpellMisc { get; set; }
+        public static Storage<SpellRangeEntry> SpellRadius { get; set; }
 
         private static string GetDBCPath()
         {

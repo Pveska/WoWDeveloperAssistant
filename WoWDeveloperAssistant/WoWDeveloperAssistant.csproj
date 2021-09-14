@@ -123,6 +123,7 @@
     <Compile Include="Database Advisor\WaypointsHelper.cs" />
     <Compile Include="DBC\DBC.cs" />
     <Compile Include="DBC\Structures\AchievementEntry.cs" />
+    <Compile Include="DBC\Structures\SpellRangeEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaEntry.cs" />
     <Compile Include="DBC\Structures\CriteriaTreeEntry.cs" />
     <Compile Include="DBC\Structures\DBFileAttribute.cs" />
