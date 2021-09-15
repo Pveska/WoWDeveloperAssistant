@@ -633,5 +633,10 @@ namespace WoWDeveloperAssistant
             treeView_ModifierTrees_ModifierTrees.Nodes.Clear();
             ModifierTreesHandler.ShowModifierTreeRequirements(this);
         }
+
+        private void createLegionCombatAISqlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            creatureScriptsCreator.GenerateCombatAISQL();
+        }
     }
 }
