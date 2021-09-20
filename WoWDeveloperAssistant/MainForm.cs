@@ -97,7 +97,7 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) && creatureScriptsCreator.GetDataFromFile(openFileDialog.FileNames) != 0)
+                if (IsTxtFileValidForParse(openFileDialog.FileName) && creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
                 {
                     creatureScriptsCreator.ImportSuccessful();
                 }
@@ -220,7 +220,7 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) && waypointsCreator.GetDataFromFile(openFileDialog.FileNames) != 0)
+                if (IsTxtFileValidForParse(openFileDialog.FileName) && waypointsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
                 {
                     waypointsCreator.ImportSuccessful(false);
                 }

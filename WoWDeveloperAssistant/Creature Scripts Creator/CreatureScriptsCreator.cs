@@ -78,7 +78,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = true;
         }
 
-        public uint GetDataFromFile(string[] fileNames)
+        public uint GetDataFromFiles(string[] fileNames)
         {
             uint successfullyParsedFilesCount = 0;
 

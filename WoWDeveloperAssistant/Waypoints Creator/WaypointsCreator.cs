@@ -24,7 +24,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             this.mainForm = mainForm;
         }
 
-        public uint GetDataFromFile(string[] fileNames)
+        public uint GetDataFromFiles(string[] fileNames)
         {
             uint successfullyParsedFilesCount = 0;
 
