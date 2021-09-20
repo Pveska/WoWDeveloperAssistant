@@ -23,7 +23,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             { "SpellHit",          "void SpellHit(Unit* p_Caster, SpellInfo const* p_Spell) override"                                        },
             { "OnSpellCasted",     "void OnSpellCasted(SpellInfo const* p_SpellInfo) override"                                               },
             { "PassengerBoarded",  "void PassengerBoarded(Unit* p_Passenger, int8 /*p_SeatID*/, bool p_Apply) override"                      },
-            { "MovementInform",    "void MovementInform(uint32 /*p_Type*/, uint64 p_PointId) override"                                       },
+            { "MovementInform",    "void MovementInform(bool /*p_Finished*/, uint32 /*p_Type*/, uint64 p_PointId) override"                  },
             { "Reset",             "void Reset() override"                                                                                   },
             { "EnterCombat",       "void EnterCombat(Unit* /*p_Victim*/) override"                                                           },
             { "DamageTaken",       "void DamageTaken(Unit* /*p_Attacker*/, uint32& /*p_Damage*/, SpellInfo const* /*p_SpellInfo*/) override" },
