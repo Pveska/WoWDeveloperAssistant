@@ -24,14 +24,14 @@ namespace WoWDeveloperAssistant.Misc
         public Dictionary<uint, Spell> castedSpells;
         public TimeSpan lastUpdatePacketTime;
         public bool hasDisableGravity;
+        public string transportGuid;
 
         public Creature(UpdateObjectPacket updatePacket)
         {
-            guid = updatePacket.creatureGuid;
-            entry = updatePacket.creatureEntry;
-            name = updatePacket.creatureName;
-            maxhealth = updatePacket.creatureMaxHealth;
-            deathTime = updatePacket.creatureCurrentHealth == 0 ? updatePacket.packetSendTime : new TimeSpan();
+            guid = updatePacket.guid;
+            entry = updatePacket.entry;
+            maxhealth = updatePacket.maxHealth;
+            deathTime = updatePacket.currentHealth == 0 ? updatePacket.packetSendTime : new TimeSpan();
             castedSpells = new Dictionary<uint, Spell>();
             combatStartTime = new TimeSpan();
             spawnPosition = updatePacket.spawnPosition;
@@ -40,24 +40,22 @@ namespace WoWDeveloperAssistant.Misc
             auras = new List<Aura>();
             lastUpdatePacketTime = updatePacket.packetSendTime;
             hasDisableGravity = updatePacket.hasDisableGravity;
+            transportGuid = updatePacket.transportGuid;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
         {
-            if (guid == "" && updatePacket.creatureGuid != "")
-                guid = updatePacket.creatureGuid;
+            if (guid == "" && updatePacket.guid != "")
+                guid = updatePacket.guid;
 
-            if (entry == 0 && updatePacket.creatureEntry != 0)
-                entry = updatePacket.creatureEntry;
+            if (entry == 0 && updatePacket.entry != 0)
+                entry = updatePacket.entry;
 
-            if (name == "Unknown" && updatePacket.creatureName != "Unknown")
-                name = updatePacket.creatureName;
-
-            if (deathTime == TimeSpan.Zero && updatePacket.creatureCurrentHealth == 0)
+            if (deathTime == TimeSpan.Zero && updatePacket.currentHealth == 0)
                 deathTime = updatePacket.packetSendTime;
 
-            if (maxhealth == 0 && updatePacket.creatureMaxHealth != 0)
-                maxhealth = updatePacket.creatureMaxHealth;
+            if (maxhealth == 0 && updatePacket.maxHealth != 0)
+                maxhealth = updatePacket.maxHealth;
 
             if (lastUpdatePacketTime > updatePacket.packetSendTime && updatePacket.spawnPosition.IsValid())
             {
@@ -78,6 +76,9 @@ namespace WoWDeveloperAssistant.Misc
 
             if (!hasDisableGravity && updatePacket.hasDisableGravity)
                 hasDisableGravity = updatePacket.hasDisableGravity;
+
+            if (transportGuid == "" && updatePacket.transportGuid != "")
+                transportGuid = updatePacket.transportGuid;
         }
 
         public void UpdateSpells(SpellStartPacket spellPacket)

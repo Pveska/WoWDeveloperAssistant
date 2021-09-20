@@ -17,13 +17,33 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
     {
         private readonly MainForm mainForm;
         private Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
+        private Dictionary<string, GameObject> gameObjectsDict = new Dictionary<string, GameObject>();
 
         public WaypointsCreator(MainForm mainForm)
         {
             this.mainForm = mainForm;
         }
 
-        public bool GetDataFromSniffFile(string fileName, bool multiSelect)
+        public uint GetDataFromFile(string[] fileNames)
+        {
+            uint successfullyParsedFilesCount = 0;
+
+            foreach (string fileName in fileNames)
+            {
+                if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
+                {
+                    successfullyParsedFilesCount++;
+                }
+                else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
+                {
+                    successfullyParsedFilesCount++;
+                }
+            }
+
+            return successfullyParsedFilesCount;
+        }
+
+        public bool GetDataFromTxtFile(string fileName, bool multiSelect)
         {
             mainForm.SetCurrentStatus("Getting lines...");
 
@@ -150,18 +170,49 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 {
                     updateObjectPacketsDict.AddSourceFromUpdatePacket(updatePacket, packet.index);
 
-                    if (!creaturesDict.ContainsKey(updatePacket.creatureGuid))
+                    if (updatePacket.objectType == UpdateObjectPacket.ObjectTypes.Unit)
                     {
-                        creaturesDict.Add(updatePacket.creatureGuid, new Creature(updatePacket));
-                        creaturesDict[updatePacket.creatureGuid].SortWaypoints();
+                        if (!creaturesDict.ContainsKey(updatePacket.guid))
+                        {
+                            creaturesDict.Add(updatePacket.guid, new Creature(updatePacket));
+                            creaturesDict[updatePacket.guid].SortWaypoints();
+                        }
+                        else
+                        {
+                            creaturesDict[updatePacket.guid].UpdateCreature(updatePacket);
+                            creaturesDict[updatePacket.guid].SortWaypoints();
+                        }
                     }
-                    else
+                    else if (updatePacket.objectType == UpdateObjectPacket.ObjectTypes.GameObject)
                     {
-                        creaturesDict[updatePacket.creatureGuid].UpdateCreature(updatePacket);
-                        creaturesDict[updatePacket.creatureGuid].SortWaypoints();
+                        if (!gameObjectsDict.ContainsKey(updatePacket.guid))
+                        {
+                            gameObjectsDict.Add(updatePacket.guid, new GameObject(updatePacket));
+                        }
+                        else
+                        {
+                            gameObjectsDict[updatePacket.guid].UpdateGameObject(updatePacket);
+                        }
                     }
                 }
             }
+
+            Parallel.ForEach(creaturesDict.Values, creature =>
+            {
+                creature.name = MainForm.GetCreatureNameByEntry(creature.entry);
+
+                if (creature.transportGuid != "")
+                {
+                    foreach (var gameObject in gameObjectsDict)
+                    {
+                        if (gameObject.Key == creature.transportGuid)
+                        {
+                            creature.mapId = GetMapIdForTransport(gameObject.Value.entry);
+                            break;
+                        }
+                    }
+                }
+            });
 
             mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE packets...");
 
@@ -244,7 +295,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Parallel.ForEach(auraPacketsDict.Values, packet =>
                 {
-                    foreach(AuraUpdatePacket auraPacket in AuraUpdatePacket.ParseAuraUpdatePacket(lines, packet.index, buildVersion))
+                    foreach (AuraUpdatePacket auraPacket in AuraUpdatePacket.ParseAuraUpdatePacket(lines, packet.index, buildVersion))
                     {
                         lock (auraPacketsDict)
                         {
@@ -429,27 +480,34 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 });
             }
 
-            if (!multiSelect)
+            if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
             {
-                if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
-                {
-                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
 
+                if (!multiSelect)
+                {
                     using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.dat"), FileMode.OpenOrCreate))
                     {
-                        binaryFormatter.Serialize(fileStream, creaturesDict);
+                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
+                        {
+                            { 0, creaturesDict },
+                            { 1, gameObjectsDict }
+                        };
+
+                        binaryFormatter.Serialize(fileStream, dictToSerialize);
                     }
                 }
-            }
-            else
-            {
-                if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
+                else
                 {
-                    BinaryFormatter binaryFormatter = new BinaryFormatter();
-
                     using (FileStream fileStream = new FileStream("multi_selected_waypoint_packets.dat", FileMode.OpenOrCreate))
                     {
-                        binaryFormatter.Serialize(fileStream, creaturesDict);
+                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
+                        {
+                            { 0, creaturesDict },
+                            { 1, gameObjectsDict }
+                        };
+
+                        binaryFormatter.Serialize(fileStream, dictToSerialize);
                     }
                 }
             }
@@ -458,31 +516,27 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return true;
         }
 
-        public bool GetPacketsFromDataFile(string fileName, bool multiSelect)
+        public bool GetDataFromBinFile(string fileName, bool multiSelect)
         {
-            mainForm.SetCurrentStatus("Current status: Getting packets from data file...");
+            mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
             BinaryFormatter binaryFormatter = new BinaryFormatter();
+            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
 
-            if (!multiSelect)
+            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
             {
-                using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
-                {
-                    creaturesDict = (Dictionary<string, Creature>)binaryFormatter.Deserialize(fileStream);
-                }
+                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
+            }
+
+            if (multiSelect)
+            {
+                creaturesDict.Union((Dictionary<string, Creature>)dictFromSerialize[0]);
+                gameObjectsDict.Union((Dictionary<string, GameObject>)dictFromSerialize[1]);
             }
             else
             {
-                using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
-                {
-                    foreach (var creature in (Dictionary<string, Creature>)binaryFormatter.Deserialize(fileStream))
-                    {
-                        if (!creaturesDict.ContainsKey(creature.Key))
-                        {
-                            creaturesDict.Add(creature.Key, creature.Value);
-                        }
-                    }
-                }
+                creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
+                gameObjectsDict = (Dictionary<string, GameObject>)dictFromSerialize[1];
             }
 
             return true;

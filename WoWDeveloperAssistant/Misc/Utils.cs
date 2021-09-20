@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -125,7 +126,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static UpdateObjectPacket? GetUpdatePacketForCreatureWithGuid(this IEnumerable<object> list, string guid)
         {
-            foreach (var updateObjectPacket in list.Cast<UpdateObjectPacket>().Where(updateObjectPacket => updateObjectPacket.creatureGuid == guid))
+            foreach (var updateObjectPacket in list.Cast<UpdateObjectPacket>().Where(updateObjectPacket => updateObjectPacket.guid == guid))
             {
                 return updateObjectPacket;
             }
@@ -291,6 +292,33 @@ namespace WoWDeveloperAssistant.Misc
             }
 
             return spaces;
+        }
+
+        public static uint GetMapIdForTransport(uint transportEntry)
+        {
+            var mapIdDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `data6` FROM `gameobject_template` WHERE `entry` = {transportEntry};") : null;
+
+            if (mapIdDs != null)
+                return Convert.ToUInt16(mapIdDs.Tables["table"].Rows[0][0].ToString());
+
+            return 0;
+        }
+
+        public static Dictionary<uint, string> GetCreatureNamesFromDB()
+        {
+            Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
+
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery("SELECT `entry`, `Name1` FROM `creature_template_wdb`;") : null;
+
+            if (creatureNameDs != null)
+            {
+                foreach (DataRow row in creatureNameDs.Tables["table"].Rows)
+                {
+                    namesDict.Add((uint)row[0], row[1].ToString());
+                }
+            }
+
+            return namesDict;
         }
     }
 }

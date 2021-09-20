@@ -137,6 +137,7 @@
     <Compile Include="Misc\Aura.cs" />
     <Compile Include="Misc\Creature.cs" />
     <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />
+    <Compile Include="Misc\GameObject.cs" />
     <Compile Include="Misc\LineGetters.cs" />
     <Compile Include="Misc\Packets.cs" />
     <Compile Include="Creature Scripts Creator\Spell.cs" />

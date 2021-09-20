@@ -35,26 +35,8 @@ namespace WoWDeveloperAssistant
 
             if (Properties.Settings.Default.UsingDB)
             {
-                creatureNamesDict = GetCreatureNamesFromDB();
+                creatureNamesDict = Misc.Utils.GetCreatureNamesFromDB();
             }
-        }
-
-        private Dictionary<uint, string> GetCreatureNamesFromDB()
-        {
-            Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
-
-            string creatureNameQuery = "SELECT `entry`, `Name1` FROM `creature_template_wdb`;";
-            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
-
-            if (creatureNameDs != null)
-            {
-                foreach (DataRow row in creatureNameDs.Tables["table"].Rows)
-                {
-                    namesDict.Add((uint)row[0], row[1].ToString());
-                }
-            }
-
-            return namesDict;
         }
 
         public static string GetCreatureNameByEntry(uint creatureEntry)
@@ -115,27 +97,16 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (openFileDialog.FileName.Contains("txt"))
+                if (IsTxtFileValidForParse(openFileDialog.FileName) && creatureScriptsCreator.GetDataFromFile(openFileDialog.FileNames) != 0)
                 {
-                    if (IsTxtFileValidForParse(openFileDialog.FileName) &&
-                    creatureScriptsCreator.GetDataFromSniffFile(openFileDialog.FileNames))
-                    {
-                        creatureScriptsCreator.ImportSuccessful();
-                    }
-                    else
-                    {
-                        toolStripStatusLabel_CurrentAction.Text = "";
-                        toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                        toolStripButton_CSC_ImportSniff.Enabled = true;
-                        Cursor = Cursors.Default;
-                    }
+                    creatureScriptsCreator.ImportSuccessful();
                 }
-                else if (openFileDialog.FileName.Contains("dat"))
+                else
                 {
-                    if (creatureScriptsCreator.GetPacketsFromDataFile(openFileDialog.FileNames))
-                    {
-                        creatureScriptsCreator.ImportSuccessful();
-                    }
+                    toolStripStatusLabel_CurrentAction.Text = "";
+                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                    toolStripButton_CSC_ImportSniff.Enabled = true;
+                    Cursor = Cursors.Default;
                 }
             }
         }
@@ -249,67 +220,16 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (openFileDialog.FileNames.Length == 1)
+                if (IsTxtFileValidForParse(openFileDialog.FileName) && waypointsCreator.GetDataFromFile(openFileDialog.FileNames) != 0)
                 {
-                    if (openFileDialog.FileName.Contains("txt"))
-                    {
-                        if (IsTxtFileValidForParse(openFileDialog.FileName) &&
-                        waypointsCreator.GetDataFromSniffFile(openFileDialog.FileName, false))
-                        {
-                            waypointsCreator.ImportSuccessful(false);
-                        }
-                        else
-                        {
-                            toolStripStatusLabel_CurrentAction.Text = "";
-                            toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                            toolStripButton_CSC_ImportSniff.Enabled = true;
-                            Cursor = Cursors.Default;
-                        }
-                    }
-                    else if (openFileDialog.FileName.Contains("dat"))
-                    {
-                        if (waypointsCreator.GetPacketsFromDataFile(openFileDialog.FileName, false))
-                        {
-                            waypointsCreator.ImportSuccessful(false);
-                        }
-                    }
+                    waypointsCreator.ImportSuccessful(false);
                 }
                 else
                 {
-                    uint successfulFilesParsedCount = 0;
-
-                    foreach (var fileName in openFileDialog.FileNames)
-                    {
-                        if (fileName.Contains("txt"))
-                        {
-                            if (IsTxtFileValidForParse(fileName))
-                            {
-                                if (waypointsCreator.GetDataFromSniffFile(fileName, true))
-                                {
-                                    successfulFilesParsedCount++;
-                                }
-                            }
-                        }
-                        else if (fileName.Contains("dat"))
-                        {
-                            if (waypointsCreator.GetPacketsFromDataFile(fileName, true))
-                            {
-                                successfulFilesParsedCount++;
-                            }
-                        }
-                    }
-
-                    if (successfulFilesParsedCount != 0)
-                    {
-                        waypointsCreator.ImportSuccessful(true);
-                    }
-                    else
-                    {
-                        toolStripStatusLabel_CurrentAction.Text = "";
-                        toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                        toolStripButton_CSC_ImportSniff.Enabled = true;
-                        Cursor = Cursors.Default;
-                    }
+                    toolStripStatusLabel_CurrentAction.Text = "";
+                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                    toolStripButton_CSC_ImportSniff.Enabled = true;
+                    Cursor = Cursors.Default;
                 }
             }
         }
