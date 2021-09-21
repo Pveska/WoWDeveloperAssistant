@@ -55,13 +55,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> emotePacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> attackStopPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> animKitPacketsDict = new SortedDictionary<long, Packet>();
-
             BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
-            if (buildVersion == BuildVersions.BUILD_UNKNOWN)
-            {
-                MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+
+            if (!IsTxtFileValidForParse(fileName, lines, buildVersion))
                 return false;
-            }
 
             mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
 

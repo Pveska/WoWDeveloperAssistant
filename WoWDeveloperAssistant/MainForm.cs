@@ -47,21 +47,6 @@ namespace WoWDeveloperAssistant
             return "Unknown";
         }
 
-        private static bool IsTxtFileValidForParse(string fileName)
-        {
-            StreamReader file = new StreamReader(fileName);
-            var line = file.ReadLine();
-            file.Close();
-
-            if (line == "# TrinityCore - WowPacketParser")
-            {
-                return true;
-            }
-
-            MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-            return false;
-        }
-
         private void createSQLToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView_CreatureScriptsCreator_Spells.Rows.Count > 0)
@@ -97,7 +82,7 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) && creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
+                if (creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
                 {
                     creatureScriptsCreator.ImportSuccessful();
                 }
@@ -220,7 +205,7 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (IsTxtFileValidForParse(openFileDialog.FileName) && waypointsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
+                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
                 {
                     waypointsCreator.ImportSuccessful(false);
                 }

@@ -103,13 +103,10 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             var lines = File.ReadAllLines(fileName);
             Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
-
             BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
-            if (buildVersion == BuildVersions.BUILD_UNKNOWN)
-            {
-                MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+
+            if (!IsTxtFileValidForParse(fileName, lines, buildVersion))
                 return false;
-            }
 
             if (!multiSelect)
             {

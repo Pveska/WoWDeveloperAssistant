@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Packets;
 
@@ -319,6 +320,23 @@ namespace WoWDeveloperAssistant.Misc
             }
 
             return namesDict;
+        }
+
+        public static bool IsTxtFileValidForParse(string fileName, string[] lines, BuildVersions buildVersion)
+        {
+            if (lines[0] != "# TrinityCore - WowPacketParser")
+            {
+                MessageBox.Show(fileName + " is not a valid TrinityCore parsed sniff file.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                return false;
+            }
+
+            if (buildVersion == BuildVersions.BUILD_UNKNOWN)
+            {
+                MessageBox.Show(fileName + " has non-supported build.", "File Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                return false;
+            }
+
+            return true;
         }
     }
 }
