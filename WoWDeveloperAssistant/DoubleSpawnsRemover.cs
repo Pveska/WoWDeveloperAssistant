@@ -104,33 +104,39 @@ namespace WoWDeveloperAssistant
                 }
             }
 
-            creaturesDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` IN (" + GetStringFromList(creatureEntries) + ")");
-
-            gameobjectsDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `gameobject` WHERE `id` IN (" + GetStringFromList(gameobjectEntries) + ")");
-
-            foreach (DataRow row in creaturesDataRowCollection)
+            if (creatureEntries.Count != 0)
             {
-                if (!creaturesDataRowDictionary.ContainsKey(row[1].ToString()))
+                creaturesDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` IN (" + GetStringFromList(creatureEntries) + ")");
+
+                foreach (DataRow row in creaturesDataRowCollection)
                 {
-                    creaturesDataRowDictionary.Add(row[1].ToString(), new List<DataRow>());
-                    creaturesDataRowDictionary[row[1].ToString()].Add(row);
-                }
-                else
-                {
-                    creaturesDataRowDictionary[row[1].ToString()].Add(row);
+                    if (!creaturesDataRowDictionary.ContainsKey(row[1].ToString()))
+                    {
+                        creaturesDataRowDictionary.Add(row[1].ToString(), new List<DataRow>());
+                        creaturesDataRowDictionary[row[1].ToString()].Add(row);
+                    }
+                    else
+                    {
+                        creaturesDataRowDictionary[row[1].ToString()].Add(row);
+                    }
                 }
             }
 
-            foreach (DataRow row in gameobjectsDataRowCollection)
+            if (gameobjectEntries.Count != 0)
             {
-                if (!gameobjectDataRowDictionary.ContainsKey(row[1].ToString()))
+                gameobjectsDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `gameobject` WHERE `id` IN (" + GetStringFromList(gameobjectEntries) + ")");
+
+                foreach (DataRow row in gameobjectsDataRowCollection)
                 {
-                    gameobjectDataRowDictionary.Add(row[1].ToString(), new List<DataRow>());
-                    gameobjectDataRowDictionary[row[1].ToString()].Add(row);
-                }
-                else
-                {
-                    gameobjectDataRowDictionary[row[1].ToString()].Add(row);
+                    if (!gameobjectDataRowDictionary.ContainsKey(row[1].ToString()))
+                    {
+                        gameobjectDataRowDictionary.Add(row[1].ToString(), new List<DataRow>());
+                        gameobjectDataRowDictionary[row[1].ToString()].Add(row);
+                    }
+                    else
+                    {
+                        gameobjectDataRowDictionary[row[1].ToString()].Add(row);
+                    }
                 }
             }
 
