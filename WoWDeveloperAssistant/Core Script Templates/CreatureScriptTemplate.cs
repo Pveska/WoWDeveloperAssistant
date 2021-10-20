@@ -186,6 +186,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             string normilizedString = line;
 
             normilizedString = normilizedString.Replace(" ", "_");
+            normilizedString = normilizedString.Replace("-", "_");
 
             foreach (char character in normilizedString)
             {
