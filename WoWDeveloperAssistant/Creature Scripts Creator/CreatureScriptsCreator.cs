@@ -78,23 +78,29 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = true;
         }
 
-        public uint GetDataFromFiles(string[] fileNames)
+        public void GetDataFromFiles(string[] fileNames)
         {
-            uint successfullyParsedFilesCount = 0;
-
-            foreach (string fileName in fileNames)
+            Task.Factory.StartNew(() =>
             {
-                if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
-                {
-                    successfullyParsedFilesCount++;
-                }
-                else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
-                {
-                    successfullyParsedFilesCount++;
-                }
-            }
+                uint successfullyParsedFilesCount = 0;
 
-            return successfullyParsedFilesCount;
+                foreach (string fileName in fileNames)
+                {
+                    if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
+                    {
+                        successfullyParsedFilesCount++;
+                    }
+                    else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
+                    {
+                        successfullyParsedFilesCount++;
+                    }
+
+                    mainForm.FileCountDone++;
+                    mainForm.UpdateFileStatus();
+                }
+
+                mainForm.ImportSniffDone(false, successfullyParsedFilesCount != 0);
+            });
         }
 
         public bool GetDataFromTxtFile(string fileName, bool multiSelect)
@@ -795,7 +801,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.DataSource = null;
             mainForm.dataGridView_CreatureScriptsCreator_Spells.Enabled = false;
             mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Clear();
-            mainForm.toolStripStatusLabel_FileStatus.Text = "Loading File...";
+            mainForm.UpdateFileStatus();
         }
 
         public void ImportSuccessful()

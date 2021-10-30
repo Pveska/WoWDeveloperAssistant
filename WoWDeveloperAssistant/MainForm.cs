@@ -21,6 +21,8 @@ namespace WoWDeveloperAssistant
         private readonly CoreScriptTemplates coreScriptTemplate;
         private static Dictionary<uint, string> creatureNamesDict;
         private readonly ConditionsCreator conditionsCreator;
+        public int FileCount = 0;
+        public int FileCountDone = 0;
 
         public MainForm()
         {
@@ -74,6 +76,8 @@ namespace WoWDeveloperAssistant
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
+                FileCount = openFileDialog.FileNames.Length;
+                FileCountDone = 0;
                 creatureScriptsCreator.ImportStarted();
 
                 if (!DBC.DBC.IsLoaded())
@@ -82,17 +86,25 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
-                {
-                    creatureScriptsCreator.ImportSuccessful();
-                }
+                creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames);
+            }
+        }
+
+        public void ImportSniffDone(bool p_Waypoint, bool ok)
+        {
+            if (ok)
+            {
+                if (p_Waypoint)
+                    waypointsCreator.ImportSuccessful(false);
                 else
-                {
-                    toolStripStatusLabel_CurrentAction.Text = "";
-                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_CSC_ImportSniff.Enabled = true;
-                    Cursor = Cursors.Default;
-                }
+                    creatureScriptsCreator.ImportSuccessful();
+            }
+            else
+            {
+                toolStripStatusLabel_CurrentAction.Text = "";
+                toolStripStatusLabel_FileStatus.Text = "No File Loaded";
+                toolStripButton_CSC_ImportSniff.Enabled = true;
+                Cursor = Cursors.Default;
             }
         }
 
@@ -197,6 +209,8 @@ namespace WoWDeveloperAssistant
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
+                FileCount = openFileDialog.FileNames.Length;
+                FileCountDone = 0;
                 waypointsCreator.ImportStarted();
 
                 if (!DBC.DBC.IsLoaded())
@@ -205,17 +219,7 @@ namespace WoWDeveloperAssistant
                     DBC.DBC.Load();
                 }
 
-                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
-                {
-                    waypointsCreator.ImportSuccessful(false);
-                }
-                else
-                {
-                    toolStripStatusLabel_CurrentAction.Text = "";
-                    toolStripStatusLabel_FileStatus.Text = "No File Loaded";
-                    toolStripButton_CSC_ImportSniff.Enabled = true;
-                    Cursor = Cursors.Default;
-                }
+                waypointsCreator.GetDataFromFiles(openFileDialog.FileNames);
             }
         }
 
@@ -275,8 +279,13 @@ namespace WoWDeveloperAssistant
 
         public void SetCurrentStatus(string status)
         {
-            toolStripStatusLabel_CurrentAction.Text = "Current Status: " + status;
+            toolStripStatusLabel_CurrentAction.Text = string.Format("Current Status: {0}", status);
             Update();
+        }
+
+        public void UpdateFileStatus()
+        {
+            toolStripStatusLabel_FileStatus.Text = string.Format("[{0}/{1}] Loading File...", FileCountDone, FileCount);
         }
 
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
