@@ -147,7 +147,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             },
         };
 
-        public static void CreateTemplate(uint objectEntry, ListBox hooksListBox, TreeView hookBodiesTreeView)
+        public static void CreateTemplate(uint objectEntry, ListBox hooksListBox, TreeView hookBodiesTreeView, ref string preview)
         {
             string scriptBody = "";
             string defaultName = "";
@@ -176,8 +176,13 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             scriptBody += GetHooksBody(hooksListBox, hookBodiesTreeView);
             scriptBody += "\r\n" + "};" + "\r\n";
 
-            Clipboard.SetText(scriptBody);
-            MessageBox.Show("Template has been successfully builded and copied on your clipboard!");
+            if (preview == "true")
+                preview = scriptBody;
+            else
+            {
+                Clipboard.SetText(scriptBody);
+                MessageBox.Show("Template has been successfully builded and copied on your clipboard!");
+            }
         }
 
         public static string NormilizeScriptName(string line)

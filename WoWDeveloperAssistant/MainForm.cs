@@ -297,6 +297,12 @@ namespace WoWDeveloperAssistant
         {
             textBox_CoreScriptTemplates_ObjectId.Enabled = true;
             coreScriptTemplate.FillTreeWithHookBodies();
+            coreScriptTemplate.CreateTemplate(true);
+        }
+
+        private void treeView_CoreScriptTemplates_HookBodies_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            coreScriptTemplate.CreateTemplate(true);
         }
 
         private void TextBox_CoreScriptTemplates_Enter(object sender, KeyEventArgs e)
@@ -307,7 +313,12 @@ namespace WoWDeveloperAssistant
             if (textBox_CoreScriptTemplates_ObjectId.Text == "" || textBox_CoreScriptTemplates_ObjectId.Text == "0")
                 return;
 
-            coreScriptTemplate.CreateTemplate();
+            coreScriptTemplate.CreateTemplate(false);
+        }
+
+        private void textBox_CoreScriptTemplates_ObjectId_TextChanged(object sender, EventArgs e)
+        {
+            coreScriptTemplate.CreateTemplate(true);
         }
 
         private void TextBoxAchievements_Id_KeyUp(object sender, KeyEventArgs e)
