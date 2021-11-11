@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="toolStrip_CreatureScriptsCreator.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>12, 20</value>
-  </metadata>
-  <metadata name="toolStrip_WaypointsCreator.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>606, 23</value>
-  </metadata>
   <metadata name="SpellId.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -139,7 +133,7 @@
   <data name="toolStripButton_CSC_ImportSniff.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAR4SURBVHhe7Z3NilxVGEVrYKLPIQ6CiU+hjyP4Cg4FJZEY
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAR4SURBVHhe7Z3NilxVGEVrYKLPIQ6CiU+hjyP4Cg4FJZEY
         RN/EOBZ1bhTxFXTgHzhQ0e8LQcqwbHt33XvP2ffuBQvC7urUqayT7p40dTogb5QflU/K75/Zf+7t9TLs
         lFfKL8u//sfPy5fLsCNeLX8oKTjZXxXulGEHvFR+V1Loq/y2fLEM5rxVUuDr+GYZzPmipLjX8bMymPNT
         SXGv449lMIfCKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpi
@@ -164,7 +158,7 @@
   <data name="toolStripButton_CreatureScriptsCreator_Search.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAp1SURBVHhe7Z13DCVVFYfX3o0CBrGCvWCvEUVBo6hY/iCo
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAp1SURBVHhe7Z13DCVVFYfX3o0CBrGCvWCvEUVBo6hY/iCo
         UcCKkqjYsCAWREXAGgWxJ5oIAiqIKEaFqBhrYkUFETUWsIK9l9+XdRN389u3t83MnXnnS76E7LIz992Z
         N+/Oveecu2HG7CT3lE+Tb5JnyLPlV+V58ifyt//z5/ICyd99Vp4pj5fPknvJXeRlZdApV5UPkEfIz8lL
         5X8a+xfJDfIG+Qi5nQwm5NaSC36O/Lt0F21I/yW/Lt8o7yWDEdhRvkCeK91FmdKfytfIm8ugMXeTJ0ge
@@ -251,7 +245,7 @@
   <data name="toolStripButton_WaypointsCreator_Search.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAp1SURBVHhe7Z13DCVVFYfX3o0CBrGCvWCvEUVBo6hY/iCo
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAp1SURBVHhe7Z13DCVVFYfX3o0CBrGCvWCvEUVBo6hY/iCo
         UcCKkqjYsCAWREXAGgWxJ5oIAiqIKEaFqBhrYkUFETUWsIK9l9+XdRN389u3t83MnXnnS76E7LIz992Z
         N+/Oveecu2HG7CT3lE+Tb5JnyLPlV+V58ifyt//z5/ICyd99Vp4pj5fPknvJXeRlZdApV5UPkEfIz8lL
         5X8a+xfJDfIG+Qi5nQwm5NaSC36O/Lt0F21I/yW/Lt8o7yWDEdhRvkCeK91FmdKfytfIm8ugMXeTJ0ge
@@ -302,7 +296,7 @@
   <data name="toolStripButton_WaypointsCreator_Settings.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAABDKSURBVHhe7dVRctu6EkXRO/9Jv5fETmI7xxIlESDQvVbV
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAABDKSURBVHhe7dVRctu6EkXRO/9Jv5fETmI7xxIlESDQvVbV
         /jVokd34D4Bl/K9QANBauhw7BQAlpUtPnwOAbaWLTccDgKWly0vnBABLSJeUxgYA06ULSfMDgKHS5aPr
         A4BTpctG6wUAL0mXi/YIAB6SLhPtFwDclS4Q7R0AROnSUJ0A4I90UahmABAvCNUOgKbSpaA+AdBMugzU
         LwCaSJeAegZAA+kCUO8AKCwtfulnABSUFr70OwCKScte+hoAhaRFL30NgCLSkpdSABSQFrx0KwA2l5a7
@@ -380,7 +374,7 @@
   <data name="toolStripButton_WaypointsCreator_LoadSniff.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAR4SURBVHhe7Z3NilxVGEVrYKLPIQ6CiU+hjyP4Cg4FJZEY
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAR4SURBVHhe7Z3NilxVGEVrYKLPIQ6CiU+hjyP4Cg4FJZEY
         RN/EOBZ1bhTxFXTgHzhQ0e8LQcqwbHt33XvP2ffuBQvC7urUqayT7p40dTogb5QflU/K75/Zf+7t9TLs
         lFfKL8u//sfPy5fLsCNeLX8oKTjZXxXulGEHvFR+V1Loq/y2fLEM5rxVUuDr+GYZzPmipLjX8bMymPNT
         SXGv449lMIfCKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpiMIeiKgZzKKpi
