@@ -115,6 +115,7 @@
     <Compile Include="Conditions Creator\ConditionsCreator.cs" />
     <Compile Include="Core Script Templates\CoreScriptTemplates.cs" />
     <Compile Include="Core Script Templates\CreatureScriptTemplate.cs" />
+    <Compile Include="Core Script Templates\SpellScriptTemplate.cs" />
     <Compile Include="Database Advisor\AddonsHelper.cs" />
     <Compile Include="Database Advisor\DoublePathsFinder.cs" />
     <Compile Include="Database Advisor\GossipMenuAdvisor.cs" />
