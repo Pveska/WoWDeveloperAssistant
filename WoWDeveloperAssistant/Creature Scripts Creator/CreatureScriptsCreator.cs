@@ -634,6 +634,8 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
             {
                 Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+                double minCastTime = Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000;
+                double maxCastTime = Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000;
 
                 if (!spell.isDeathSpell && l == 0)
                 {
@@ -643,12 +645,12 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     }
                     else
                     {
-                        body += $"\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000}));";
+                        body += $"\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, " + (minCastTime != maxCastTime ? $"urand({minCastTime}, {maxCastTime})" : $"{minCastTime}") + ");";
                     }
                 }
                 else if (!spell.isDeathSpell && l > 0)
                 {
-                    body += $"\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000}));";
+                    body += $"\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, " + (minCastTime != maxCastTime ? $"urand({minCastTime}, {maxCastTime})" : $"{minCastTime}") + ");";
                 }
             }
 
@@ -670,22 +672,24 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++)
             {
                 Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
+                double minRepeatTime = Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000;
+                double maxRepeatTime = Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000;
 
                 if (!spell.isDeathSpell && l + 1 < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount)
                 {
                     body += $"\r\n{AddSpacesCount(12)}case eEvents::Cast{NormilizeName(spell.name)}:\r\n{AddSpacesCount(12)}{{\r\n{AddSpacesCount(16)}" + (spell.GetTargetType() == 1 ? "DoCast" : "DoCastVictim") + $"(eSpells::{NormilizeName(spell.name)});";
 
-                    if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds))
+                    if (minRepeatTime == maxRepeatTime)
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000});";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {minRepeatTime});";
                     }
-                    else if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == 0 && Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) == 0)
+                    else if (minRepeatTime == 0 && maxRepeatTime == 0)
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, 0);";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, 1);";
                     }
                     else
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000}));";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({minRepeatTime}, {maxRepeatTime}));";
                     }
 
                     body += $"\r\n{AddSpacesCount(16)}break;";
@@ -695,17 +699,17 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 {
                     body += $"\r\n{AddSpacesCount(12)}case eEvents::Cast{NormilizeName(spell.name)}:\r\n{AddSpacesCount(12)}{{\r\n{AddSpacesCount(16)}" + (spell.GetTargetType() == 1 ? "DoCast" : "DoCastVictim") + $"(eSpells::{NormilizeName(spell.name)});";
 
-                    if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds))
+                    if (minRepeatTime == maxRepeatTime)
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000});";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, {minRepeatTime});";
                     }
-                    else if (Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) == 0 && Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) == 0)
+                    else if (minRepeatTime == 0 && maxRepeatTime == 0)
                     {
                         body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, 0);";
                     }
                     else
                     {
-                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000}));";
+                        body += $"\r\n{AddSpacesCount(16)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({minRepeatTime}, {maxRepeatTime}));";
                     }
 
                     body += $"\r\n{AddSpacesCount(16)}break;";
