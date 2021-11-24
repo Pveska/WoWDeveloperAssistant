@@ -641,7 +641,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 {
                     if (IsCreatureHasAggroText(creature.entry))
                     {
-                        body += $"\r\n\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, urand({Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000}, {Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000}));";
+                        body += $"\r\n\r\n{AddSpacesCount(8)}events.ScheduleEvent(eEvents::Cast{NormilizeName(spell.name)}, " + (minCastTime != maxCastTime ? $"urand({minCastTime}, {maxCastTime})" : $"{minCastTime}")  + ");";
                     }
                     else
                     {
