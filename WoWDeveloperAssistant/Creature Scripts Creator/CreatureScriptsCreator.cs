@@ -78,29 +78,23 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = true;
         }
 
-        public void GetDataFromFiles(string[] fileNames)
+        public uint GetDataFromFiles(string[] fileNames)
         {
-            Task.Factory.StartNew(() =>
+            uint successfullyParsedFilesCount = 0;
+
+            foreach (string fileName in fileNames)
             {
-                uint successfullyParsedFilesCount = 0;
-
-                foreach (string fileName in fileNames)
+                if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
                 {
-                    if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
-                    {
-                        successfullyParsedFilesCount++;
-                    }
-                    else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
-                    {
-                        successfullyParsedFilesCount++;
-                    }
-
-                    mainForm.FileCountDone++;
-                    mainForm.UpdateFileStatus();
+                    successfullyParsedFilesCount++;
                 }
+                else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
+                {
+                    successfullyParsedFilesCount++;
+                }
+            }
 
-                mainForm.ImportSniffDone(false, successfullyParsedFilesCount != 0);
-            });
+            return successfullyParsedFilesCount;
         }
 
         public bool GetDataFromTxtFile(string fileName, bool multiSelect)
@@ -805,7 +799,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.DataSource = null;
             mainForm.dataGridView_CreatureScriptsCreator_Spells.Enabled = false;
             mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Clear();
-            mainForm.UpdateFileStatus();
+            mainForm.toolStripStatusLabel_FileStatus.Text = "Loading File...";
         }
 
         public void ImportSuccessful()

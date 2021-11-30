@@ -24,29 +24,23 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             this.mainForm = mainForm;
         }
 
-        public void GetDataFromFiles(string[] fileNames)
+        public uint GetDataFromFiles(string[] fileNames)
         {
-            Task.Factory.StartNew(() =>
+            uint successfullyParsedFilesCount = 0;
+
+            foreach (string fileName in fileNames)
             {
-                uint successfullyParsedFilesCount = 0;
-
-                foreach (string fileName in fileNames)
+                if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
                 {
-                    if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
-                    {
-                        successfullyParsedFilesCount++;
-                    }
-                    else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
-                    {
-                        successfullyParsedFilesCount++;
-                    }
-
-                    mainForm.FileCountDone++;
-                    mainForm.UpdateFileStatus();
+                    successfullyParsedFilesCount++;
                 }
+                else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
+                {
+                    successfullyParsedFilesCount++;
+                }
+            }
 
-                mainForm.ImportSniffDone(true, successfullyParsedFilesCount != 0);
-            });
+            return successfullyParsedFilesCount;
         }
 
         public bool GetDataFromTxtFile(string fileName, bool multiSelect)
@@ -1385,7 +1379,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.listBox_WaypointsCreator_CreatureGuids.DataSource = null;
             mainForm.grid_WaypointsCreator_Waypoints.Enabled = false;
             mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
-            mainForm.UpdateFileStatus();
+            mainForm.toolStripStatusLabel_FileStatus.Text = "Loading File...";
         }
 
         public void ImportSuccessful(bool multiSelect)
