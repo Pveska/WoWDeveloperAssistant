@@ -368,7 +368,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 }
                 else
                 {
-                    using (FileStream fileStream = new FileStream("multi_selected_script_packets.dat", FileMode.OpenOrCreate))
+                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "multi_selected_script_packets.dat"), FileMode.OpenOrCreate))
                     {
                         Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
                         {
@@ -397,15 +397,18 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
             }
 
+            Dictionary<string, Creature> creatureDictFromSerialize = (Dictionary<string, Creature>)dictFromSerialize[0];
+            Dictionary<uint, List<CreatureText>> creatureTextsDictFromSerialize = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
+
             if (multiSelect)
             {
-                creaturesDict.Union((Dictionary<string, Creature>)dictFromSerialize[0]);
-                creatureTextsDict.Union((Dictionary<uint, List<CreatureText>>)dictFromSerialize[1]);
+                creaturesDict = creaturesDict.Concat(creatureDictFromSerialize.Where(x => !creaturesDict.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
+                creatureTextsDict = creatureTextsDict.Concat(creatureTextsDictFromSerialize.Where(x => !creatureTextsDict.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
             }
             else
             {
-                creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
-                creatureTextsDict = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
+                creaturesDict = creatureDictFromSerialize;
+                creatureTextsDict = creatureTextsDictFromSerialize;
             }
 
             return true;
