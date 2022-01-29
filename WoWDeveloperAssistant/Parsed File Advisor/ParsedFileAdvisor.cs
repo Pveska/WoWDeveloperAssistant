@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Misc;
+using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
 
@@ -16,12 +17,14 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
     public class ParsedFileAdvisor
     {
         private readonly MainForm mainForm;
-        public Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
+        public static Dictionary<string, Creature> creatures = new Dictionary<string, Creature>();
         public List<UpdateObjectPacket> conversationPackets = new List<UpdateObjectPacket>();
-        public Dictionary<uint, List<CreatureText>> creatureTextsDict = new Dictionary<uint, List<CreatureText>>();
-        public List<SpellStartPacket> spellPacketsList = new List<SpellStartPacket>();
+        public Dictionary<uint, List<CreatureText>> creatureTexts = new Dictionary<uint, List<CreatureText>>();
+        public List<SpellStartPacket> spellPackets = new List<SpellStartPacket>();
         public List<QuestGiverAcceptQuestPacket> questAcceptPackets = new List<QuestGiverAcceptQuestPacket>();
         public List<QuestGiverQuestCompletePacket> questCompletePackets = new List<QuestGiverQuestCompletePacket>();
+        public List<PlayerMovePacket> playerMovePackets = new List<PlayerMovePacket>();
+        public List<QuestUpdateAddCreditPacket> addCreditPackets = new List<QuestUpdateAddCreditPacket>();
 
         public ParsedFileAdvisor(MainForm mainForm)
         {
@@ -57,7 +60,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             if (!multiSelect)
             {
-                creaturesDict.Clear();
+                creatures.Clear();
             }
 
             Parallel.For(0, lines.Length, index =>
@@ -67,32 +70,42 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 if (packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
+                        packetIndexes.Add(index, packetType);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_SPELL_START && !packetIndexes.ContainsKey(index))
+                else if ((packetType == Packet.PacketTypes.SMSG_SPELL_START || packetType == Packet.PacketTypes.SMSG_SPELL_GO) && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
-                }
-                else if (packetType == Packet.PacketTypes.SMSG_SPELL_GO && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_GO);
+                        packetIndexes.Add(index, packetType);
                 }
                 else if (packetType == Packet.PacketTypes.SMSG_CHAT && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
+                        packetIndexes.Add(index, packetType);
                 }
-                else if (packetType == Packet.PacketTypes.CMSG_QUEST_GIVER_ACCEPT_QUEST && !packetIndexes.ContainsKey(index))
+                else if (Packet.IsQuestPacket(packetType) && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.CMSG_QUEST_GIVER_ACCEPT_QUEST);
+                        packetIndexes.Add(index, packetType);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE && !packetIndexes.ContainsKey(index))
+                else if (Packet.IsPlayerMovePacket(packetType) && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE);
+                        packetIndexes.Add(index, packetType);
+                }
+                else if(packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && !packetIndexes.ContainsKey(index))
+                {
+                    lock (packetIndexes)
+                        packetIndexes.Add(index, packetType);
+                }
+                else if(packetType == Packet.PacketTypes.SMSG_AI_REACTION && !packetIndexes.ContainsKey(index))
+                {
+                    lock (packetIndexes)
+                        packetIndexes.Add(index, packetType);
+                }
+                else if(packetType == Packet.PacketTypes.SMSG_ATTACK_STOP && !packetIndexes.ContainsKey(index))
+                {
+                    lock (packetIndexes)
+                        packetIndexes.Add(index, packetType);
                 }
             });
 
@@ -111,15 +124,15 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         }
                         else
                         {
-                            lock (creaturesDict)
+                            lock (creatures)
                             {
-                                if (!creaturesDict.ContainsKey(packet.guid))
+                                if (!creatures.ContainsKey(packet.guid))
                                 {
-                                    creaturesDict.Add(packet.guid, new Creature(packet));
+                                    creatures.Add(packet.guid, new Creature(packet));
                                 }
                                 else
                                 {
-                                    creaturesDict[packet.guid].UpdateCreature(packet);
+                                    creatures[packet.guid].UpdateCreature(packet);
                                 }
                             }
                         }
@@ -129,9 +142,52 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             conversationPackets = conversationPackets.OrderBy(x => x.packetSendTime).ToList();
 
-            Parallel.ForEach(creaturesDict.Values, creature =>
+            Parallel.ForEach(creatures.Values, creature =>
             {
                 creature.name = MainForm.GetCreatureNameByEntry(creature.entry);
+            });
+
+            Parallel.ForEach(packetIndexes, value =>
+            {
+                if (value.Value == Packet.PacketTypes.SMSG_AI_REACTION)
+                {
+                    AIReactionPacket reactionPacket = AIReactionPacket.ParseAIReactionPacket(lines, value.Key, buildVersion);
+                    if (reactionPacket.creatureGuid == "")
+                        return;
+
+                    lock (creatures)
+                    {
+                        if (creatures.ContainsKey(reactionPacket.creatureGuid))
+                        {
+                            if (creatures[reactionPacket.creatureGuid].combatStartTime == TimeSpan.Zero ||
+                                creatures[reactionPacket.creatureGuid].combatStartTime < reactionPacket.packetSendTime)
+                            {
+                                creatures[reactionPacket.creatureGuid].combatStartTime = reactionPacket.packetSendTime;
+                            }
+                        }
+                    }
+                }
+            });
+
+            Parallel.ForEach(packetIndexes, value =>
+            {
+                if (value.Value == Packet.PacketTypes.SMSG_ATTACK_STOP)
+                {
+                    AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
+                    if (attackStopPacket.creatureGuid == "")
+                        return;
+
+                    lock (creatures)
+                    {
+                        if (creatures.ContainsKey(attackStopPacket.creatureGuid))
+                        {
+                            if (attackStopPacket.nowDead)
+                            {
+                                creatures[attackStopPacket.creatureGuid].deathTime = attackStopPacket.packetSendTime;
+                            }
+                        }
+                    }
+                }
             });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
@@ -146,9 +202,9 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                             return;
                     }
 
-                    lock (spellPacketsList)
+                    lock (spellPackets)
                     {
-                        spellPacketsList.Add(spellPacket);
+                        spellPackets.Add(spellPacket);
                     }
                 }
             });
@@ -161,52 +217,57 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     if (chatPacket.creatureGuid == "")
                         return;
 
-                    lock (creaturesDict)
+                    CreatureText text = new CreatureText(chatPacket);
+                    Creature sedner = creatures.FirstOrDefault(x => x.Value.guid == chatPacket.creatureGuid).Value;
+
+                    if (Math.Floor(sedner.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                        Math.Floor(sedner.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                        Math.Floor(sedner.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                     {
-                        Parallel.ForEach(creaturesDict, creature =>
+                        lock (creatureTexts)
                         {
-                            if (creature.Value.entry == chatPacket.creatureEntry)
+                            if (creatureTexts.ContainsKey(chatPacket.creatureEntry))
                             {
-                                CreatureText text = new CreatureText(chatPacket, true);
-
-                                if (Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
-                                {
-                                    lock (creatureTextsDict)
-                                    {
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
-                                        {
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                        }
-                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
-                                        {
-                                            creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                        }
-                                    }
-                                }
-
-                                if (Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
-                                {
-                                    lock (creatureTextsDict)
-                                    {
-
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
-                                        {
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                        }
-                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
-                                        {
-                                            creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                        }
-                                    }
-                                }
+                                creatureTexts[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
                             }
-                        });
+                            else if (!creatureTexts.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTexts.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                creatureTexts[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                            }
+                        }
+                    }
+                    else if (Math.Floor(sedner.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                             Math.Floor(sedner.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                             Math.Floor(sedner.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                    {
+                        lock (creatureTexts)
+                        {
+                            if (creatureTexts.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTexts[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                            }
+                            else if (!creatureTexts.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTexts.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                creatureTexts[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        lock (creatureTexts)
+                        {
+                            if (creatureTexts.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTexts[chatPacket.creatureEntry].Add(new CreatureText(chatPacket));
+                            }
+                            else if (!creatureTexts.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTexts.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                creatureTexts[chatPacket.creatureEntry].Add(new CreatureText(chatPacket));
+                            }
+                        }
                     }
                 }
             });
@@ -241,6 +302,56 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 }
             });
 
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
+                if (Packet.IsPlayerMovePacket(value.Value))
+                {
+                    PlayerMovePacket playerMovePacket = PlayerMovePacket.ParsePlayerMovePacket(lines, value.Key, buildVersion);
+                    if (playerMovePacket.playerGuid == "" || !playerMovePacket.position.IsValid())
+                        return;
+
+                    lock (playerMovePackets)
+                    {
+                        playerMovePackets.Add(playerMovePacket);
+                    }
+                }
+            });
+
+            playerMovePackets = playerMovePackets.OrderBy(x => x.packetSendTime).ToList();
+
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
+                if (value.Value == Packet.PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT)
+                {
+                    QuestUpdateAddCreditPacket addCreditPacket = QuestUpdateAddCreditPacket.ParseQuestUpdateAddCreditPacket(lines, value.Key);
+                    if (addCreditPacket.questId == 0 || addCreditPacket.objectId == 0)
+                        return;
+
+                    lock (addCreditPackets)
+                    {
+                        addCreditPackets.Add(addCreditPacket);
+                    }
+                }
+            });
+
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
+                if (value.Value == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE)
+                {
+                    MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion);
+                    if (movePacket.creatureGuid != "")
+                    {
+                        lock (creatures)
+                        {
+                            if (creatures.ContainsKey(movePacket.creatureGuid))
+                            {
+                                creatures[movePacket.creatureGuid].AddWaypointsFromMovementPacket(movePacket);
+                            }
+                        }
+                    }
+                }
+            });
+
             if (mainForm.checkBox_ParsedFileAdvisor_CreateDataFile.Checked)
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
@@ -251,8 +362,14 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     {
                         Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
                         {
-                            { 0, creaturesDict },
-                            { 1, creatureTextsDict }
+                            { 0, creatures            },
+                            { 1, conversationPackets  },
+                            { 2, creatureTexts        },
+                            { 3, spellPackets         },
+                            { 4, questAcceptPackets   },
+                            { 5, questCompletePackets },
+                            { 6, playerMovePackets    },
+                            { 7, addCreditPackets     }
                         };
 
                         binaryFormatter.Serialize(fileStream, dictToSerialize);
@@ -264,8 +381,14 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     {
                         Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
                         {
-                            { 0, creaturesDict },
-                            { 1, creatureTextsDict }
+                            { 0, creatures            },
+                            { 1, conversationPackets  },
+                            { 2, creatureTexts        },
+                            { 3, spellPackets         },
+                            { 4, questAcceptPackets   },
+                            { 5, questCompletePackets },
+                            { 6, playerMovePackets    },
+                            { 7, addCreditPackets     }
                         };
 
                         binaryFormatter.Serialize(fileStream, dictToSerialize);
@@ -288,18 +411,36 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
             }
 
-            Dictionary<string, Creature> creatureDictFromSerialize = (Dictionary<string, Creature>)dictFromSerialize[0];
-            Dictionary<uint, List<CreatureText>> creatureTextsDictFromSerialize = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
+            Dictionary<string, Creature> creaturesFromSerialize = (Dictionary<string, Creature>)dictFromSerialize[0];
+            List<UpdateObjectPacket> conversationPacketsFromSerialize = (List<UpdateObjectPacket>)dictFromSerialize[1];
+            Dictionary<uint, List<CreatureText>> creatureTextsFromSerialize = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[2];
+            List<SpellStartPacket> spellPacketsFromSerialize = (List<SpellStartPacket>)dictFromSerialize[3];
+            List<QuestGiverAcceptQuestPacket> questAcceptPacketsFromSerialize = (List<QuestGiverAcceptQuestPacket>)dictFromSerialize[4];
+            List<QuestGiverQuestCompletePacket> questCompletePacketsFromSerialize = (List<QuestGiverQuestCompletePacket>)dictFromSerialize[5];
+            List<PlayerMovePacket> playerMovePacketsFromSerialize = (List<PlayerMovePacket>)dictFromSerialize[6];
+            List<QuestUpdateAddCreditPacket> addCreditPacketsFromSerialize = (List<QuestUpdateAddCreditPacket>)dictFromSerialize[7];
 
             if (multiSelect)
             {
-                creaturesDict = creaturesDict.Concat(creatureDictFromSerialize.Where(x => !creaturesDict.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
-                creatureTextsDict = creatureTextsDict.Concat(creatureTextsDictFromSerialize.Where(x => !creatureTextsDict.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
+                creatures = creatures.Concat(creaturesFromSerialize.Where(x => !creatures.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
+                conversationPackets = conversationPackets.Concat(conversationPacketsFromSerialize.Where(x => !conversationPackets.Contains(x))).ToList();
+                creatureTexts = creatureTexts.Concat(creatureTextsFromSerialize.Where(x => !creatureTexts.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
+                spellPackets = spellPackets.Concat(spellPacketsFromSerialize.Where(x => !spellPackets.Contains(x))).ToList();
+                questAcceptPackets = questAcceptPackets.Concat(questAcceptPacketsFromSerialize.Where(x => !questAcceptPackets.Contains(x))).ToList();
+                questCompletePackets = questCompletePackets.Concat(questCompletePacketsFromSerialize.Where(x => !questCompletePackets.Contains(x))).ToList();
+                playerMovePackets = playerMovePackets.Concat(playerMovePacketsFromSerialize.Where(x => !playerMovePackets.Contains(x))).ToList();
+                addCreditPackets = addCreditPackets.Concat(addCreditPacketsFromSerialize.Where(x => !addCreditPackets.Contains(x))).ToList();
             }
             else
             {
-                creaturesDict = creatureDictFromSerialize;
-                creatureTextsDict = creatureTextsDictFromSerialize;
+                creatures = creaturesFromSerialize;
+                conversationPackets = conversationPacketsFromSerialize;
+                creatureTexts = creatureTextsFromSerialize;
+                spellPackets = spellPacketsFromSerialize;
+                questAcceptPackets = questAcceptPacketsFromSerialize;
+                questCompletePackets = questCompletePacketsFromSerialize;
+                playerMovePackets = playerMovePacketsFromSerialize;
+                addCreditPackets = addCreditPacketsFromSerialize;
             }
 
             return true;
@@ -319,6 +460,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             mainForm.Cursor = Cursors.WaitCursor;
             mainForm.toolStripButton_ParsedFileAdvisor_ImportSniff.Enabled = false;
             mainForm.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = "Loading File...";
+            mainForm.Update();
         }
 
         public void ImportSuccessful()
@@ -329,13 +471,24 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             mainForm.textBox_ParsedFileAdvisor_PlayerCastedSpells.Enabled = true;
             mainForm.textBox_ParsedFileAdvisor_AreaTriggerSplines.Enabled = true;
             mainForm.textBox_ParsedFileAdvisor_SpellDestinations.Enabled = true;
-            mainForm.textBox_ParsedFileAdvisor_QuestConversations.Enabled = true;
+            mainForm.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Enabled = true;
+            mainForm.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Enabled = true;
+            mainForm.Update();
         }
         public void ImportFailed()
         {
             mainForm.Cursor = Cursors.Default;
             mainForm.toolStripButton_ParsedFileAdvisor_ImportSniff.Enabled = true;
             mainForm.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = "No File Loaded";
+            mainForm.Update();
+        }
+
+        public static uint GetCreatureEntryByGuid(string creatureGuid)
+        {
+            if (creatures.ContainsKey(creatureGuid))
+                return creatures[creatureGuid].entry;
+
+            return 0;
         }
 
         public void ParsePlayerCastedSpells()
@@ -347,12 +500,12 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             string output = "";
             List<KeyValuePair<SpellStartPacket, uint>> spellPacketsListPair = new List<KeyValuePair<SpellStartPacket, uint>>();
 
-            Parallel.ForEach(spellPacketsList, spellPacket =>
+            Parallel.ForEach(spellPackets, spellPacket =>
             {
                 if (spellPacket.casterGuid != playerGuid)
                     return;
 
-                lock (spellPacketsList)
+                lock (spellPackets)
                 {
                     int spellIndex = spellPacketsListPair.FindIndex(x => x.Key.spellId == spellPacket.spellId);
 
@@ -405,7 +558,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             List<Position> allDestPositions = new List<Position>();
             List<Position> uniqDestPositions = new List<Position>();
 
-            Parallel.ForEach(spellPacketsList, spellPacket =>
+            Parallel.ForEach(spellPackets, spellPacket =>
             {
                 if (spellPacket.spellId != Convert.ToUInt32(spellId) || spellPacket.type != Packet.PacketTypes.SMSG_SPELL_START || !spellPacket.spellDestination.IsValid())
                     return;
@@ -454,68 +607,106 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             return false;
         }
 
-        public void ParseQuestAcceptAndRewardConversations()
+        public void ParseQuestConversations()
         {
-            if (mainForm.textBox_ParsedFileAdvisor_QuestConversations.Text == "" || mainForm.textBox_ParsedFileAdvisor_QuestConversations.Text == "0")
+            if (mainForm.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Text == "" || mainForm.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Text == "0")
                 return;
 
             string output = "";
-            QuestGiverAcceptQuestPacket acceptPacket = questAcceptPackets.SingleOrDefault(x => x.questId == Convert.ToUInt32(mainForm.textBox_ParsedFileAdvisor_QuestConversations.Text));
-            QuestGiverQuestCompletePacket completePacket = questCompletePackets.SingleOrDefault(x => x.questId == Convert.ToUInt32(mainForm.textBox_ParsedFileAdvisor_QuestConversations.Text));
+            uint questId = Convert.ToUInt32(mainForm.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Text);
+            QuestGiverAcceptQuestPacket acceptPacket = questAcceptPackets.FirstOrDefault(x => x.questId == questId);
+            QuestGiverQuestCompletePacket completePacket = questCompletePackets.FirstOrDefault(x => x.questId == questId);
 
             if (acceptPacket.questId != 0)
             {
-                UpdateObjectPacket acceptConversationPacket = conversationPackets.SingleOrDefault(x => x.packetSendTime >= acceptPacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - acceptPacket.packetSendTime.TotalMilliseconds) <= 1000);
+                UpdateObjectPacket acceptConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= acceptPacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - acceptPacket.packetSendTime.TotalMilliseconds) <= 2500);
+                CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(acceptPacket.packetSendTime);
                 if (acceptConversationPacket.entry != 0)
                 {
-                    output += $"Conversation that goes after accepting quest {acceptPacket.questId} - {MainForm.GetQuestNameById(acceptPacket.questId)}:\r\n";
-                    output += $"Conversation Id: {acceptConversationPacket.entry}\r\n";
+                    output += $"- Conversation that goes after accepting quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += GetConversationData(acceptConversationPacket);
+                }
+                else if (creatureText != null)
+                {
+                    output += $"- Creature text that goes after accepting quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += GetCreatureTextData(creatureText);
+                }
+            }
 
-                    for (int i = 0; i < acceptConversationPacket.conversationData.conversationLines.Count; i++)
+            foreach (QuestUpdateAddCreditPacket creditPacket in addCreditPackets.Where(x => x.questId == questId))
+            {
+                UpdateObjectPacket addCreditConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= creditPacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - creditPacket.packetSendTime.TotalMilliseconds) <= 2500);
+                CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(creditPacket.packetSendTime);
+                if (addCreditConversationPacket.entry != 0)
+                {
+                    if (output != "")
                     {
-                        int conversationLineId = (int)acceptConversationPacket.conversationData.conversationLines[i].Key;
-                        string conversationLineText = "";
-                        Creature actor = null;
+                        output += "\r\n";
+                    }
 
-                        if (creaturesDict.ContainsKey(acceptConversationPacket.conversationData.conversationActors[(int)acceptConversationPacket.conversationData.conversationLines[i].Value]))
-                        {
-                            actor = creaturesDict[acceptConversationPacket.conversationData.conversationActors[(int)acceptConversationPacket.conversationData.conversationLines[i].Value]];
-                        }
+                    uint objectiveId = 0;
+                    string description = "";
 
-                        if (DBC.DBC.ConversationLine.ContainsKey(conversationLineId))
-                        {
-                            DataSet broadcastTextDs = SQLModule.HotfixSelectQuery($"SELECT `Text`, `Text1` FROM `broadcasttext` WHERE `ROW_ID` = {DBC.DBC.ConversationLine[conversationLineId].BroadcastTextId}");
-                            if (broadcastTextDs != null && broadcastTextDs.Tables["table"].Rows.Count != 0)
-                            {
-                                foreach (string stringRow in broadcastTextDs.Tables["table"].Rows[0].ItemArray)
-                                {
-                                    if (stringRow != "")
-                                    {
-                                        conversationLineText = stringRow;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                conversationLineText = "There is no text for this line, probably actor is player";
-                            }
-                        }
+                    var objectiveIdDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `ID`, `Description` FROM `quest_objectives` WHERE `QuestID` = {creditPacket.questId} AND `ObjectID` = {creditPacket.objectId};") : null;
 
-                        if (actor != null)
+                    if (objectiveIdDs != null)
+                    {
+                        foreach (DataRow row in objectiveIdDs.Tables["table"].Rows)
                         {
-                            output += $"[{i}]Actor: {actor.name} (Entry: {actor.entry}) - Line: {conversationLineText} (Id: {conversationLineId})\r\n";
-                        }
-                        else
-                        {
-                            output += $"[{i}]Actor is player\r\n";
+                            objectiveId = Convert.ToUInt32(row[0]);
+                            description = row[1].ToString();
                         }
                     }
+
+                    if (description != "")
+                    {
+                        output += $"- Conversation that goes after completing objective \"{description}\" ({objectiveId}):\r\n";
+                    }
+                    else
+                    {
+                        output += $"- Conversation that goes after completing objective {objectiveId}:\r\n";
+                    }
+
+                    output += GetConversationData(addCreditConversationPacket);
+                }
+                else if (creatureText != null)
+                {
+                    if (output != "")
+                    {
+                        output += "\r\n";
+                    }
+
+                    uint objectiveId = 0;
+                    string description = "";
+
+                    var objectiveIdDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `ID`, `Description` FROM `quest_objectives` WHERE `QuestID` = {creditPacket.questId} AND `ObjectID` = {creditPacket.objectId};") : null;
+
+                    if (objectiveIdDs != null)
+                    {
+                        foreach (DataRow row in objectiveIdDs.Tables["table"].Rows)
+                        {
+                            objectiveId = Convert.ToUInt32(row[0]);
+                            description = row[1].ToString();
+                        }
+                    }
+
+                    if (description != "")
+                    {
+                        output += $"- Creature text that goes after completing objective \"{description}\" ({objectiveId}):\r\n";
+                    }
+                    else
+                    {
+                        output += $"- Creature text that goes after completing objective {objectiveId}:\r\n";
+                    }
+
+                    output += GetCreatureTextData(creatureText);
                 }
             }
 
             if (completePacket.questId != 0)
             {
-                UpdateObjectPacket completeConversationPacket = conversationPackets.SingleOrDefault(x => x.packetSendTime >= completePacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - completePacket.packetSendTime.TotalMilliseconds) <= 1000);
+                UpdateObjectPacket completeConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= completePacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - completePacket.packetSendTime.TotalMilliseconds) <= 2500);
+                CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(completePacket.packetSendTime);
                 if (completeConversationPacket.entry != 0)
                 {
                     if (output != "")
@@ -523,57 +714,306 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         output += "\r\n";
                     }
 
-                    output += $"Conversation that goes after accepting quest {acceptPacket.questId} - {MainForm.GetQuestNameById(acceptPacket.questId)}:\r\n";
-                    output += $"Conversation Id: {completeConversationPacket.entry}\r\n";
+                    output += $"- Conversation that goes after rewarding quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += GetConversationData(completeConversationPacket);
+                }
+                else if (creatureText != null)
+                {
+                    output += $"- Creature text that goes after rewarding quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += GetCreatureTextData(creatureText);
+                }
+            }
 
-                    for (int i = 0; i < completeConversationPacket.conversationData.conversationLines.Count; i++)
+            mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
+        }
+
+        CreatureText GetCreatureTextBasedOnTargetTimeSpan(TimeSpan time)
+        {
+            CreatureText text = null;
+
+            foreach (var itr in creatureTexts.Values)
+            {
+                text = itr.FirstOrDefault(x => x.sayTime >= time && (x.sayTime.TotalMilliseconds - time.TotalMilliseconds) <= 2500);
+                if (text != null)
+                    return text;
+            }
+
+            return text;
+        }
+
+        public void ParseLosConversationsOrTexts()
+        {
+            if (mainForm.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Text == "")
+                return;
+
+            string output = "";
+            string playerGuid = mainForm.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Text;
+
+            foreach (UpdateObjectPacket conversationPacket in conversationPackets)
+            {
+                foreach (PlayerMovePacket movePacket in playerMovePackets.Where(x => x.playerGuid == playerGuid).OrderByDescending(x => x.packetSendTime))
+                {
+                    if (conversationPacket.packetSendTime.TotalMilliseconds >= movePacket.packetSendTime.TotalMilliseconds && (conversationPacket.packetSendTime.TotalMilliseconds - movePacket.packetSendTime.TotalMilliseconds) <= 2500 && !IsQuestRelatedConversation(conversationPacket))
                     {
-                        int conversationLineId = (int)completeConversationPacket.conversationData.conversationLines[i].Key;
-                        string conversationLineText = "";
-                        Creature actor = null;
+                        output += $"- Player triggered LOS conversation at {movePacket.packetSendTime.ToFormattedStringWithMilliseconds()}, {GetEstimatedDistanceToTriggerPosition(conversationPacket, movePacket)}\r\n";
+                        output += GetConversationData(conversationPacket);
+                        break;
+                    }
+                }
+            }
 
-                        if (creaturesDict.ContainsKey(completeConversationPacket.conversationData.conversationActors[(int)completeConversationPacket.conversationData.conversationLines[i].Value]))
-                        {
-                            actor = creaturesDict[completeConversationPacket.conversationData.conversationActors[(int)completeConversationPacket.conversationData.conversationLines[i].Value]];
-                        }
+            List<CreatureText> tempCreatureTexts = new List<CreatureText>();
 
-                        if (DBC.DBC.ConversationLine.ContainsKey(conversationLineId))
-                        {
-                            DataSet broadcastTextDs = SQLModule.HotfixSelectQuery($"SELECT `Text`, `Text1` FROM `broadcasttext` WHERE `ROW_ID` = {DBC.DBC.ConversationLine[conversationLineId].BroadcastTextId}");
-                            if (broadcastTextDs != null && broadcastTextDs.Tables["table"].Rows.Count != 0)
-                            {
-                                foreach (string stringRow in broadcastTextDs.Tables["table"].Rows[0].ItemArray)
-                                {
-                                    if (stringRow != "")
-                                    {
-                                        conversationLineText = stringRow;
-                                    }
-                                }
-                            }
-                        }
+            foreach (var itr in creatureTexts.Values)
+            {
+                tempCreatureTexts.AddRange(itr);
+            }
 
-                        if (conversationLineText == "" && actor != null)
-                        {
-                            conversationLineText = "There is no text for this line";
-                        }
-                        else if (conversationLineText == "" && actor == null)
-                        {
-                            conversationLineText = "There is no text for this line, probably actor is player";
-                        }
-
-                        if (actor != null)
-                        {
-                            output += $"[{i}]Actor: {actor.name} - {actor.entry} - Line: {conversationLineText} : {conversationLineId}\r\n";
-                        }
-                        else
-                        {
-                            output += $"[{i}]Actor is player\r\n";
-                        }
+            foreach (CreatureText creatureText in tempCreatureTexts.OrderBy(x => x.sayTime))
+            {
+                foreach (PlayerMovePacket movePacket in playerMovePackets.Where(x => x.playerGuid == playerGuid).OrderByDescending(x => x.packetSendTime))
+                {
+                    if (!creatureText.isAggroText && !creatureText.isDeathText && creatureText.sayTime.TotalMilliseconds >= movePacket.packetSendTime.TotalMilliseconds && (creatureText.sayTime.TotalMilliseconds - movePacket.packetSendTime.TotalMilliseconds) <= 2500 && !IsQuestRelatedCreatureText(creatureText))
+                    {
+                        output += $"- Player triggered LOS creature text at {movePacket.packetSendTime.ToFormattedStringWithMilliseconds()}, {GetEstimatedDistanceToTriggerPosition(movePacket, creatureText)}\r\n";
+                        output += GetCreatureTextData(creatureText);
+                        break;
                     }
                 }
             }
 
             mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
+        }
+
+        private bool IsQuestRelatedConversation(UpdateObjectPacket conversationPacket)
+        {
+            return questAcceptPackets.Where(x => conversationPacket.packetSendTime.TotalMilliseconds >= x.packetSendTime.TotalMilliseconds && (conversationPacket.packetSendTime.TotalMilliseconds - x.packetSendTime.TotalMilliseconds) <= 4000).Count() != 0 ||
+                questCompletePackets.Where(x => conversationPacket.packetSendTime.TotalMilliseconds >= x.packetSendTime.TotalMilliseconds && (conversationPacket.packetSendTime.TotalMilliseconds - x.packetSendTime.TotalMilliseconds) <= 4000).Count() != 0;
+        }
+
+        private bool IsQuestRelatedCreatureText(CreatureText creatureText)
+        {
+            return questAcceptPackets.Where(x => creatureText.sayTime.TotalMilliseconds >= x.packetSendTime.TotalMilliseconds && (creatureText.sayTime.TotalMilliseconds - x.packetSendTime.TotalMilliseconds) <= 4000).Count() != 0 ||
+                questCompletePackets.Where(x => creatureText.sayTime.TotalMilliseconds >= x.packetSendTime.TotalMilliseconds && (creatureText.sayTime.TotalMilliseconds - x.packetSendTime.TotalMilliseconds) <= 4000).Count() != 0;
+        }
+
+        private string GetEstimatedDistanceToTriggerPosition(UpdateObjectPacket conversationPacket, PlayerMovePacket movePacket)
+        {
+            string output = "estimated distance to trigger position is unknown";
+            List<double> estimatedDistances = new List<double>();
+            bool thereWasActorWithWaypoints = false;
+
+            if (conversationPacket.conversationData.conversationActors.Count == 0)
+            {
+                output = "estimated distance to trigger is unknown, because conversation doesn't have any creature actor";
+                return output;
+            }
+
+            for (int i = 0; i < conversationPacket.conversationData.conversationLines.Count; i++)
+            {
+                Creature actor;
+
+                if (creatures.ContainsKey(conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]))
+                {
+                    actor = creatures[conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]];
+                }
+                else
+                    return output;
+
+                if (!actor.HasWaypoints())
+                {
+                    estimatedDistances.Add(Math.Round(movePacket.position.GetDistance(actor.spawnPosition)));
+                }
+                else
+                {
+                    thereWasActorWithWaypoints = true;
+
+                    List<Waypoint> waypoints = actor.waypoints.Where(x => conversationPacket.packetSendTime >= x.moveStartTime && (conversationPacket.packetSendTime.TotalMilliseconds - x.moveStartTime.TotalMilliseconds) <= 2500).ToList();
+                    if (waypoints.Count == 0)
+                        continue;
+
+                    Waypoint lastWaypoint = waypoints.OrderBy(x => x.moveStartTime).OrderBy(x => x.idFromParse).LastOrDefault();
+                    if (lastWaypoint.movePosition.IsValid())
+                    {
+                        estimatedDistances.Add(Math.Round(movePacket.position.GetDistance(lastWaypoint.movePosition)));
+                    }
+                    else if (lastWaypoint.startPosition.IsValid())
+                    {
+                        estimatedDistances.Add(Math.Round(movePacket.position.GetDistance(lastWaypoint.startPosition)));
+                    }
+                }
+            }
+
+            estimatedDistances = estimatedDistances.Intersect(estimatedDistances).ToList();
+
+            if (estimatedDistances.Count > 1)
+            {
+                output = "estimated distances to trigger position: ";
+
+                for (int i = 0; i < estimatedDistances.Count; i++)
+                {
+                    if (i + 1 < estimatedDistances.Count)
+                    {
+                        output += $"{estimatedDistances[i]}.0f, ";
+                    }
+                    else
+                    {
+                        output += $"{estimatedDistances[i]}.0f";
+                    }
+                }
+            }
+            else
+            {
+                output = $"estimated distance to trigger position: {estimatedDistances.FirstOrDefault()}.0f";
+            }
+
+            if (thereWasActorWithWaypoints)
+            {
+                if (conversationPacket.conversationData.conversationActors.Count > 1)
+                {
+                    output += " (Some actors has waypoints)";
+                }
+                else
+                {
+                    output += " (Actor has waypoints)";
+                }
+            }
+
+            return output;
+        }
+
+        private string GetEstimatedDistanceToTriggerPosition(PlayerMovePacket movePacket, CreatureText creatureText)
+        {
+            string output = "estimated distance to trigger position is unknown";
+            Creature actor;
+            bool thereWasActorWithWaypoints = false;
+            double distance = 0.0f;
+
+            if (creatures.ContainsKey(creatureText.creatureGuid))
+            {
+                actor = creatures[creatureText.creatureGuid];
+            }
+            else
+                return output;
+
+            if (!actor.HasWaypoints())
+            {
+                distance = Math.Round(movePacket.position.GetDistance(actor.spawnPosition));
+            }
+            else
+            {
+                thereWasActorWithWaypoints = true;
+
+                List<Waypoint> waypoints = actor.waypoints.Where(x => creatureText.sayTime >= x.moveStartTime && (creatureText.sayTime.TotalMilliseconds - x.moveStartTime.TotalMilliseconds) <= 2500).ToList();
+                if (waypoints.Count == 0)
+                    return output;
+
+                Waypoint lastWaypoint = waypoints.OrderBy(x => x.moveStartTime).OrderBy(x => x.idFromParse).LastOrDefault();
+                if (lastWaypoint.movePosition.IsValid())
+                {
+                    distance = Math.Round(movePacket.position.GetDistance(lastWaypoint.movePosition));
+                }
+                else if (lastWaypoint.startPosition.IsValid())
+                {
+                    distance = Math.Round(movePacket.position.GetDistance(lastWaypoint.startPosition));
+                }
+            }
+
+            output = $"estimated distance to trigger position: {distance}.0f";
+
+            if (thereWasActorWithWaypoints)
+            {
+                output += " (Sender has waypoints)";
+            }
+
+            return output;
+        }
+
+        private string GetConversationData(UpdateObjectPacket conversationPacket)
+        {
+            string output = "";
+
+            output += $"Conversation Id: {conversationPacket.entry}\r\n";
+
+            for (int i = 0; i < conversationPacket.conversationData.conversationLines.Count; i++)
+            {
+                int conversationLineId = (int)conversationPacket.conversationData.conversationLines[i].Key;
+                string conversationLineText = "";
+                Creature actor = null;
+
+                if (DBC.DBC.ConversationLine.ContainsKey(conversationLineId))
+                {
+                    DataSet broadcastTextDs = SQLModule.HotfixSelectQuery($"SELECT `Text`, `Text1` FROM `broadcasttext` WHERE `ROW_ID` = {DBC.DBC.ConversationLine[conversationLineId].BroadcastTextId}");
+                    if (broadcastTextDs != null && broadcastTextDs.Tables["table"].Rows.Count != 0)
+                    {
+                        foreach (string stringRow in broadcastTextDs.Tables["table"].Rows[0].ItemArray)
+                        {
+                            if (stringRow != "")
+                            {
+                                conversationLineText = stringRow;
+                            }
+                        }
+                    }
+                }
+
+                if (conversationPacket.conversationData.conversationActors.Count != 0)
+                {
+                    if (creatures.ContainsKey(conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]))
+                    {
+                        actor = creatures[conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]];
+                    }
+
+                    if (conversationLineText == "" && actor != null)
+                    {
+                        conversationLineText = "There is no text for this line";
+                    }
+                    else if (conversationLineText == "" && actor == null)
+                    {
+                        conversationLineText = "There is no text for this line, probably actor is player";
+                    }
+
+                    if (actor != null)
+                    {
+                        output += $"[{i}] Actor: \"{actor.name}\" ({actor.entry}) - Line: \"{conversationLineText}\" ({conversationLineId})\r\n";
+                    }
+                    else
+                    {
+                        output += $"[{i}] Actor is player\r\n";
+                    }
+                }
+                else
+                {
+                    if (conversationLineText == "")
+                    {
+                        conversationLineText = "There is no text for this line";
+                    }
+
+                    output += $"[{i}] Line: \"{conversationLineText}\" ({conversationLineId})\r\n";
+                }
+            }
+
+            output += "\r\n";
+
+            return output;
+        }
+
+        private string GetCreatureTextData(CreatureText creatureText)
+        {
+            string output = "Text data is empty";
+            Creature sender;
+
+            if (creatures.ContainsKey(creatureText.creatureGuid))
+            {
+                sender = creatures[creatureText.creatureGuid];
+            }
+            else
+                return output;
+
+            output = $"Sender: \"{sender.name}\" ({sender.entry})\r\n";
+            output += $"Text: \"{creatureText.creatureText}\"\r\n";
+            output += "\r\n";
+
+            return output;
         }
     }
 }

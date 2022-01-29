@@ -222,7 +222,14 @@ namespace WoWDeveloperAssistant.Misc
 
         public void SortWaypoints()
         {
-            waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.packetNumber select waypoint);
+            if (waypoints.Where(x => x.packetNumber == -1).Count() != 0)
+            {
+                waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.moveStartTime select waypoint);
+            }
+            else
+            {
+                waypoints = new List<Waypoint>(from waypoint in waypoints orderby waypoint.idFromParse orderby waypoint.packetNumber select waypoint);
+            }
         }
 
         public string GetSpawnDifficulties()

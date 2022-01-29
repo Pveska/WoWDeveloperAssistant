@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
+using WoWDeveloperAssistant.Parsed_File_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 using static WoWDeveloperAssistant.Misc.Packets.Packet;
@@ -27,19 +28,23 @@ namespace WoWDeveloperAssistant.Misc
 
             public enum PacketTypes : byte
             {
-                UNKNOWN_PACKET                  = 0,
-                SMSG_UPDATE_OBJECT              = 1,
-                SMSG_AI_REACTION                = 2,
-                SMSG_SPELL_START                = 3,
-                SMSG_CHAT                       = 4,
-                SMSG_ON_MONSTER_MOVE            = 5,
-                SMSG_ATTACK_STOP                = 6,
-                SMSG_AURA_UPDATE                = 7,
-                SMSG_EMOTE                      = 8,
-                SMSG_SPELL_GO                   = 9,
-                SMSG_SET_AI_ANIM_KIT            = 10,
-                CMSG_QUEST_GIVER_ACCEPT_QUEST   = 11,
-                SMSG_QUEST_GIVER_QUEST_COMPLETE = 12
+                UNKNOWN_PACKET,
+                SMSG_UPDATE_OBJECT,
+                SMSG_AI_REACTION,
+                SMSG_SPELL_START,
+                SMSG_CHAT,
+                SMSG_ON_MONSTER_MOVE,
+                SMSG_ATTACK_STOP,
+                SMSG_AURA_UPDATE,
+                SMSG_EMOTE,
+                SMSG_SPELL_GO,
+                SMSG_SET_AI_ANIM_KIT,
+                CMSG_QUEST_GIVER_ACCEPT_QUEST,
+                SMSG_QUEST_GIVER_QUEST_COMPLETE,
+                CMSG_MOVE_START_FORWARD,
+                CMSG_MOVE_STOP,
+                CMSG_MOVE_HEARTBEAT,
+                SMSG_QUEST_UPDATE_ADD_CREDIT
             }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
@@ -138,6 +143,16 @@ namespace WoWDeveloperAssistant.Misc
                     default:
                         return false;
                 }
+            }
+
+            public static bool IsPlayerMovePacket(PacketTypes packetType)
+            {
+                return packetType == PacketTypes.CMSG_MOVE_START_FORWARD || packetType == PacketTypes.CMSG_MOVE_STOP || packetType == PacketTypes.CMSG_MOVE_HEARTBEAT;
+            }
+
+            public static bool IsQuestPacket(PacketTypes packetType)
+            {
+                return packetType == PacketTypes.CMSG_QUEST_GIVER_ACCEPT_QUEST || packetType == PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE || packetType == PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT;
             }
         }
 
@@ -308,6 +323,10 @@ namespace WoWDeveloperAssistant.Misc
                     while (lines[index] != "");
 
                     chatPacket.creatureEntry = CreatureScriptsCreator.GetCreatureEntryByGuid(chatPacket.creatureGuid);
+                    if (chatPacket.creatureEntry == 0)
+                    {
+                        chatPacket.creatureEntry = ParsedFileAdvisor.GetCreatureEntryByGuid(chatPacket.creatureGuid);
+                    }
                 }
 
                 return chatPacket;
@@ -995,6 +1014,7 @@ namespace WoWDeveloperAssistant.Misc
                 MOVE_MAX    = 5
             };
 
+            [Serializable]
             public struct JumpInfo
             {
                 public uint moveTime;
@@ -1564,6 +1584,164 @@ namespace WoWDeveloperAssistant.Misc
 
                 return movePacket;
             }
+
+            public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion)
+            {
+                MonsterMovePacket movePacket = new MonsterMovePacket(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true), 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+                MonsterMovePacket tempMovePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
+                bool tempFlying = false;
+                Position tempPointPosition = new Position();
+
+                if (LineGetters.IsCreatureLine(lines[index + 1]))
+                {
+                    Position lastPosition = new Position();
+                    bool isFlying = false;
+
+                    do
+                    {
+                        if (!movePacket.startPos.IsValid())
+                        {
+                            tempMovePacket.startPos = GetStartPositionFromLine(lines[index]);
+
+                            if (tempMovePacket.startPos.IsValid())
+                            {
+                                movePacket.startPos = tempMovePacket.startPos;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (movePacket.moveTime == 0)
+                        {
+                            tempMovePacket.moveTime = GetMoveTimeFromLine(lines[index]);
+
+                            if (tempMovePacket.moveTime != 0)
+                            {
+                                movePacket.moveTime = tempMovePacket.moveTime;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (movePacket.creatureOrientation == 0.0f)
+                        {
+                            tempMovePacket.creatureOrientation = GetFaceDirectionFromLine(lines[index]);
+
+                            if (tempMovePacket.creatureOrientation != 0.0f)
+                            {
+                                movePacket.creatureOrientation = tempMovePacket.creatureOrientation;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (!isFlying)
+                        {
+                            tempFlying = GetFlyingFromLine(lines[index]);
+
+                            if (tempFlying)
+                            {
+                                isFlying = tempFlying;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (!tempPointPosition.IsValid())
+                        {
+                            tempPointPosition = GetPointPositionFromLine(lines[index]);
+
+                            if (tempPointPosition.IsValid())
+                            {
+                                if (ConsistsOfPoints(lines[index], lines[index + 1]))
+                                {
+                                    uint pointId = 1;
+
+                                    do
+                                    {
+                                        Position point = GetPointPositionFromLine(lines[index]);
+
+                                        if (point.IsValid())
+                                        {
+                                            Waypoint wp = new Waypoint(point, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                            wp.packetNumber = -1;
+                                            movePacket.waypoints.Add(wp);
+                                            pointId++;
+                                        }
+
+                                        index++;
+                                    }
+                                    while (lines[index] != "");
+                                }
+                                else
+                                {
+                                    lastPosition = tempPointPosition;
+
+                                    uint pointId = 1;
+
+                                    do
+                                    {
+                                        Position waypoint = GetWayPointPositionFromLine(lines[index]);
+
+                                        if (waypoint.IsValid())
+                                        {
+                                            Waypoint wp = new Waypoint(waypoint, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                            wp.packetNumber = -1;
+                                            movePacket.waypoints.Add(wp);
+                                            pointId++;
+                                        }
+
+                                        if (movePacket.jumpInfo.jumpGravity == 0.0f)
+                                        {
+                                            tempMovePacket.jumpInfo.jumpGravity = GetJumpGravityFromLine(lines[index]);
+
+                                            if (tempMovePacket.jumpInfo.jumpGravity != 0.0f)
+                                            {
+                                                movePacket.jumpInfo.jumpGravity = tempMovePacket.jumpInfo.jumpGravity;
+                                            }
+                                        }
+
+                                        index++;
+                                    }
+                                    while (lines[index] != "");
+
+                                    index--;
+                                }
+
+                                if (lastPosition.IsValid())
+                                {
+                                    if (movePacket.jumpInfo.jumpGravity != 0.0f)
+                                    {
+                                        movePacket.jumpInfo.moveTime = movePacket.moveTime;
+                                        movePacket.jumpInfo.jumpPos = lastPosition;
+                                    }
+                                    else
+                                    {
+                                        Waypoint wp = new Waypoint(lastPosition, 0.0f, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                                        wp.packetNumber = -1;
+                                        movePacket.waypoints.Add(wp);
+                                    }
+                                }
+                            }
+                        }
+
+                        index++;
+                    }
+                    while (lines[index] != "");
+
+                    if (movePacket.creatureGuid == "")
+                        return movePacket;
+
+                    if (movePacket.waypoints.Count == 0 && movePacket.HasOrientation())
+                    {
+                        Waypoint wp = new Waypoint(lastPosition, movePacket.creatureOrientation, 0, movePacket.startPos, movePacket.moveTime, movePacket.packetSendTime, new TimeSpan(), new List<WaypointScript>(), (uint)(movePacket.waypoints.Count + 1), isFlying == true ? MoveType.MOVE_FLIGHT : MoveType.MOVE_MAX);
+                        wp.packetNumber = -1;
+                        movePacket.waypoints.Add(wp);
+                    }
+                }
+
+                return movePacket;
+            }
         }
 
         [Serializable]
@@ -1916,6 +2094,101 @@ namespace WoWDeveloperAssistant.Misc
                 Regex questIdRegex = new Regex(@"QuestId:{1}\s{1}\d+");
                 if (questIdRegex.IsMatch(line))
                     return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("QuestId: ", ""));
+
+                return 0;
+            }
+        }
+
+        [Serializable]
+        public struct PlayerMovePacket
+        {
+            public string playerGuid;
+            public Position position;
+            public TimeSpan packetSendTime;
+
+            public PlayerMovePacket(string playerGuid, Position position, TimeSpan time)
+            { this.playerGuid = playerGuid; this.position = position; packetSendTime = time; }
+
+            public static PlayerMovePacket ParsePlayerMovePacket(string[] lines, long index, BuildVersions buildVersion)
+            {
+                PlayerMovePacket playerMovePacket = new PlayerMovePacket("", new Position(), LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    if (LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true) != "")
+                        playerMovePacket.playerGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, moverGuid: true);
+
+                    if (GetPositionFromLine(lines[index]).IsValid())
+                        playerMovePacket.position = GetPositionFromLine(lines[index]);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return playerMovePacket;
+            }
+
+            public static Position GetPositionFromLine(string line)
+            {
+                Position position = new Position();
+
+                Regex xyzRegex = new Regex(@"Position:{1}\s{1}X:{1}.+");
+                if (xyzRegex.IsMatch(line))
+                {
+                    string[] splittedLine = xyzRegex.Match(line).ToString().Replace("Position: X: ", "").Split(' ');
+
+                    position.x = float.Parse(splittedLine[0], CultureInfo.InvariantCulture.NumberFormat);
+                    position.y = float.Parse(splittedLine[2], CultureInfo.InvariantCulture.NumberFormat);
+                    position.z = float.Parse(splittedLine[4], CultureInfo.InvariantCulture.NumberFormat);
+                }
+
+                return position;
+            }
+        }
+
+        [Serializable]
+        public struct QuestUpdateAddCreditPacket
+        {
+            public uint questId;
+            public uint objectId;
+            public TimeSpan packetSendTime;
+
+            public QuestUpdateAddCreditPacket(uint questId, uint objectId, TimeSpan time)
+            { this.questId = questId; this.objectId = objectId; packetSendTime = time; }
+
+            public static QuestUpdateAddCreditPacket ParseQuestUpdateAddCreditPacket(string[] lines, long index)
+            {
+                QuestUpdateAddCreditPacket addCreditPacket = new QuestUpdateAddCreditPacket(0, 0, LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    if (GetQuestIdFromLine(lines[index]) != 0)
+                        addCreditPacket.questId = GetQuestIdFromLine(lines[index]);
+
+                    if (GetObjectIdFromLine(lines[index]) != 0)
+                        addCreditPacket.objectId = GetObjectIdFromLine(lines[index]);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return addCreditPacket;
+            }
+
+            private static uint GetQuestIdFromLine(string line)
+            {
+                Regex questIdRegex = new Regex(@"QuestID:{1}\s{1}\d+");
+                if (questIdRegex.IsMatch(line))
+                    return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("QuestID: ", ""));
+
+                return 0;
+            }
+
+            private static uint GetObjectIdFromLine(string line)
+            {
+                Regex questIdRegex = new Regex(@"ObjectID:{1}\s{1}\d+");
+                if (questIdRegex.IsMatch(line))
+                    return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("ObjectID: ", ""));
 
                 return 0;
             }

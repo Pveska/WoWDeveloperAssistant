@@ -577,7 +577,15 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            parsedFileAdvisor.ParseQuestAcceptAndRewardConversations();
+            parsedFileAdvisor.ParseQuestConversations();
+        }
+
+        private void textBox_ParsedFileAdvisor_LosConversationsOrTexts_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.ParseLosConversationsOrTexts();
         }
     }
 }
