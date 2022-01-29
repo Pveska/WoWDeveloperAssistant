@@ -323,6 +323,23 @@ namespace WoWDeveloperAssistant.Misc
             return namesDict;
         }
 
+        public static Dictionary<uint, string> GetQuestNamesFromDB()
+        {
+            Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
+
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery("SELECT `ID`, `LogTitle` FROM `quest_template`;") : null;
+
+            if (creatureNameDs != null)
+            {
+                foreach (DataRow row in creatureNameDs.Tables["table"].Rows)
+                {
+                    namesDict.Add((uint)row[0], row[1].ToString());
+                }
+            }
+
+            return namesDict;
+        }
+
         public static bool IsTxtFileValidForParse(string fileName, string[] lines, BuildVersions buildVersion)
         {
             if (lines[0] != "# TrinityCore - WowPacketParser")

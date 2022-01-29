@@ -8,7 +8,7 @@ namespace WoWDeveloperAssistant.Misc
 {
     public static class LineGetters
     {
-        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool casterUnit = false, bool transportGuid = false)
+        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool casterUnit = false, bool transportGuid = false, bool conversationActorGuid = false)
         {
             if (!line.Contains("TypeName: Creature; Full:") && !line.Contains("TypeName: Vehicle; Full:") && !line.Contains("TypeName: Player; Full:") && !line.Contains("TypeName: Transport; Full:"))
                 return "";
@@ -62,6 +62,12 @@ namespace WoWDeveloperAssistant.Misc
                 Regex guidRegex = new Regex(@"TransportGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
                     return guidRegex.Match(line).ToString().Replace("TransportGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+            }
+            else if (conversationActorGuid)
+            {
+                Regex guidRegex = new Regex(@"ActorGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
+                if (guidRegex.IsMatch(line))
+                    return guidRegex.Match(line).ToString().Replace("ActorGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else
             {
@@ -208,6 +214,14 @@ namespace WoWDeveloperAssistant.Misc
                 return Convert.ToInt64(numberRegex.Match(line).ToString().Replace("Number: ", ""));
 
             return 0;
+        }
+
+        public static bool IsConversationLine(this string value)
+        {
+            if (value.Contains("ObjectGuid: TypeName: Conversation; Full:"))
+                return true;
+
+            return false;
         }
     }
 }

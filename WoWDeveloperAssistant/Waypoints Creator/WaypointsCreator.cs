@@ -278,7 +278,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Parallel.ForEach(spellPacketsDict.Values, packet =>
                 {
-                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, packet.index, buildVersion);
+                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, packet.index, buildVersion, Packet.PacketTypes.SMSG_SPELL_START);
                     if (spellPacket.spellId == 0)
                         return;
 
@@ -315,7 +315,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Parallel.ForEach(emotePacketsDict.Values, packet =>
                 {
-                    EmotePacket emotePacket = EmotePacket.ParseEmotePacket(lines, packet.index, buildVersion);
+                    EmotePacket emotePacket = EmotePacket.ParseEmotePacket(lines, packet.index);
                     if (emotePacket.guid == "" || emotePacket.emoteId == 0)
                         return;
 
@@ -329,7 +329,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Parallel.ForEach(animKitPacketsDict.Values, packet =>
                 {
-                    SetAiAnimKitPacket animKitPacket = SetAiAnimKitPacket.ParseSetAiAnimKitPacket(lines, packet.index, buildVersion);
+                    SetAiAnimKitPacket animKitPacket = SetAiAnimKitPacket.ParseSetAiAnimKitPacket(lines, packet.index);
                     if (animKitPacket.guid == "" || animKitPacket.aiAnimKitId == null)
                         return;
 

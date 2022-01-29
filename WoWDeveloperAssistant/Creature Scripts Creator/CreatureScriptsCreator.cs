@@ -185,7 +185,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 if (value.Value == Packet.PacketTypes.SMSG_SPELL_START)
                 {
-                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, value.Key, buildVersion);
+                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, value.Key, buildVersion, value.Value);
                     if (spellPacket.spellId == 0)
                         return;
 

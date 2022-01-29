@@ -119,8 +119,8 @@
     <Compile Include="Database Advisor\AddonsHelper.cs" />
     <Compile Include="Database Advisor\DoublePathsFinder.cs" />
     <Compile Include="Database Advisor\GossipMenuAdvisor.cs" />
-    <Compile Include="Database Advisor\PlayerCastedSpellsParser.cs" />
-    <Compile Include="Database Advisor\SpellDestinationsParser.cs" />
+    <Compile Include="DBC\Structures\ConversationLineEntry.cs" />
+    <Compile Include="Parsed File Advisor\ParsedFileAdvisor.cs" />
     <Compile Include="Database Advisor\WaypointsHelper.cs" />
     <Compile Include="DBC\DBC.cs" />
     <Compile Include="DBC\Structures\AchievementEntry.cs" />
@@ -143,7 +143,7 @@
     <Compile Include="Misc\Packets.cs" />
     <Compile Include="Creature Scripts Creator\Spell.cs" />
     <Compile Include="Creature Scripts Creator\CreatureText.cs" />
-    <Compile Include="Database Advisor\AreatriggerSplineCreator.cs" />
+    <Compile Include="Parsed File Advisor\AreaTriggerSplines.cs" />
     <Compile Include="Database Advisor\CreatureFlagsAdvisor.cs" />
     <Compile Include="Database Advisor\QuestFlagsAdvisor.cs" />
     <Compile Include="DoubleSpawnsRemover.cs" />

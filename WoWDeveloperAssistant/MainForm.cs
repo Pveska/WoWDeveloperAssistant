@@ -9,6 +9,7 @@ using WoWDeveloperAssistant.Waypoints_Creator;
 using WoWDeveloperAssistant.Achievements;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Conditions_Creator;
+using WoWDeveloperAssistant.Parsed_File_Advisor;
 
 namespace WoWDeveloperAssistant
 {
@@ -20,7 +21,9 @@ namespace WoWDeveloperAssistant
         private readonly WaypointsCreator waypointsCreator;
         private readonly CoreScriptTemplates coreScriptTemplate;
         private static Dictionary<uint, string> creatureNamesDict;
+        private static Dictionary<uint, string> questNamesDict;
         private readonly ConditionsCreator conditionsCreator;
+        private readonly ParsedFileAdvisor parsedFileAdvisor;
 
         public MainForm()
         {
@@ -30,12 +33,15 @@ namespace WoWDeveloperAssistant
             waypointsCreator = new WaypointsCreator(this);
             coreScriptTemplate = new CoreScriptTemplates(this);
             conditionsCreator = new ConditionsCreator(this);
+            parsedFileAdvisor = new ParsedFileAdvisor(this);
 
             creatureNamesDict = new Dictionary<uint, string>();
+            questNamesDict = new Dictionary<uint, string>();
 
             if (Properties.Settings.Default.UsingDB)
             {
                 creatureNamesDict = Misc.Utils.GetCreatureNamesFromDB();
+                questNamesDict = Misc.Utils.GetQuestNamesFromDB();
             }
         }
 
@@ -43,6 +49,14 @@ namespace WoWDeveloperAssistant
         {
             if (creatureNamesDict.ContainsKey(creatureEntry))
                 return creatureNamesDict[creatureEntry];
+
+            return "Unknown";
+        }
+
+        public static string GetQuestNameById(uint questId)
+        {
+            if (questNamesDict.ContainsKey(questId))
+                return questNamesDict[questId];
 
             return "Unknown";
         }
@@ -182,12 +196,7 @@ namespace WoWDeveloperAssistant
         {
             if (e.KeyCode == Keys.Enter)
             {
-                AreatriggerSplineCreator.OpenFileDialog(openFileDialog);
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    AreatriggerSplineCreator.ParseSplinesForAreatrigger(openFileDialog.FileName, textBox_DatabaseAdvisor_AreatriggerSplines.Text);
-                }
             }
         }
 
@@ -383,20 +392,12 @@ namespace WoWDeveloperAssistant
             treeView_Achievements_ModifierTreeChildNodes.Nodes.Clear();
         }
 
-        private void textBox_SpellDestinations_KeyUp(object sender, KeyEventArgs e)
+        private void textBox_ParsedFileAdvisor_SpellDestinations_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_DatabaseAdvisor_SpellDestinations.Text == "" || textBox_DatabaseAdvisor_SpellDestinations.Text == "0")
-                return;
-
-            SpellDestinationsParser.OpenFileDialog(openFileDialog);
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                SpellDestinationsParser.ParseSpellDestinations(openFileDialog.FileName, textBox_DatabaseAdvisor_SpellDestinations.Text);
-            }
+            parsedFileAdvisor.ParseSpellDestinations();
         }
 
         private void comboBox_ConditionSourceType_DropDown(object sender, EventArgs e)
@@ -471,20 +472,12 @@ namespace WoWDeveloperAssistant
             textBox_DatabaseAdvisor_Output.Text = GossipMenuAdvisor.GetTextForGossipMenu(textBox_DatabaseAdvisor_GossipMenuText.Text);
         }
 
-        private void textBox_PlayerCastedSpells_KeyDown(object sender, KeyEventArgs e)
+        private void textBox_ParsedFileAdvisor_PlayerCastedSpells_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            if (textBox_DatabaseAdvisor_PlayerCastedSpells.Text == "")
-                return;
-
-            PlayerCastedSpellsParser.OpenFileDialog(openFileDialog);
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                textBox_DatabaseAdvisor_Output.Text = PlayerCastedSpellsParser.ParsePlayerCastedSpells(openFileDialog.FileName, textBox_DatabaseAdvisor_PlayerCastedSpells.Text);
-            }
+            parsedFileAdvisor.ParsePlayerCastedSpells();
         }
 
         private void removeGuidsBeforeSelectedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -553,6 +546,38 @@ namespace WoWDeveloperAssistant
         private void createLegionCombatAISqlToolStripMenuItem_Click(object sender, EventArgs e)
         {
             creatureScriptsCreator.GenerateCombatAISQL();
+        }
+
+        private void toolStripButton_ParsedFileAdvisor_ImportSniff_Click(object sender, EventArgs e)
+        {
+            parsedFileAdvisor.OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                parsedFileAdvisor.ImportStarted();
+
+                if (!DBC.DBC.IsLoaded())
+                {
+                    DBC.DBC.Load();
+                }
+
+                if (parsedFileAdvisor.GetDataFromFiles(openFileDialog.FileNames) != 0)
+                {
+                    parsedFileAdvisor.ImportSuccessful();
+                }
+                else
+                {
+                    parsedFileAdvisor.ImportFailed();
+                }
+            }
+        }
+
+        private void textBox_ParsedFileAdvisor_QuestConversations_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.ParseQuestAcceptAndRewardConversations();
         }
     }
 }
