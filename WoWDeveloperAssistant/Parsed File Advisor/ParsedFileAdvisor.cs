@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
@@ -624,6 +625,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 if (acceptConversationPacket.entry != 0)
                 {
                     output += $"- Conversation that goes after accepting quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += $"Enum value: Quest{GetNormilizedQuestName(acceptPacket.questId)}AcceptedConversation = {acceptConversationPacket.entry}\r\n";
                     output += GetConversationData(acceptConversationPacket);
                 }
                 else if (creatureText != null)
@@ -715,6 +717,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     }
 
                     output += $"- Conversation that goes after rewarding quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += $"Enum value: Quest{GetNormilizedQuestName(acceptPacket.questId)}RewardedConversation = {completeConversationPacket.entry}\r\n";
                     output += GetConversationData(completeConversationPacket);
                 }
                 else if (creatureText != null)
@@ -725,6 +728,37 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             }
 
             mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
+        }
+
+        public static string GetNormilizedQuestName(uint questId)
+        {
+            string questName = MainForm.GetQuestNameById(questId);
+            if (questName == "Unknown")
+                return questName;
+
+            string[] splittedLine = questName.Split(' ');
+
+            for (int i = 0; i < splittedLine.Length; i++)
+            {
+                if (!char.IsUpper(splittedLine[i][0]))
+                {
+                    splittedLine[i] = splittedLine[i].Replace($"{splittedLine[i][0]}", $"{splittedLine[i][0].ToString().ToUpper()}");
+                }
+            }
+
+            questName = string.Concat(splittedLine);
+
+            Regex nonWordRegex = new Regex(@"\W+");
+
+            foreach (char character in questName)
+            {
+                if (nonWordRegex.IsMatch(character.ToString()))
+                {
+                    questName = questName.Replace(nonWordRegex.Match(character.ToString()).ToString(), "");
+                }
+            }
+
+            return questName;
         }
 
         CreatureText GetCreatureTextBasedOnTargetTimeSpan(TimeSpan time)
