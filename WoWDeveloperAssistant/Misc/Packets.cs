@@ -44,7 +44,8 @@ namespace WoWDeveloperAssistant.Misc
                 CMSG_MOVE_START_FORWARD,
                 CMSG_MOVE_STOP,
                 CMSG_MOVE_HEARTBEAT,
-                SMSG_QUEST_UPDATE_ADD_CREDIT
+                SMSG_QUEST_UPDATE_ADD_CREDIT,
+                SMSG_QUEST_UPDATE_COMPLETE
             }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
@@ -52,7 +53,11 @@ namespace WoWDeveloperAssistant.Misc
                 foreach (string packetName in Enum.GetNames(typeof(PacketTypes)))
                 {
                     if (line.Contains(packetName))
-                        return (PacketTypes)Enum.Parse(typeof(PacketTypes), packetName);
+                    {
+                        Regex packetnameRegex = new Regex(packetName + @"{1}\s+");
+                        if (packetnameRegex.IsMatch(line))
+                            return (PacketTypes)Enum.Parse(typeof(PacketTypes), packetnameRegex.Match(line).ToString());
+                    }
                 }
 
                 return PacketTypes.UNKNOWN_PACKET;
@@ -152,7 +157,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static bool IsQuestPacket(PacketTypes packetType)
             {
-                return packetType == PacketTypes.CMSG_QUEST_GIVER_ACCEPT_QUEST || packetType == PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE || packetType == PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT;
+                return packetType == PacketTypes.CMSG_QUEST_GIVER_ACCEPT_QUEST || packetType == PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE || packetType == PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT || packetType == PacketTypes.SMSG_QUEST_UPDATE_COMPLETE;
             }
         }
 
@@ -2189,6 +2194,41 @@ namespace WoWDeveloperAssistant.Misc
                 Regex questIdRegex = new Regex(@"ObjectID:{1}\s{1}\d+");
                 if (questIdRegex.IsMatch(line))
                     return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("ObjectID: ", ""));
+
+                return 0;
+            }
+        }
+
+        [Serializable]
+        public struct QuestUpdateCompletePacket
+        {
+            public uint questId;
+            public TimeSpan packetSendTime;
+
+            public QuestUpdateCompletePacket(uint questId, TimeSpan time)
+            { this.questId = questId; packetSendTime = time; }
+
+            public static QuestUpdateCompletePacket ParseQuestUpdateCompletePacket(string[] lines, long index)
+            {
+                QuestUpdateCompletePacket addCreditPacket = new QuestUpdateCompletePacket(0, LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    if (GetQuestIdFromLine(lines[index]) != 0)
+                        addCreditPacket.questId = GetQuestIdFromLine(lines[index]);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return addCreditPacket;
+            }
+
+            private static uint GetQuestIdFromLine(string line)
+            {
+                Regex questIdRegex = new Regex(@"QuestID:{1}\s{1}\d+");
+                if (questIdRegex.IsMatch(line))
+                    return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("QuestID: ", ""));
 
                 return 0;
             }

@@ -23,7 +23,8 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         public Dictionary<uint, List<CreatureText>> creatureTexts = new Dictionary<uint, List<CreatureText>>();
         public List<SpellStartPacket> spellPackets = new List<SpellStartPacket>();
         public List<QuestGiverAcceptQuestPacket> questAcceptPackets = new List<QuestGiverAcceptQuestPacket>();
-        public List<QuestGiverQuestCompletePacket> questCompletePackets = new List<QuestGiverQuestCompletePacket>();
+        public List<QuestGiverQuestCompletePacket> questRewardPackets = new List<QuestGiverQuestCompletePacket>();
+        public List<QuestUpdateCompletePacket> questCompletePackets = new List<QuestUpdateCompletePacket>();
         public List<PlayerMovePacket> playerMovePackets = new List<PlayerMovePacket>();
         public List<QuestUpdateAddCreditPacket> addCreditPackets = new List<QuestUpdateAddCreditPacket>();
 
@@ -292,7 +293,22 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             {
                 if (value.Value == Packet.PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE)
                 {
-                    QuestGiverQuestCompletePacket questCompletePacket = QuestGiverQuestCompletePacket.ParseQuestGiverQuestCompletePacket(lines, value.Key);
+                    QuestGiverQuestCompletePacket questRewardPacket = QuestGiverQuestCompletePacket.ParseQuestGiverQuestCompletePacket(lines, value.Key);
+                    if (questRewardPacket.questId == 0)
+                        return;
+
+                    lock (questRewardPackets)
+                    {
+                        questRewardPackets.Add(questRewardPacket);
+                    }
+                }
+            });
+
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
+                if (value.Value == Packet.PacketTypes.SMSG_QUEST_UPDATE_COMPLETE)
+                {
+                    QuestUpdateCompletePacket questCompletePacket = QuestUpdateCompletePacket.ParseQuestUpdateCompletePacket(lines, value.Key);
                     if (questCompletePacket.questId == 0)
                         return;
 
@@ -302,6 +318,23 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     }
                 }
             });
+
+            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
+            {
+                if (value.Value == Packet.PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT)
+                {
+                    QuestUpdateAddCreditPacket addCreditPacket = QuestUpdateAddCreditPacket.ParseQuestUpdateAddCreditPacket(lines, value.Key);
+                    if (addCreditPacket.questId == 0 || addCreditPacket.objectId == 0)
+                        return;
+
+                    lock (addCreditPackets)
+                    {
+                        addCreditPackets.Add(addCreditPacket);
+                    }
+                }
+            });
+
+            addCreditPackets = addCreditPackets.OrderBy(x => x.packetSendTime).ToList();
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
@@ -319,21 +352,6 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             });
 
             playerMovePackets = playerMovePackets.OrderBy(x => x.packetSendTime).ToList();
-
-            Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
-            {
-                if (value.Value == Packet.PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT)
-                {
-                    QuestUpdateAddCreditPacket addCreditPacket = QuestUpdateAddCreditPacket.ParseQuestUpdateAddCreditPacket(lines, value.Key);
-                    if (addCreditPacket.questId == 0 || addCreditPacket.objectId == 0)
-                        return;
-
-                    lock (addCreditPackets)
-                    {
-                        addCreditPackets.Add(addCreditPacket);
-                    }
-                }
-            });
 
             Parallel.ForEach(packetIndexes.AsEnumerable(), value =>
             {
@@ -369,8 +387,9 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                             { 3, spellPackets         },
                             { 4, questAcceptPackets   },
                             { 5, questCompletePackets },
-                            { 6, playerMovePackets    },
-                            { 7, addCreditPackets     }
+                            { 6, questRewardPackets   },
+                            { 7, playerMovePackets    },
+                            { 8, addCreditPackets     }
                         };
 
                         binaryFormatter.Serialize(fileStream, dictToSerialize);
@@ -388,8 +407,9 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                             { 3, spellPackets         },
                             { 4, questAcceptPackets   },
                             { 5, questCompletePackets },
-                            { 6, playerMovePackets    },
-                            { 7, addCreditPackets     }
+                            { 6, questRewardPackets   },
+                            { 7, playerMovePackets    },
+                            { 8, addCreditPackets     }
                         };
 
                         binaryFormatter.Serialize(fileStream, dictToSerialize);
@@ -417,9 +437,10 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             Dictionary<uint, List<CreatureText>> creatureTextsFromSerialize = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[2];
             List<SpellStartPacket> spellPacketsFromSerialize = (List<SpellStartPacket>)dictFromSerialize[3];
             List<QuestGiverAcceptQuestPacket> questAcceptPacketsFromSerialize = (List<QuestGiverAcceptQuestPacket>)dictFromSerialize[4];
-            List<QuestGiverQuestCompletePacket> questCompletePacketsFromSerialize = (List<QuestGiverQuestCompletePacket>)dictFromSerialize[5];
-            List<PlayerMovePacket> playerMovePacketsFromSerialize = (List<PlayerMovePacket>)dictFromSerialize[6];
-            List<QuestUpdateAddCreditPacket> addCreditPacketsFromSerialize = (List<QuestUpdateAddCreditPacket>)dictFromSerialize[7];
+            List<QuestUpdateCompletePacket> questCompletePacketsFromSerialize = (List<QuestUpdateCompletePacket>)dictFromSerialize[5];
+            List<QuestGiverQuestCompletePacket> questRewardPacketsFromSerialize = (List<QuestGiverQuestCompletePacket>)dictFromSerialize[6];
+            List<PlayerMovePacket> playerMovePacketsFromSerialize = (List<PlayerMovePacket>)dictFromSerialize[7];
+            List<QuestUpdateAddCreditPacket> addCreditPacketsFromSerialize = (List<QuestUpdateAddCreditPacket>)dictFromSerialize[8];
 
             if (multiSelect)
             {
@@ -429,6 +450,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 spellPackets = spellPackets.Concat(spellPacketsFromSerialize.Where(x => !spellPackets.Contains(x))).ToList();
                 questAcceptPackets = questAcceptPackets.Concat(questAcceptPacketsFromSerialize.Where(x => !questAcceptPackets.Contains(x))).ToList();
                 questCompletePackets = questCompletePackets.Concat(questCompletePacketsFromSerialize.Where(x => !questCompletePackets.Contains(x))).ToList();
+                questRewardPackets = questRewardPackets.Concat(questRewardPacketsFromSerialize.Where(x => !questRewardPackets.Contains(x))).ToList();
                 playerMovePackets = playerMovePackets.Concat(playerMovePacketsFromSerialize.Where(x => !playerMovePackets.Contains(x))).ToList();
                 addCreditPackets = addCreditPackets.Concat(addCreditPacketsFromSerialize.Where(x => !addCreditPackets.Contains(x))).ToList();
             }
@@ -440,6 +462,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 spellPackets = spellPacketsFromSerialize;
                 questAcceptPackets = questAcceptPacketsFromSerialize;
                 questCompletePackets = questCompletePacketsFromSerialize;
+                questRewardPackets = questRewardPacketsFromSerialize;
                 playerMovePackets = playerMovePacketsFromSerialize;
                 addCreditPackets = addCreditPacketsFromSerialize;
             }
@@ -616,12 +639,14 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             string output = "";
             uint questId = Convert.ToUInt32(mainForm.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Text);
             QuestGiverAcceptQuestPacket acceptPacket = questAcceptPackets.FirstOrDefault(x => x.questId == questId);
-            QuestGiverQuestCompletePacket completePacket = questCompletePackets.FirstOrDefault(x => x.questId == questId);
+            QuestUpdateCompletePacket completePacket = questCompletePackets.FirstOrDefault(x => x.questId == questId);
+            QuestGiverQuestCompletePacket rewardPacket = questRewardPackets.FirstOrDefault(x => x.questId == questId);
 
             if (acceptPacket.questId != 0)
             {
                 UpdateObjectPacket acceptConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= acceptPacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - acceptPacket.packetSendTime.TotalMilliseconds) <= 2500);
                 CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(acceptPacket.packetSendTime);
+
                 if (acceptConversationPacket.entry != 0)
                 {
                     output += $"- Conversation that goes after accepting quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
@@ -637,8 +662,12 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             foreach (QuestUpdateAddCreditPacket creditPacket in addCreditPackets.Where(x => x.questId == questId))
             {
+                if (completePacket.packetSendTime >= creditPacket.packetSendTime && (completePacket.packetSendTime.TotalMilliseconds - creditPacket.packetSendTime.TotalMilliseconds) <= 1000)
+                    continue;
+
                 UpdateObjectPacket addCreditConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= creditPacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - creditPacket.packetSendTime.TotalMilliseconds) <= 2500);
-                CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(creditPacket.packetSendTime);
+                CreatureText creditCreatureText = GetCreatureTextBasedOnTargetTimeSpan(creditPacket.packetSendTime);
+
                 if (addCreditConversationPacket.entry != 0)
                 {
                     if (output != "")
@@ -671,7 +700,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
                     output += GetConversationData(addCreditConversationPacket);
                 }
-                else if (creatureText != null)
+                else if (creditCreatureText != null)
                 {
                     if (output != "")
                     {
@@ -701,14 +730,36 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         output += $"- Creature text that goes after completing objective {objectiveId}:\r\n";
                     }
 
-                    output += GetCreatureTextData(creatureText);
+                    output += GetCreatureTextData(creditCreatureText);
                 }
             }
 
             if (completePacket.questId != 0)
             {
-                UpdateObjectPacket completeConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= completePacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - completePacket.packetSendTime.TotalMilliseconds) <= 2500);
-                CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(completePacket.packetSendTime);
+                if (completePacket.packetSendTime >= acceptPacket.packetSendTime && (completePacket.packetSendTime.TotalMilliseconds - acceptPacket.packetSendTime.TotalMilliseconds) > 1000)
+                {
+                    UpdateObjectPacket completeConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= completePacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - completePacket.packetSendTime.TotalMilliseconds) <= 2500);
+                    CreatureText completeCreatureText = GetCreatureTextBasedOnTargetTimeSpan(completePacket.packetSendTime);
+
+                    if (completeConversationPacket.entry != 0)
+                    {
+                        output += $"- Conversation that goes after completing quest \"{MainForm.GetQuestNameById(completePacket.questId)}\" ({completePacket.questId}):\r\n";
+                        output += $"Enum value: Quest{GetNormilizedQuestName(completePacket.questId)}CompletedConversation = {completeConversationPacket.entry}\r\n";
+                        output += GetConversationData(completeConversationPacket);
+                    }
+                    else if (completeCreatureText != null)
+                    {
+                        output += $"- Creature text that goes after completing quest \"{MainForm.GetQuestNameById(completePacket.questId)}\" ({completePacket.questId}):\r\n";
+                        output += GetCreatureTextData(completeCreatureText);
+                    }
+                }
+            }
+
+            if (rewardPacket.questId != 0)
+            {
+                UpdateObjectPacket completeConversationPacket = conversationPackets.FirstOrDefault(x => x.packetSendTime >= rewardPacket.packetSendTime && (x.packetSendTime.TotalMilliseconds - rewardPacket.packetSendTime.TotalMilliseconds) <= 2500);
+                CreatureText creatureText = GetCreatureTextBasedOnTargetTimeSpan(rewardPacket.packetSendTime);
+
                 if (completeConversationPacket.entry != 0)
                 {
                     if (output != "")
@@ -716,13 +767,13 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         output += "\r\n";
                     }
 
-                    output += $"- Conversation that goes after rewarding quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
-                    output += $"Enum value: Quest{GetNormilizedQuestName(acceptPacket.questId)}RewardedConversation = {completeConversationPacket.entry}\r\n";
+                    output += $"- Conversation that goes after rewarding quest \"{MainForm.GetQuestNameById(rewardPacket.questId)}\" ({rewardPacket.questId}):\r\n";
+                    output += $"Enum value: Quest{GetNormilizedQuestName(rewardPacket.questId)}RewardedConversation = {completeConversationPacket.entry}\r\n";
                     output += GetConversationData(completeConversationPacket);
                 }
                 else if (creatureText != null)
                 {
-                    output += $"- Creature text that goes after rewarding quest \"{MainForm.GetQuestNameById(acceptPacket.questId)}\" ({acceptPacket.questId}):\r\n";
+                    output += $"- Creature text that goes after rewarding quest \"{MainForm.GetQuestNameById(rewardPacket.questId)}\" ({rewardPacket.questId}):\r\n";
                     output += GetCreatureTextData(creatureText);
                 }
             }
