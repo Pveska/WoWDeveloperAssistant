@@ -220,11 +220,13 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         return;
 
                     CreatureText text = new CreatureText(chatPacket);
-                    Creature sedner = creatures.FirstOrDefault(x => x.Value.guid == chatPacket.creatureGuid).Value;
+                    Creature sender = creatures.FirstOrDefault(x => x.Value.guid == chatPacket.creatureGuid).Value;
+                    if (sender == null)
+                        return;
 
-                    if (Math.Floor(sedner.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                        Math.Floor(sedner.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                        Math.Floor(sedner.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                    if (Math.Floor(sender.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                        Math.Floor(sender.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                        Math.Floor(sender.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                     {
                         lock (creatureTexts)
                         {
@@ -239,9 +241,9 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                             }
                         }
                     }
-                    else if (Math.Floor(sedner.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                             Math.Floor(sedner.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                             Math.Floor(sedner.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                    else if (Math.Floor(sender.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
+                             Math.Floor(sender.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
+                             Math.Floor(sender.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
                     {
                         lock (creatureTexts)
                         {
@@ -584,7 +586,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             Parallel.ForEach(spellPackets, spellPacket =>
             {
-                if (spellPacket.spellId != Convert.ToUInt32(spellId) || spellPacket.type != Packet.PacketTypes.SMSG_SPELL_START || !spellPacket.spellDestination.IsValid())
+                if (spellPacket.spellId != Convert.ToUInt32(spellId) || !spellPacket.spellDestination.IsValid())
                     return;
 
                 lock (allDestPositions)
