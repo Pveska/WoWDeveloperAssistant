@@ -383,6 +383,8 @@ namespace WoWDeveloperAssistant.Misc
                 case 1643: // Kultiras
                 case 1642: // Zandalar
                 case 1718: // Nazjatar
+                case 2241: // New Uldum
+                case 2222: // Shadowlands
                     return true;
                 default:
                     return false;
