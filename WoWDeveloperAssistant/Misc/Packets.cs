@@ -779,7 +779,7 @@ namespace WoWDeveloperAssistant.Misc
                         if (updatePacket.entry == 0 || updatePacket.guid == "")
                             continue;
 
-                        if (Properties.Settings.Default.CombatMovement && updatePacket.unitFlags != null && ((UnitFlags)updatePacket.unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
+                        if (Properties.Settings.Default.CombatMovement && updatePacket.unitFlags != null && ((UnitFlags)updatePacket.unitFlags & UnitFlags.AffectingCombat) != 0)
                         {
                             updatePacket.waypoints.Clear();
                         }
@@ -1194,7 +1194,7 @@ namespace WoWDeveloperAssistant.Misc
 
                 for (int i = creatureUpdateObjectPackets.Count() - 1; i >= 0; i--)
                 {
-                    if (creatureUpdateObjectPackets[i].unitFlags != null && ((UnitFlags)creatureUpdateObjectPackets[i].unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) == 0)
+                    if (creatureUpdateObjectPackets[i].unitFlags != null && ((UnitFlags)creatureUpdateObjectPackets[i].unitFlags & UnitFlags.AffectingCombat) == 0)
                     {
                         firstNonCombatPacketFromDescent = creatureUpdateObjectPackets[i];
                         break;
@@ -1203,7 +1203,7 @@ namespace WoWDeveloperAssistant.Misc
 
                 for (int i = creatureUpdateObjectPackets.Count() - 1; i >= 0; i--)
                 {
-                    if (creatureUpdateObjectPackets[i].unitFlags != null && ((UnitFlags)creatureUpdateObjectPackets[i].unitFlags & UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)
+                    if (creatureUpdateObjectPackets[i].unitFlags != null && ((UnitFlags)creatureUpdateObjectPackets[i].unitFlags & UnitFlags.AffectingCombat) != 0)
                     {
                         firstCombatPacketFromDescent = creatureUpdateObjectPackets[i];
                         break;
