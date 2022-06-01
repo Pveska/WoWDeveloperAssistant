@@ -14,20 +14,21 @@ namespace WoWDeveloperAssistant.Misc
     {
         public enum BuildVersions : uint
         {
-            BUILD_UNKNOWN = 0,
-            BUILD_8_0_1   = 1,
-            BUILD_8_1_0   = 2,
-            BUILD_8_1_5   = 3,
-            BUILD_8_2_0   = 4,
-            BUILD_8_2_5   = 5,
-            BUILD_8_3_0   = 6,
-            BUILD_8_3_7   = 7,
-            BUILD_9_0_1   = 8,
-            BUILD_9_0_2   = 9,
-            BUILD_9_0_5   = 10,
-            BUILD_9_1_0   = 11,
-            BUILD_9_1_5   = 12,
-            BUILD_9_2_0   = 13
+            BUILD_UNKNOWN,
+            BUILD_8_0_1,
+            BUILD_8_1_0,
+            BUILD_8_1_5,
+            BUILD_8_2_0,
+            BUILD_8_2_5,
+            BUILD_8_3_0,
+            BUILD_8_3_7,
+            BUILD_9_0_1,
+            BUILD_9_0_2,
+            BUILD_9_0_5,
+            BUILD_9_1_0,
+            BUILD_9_1_5,
+            BUILD_9_2_0,
+            BUILD_9_2_5
         };
 
         public static string GetValueWithoutComma(this float value)
