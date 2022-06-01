@@ -355,13 +355,14 @@ namespace WoWDeveloperAssistant.Misc
             public uint? sheatheState;
             public uint? standState;
             public bool hasDisableGravity;
+            public bool isCyclic;
             public uint moveTime;
             public uint? unitFlags;
             public MonsterMovePacket.JumpInfo jumpInfo;
             public ConversationData conversationData;
 
-            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData)
-            { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; }
+            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData)
+            { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.isCyclic = isCyclic; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; }
 
             public enum ObjectTypes
             {
@@ -618,8 +619,8 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
                         Position tempPointPosition = new Position();
 
                         do
@@ -722,6 +723,17 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                             }
 
+                            if (!updatePacket.isCyclic)
+                            {
+                                tempUpdatePacket.isCyclic = MonsterMovePacket.GetCyclicFromLine(lines[index]);
+                                if (tempUpdatePacket.isCyclic)
+                                {
+                                    updatePacket.isCyclic = tempUpdatePacket.isCyclic;
+                                    index++;
+                                    continue;
+                                }
+                            }
+
                             if (updatePacket.moveTime == 0 || updatePacket.jumpInfo.moveTime == 0)
                             {
                                 tempUpdatePacket.moveTime = GetDurationFromLine(lines[index]);
@@ -767,6 +779,17 @@ namespace WoWDeveloperAssistant.Misc
                                 if (tempUpdatePacket.hasDisableGravity)
                                 {
                                     updatePacket.hasDisableGravity = tempUpdatePacket.hasDisableGravity;
+                                    index++;
+                                    continue;
+                                }
+                            }
+
+                            if (!updatePacket.isCyclic)
+                            {
+                                tempUpdatePacket.isCyclic = MonsterMovePacket.GetCyclicFromLine(lines[index]);
+                                if (tempUpdatePacket.isCyclic)
+                                {
+                                    updatePacket.isCyclic = tempUpdatePacket.isCyclic;
                                     index++;
                                     continue;
                                 }
@@ -827,8 +850,8 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if (lines[index].Contains("UpdateType: Values") && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
 
                         do
                         {
@@ -851,6 +874,17 @@ namespace WoWDeveloperAssistant.Misc
                                 if (tempUpdatePacket.hasDisableGravity)
                                 {
                                     updatePacket.hasDisableGravity = tempUpdatePacket.hasDisableGravity;
+                                    index++;
+                                    continue;
+                                }
+                            }
+
+                            if (!updatePacket.isCyclic)
+                            {
+                                tempUpdatePacket.isCyclic = MonsterMovePacket.GetCyclicFromLine(lines[index]);
+                                if (tempUpdatePacket.isCyclic)
+                                {
+                                    updatePacket.isCyclic = tempUpdatePacket.isCyclic;
                                     index++;
                                     continue;
                                 }
@@ -929,8 +963,8 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && lines[index + 1].IsConversationLine())
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<string>(), new List<KeyValuePair<uint, uint?>>()));
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<string>(), new List<KeyValuePair<uint, uint?>>()));
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
 
                         do
                         {
@@ -1152,6 +1186,19 @@ namespace WoWDeveloperAssistant.Misc
                 return false;
             }
 
+            public static bool GetCyclicFromLine(string line)
+            {
+                if (line.Contains("Flags:"))
+                {
+                    if (line.Contains("Cyclic"))
+                        return true;
+                    else
+                        return false;
+                }
+
+                return false;
+            }
+
             public static float GetWaypointsDistance(List<Waypoint> waypoints, Position startPosition)
             {
                 if (waypoints.Count() == 0)
@@ -1223,12 +1270,14 @@ namespace WoWDeveloperAssistant.Misc
                 MonsterMovePacket movePacket = new MonsterMovePacket(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true), 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
                 MonsterMovePacket tempMovePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
                 bool tempFlying = false;
+                bool tempCyclic = false;
                 Position tempPointPosition = new Position();
 
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
                     Position lastPosition = new Position();
                     bool isFlying = false;
+                    bool isCyclic = false;
 
                     do
                     {
@@ -1275,6 +1324,17 @@ namespace WoWDeveloperAssistant.Misc
                             if (tempFlying)
                             {
                                 isFlying = tempFlying;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (!isCyclic)
+                        {
+                            tempCyclic = GetCyclicFromLine(lines[index]);
+                            if (tempCyclic)
+                            {
+                                isCyclic = tempCyclic;
                                 index++;
                                 continue;
                             }
@@ -1402,6 +1462,7 @@ namespace WoWDeveloperAssistant.Misc
                 MonsterMovePacket movePacket = new MonsterMovePacket(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true), 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
                 MonsterMovePacket tempMovePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
                 bool tempFlying = false;
+                bool tempCyclic = false;
                 Position tempPointPosition = new Position();
                 bool skipCombatMovement = Properties.Settings.Default.CombatMovement;
 
@@ -1412,6 +1473,7 @@ namespace WoWDeveloperAssistant.Misc
 
                     Position lastPosition = new Position();
                     bool isFlying = false;
+                    bool isCyclic = false;
 
                     do
                     {
@@ -1458,6 +1520,17 @@ namespace WoWDeveloperAssistant.Misc
                             if (tempFlying)
                             {
                                 isFlying = tempFlying;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (!isCyclic)
+                        {
+                            tempCyclic = GetCyclicFromLine(lines[index]);
+                            if (tempCyclic)
+                            {
+                                isCyclic = tempCyclic;
                                 index++;
                                 continue;
                             }
@@ -1595,12 +1668,14 @@ namespace WoWDeveloperAssistant.Misc
                 MonsterMovePacket movePacket = new MonsterMovePacket(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true), 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
                 MonsterMovePacket tempMovePacket = new MonsterMovePacket("", 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
                 bool tempFlying = false;
+                bool tempCyclic = false;
                 Position tempPointPosition = new Position();
 
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
                     Position lastPosition = new Position();
                     bool isFlying = false;
+                    bool isCyclic = false;
 
                     do
                     {
@@ -1647,6 +1722,17 @@ namespace WoWDeveloperAssistant.Misc
                             if (tempFlying)
                             {
                                 isFlying = tempFlying;
+                                index++;
+                                continue;
+                            }
+                        }
+
+                        if (!isCyclic)
+                        {
+                            tempCyclic = GetCyclicFromLine(lines[index]);
+                            if (tempCyclic)
+                            {
+                                isCyclic = tempCyclic;
                                 index++;
                                 continue;
                             }

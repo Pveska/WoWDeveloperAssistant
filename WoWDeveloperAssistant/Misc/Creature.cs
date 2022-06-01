@@ -24,6 +24,7 @@ namespace WoWDeveloperAssistant.Misc
         public Dictionary<uint, Spell> castedSpells;
         public TimeSpan lastUpdatePacketTime;
         public bool hasDisableGravity;
+        public bool isCyclic;
         public string transportGuid;
 
         public Creature(UpdateObjectPacket updatePacket)
@@ -40,6 +41,7 @@ namespace WoWDeveloperAssistant.Misc
             auras = new List<Aura>();
             lastUpdatePacketTime = updatePacket.packetSendTime;
             hasDisableGravity = updatePacket.hasDisableGravity;
+            isCyclic = updatePacket.isCyclic;
             transportGuid = updatePacket.transportGuid;
         }
 
@@ -76,6 +78,9 @@ namespace WoWDeveloperAssistant.Misc
 
             if (!hasDisableGravity && updatePacket.hasDisableGravity)
                 hasDisableGravity = updatePacket.hasDisableGravity;
+
+            if (!isCyclic && updatePacket.isCyclic)
+                isCyclic = updatePacket.isCyclic;
 
             if (transportGuid == "" && updatePacket.transportGuid != "")
                 transportGuid = updatePacket.transportGuid;
