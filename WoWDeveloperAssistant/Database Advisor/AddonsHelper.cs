@@ -64,7 +64,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 List<string> intersectedLinkedIds = creatureAddons.Keys.Intersect(creatureLinkedIds).ToList();
 
-                output += "INSERT INTO `creature_addon` (`linked_id`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `auras`, `VerifiedBuild`) VALUES" + "\r\n";
+                output += "INSERT INTO `creature_addon` (`linked_id`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `auras`, `WorldEffectIDs`, `VerifiedBuild`) VALUES" + "\r\n";
 
                 for (int i = 0; i < creatureLinkedIds.Count; i++)
                 {
