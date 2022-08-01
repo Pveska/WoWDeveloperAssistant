@@ -12,11 +12,11 @@ namespace WoWDeveloperAssistant.Database_Advisor
     {
         public static void CreateReturnPath(TextBox textBox)
         {
-            if (!textBox.Text.Contains("@PATH"))
+            if (!textBox.Text.Contains("@LinkedId"))
                 return;
 
             // Getting array with strings that contains points only
-            List<string> pointStrings = textBox.Text.Split("\r\n".ToCharArray()).Where(x => x.Contains("(@PATH, ")).ToList();
+            List<string> pointStrings = textBox.Text.Split("\r\n".ToCharArray()).Where(x => x.Contains("(@LinkedId, ")).ToList();
 
             // Add new line for each of point strings and remove any colons
             for (int i = 0; i < pointStrings.Count; i++)
@@ -38,10 +38,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
             // Recalculate point ids
             for (int i = 1; i <= pointStrings.Count; i++)
             {
-                Regex pointIdRegex = new Regex(@"@PATH,\s{1}\d+");
+                Regex pointIdRegex = new Regex(@"@LinkedId,\s{1}\d+");
                 if (pointIdRegex.IsMatch(pointStrings[i - 1]))
                 {
-                    pointStrings[i - 1] = pointStrings[i - 1].Replace(pointIdRegex.Match(pointStrings[i - 1]).ToString(), "@PATH, " + i);
+                    pointStrings[i - 1] = pointStrings[i - 1].Replace(pointIdRegex.Match(pointStrings[i - 1]).ToString(), "@LinkedId, " + i);
                 }
             }
 
@@ -49,7 +49,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             pointStrings[pointStrings.Count - 1] = pointStrings.Last().Replace("),", ");");
 
             // Clear all strings on TextBox that contains points data
-            textBox.Text = textBox.Text.Remove(textBox.Text.IndexOf("(@PATH"));
+            textBox.Text = textBox.Text.Remove(textBox.Text.IndexOf("(@LinkedId"));
 
             // Add points to TextBox
             foreach (string pointString in pointStrings)
@@ -60,10 +60,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
         public static void RecalculatePointIds(TextBox textBox)
         {
-            if (!textBox.Text.Contains("@PATH"))
+            if (!textBox.Text.Contains("@LinkedId"))
                 return;
 
-            List<string> pointStrings = textBox.Text.Split("\r\n".ToCharArray()).Where(x => x.Contains("(@PATH, ")).ToList();
+            List<string> pointStrings = textBox.Text.Split("\r\n".ToCharArray()).Where(x => x.Contains("(@LinkedId, ")).ToList();
 
             // Add new line for each of point strings and remove any colons
             for (int i = 0; i < pointStrings.Count; i++)
@@ -74,10 +74,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
             // Recalculate point ids
             for (int i = 1; i <= pointStrings.Count; i++)
             {
-                Regex pointIdRegex = new Regex(@"@PATH,\s{1}\d+");
+                Regex pointIdRegex = new Regex(@"@LinkedId,\s{1}\d+");
                 if (pointIdRegex.IsMatch(pointStrings[i - 1]))
                 {
-                    pointStrings[i - 1] = pointStrings[i - 1].Replace(pointIdRegex.Match(pointStrings[i - 1]).ToString(), "@PATH, " + i);
+                    pointStrings[i - 1] = pointStrings[i - 1].Replace(pointIdRegex.Match(pointStrings[i - 1]).ToString(), "@LinkedId, " + i);
                 }
             }
 
@@ -85,7 +85,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             pointStrings[pointStrings.Count - 1] = pointStrings.Last().Replace("),", ");");
 
             // Clear all strings on TextBox that contains points data
-            textBox.Text = textBox.Text.Remove(textBox.Text.IndexOf("(@PATH"));
+            textBox.Text = textBox.Text.Remove(textBox.Text.IndexOf("(@LinkedId"));
 
             // Add recalculated points to TextBox
             foreach (string pointString in pointStrings)

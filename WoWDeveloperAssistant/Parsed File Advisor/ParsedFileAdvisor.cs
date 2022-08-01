@@ -379,7 +379,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
                 if (!multiSelect)
                 {
-                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_parsed_filed_advisor_packets.dat"), FileMode.OpenOrCreate))
+                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_parsed_file_advisor_packets.dat"), FileMode.OpenOrCreate))
                     {
                         Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
                         {
@@ -399,7 +399,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 }
                 else
                 {
-                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "multi_selected_parsed_filed_advisor_packets.dat"), FileMode.OpenOrCreate))
+                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "multi_selected_parsed_file_advisor_packets.dat"), FileMode.OpenOrCreate))
                     {
                         Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
                         {
@@ -475,11 +475,12 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed Sniff or Data File (*.txt;*.dat)|*.txt;*.dat";
+            mainForm.openFileDialog.Filter = "Parsed sniff or data file (*.txt;*.dat)|*parsed.txt;*parsed_file_advisor_packets.dat";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
             mainForm.openFileDialog.Multiselect = true;
             mainForm.openFileDialog.CheckFileExists = true;
+            mainForm.openFileDialog.FileName = " ";
         }
         public void ImportStarted()
         {

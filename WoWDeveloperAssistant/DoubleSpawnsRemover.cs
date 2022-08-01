@@ -600,12 +600,13 @@ namespace WoWDeveloperAssistant
         public static void OpenFileDialog(OpenFileDialog fileDialog)
         {
             fileDialog.Title = "Open File";
-            fileDialog.Filter = "SQL File (*.sql)|*.sql";
+            fileDialog.Filter = "Parsed SQL file with spawns (*.sql)|*.sql";
             fileDialog.FileName = "";
             fileDialog.FilterIndex = 1;
             fileDialog.ShowReadOnly = false;
             fileDialog.Multiselect = false;
             fileDialog.CheckFileExists = true;
+            fileDialog.FileName = " ";
         }
     }
 }

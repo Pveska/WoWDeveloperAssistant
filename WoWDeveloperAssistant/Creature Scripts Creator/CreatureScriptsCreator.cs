@@ -784,11 +784,12 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed Sniff or Data File (*.txt;*.dat)|*.txt;*.dat";
+            mainForm.openFileDialog.Filter = "Parsed sniff or data file with scripts (*.txt;*.dat)|*parsed.txt;*script_packets.dat";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
             mainForm.openFileDialog.Multiselect = true;
             mainForm.openFileDialog.CheckFileExists = true;
+            mainForm.openFileDialog.FileName = " ";
         }
 
         public void ImportStarted()

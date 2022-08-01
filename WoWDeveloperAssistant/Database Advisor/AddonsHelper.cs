@@ -123,12 +123,13 @@ namespace WoWDeveloperAssistant.Database_Advisor
         public static void OpenFileDialog(OpenFileDialog fileDialog)
         {
             fileDialog.Title = "Open File";
-            fileDialog.Filter = "Sql File (*.sql)|*.sql";
+            fileDialog.Filter = "Parsed SQL file with addons (*.sql)|*.sql";
             fileDialog.FileName = "";
             fileDialog.FilterIndex = 1;
             fileDialog.ShowReadOnly = false;
             fileDialog.Multiselect = false;
             fileDialog.CheckFileExists = true;
+            fileDialog.FileName = " ";
         }
     }
 }
