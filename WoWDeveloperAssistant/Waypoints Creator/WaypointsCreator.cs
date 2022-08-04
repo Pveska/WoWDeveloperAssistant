@@ -767,10 +767,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string oldFormationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` IN (" + linkedIds + ") OR " + "`memberLinkedId` IN (" + linkedIds + ");";
             string newFormationSqlQuery = "SELECT `LeaderLinkedId`, `MemberLinkedId` FROM `creature_group_members` WHERE `LeaderLinkedId` IN (" + linkedIds + ") OR " + "`MemberLinkedId` IN (" + linkedIds + ");";
             string addonSqlQuery = "SELECT `linked_id` FROM `creature_addon` WHERE `linked_id` IN (" + linkedIds + ") AND `path_id` != 0;";
+            string waypointDataSqlQuery = "SELECT `linked_id` FROM `waypoint_data` WHERE `linked_id` IN (" + linkedIds + ");";
 
             var oldCreatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(oldFormationSqlQuery) : null;
             var newCreatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(newFormationSqlQuery) : null;
             var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
+            var waypointDataDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(waypointDataSqlQuery) : null;
 
             if (oldCreatureFormationsDs != null && oldCreatureFormationsDs.Tables["table"].Rows.Count > 0)
             {
@@ -819,6 +821,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
             {
                 Parallel.ForEach(creatureAddonDs.Tables["table"].Rows.Cast<DataRow>().AsEnumerable(), row =>
+                {
+                    if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
+                    {
+                        lock (foundLinkedIds)
+                        {
+                            foundLinkedIds.Add(row.ItemArray[0].ToString());
+                        }
+                    }
+                });
+            }
+
+            if (waypointDataDs != null && waypointDataDs.Tables["table"].Rows.Count > 0)
+            {
+                Parallel.ForEach(waypointDataDs.Tables["table"].Rows.Cast<DataRow>().AsEnumerable(), row =>
                 {
                     if (row.ItemArray[0].ToString() != "" && !foundLinkedIds.Contains(row.ItemArray[0].ToString()))
                     {
