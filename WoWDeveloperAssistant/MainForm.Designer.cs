@@ -220,6 +220,7 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.recalculateTextForGossipMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -511,7 +512,7 @@
             this.toolStripSeparator_CSC});
             this.toolStrip_CreatureScriptsCreator.Location = new System.Drawing.Point(3, 2);
             this.toolStrip_CreatureScriptsCreator.Name = "toolStrip_CreatureScriptsCreator";
-            this.toolStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(2034, 38);
+            this.toolStrip_CreatureScriptsCreator.Size = new System.Drawing.Size(2034, 34);
             this.toolStrip_CreatureScriptsCreator.TabIndex = 1;
             this.toolStrip_CreatureScriptsCreator.Text = "toolStrip_CreatureScriptsCreator";
             // 
@@ -520,7 +521,7 @@
             this.toolStripButton_CSC_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_CSC_ImportSniff.Image")));
             this.toolStripButton_CSC_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_ImportSniff.Name = "toolStripButton_CSC_ImportSniff";
-            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(128, 33);
+            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(128, 29);
             this.toolStripButton_CSC_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_CSC_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
             // 
@@ -1080,28 +1081,29 @@
             this.contextMenuStrip_DatabaseAdvisor.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createReturnPathToolStripMenuItem,
             this.recalculatePointsToolStripMenuItem,
-            this.getAddonsFromSqlToolStripMenuItem});
+            this.getAddonsFromSqlToolStripMenuItem,
+            this.recalculateTextForGossipMenuToolStripMenuItem});
             this.contextMenuStrip_DatabaseAdvisor.Name = "contextMenuStrip_DatabaseAdvisor";
-            this.contextMenuStrip_DatabaseAdvisor.Size = new System.Drawing.Size(258, 100);
+            this.contextMenuStrip_DatabaseAdvisor.Size = new System.Drawing.Size(341, 132);
             // 
             // createReturnPathToolStripMenuItem
             // 
             this.createReturnPathToolStripMenuItem.Name = "createReturnPathToolStripMenuItem";
-            this.createReturnPathToolStripMenuItem.Size = new System.Drawing.Size(257, 32);
+            this.createReturnPathToolStripMenuItem.Size = new System.Drawing.Size(340, 32);
             this.createReturnPathToolStripMenuItem.Text = "Create return path";
             this.createReturnPathToolStripMenuItem.Click += new System.EventHandler(this.createReturnPathToolStripMenuItem_Click);
             // 
             // recalculatePointsToolStripMenuItem
             // 
             this.recalculatePointsToolStripMenuItem.Name = "recalculatePointsToolStripMenuItem";
-            this.recalculatePointsToolStripMenuItem.Size = new System.Drawing.Size(257, 32);
+            this.recalculatePointsToolStripMenuItem.Size = new System.Drawing.Size(340, 32);
             this.recalculatePointsToolStripMenuItem.Text = "Recalculate point ids";
             this.recalculatePointsToolStripMenuItem.Click += new System.EventHandler(this.recalculatePointsToolStripMenuItem_Click);
             // 
             // getAddonsFromSqlToolStripMenuItem
             // 
             this.getAddonsFromSqlToolStripMenuItem.Name = "getAddonsFromSqlToolStripMenuItem";
-            this.getAddonsFromSqlToolStripMenuItem.Size = new System.Drawing.Size(257, 32);
+            this.getAddonsFromSqlToolStripMenuItem.Size = new System.Drawing.Size(340, 32);
             this.getAddonsFromSqlToolStripMenuItem.Text = "Get addons from SQL";
             this.getAddonsFromSqlToolStripMenuItem.Click += new System.EventHandler(this.getAddonsFromSqlToolStripMenuItem_Click);
             // 
@@ -2038,7 +2040,7 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff});
             this.toolStrip_ParsedFileAdvisor.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_ParsedFileAdvisor.Name = "toolStrip_ParsedFileAdvisor";
-            this.toolStrip_ParsedFileAdvisor.Size = new System.Drawing.Size(2034, 34);
+            this.toolStrip_ParsedFileAdvisor.Size = new System.Drawing.Size(2034, 38);
             this.toolStrip_ParsedFileAdvisor.TabIndex = 16;
             this.toolStrip_ParsedFileAdvisor.Text = "toolStrip1";
             // 
@@ -2138,6 +2140,13 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
+            // 
+            // recalculateTextForGossipMenuToolStripMenuItem
+            // 
+            this.recalculateTextForGossipMenuToolStripMenuItem.Name = "recalculateTextForGossipMenuToolStripMenuItem";
+            this.recalculateTextForGossipMenuToolStripMenuItem.Size = new System.Drawing.Size(340, 32);
+            this.recalculateTextForGossipMenuToolStripMenuItem.Text = "Recalculate text for gossip menu";
+            this.recalculateTextForGossipMenuToolStripMenuItem.Click += new System.EventHandler(this.recalculateTextForGossipMenuToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2361,6 +2370,7 @@
         private System.Windows.Forms.Label label_ParsedFileAdvisor_QuestConversationsOrTexts;
         public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_LosConversationsOrTexts;
         private System.Windows.Forms.Label label_ParsedFileAdvisor_LosConversationsOrTexts;
+        private System.Windows.Forms.ToolStripMenuItem recalculateTextForGossipMenuToolStripMenuItem;
     }
 }
 

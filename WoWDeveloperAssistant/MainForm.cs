@@ -587,5 +587,10 @@ namespace WoWDeveloperAssistant
 
             parsedFileAdvisor.ParseLosConversationsOrTexts();
         }
+
+        private void recalculateTextForGossipMenuToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NpcTextAdvisor.GetNpcTextForGossipMenu(textBox_DatabaseAdvisor_Output);
+        }
     }
 }
