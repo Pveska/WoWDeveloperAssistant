@@ -403,9 +403,12 @@ namespace WoWDeveloperAssistant.Misc
 
             public static uint GetEntryFromLine(string line)
             {
-                Regex entryRegexField = new Regex(@"EntryID:{1}\s*\d+");
+                Regex objectType = new Regex(@"ServerId:{1}\s+\d+;{1}\s+Entry:{1}\s+");
+                Regex entryRegexField = new Regex(@"ServerId:{1}\s+\d+;{1}\s+Entry:{1}\s+\d+");
+
                 if (entryRegexField.IsMatch(line))
-                    return Convert.ToUInt32(entryRegexField.Match(line).ToString().Replace("EntryID: ", ""));
+                    return Convert.ToUInt32(entryRegexField.Match(line).ToString().Replace(objectType.Match(line).ToString(), ""));
+
                 return 0;
             }
 
