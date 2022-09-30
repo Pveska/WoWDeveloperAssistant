@@ -32,6 +32,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         {
             this.mainForm = mainForm;
         }
+
         public uint GetDataFromFiles(string[] fileNames)
         {
             uint successfullyParsedFilesCount = 0;

@@ -123,14 +123,17 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 npcTextRowsMerged += buildedNpcRow;
             }
 
-            npcTextRowsMerged = npcTextRowsMerged.Replace(npcTextRowsMerged.Split('\n').Where(x => x != "").ToArray().Last(), npcTextRowsMerged.Split('\n').Where(x => x != "").ToArray().Last().Replace("),", ");"));
-
-            outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteForNpcText(npcTextRowsMerged);
-            outputText += "INSERT INTO `npc_text` (`ID`, `BroadcastTextID0`, `Probability0`, `BroadcastTextID1`, `Probability1`, `BroadcastTextID2`, `Probability2`, `BroadcastTextID3`, `Probability3`, `BroadcastTextID4`, `Probability4`, `BroadcastTextID5`, `Probability5`, `BroadcastTextID6`, `Probability6`, `BroadcastTextID7`, `Probability7`, `VerifiedBuild`) VALUES\r\n";
-
-            foreach (var npcText in npcTextRowsMerged)
+            if (npcTextRowsMerged != "")
             {
-                outputText += npcText;
+                npcTextRowsMerged = npcTextRowsMerged.Replace(npcTextRowsMerged.Split('\n').Where(x => x != "").ToArray().Last(), npcTextRowsMerged.Split('\n').Where(x => x != "").ToArray().Last().Replace("),", ");"));
+
+                outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteForNpcText(npcTextRowsMerged);
+                outputText += "INSERT INTO `npc_text` (`ID`, `BroadcastTextID0`, `Probability0`, `BroadcastTextID1`, `Probability1`, `BroadcastTextID2`, `Probability2`, `BroadcastTextID3`, `Probability3`, `BroadcastTextID4`, `Probability4`, `BroadcastTextID5`, `Probability5`, `BroadcastTextID6`, `Probability6`, `BroadcastTextID7`, `Probability7`, `VerifiedBuild`) VALUES\r\n";
+
+                foreach (var npcText in npcTextRowsMerged)
+                {
+                    outputText += npcText;
+                }
             }
 
             foreach (var gossip in gossipWithNpcTextsDict)
@@ -155,16 +158,19 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
 
-            npcTextRowsSplitted = npcTextRowsSplitted.Replace(npcTextRowsSplitted.Split('\n').Where(x => x != "").ToArray().Last(), npcTextRowsSplitted.Split('\n').Where(x => x != "").ToArray().Last().Replace("),", ");"));
-
-            outputText += "\r\n";
-
-            outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteForNpcText(npcTextRowsSplitted);
-            outputText += "INSERT INTO `npc_text` (`ID`, `BroadcastTextID0`, `Probability0`, `BroadcastTextID1`, `Probability1`, `BroadcastTextID2`, `Probability2`, `BroadcastTextID3`, `Probability3`, `BroadcastTextID4`, `Probability4`, `BroadcastTextID5`, `Probability5`, `BroadcastTextID6`, `Probability6`, `BroadcastTextID7`, `Probability7`, `VerifiedBuild`) VALUES\r\n";
-
-            foreach (var npcText in npcTextRowsSplitted)
+            if (npcTextRowsSplitted != "")
             {
-                outputText += npcText;
+                npcTextRowsSplitted = npcTextRowsSplitted.Replace(npcTextRowsSplitted.Split('\n').Where(x => x != "").ToArray().Last(), npcTextRowsSplitted.Split('\n').Where(x => x != "").ToArray().Last().Replace("),", ");"));
+
+                outputText += "\r\n";
+
+                outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteForNpcText(npcTextRowsSplitted);
+                outputText += "INSERT INTO `npc_text` (`ID`, `BroadcastTextID0`, `Probability0`, `BroadcastTextID1`, `Probability1`, `BroadcastTextID2`, `Probability2`, `BroadcastTextID3`, `Probability3`, `BroadcastTextID4`, `Probability4`, `BroadcastTextID5`, `Probability5`, `BroadcastTextID6`, `Probability6`, `BroadcastTextID7`, `Probability7`, `VerifiedBuild`) VALUES\r\n";
+
+                foreach (var npcText in npcTextRowsSplitted)
+                {
+                    outputText += npcText;
+                }
             }
 
             textBox.Text = outputText;
