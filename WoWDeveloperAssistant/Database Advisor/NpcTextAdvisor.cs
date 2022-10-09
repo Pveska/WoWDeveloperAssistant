@@ -57,12 +57,20 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     if (npcTexts == null || npcTexts.Tables["table"].Rows.Count == 0)
                     {
                         gossipWithNpcTextsDict[gossip.Key].Add(broadcastTextId * 10);
-                        broadcastTextToNpcTextLinksDict.Add(broadcastTextId, broadcastTextId * 10);
+
+                        if (!broadcastTextToNpcTextLinksDict.ContainsKey(broadcastTextId))
+                        {
+                            broadcastTextToNpcTextLinksDict.Add(broadcastTextId, broadcastTextId * 10);
+                        }
                     }
                     else
                     {
                         gossipWithNpcTextsDict[gossip.Key].Add(Convert.ToInt32(npcTexts.Tables["table"].Rows[0].ItemArray[0].ToString()));
-                        broadcastTextToNpcTextLinksDict.Add(Convert.ToInt32(broadcastTextId), Convert.ToInt32(npcTexts.Tables["table"].Rows[0].ItemArray[0].ToString()));
+
+                        if (!broadcastTextToNpcTextLinksDict.ContainsKey(broadcastTextId))
+                        {
+                            broadcastTextToNpcTextLinksDict.Add(Convert.ToInt32(broadcastTextId), Convert.ToInt32(npcTexts.Tables["table"].Rows[0].ItemArray[0].ToString()));
+                        }
                     }
                 }
             }
@@ -83,7 +91,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     }
                 }
 
-                if (i + 1 >= textBoxText.Length)
+                if (i + 1 >= textBoxText.Length && gossipRows != "")
                 {
                     gossipRows = gossipRows.Replace(gossipRows.Split('\r').Where(x => x != "").ToArray().Last(), gossipRows.Split('\r').Where(x => x != "").ToArray().Last().Replace("),", ");")) + "\r\n";
                 }
@@ -127,7 +135,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 npcTextRowsMerged = npcTextRowsMerged.Replace(npcTextRowsMerged.Split('\n').Where(x => x != "").ToArray().Last(), npcTextRowsMerged.Split('\n').Where(x => x != "").ToArray().Last().Replace("),", ");"));
 
-                outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteForNpcText(npcTextRowsMerged);
+                outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteLineForNpcText(npcTextRowsMerged);
                 outputText += "INSERT INTO `npc_text` (`ID`, `BroadcastTextID0`, `Probability0`, `BroadcastTextID1`, `Probability1`, `BroadcastTextID2`, `Probability2`, `BroadcastTextID3`, `Probability3`, `BroadcastTextID4`, `Probability4`, `BroadcastTextID5`, `Probability5`, `BroadcastTextID6`, `Probability6`, `BroadcastTextID7`, `Probability7`, `VerifiedBuild`) VALUES\r\n";
 
                 foreach (var npcText in npcTextRowsMerged)
@@ -143,7 +151,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     if (!broadcastTextToNpcTextLinksDict.ContainsKey(npcTextId / 10))
                         continue;
 
-                    string buildedNpcRow = $"({npcTextId}, {npcTextId / 10}, ";
+                    string buildedNpcRow = $"({npcTextId}, {npcTextId / 10}, 1, ";
 
                     for (int i = 0; i < 7; i++)
                     {
@@ -164,7 +172,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
                 outputText += "\r\n";
 
-                outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteForNpcText(npcTextRowsSplitted);
+                outputText += "DELETE FROM `npc_text` WHERE " + GetDeleteLineForNpcText(npcTextRowsSplitted);
                 outputText += "INSERT INTO `npc_text` (`ID`, `BroadcastTextID0`, `Probability0`, `BroadcastTextID1`, `Probability1`, `BroadcastTextID2`, `Probability2`, `BroadcastTextID3`, `Probability3`, `BroadcastTextID4`, `Probability4`, `BroadcastTextID5`, `Probability5`, `BroadcastTextID6`, `Probability6`, `BroadcastTextID7`, `Probability7`, `VerifiedBuild`) VALUES\r\n";
 
                 foreach (var npcText in npcTextRowsSplitted)
@@ -230,7 +238,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             return true;
         }
 
-        private static string GetDeleteForNpcText(string npcTextRows)
+        private static string GetDeleteLineForNpcText(string npcTextRows)
         {
             string output = "";
 
@@ -243,11 +251,11 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
                 if (output.Length == 0)
                 {
-                    output += $"(`ID` = {splittedNpcText[0].Replace("(", "")} AND `BroadcastTextID0` = {splittedNpcText[1]})";
+                    output += $"(`ID` = {splittedNpcText[0].Replace("(", "")} AND `BroadcastTextID0` = {splittedNpcText[1].Replace(" ", "")})";
                 }
                 else
                 {
-                    output += $" OR (`ID` = {splittedNpcText[0].Replace("(", "")} AND `BroadcastTextID0` = {splittedNpcText[1]})";
+                    output += $" OR (`ID` = {splittedNpcText[0].Replace("(", "")} AND `BroadcastTextID0` = {splittedNpcText[1].Replace(" ", "")})";
                 }
             }
 
