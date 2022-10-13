@@ -478,8 +478,8 @@ namespace WoWDeveloperAssistant
 
         private static Position GetPositionFromLine(string line)
         {
-            Regex creatureLineRegex = new Regex(@".+,{1}\s{1}'0'{1},{1}\s{1}0,{1}\s{1}0,{1}\s{1}");
-            Regex gameobjectLineRegex = new Regex(@".+,{1}\s{1}'0'{1},{1}\s{1}");
+            Regex creatureLineRegex = new Regex(@".+, '0', 1, 0, 0, 0, {1}");
+            Regex gameobjectLineRegex = new Regex(@".+, '0', 1, 0, {1}");
 
             if (creatureLineRegex.IsMatch(line))
             {
