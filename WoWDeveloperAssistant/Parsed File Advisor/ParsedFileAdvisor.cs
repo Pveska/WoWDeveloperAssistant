@@ -122,7 +122,11 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         {
                             lock (conversationPackets)
                             {
-                                conversationPackets.Add(packet);
+                                UpdateObjectPacket existedUpdateObjectPacket = conversationPackets.FirstOrDefault(x => x.entry == packet.entry);
+                                if (existedUpdateObjectPacket.entry == 0)
+                                {
+                                    conversationPackets.Add(packet);
+                                }
                             }
                         }
                         else
@@ -840,6 +844,9 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             foreach (UpdateObjectPacket conversationPacket in conversationPackets)
             {
+                if (conversationPacket.conversationData.conversationActors.Count == 0)
+                    continue;
+
                 foreach (PlayerMovePacket movePacket in playerMovePackets.Where(x => x.playerGuid == playerGuid).OrderByDescending(x => x.packetSendTime))
                 {
                     if (conversationPacket.packetSendTime.TotalMilliseconds >= movePacket.packetSendTime.TotalMilliseconds && (conversationPacket.packetSendTime.TotalMilliseconds - movePacket.packetSendTime.TotalMilliseconds) <= 2500 && !IsQuestRelatedConversation(conversationPacket))
@@ -888,8 +895,8 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
         private string GetEstimatedDistanceToTriggerPosition(UpdateObjectPacket conversationPacket, PlayerMovePacket movePacket)
         {
-            string output = "estimated distance to trigger position is unknown";
-            List<double> estimatedDistances = new List<double>();
+            string output = "";
+            List<KeyValuePair<string, double>> estimatedDistances = new List<KeyValuePair<string, double>>();
             bool thereWasActorWithWaypoints = false;
 
             if (conversationPacket.conversationData.conversationActors.Count == 0)
@@ -898,20 +905,20 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 return output;
             }
 
-            for (int i = 0; i < conversationPacket.conversationData.conversationLines.Count; i++)
+            for (int i = 0; i < conversationPacket.conversationData.conversationActors.Count; i++)
             {
                 Creature actor;
 
-                if (creatures.ContainsKey(conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]))
+                if (creatures.ContainsKey(conversationPacket.conversationData.conversationActors[i].Key))
                 {
-                    actor = creatures[conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]];
+                    actor = creatures[conversationPacket.conversationData.conversationActors[i].Key];
                 }
                 else
-                    return output;
+                    continue;
 
                 if (!actor.HasWaypoints())
                 {
-                    estimatedDistances.Add(Math.Round(movePacket.position.GetDistance(actor.spawnPosition)));
+                    estimatedDistances.Add(new KeyValuePair<string, double>(actor.name, Math.Round(movePacket.position.GetDistance(actor.spawnPosition))));
                 }
                 else
                 {
@@ -924,16 +931,14 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     Waypoint lastWaypoint = waypoints.OrderBy(x => x.moveStartTime).OrderBy(x => x.idFromParse).LastOrDefault();
                     if (lastWaypoint.movePosition.IsValid())
                     {
-                        estimatedDistances.Add(Math.Round(movePacket.position.GetDistance(lastWaypoint.movePosition)));
+                        estimatedDistances.Add(new KeyValuePair<string, double>(actor.name, Math.Round(movePacket.position.GetDistance(lastWaypoint.movePosition))));
                     }
                     else if (lastWaypoint.startPosition.IsValid())
                     {
-                        estimatedDistances.Add(Math.Round(movePacket.position.GetDistance(lastWaypoint.startPosition)));
+                        estimatedDistances.Add(new KeyValuePair<string, double>(actor.name, Math.Round(movePacket.position.GetDistance(lastWaypoint.startPosition))));
                     }
                 }
             }
-
-            estimatedDistances = estimatedDistances.Intersect(estimatedDistances).ToList();
 
             if (estimatedDistances.Count > 1)
             {
@@ -943,17 +948,17 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 {
                     if (i + 1 < estimatedDistances.Count)
                     {
-                        output += $"{estimatedDistances[i]}.0f, ";
+                        output += $"{estimatedDistances[i].Value}.0f ({estimatedDistances[i].Key}), ";
                     }
                     else
                     {
-                        output += $"{estimatedDistances[i]}.0f";
+                        output += $"{estimatedDistances[i].Value}.0f ({estimatedDistances[i].Key})";
                     }
                 }
             }
             else
             {
-                output = $"estimated distance to trigger position: {estimatedDistances.FirstOrDefault()}.0f";
+                output = $"estimated distance to trigger position: {estimatedDistances.FirstOrDefault().Value}.0f, ({estimatedDistances.FirstOrDefault().Key})";
             }
 
             if (thereWasActorWithWaypoints)
@@ -1047,27 +1052,32 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
                 if (conversationPacket.conversationData.conversationActors.Count != 0)
                 {
-                    if (creatures.ContainsKey(conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]))
+                    try
                     {
-                        actor = creatures[conversationPacket.conversationData.conversationActors[(int)conversationPacket.conversationData.conversationLines[i].Value]];
+                        actor = creatures[conversationPacket.conversationData.conversationActors.FirstOrDefault(x => x.Value == conversationPacket.conversationData.conversationLines[i].Value).Key];
                     }
-
-                    if (conversationLineText == "" && actor != null)
-                    {
-                        conversationLineText = "There is no text for this line";
-                    }
-                    else if (conversationLineText == "" && actor == null)
-                    {
-                        conversationLineText = "There is no text for this line, probably actor is player";
-                    }
+                    catch (System.Exception) { }
 
                     if (actor != null)
                     {
+                        if (conversationLineText == "")
+                        {
+                            conversationLineText = "There is no text for this line";
+                        }
+
                         output += $"[{i}] Actor: \"{actor.name}\" ({actor.entry}) - Line: \"{conversationLineText}\" ({conversationLineId})\r\n";
                     }
                     else
                     {
-                        output += $"[{i}] Actor is player\r\n";
+                        if (conversationLineText == "")
+                        {
+                            conversationLineText = "There is no text for this line";
+                            output += $"[{i}] Actor: Is Player - Line: \"{conversationLineText}\" ({conversationLineId})\r\n";
+                        }
+                        else if (conversationLineText != "")
+                        {
+                            output += $"[{i}] Actor: Is Non WorldObject - Line: \"{conversationLineText}\" ({conversationLineId})\r\n";
+                        }
                     }
                 }
                 else

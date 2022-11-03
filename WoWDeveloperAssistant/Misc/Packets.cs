@@ -374,10 +374,10 @@ namespace WoWDeveloperAssistant.Misc
             [Serializable]
             public struct ConversationData
             {
-                public List<string> conversationActors;
+                public List<KeyValuePair<string, uint>> conversationActors;
                 public List<KeyValuePair<uint, uint?>> conversationLines;
 
-                public ConversationData(List<string> conversationActors, List<KeyValuePair<uint, uint?>> conversationLines)
+                public ConversationData(List<KeyValuePair<string, uint>> conversationActors, List<KeyValuePair<uint, uint?>> conversationLines)
                 { this.conversationActors = conversationActors; this.conversationLines = conversationLines; }
             }
 
@@ -611,6 +611,20 @@ namespace WoWDeveloperAssistant.Misc
                     return Convert.ToUInt32(actorIndexRegex.Match(line).ToString().Replace("ActorIndex: ", ""));
 
                 return null;
+            }
+
+            public static KeyValuePair<string, uint> GetActorDataFromLine(string line, BuildVersions buildVersion)
+            {
+                string actorGuid = LineGetters.GetGuidFromLine(line, buildVersion, conversationActorGuid: true);
+                uint actorIndex = 0;
+
+                Regex actorIndexRegex = new Regex(@"\(ConversationData\) \(Actors\){1}\s\[{1}\w+\]{1}");
+                if (actorIndexRegex.IsMatch(line))
+                {
+                    actorIndex = Convert.ToUInt32(actorIndexRegex.Match(line).ToString().Replace("(ConversationData) (Actors) [", "").Replace("]", ""));
+                }
+
+                return new KeyValuePair<string, uint>(actorGuid, actorIndex);
             }
 
             public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
@@ -966,7 +980,7 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && lines[index + 1].IsConversationLine())
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<string>(), new List<KeyValuePair<uint, uint?>>()));
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()));
                         UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
 
                         do
@@ -997,13 +1011,13 @@ namespace WoWDeveloperAssistant.Misc
 
                             if (GetConversationLineIdFromLine(lines[index]) != 0)
                             {
-                                uint conversationEntry = GetConversationLineIdFromLine(lines[index]);
+                                uint conversationLineId = GetConversationLineIdFromLine(lines[index]);
 
                                 do
                                 {
                                     if (GetActorIndexFromLine(lines[index]) != null)
                                     {
-                                        updatePacket.conversationData.conversationLines.Add(new KeyValuePair<uint, uint?>(conversationEntry, GetActorIndexFromLine(lines[index])));
+                                        updatePacket.conversationData.conversationLines.Add(new KeyValuePair<uint, uint?>(conversationLineId, GetActorIndexFromLine(lines[index])));
                                     }
 
                                     index++;
@@ -1014,7 +1028,7 @@ namespace WoWDeveloperAssistant.Misc
 
                             if (LineGetters.GetGuidFromLine(lines[index], buildVersion, conversationActorGuid: true) != "")
                             {
-                                updatePacket.conversationData.conversationActors.Add(LineGetters.GetGuidFromLine(lines[index], buildVersion, conversationActorGuid: true));
+                                updatePacket.conversationData.conversationActors.Add(GetActorDataFromLine(lines[index], buildVersion));
                             }
 
                             index++;
