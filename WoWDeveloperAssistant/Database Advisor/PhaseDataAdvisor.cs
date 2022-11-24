@@ -84,7 +84,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             output += GetPhaseDefinitionStringFromDictionary(zonesLinkedToPhases, creaturesData.Values.ToList());
 
             output += $"\r\nDELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 26 AND `SourceGroup` IN ({GetZoneIdsStringFromDictionary(zonesLinkedToPhases)}) AND `SourceEntry` IN ({GetPhaseIdsStringFromDictionary(zonesLinkedToPhases)});\r\n";
-            output += "INSERT INTO `phase_definitions` (`zoneId`, `entry`, `phasemask`, `phaseId`, `terrainswapmap`, `uiworldmapareaswap`, `flags`, `comment`) VALUES\r\n";
+            output += "INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES\r\n";
             output += GetPhaseConditionsStringFromDictionary(zonesLinkedToPhases);
 
             textBox.Text = output;
