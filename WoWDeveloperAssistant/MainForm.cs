@@ -592,5 +592,15 @@ namespace WoWDeveloperAssistant
         {
             NpcTextAdvisor.GetNpcTextForGossipMenu(textBox_DatabaseAdvisor_Output);
         }
+
+        private void getPhaseDataForCreatures_Click(object sender, EventArgs e)
+        {
+            AddonsHelper.OpenFileDialog(openFileDialog);
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                PhaseDataAdvisor.GetPhaseDataForCreatures(textBox_DatabaseAdvisor_Output, openFileDialog.FileName);
+            }
+        }
     }
 }

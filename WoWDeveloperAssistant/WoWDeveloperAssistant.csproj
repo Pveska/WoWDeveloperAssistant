@@ -124,6 +124,8 @@
     <Compile Include="Database Advisor\DoublePathsFinder.cs" />
     <Compile Include="Database Advisor\GossipMenuAdvisor.cs" />
     <Compile Include="Database Advisor\NpcTextAdvisor.cs" />
+    <Compile Include="Database Advisor\PhaseDataAdvisor.cs" />
+    <Compile Include="DBC\Structures\AreaTableEntry.cs" />
     <Compile Include="DBC\Structures\ConversationLineEntry.cs" />
     <Compile Include="Parsed File Advisor\ParsedFileAdvisor.cs" />
     <Compile Include="Database Advisor\WaypointsHelper.cs" />

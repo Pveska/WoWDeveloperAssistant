@@ -22,6 +22,7 @@ namespace WoWDeveloperAssistant.DBC
         public static Storage<SpellMiscEntry> SpellMisc { get; set; }
         public static Storage<SpellRangeEntry> SpellRadius { get; set; }
         public static Storage<ConversationLineEntry> ConversationLine { get; set; }
+        public static Storage<AreaTableEntry> AreaTable { get; set; }
 
         private static string GetDBCPath()
         {

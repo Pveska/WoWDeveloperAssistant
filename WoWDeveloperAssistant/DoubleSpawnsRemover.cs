@@ -4,7 +4,6 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
@@ -32,8 +31,8 @@ namespace WoWDeveloperAssistant
         {
             StreamWriter outputFile = new StreamWriter(fileName + "_without_duplicates.sql");
 
-            List<string> creatureEntries = new List<string>();
-            List<string> gameobjectEntries = new List<string>();
+            List<uint> creatureEntries = new List<uint>();
+            List<uint> gameobjectEntries = new List<uint>();
 
             Dictionary<string, List<DataRow>> creaturesDataRowDictionary = new Dictionary<string, List<DataRow>>();
             Dictionary<string, List<DataRow>> gameobjectDataRowDictionary = new Dictionary<string, List<DataRow>>();
@@ -74,8 +73,8 @@ namespace WoWDeveloperAssistant
                         if (IsCreatureAddonDeleteLine(lines[i]))
                             break;
 
-                        string entry = GetEntryFromLine(lines[i]);
-                        if (entry == "" || creatureEntries.Contains(entry))
+                        uint entry = LineGetters.GetEntryFromLine(lines[i]);
+                        if (entry == 0 || creatureEntries.Contains(entry))
                             continue;
 
                         creatureEntries.Add(entry);
@@ -94,8 +93,8 @@ namespace WoWDeveloperAssistant
                         if (IsGameObjectAddonDeleteLine(lines[i]))
                             break;
 
-                        string entry = GetEntryFromLine(lines[i]);
-                        if (entry == "" || gameobjectEntries.Contains(entry))
+                        uint entry = LineGetters.GetEntryFromLine(lines[i]);
+                        if (entry == 0 || gameobjectEntries.Contains(entry))
                             continue;
 
                         gameobjectEntries.Add(entry);
@@ -162,10 +161,10 @@ namespace WoWDeveloperAssistant
                         if (IsCreatureAddonDeleteLine(lines[i]))
                             break;
 
-                        string linkedId = GetLinkedIdFromLine(lines[i]);
-                        string entry = GetEntryFromLine(lines[i]);
+                        string linkedId = LineGetters.GetLinkedIdFromLine(lines[i]);
+                        uint entry = LineGetters.GetEntryFromLine(lines[i]);
                         Position spawnPos = GetPositionFromLine(lines[i]);
-                        if (linkedId == "" || entry == "" || !spawnPos.IsValid())
+                        if (linkedId == "" || entry == 0 || !spawnPos.IsValid())
                             continue;
 
                         if (!creaturesDataRowDictionary.ContainsKey(entry.ToString()))
@@ -231,7 +230,7 @@ namespace WoWDeveloperAssistant
                         if (IsGameObjectDeleteLine(lines[i]))
                             break;
 
-                        string linkedId = GetLinkedIdFromLine(lines[i]);
+                        string linkedId = LineGetters.GetLinkedIdFromLine(lines[i]);
                         if (linkedId == "")
                             continue;
 
@@ -270,10 +269,10 @@ namespace WoWDeveloperAssistant
                         if (IsGameObjectAddonDeleteLine(lines[i]))
                             break;
 
-                        string linkedId = GetLinkedIdFromLine(lines[i]);
-                        string entry = GetEntryFromLine(lines[i]);
+                        string linkedId = LineGetters.GetLinkedIdFromLine(lines[i]);
+                        uint entry = LineGetters.GetEntryFromLine(lines[i]);
                         Position spawnPos = GetPositionFromLine(lines[i]);
-                        if (linkedId == "" || entry == "" || !spawnPos.IsValid())
+                        if (linkedId == "" || entry == 0 || !spawnPos.IsValid())
                             continue;
 
                         if (!gameobjectDataRowDictionary.ContainsKey(entry.ToString()))
@@ -339,7 +338,7 @@ namespace WoWDeveloperAssistant
                         if (!IsGameObjectAddonLine(lines[i]))
                             break;
 
-                        string linkedId = GetLinkedIdFromLine(lines[i]);
+                        string linkedId = LineGetters.GetLinkedIdFromLine(lines[i]);
                         if (linkedId == "")
                             continue;
 
@@ -452,6 +451,26 @@ namespace WoWDeveloperAssistant
 
             return stringFromList;
         }
+
+        private static string GetStringFromList(List<uint> list, bool linkedIdList = false)
+        {
+            string stringFromList = "";
+
+            for (int i = 0; i < list.Count(); i++)
+            {
+                if (i + 1 < list.Count())
+                {
+                    stringFromList += linkedIdList ? "'" + list[i].ToString() + "', " : list[i].ToString() + ", ";
+                }
+                else
+                {
+                    stringFromList += linkedIdList ? "'" + list[i].ToString() + "'" : list[i].ToString();
+                }
+            }
+
+            return stringFromList;
+        }
+
         private static bool IsGameObjectAddonLine(string line)
         {
             if (line.Contains("spell_target_position") || line.Contains("creature_model_info") || line.Contains("creature_template_addon"))
@@ -459,6 +478,7 @@ namespace WoWDeveloperAssistant
             else
                 return true;
         }
+
         private static bool CoorsIsEqual(float coorA, float coorB)
         {
             if (coorA == coorB || coorA + 1.0f == coorB || coorA - 1.0f == coorB ||
@@ -506,27 +526,6 @@ namespace WoWDeveloperAssistant
             }
             else
                 return null;
-        }
-
-        private static string GetLinkedIdFromLine(string line)
-        {
-            Regex linkedIdRegex = new Regex(@"'+\S+'+");
-
-            if (linkedIdRegex.IsMatch(line))
-            {
-                {
-                    return linkedIdRegex.Match(line).ToString().Replace("'", "");
-                }
-            }
-
-            return "";
-        }
-
-        private static string GetEntryFromLine(string line)
-        {
-            var splittedLine = line.Split(',');
-
-            return splittedLine[1].Replace(" ", "");
         }
 
         private static bool IsGameObjectDeleteLine(string line)

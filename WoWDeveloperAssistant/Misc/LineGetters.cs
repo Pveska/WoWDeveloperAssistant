@@ -227,5 +227,65 @@ namespace WoWDeveloperAssistant.Misc
 
             return false;
         }
+
+        public static string GetLinkedIdFromLine(string line)
+        {
+            Regex linkedIdRegex = new Regex(@"'\S+'");
+
+            if (linkedIdRegex.IsMatch(line))
+            {
+                return linkedIdRegex.Match(line).ToString().Replace("'", "");
+            }
+
+            return "";
+        }
+
+        public static uint GetEntryFromLine(string line)
+        {
+            Regex entryRegex = new Regex(@"'\S+', \w+");
+
+            if (entryRegex.IsMatch(line))
+            {
+                return Convert.ToUInt32(entryRegex.Match(line).ToString().Split(' ')[1]);
+            }
+
+            return 0;
+        }
+
+        public static uint GetZoneIdFromLine(string line)
+        {
+            Regex zoneIdRegex = new Regex(@"\w+, \w+, '.+'{1}");
+
+            if (zoneIdRegex.IsMatch(line))
+            {
+                return Convert.ToUInt32(zoneIdRegex.Match(line).ToString().Split(',')[0].Replace(",", ""));
+            }
+
+            return 0;
+        }
+
+        public static uint GetPhaseIdFromLine(string line)
+        {
+            Regex phaseIdRegex = new Regex(@" '.+'{1}, \w{1}, \w+");
+
+            if (phaseIdRegex.IsMatch(line))
+            {
+                return Convert.ToUInt32(phaseIdRegex.Match(line).ToString().Split(',')[2].Replace(" ", ""));
+            }
+
+            return 0;
+        }
+
+        public static string GetCreatureNameFromLine(string line)
+        {
+            Regex creatureNameRegex = new Regex(@"-- .+ \(Area:");
+
+            if (creatureNameRegex.IsMatch(line))
+            {
+                return creatureNameRegex.Match(line).ToString().Replace("--  ", "").Replace("-- ", "").Replace(" (Area:", "").Replace("(", "").Replace(")", "");
+            }
+
+            return "";
+        }
     }
 }

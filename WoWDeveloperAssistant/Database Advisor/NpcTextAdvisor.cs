@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Database_Advisor
 {
@@ -18,8 +19,8 @@ namespace WoWDeveloperAssistant.Database_Advisor
             string npcTextRowsMerged = "";
             string npcTextRowsSplitted = "";
             string[] textBoxText = textBox.Text.Split('\n');
-            Dictionary<int, List<int>> gossipWithBroadcastTextsDict = new Dictionary<int, List<int>>();
-            Dictionary<int, List<int>> gossipWithNpcTextsDict = new Dictionary<int, List<int>>();
+            Dictionary<uint, List<int>> gossipWithBroadcastTextsDict = new Dictionary<uint, List<int>>();
+            Dictionary<uint, List<int>> gossipWithNpcTextsDict = new Dictionary<uint, List<int>>();
             Dictionary<int, int> broadcastTextToNpcTextLinksDict = new Dictionary<int, int>();
 
             for (int i = 0; i < textBoxText.Count(); i++)
@@ -30,14 +31,14 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
                     do
                     {
-                        if (!gossipWithBroadcastTextsDict.ContainsKey(GetEntryFromLine(textBoxText[i])))
+                        if (!gossipWithBroadcastTextsDict.ContainsKey(LineGetters.GetEntryFromLine(textBoxText[i])))
                         {
-                            gossipWithBroadcastTextsDict.Add(GetEntryFromLine(textBoxText[i]), new List<int>());
-                            gossipWithBroadcastTextsDict[GetEntryFromLine(textBoxText[i])].Add(GetBroadcastTextIdFromLine(textBoxText[i]));
+                            gossipWithBroadcastTextsDict.Add(LineGetters.GetEntryFromLine(textBoxText[i]), new List<int>());
+                            gossipWithBroadcastTextsDict[LineGetters.GetEntryFromLine(textBoxText[i])].Add(GetBroadcastTextIdFromLine(textBoxText[i]));
                         }
                         else
                         {
-                            gossipWithBroadcastTextsDict[GetEntryFromLine(textBoxText[i])].Add(GetBroadcastTextIdFromLine(textBoxText[i]));
+                            gossipWithBroadcastTextsDict[LineGetters.GetEntryFromLine(textBoxText[i])].Add(GetBroadcastTextIdFromLine(textBoxText[i]));
                         }
 
                         i++;
@@ -182,14 +183,6 @@ namespace WoWDeveloperAssistant.Database_Advisor
             }
 
             textBox.Text = outputText;
-        }
-
-        private static int GetEntryFromLine(string line)
-        {
-            if (line.Contains("("))
-                return Convert.ToInt32(line.Split(',')[0].Replace("(", ""));
-            else
-                return 0;
         }
 
         private static int GetBroadcastTextIdFromLine(string line)
