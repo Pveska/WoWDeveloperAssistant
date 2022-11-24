@@ -64,7 +64,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             }
 
             output += $"DELETE FROM `creature_addon` WHERE `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `id` IN ({GetEntriesStringFromCreatureData(creaturesData)}) AND `phaseId` IN ({GetPhasesStringFromCreatureData(creaturesData)}));\r\n\r\n";
-            output += $"DELETE FROM `creature` WHERE `id` IN ({GetEntriesStringFromCreatureData(creaturesData)}) AND `phaseId` IN ({GetPhasesStringFromCreatureData(creaturesData)}));\r\n";
+            output += $"DELETE FROM `creature` WHERE `id` IN ({GetEntriesStringFromCreatureData(creaturesData)}) AND `phaseId` IN ({GetPhasesStringFromCreatureData(creaturesData)});\r\n";
             output += $"INSERT INTO `creature` (`linked_id`, `id`, `map`, `zoneId`, `areaId`, `difficulties`, `phaseMask`, `phaseId`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `npcflag2`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `VerifiedBuild`) VALUES\r\n";
 
             foreach (var creatureRow in creaturesData)
