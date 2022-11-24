@@ -65,7 +65,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             output += $"DELETE FROM `creature_addon` WHERE `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `id` IN ({GetEntriesStringFromCreatureData(creaturesData)}) AND `phaseId` IN ({GetPhasesStringFromCreatureData(creaturesData)}));\r\n\r\n";
             output += $"DELETE FROM `creature` WHERE `id` IN ({GetEntriesStringFromCreatureData(creaturesData)}) AND `phaseId` IN ({GetPhasesStringFromCreatureData(creaturesData)}));\r\n";
-            output += $"INSERT INTO `creature` (`linked_id`, `id`, `map`, `zoneId`, `areaId`, `difficulties`, `phaseMask`, `phaseId`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `npcflag2`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `VerifiedBuild`) VALUES";
+            output += $"INSERT INTO `creature` (`linked_id`, `id`, `map`, `zoneId`, `areaId`, `difficulties`, `phaseMask`, `phaseId`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `npcflag2`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `VerifiedBuild`) VALUES\r\n";
 
             foreach (var creatureRow in creaturesData)
             {
@@ -121,7 +121,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
 
-            return output;
+            if (output.EndsWith(", "))
+                return output.Remove(output.LastIndexOf(", "));
+            else
+                return output;
         }
 
         private static string GetPhasesStringFromCreatureData(Dictionary<string, CreatureData> creatureData)
@@ -129,11 +132,13 @@ namespace WoWDeveloperAssistant.Database_Advisor
             string output = "";
 
             List<uint> phasesList = creatureData.Select(x => x.Value.phaseId).ToList();
-            phasesList = phasesList.Distinct().ToList();
             phasesList.Sort();
 
             for (int i = 0; i < phasesList.Count(); i++)
             {
+                if (output.Contains($"{creatureData.ElementAt(i).Value.phaseId}, ") || output.Contains($", {creatureData.ElementAt(i).Value.phaseId}"))
+                    continue;
+
                 if (i + 1 < phasesList.Count())
                 {
                     output += $"{creatureData.ElementAt(i).Value.phaseId}, ";
@@ -144,7 +149,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
 
-            return output;
+            if (output.EndsWith(", "))
+                return output.Remove(output.LastIndexOf(", "));
+            else
+                return output;
         }
 
         private static string GetRowWithModifyiedPhaseIdFromLine(string line)
@@ -211,7 +219,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 {
                     for (int j = 0; j < dict.Values.ElementAt(i).Count(); j++)
                     {
-                        if (output.Contains(dict.Values.ElementAt(i).ElementAt(j).ToString()))
+                        if (output.Contains($"{dict.Values.ElementAt(i).ElementAt(j)}, ") || output.Contains($", {dict.Values.ElementAt(i).ElementAt(j)}"))
                             continue;
 
                         output += dict.Values.ElementAt(i).ElementAt(j) + ", ";
@@ -221,7 +229,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 {
                     for (int j = 0; j < dict.Values.ElementAt(i).Count(); j++)
                     {
-                        if (output.Contains(dict.Values.ElementAt(i).ElementAt(j).ToString()))
+                        if (output.Contains($"{dict.Values.ElementAt(i).ElementAt(j)}, ") || output.Contains($", {dict.Values.ElementAt(i).ElementAt(j)}"))
                             continue;
 
                         if (j + 1 < dict.Values.ElementAt(i).Count())
@@ -236,7 +244,10 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
 
-            return output.Remove(output.Length - 2, 2);
+            if (output.EndsWith(", "))
+                return output.Remove(output.LastIndexOf(", "));
+            else
+                return output;
         }
 
         private static string GetPhaseDefinitionStringFromDictionary(Dictionary<uint, List<uint>> dict, List<CreatureData> creaturesData)
