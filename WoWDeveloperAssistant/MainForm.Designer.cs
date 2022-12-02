@@ -505,7 +505,6 @@
             // toolStrip_CreatureScriptsCreator
             // 
             this.toolStrip_CreatureScriptsCreator.BackColor = System.Drawing.Color.LightGray;
-            this.toolStrip_CreatureScriptsCreator.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip_CreatureScriptsCreator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_CSC_ImportSniff,
             this.toolStripButton_CreatureScriptsCreator_Search,
@@ -523,7 +522,7 @@
             this.toolStripButton_CSC_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_CSC_ImportSniff.Image")));
             this.toolStripButton_CSC_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CSC_ImportSniff.Name = "toolStripButton_CSC_ImportSniff";
-            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(136, 29);
+            this.toolStripButton_CSC_ImportSniff.Size = new System.Drawing.Size(128, 29);
             this.toolStripButton_CSC_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_CSC_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ImportSniff_Click);
             // 
@@ -534,7 +533,7 @@
             this.toolStripButton_CreatureScriptsCreator_Search.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_CreatureScriptsCreator_Search.Image")));
             this.toolStripButton_CreatureScriptsCreator_Search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_CreatureScriptsCreator_Search.Name = "toolStripButton_CreatureScriptsCreator_Search";
-            this.toolStripButton_CreatureScriptsCreator_Search.Size = new System.Drawing.Size(92, 29);
+            this.toolStripButton_CreatureScriptsCreator_Search.Size = new System.Drawing.Size(84, 29);
             this.toolStripButton_CreatureScriptsCreator_Search.Text = "Search";
             this.toolStripButton_CreatureScriptsCreator_Search.Click += new System.EventHandler(this.toolStripButton_Search_Click);
             // 
@@ -927,7 +926,6 @@
             // toolStrip_WaypointsCreator
             // 
             this.toolStrip_WaypointsCreator.BackColor = System.Drawing.Color.LightGray;
-            this.toolStrip_WaypointsCreator.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip_WaypointsCreator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton_WaypointsCreator_Search,
             this.toolStripTextBox_WaypointsCreator_Entry,
@@ -948,7 +946,7 @@
             this.toolStripButton_WaypointsCreator_Search.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WaypointsCreator_Search.Image")));
             this.toolStripButton_WaypointsCreator_Search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_WaypointsCreator_Search.Name = "toolStripButton_WaypointsCreator_Search";
-            this.toolStripButton_WaypointsCreator_Search.Size = new System.Drawing.Size(92, 29);
+            this.toolStripButton_WaypointsCreator_Search.Size = new System.Drawing.Size(84, 29);
             this.toolStripButton_WaypointsCreator_Search.Text = "Search";
             this.toolStripButton_WaypointsCreator_Search.ToolTipText = "Fill listbox with guids of\r\nselected entry or all entries.";
             this.toolStripButton_WaypointsCreator_Search.Click += new System.EventHandler(this.toolStripButton_WCSearch_Click);
@@ -986,7 +984,7 @@
             this.toolStripButton_WaypointsCreator_Settings.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WaypointsCreator_Settings.Image")));
             this.toolStripButton_WaypointsCreator_Settings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_WaypointsCreator_Settings.Name = "toolStripButton_WaypointsCreator_Settings";
-            this.toolStripButton_WaypointsCreator_Settings.Size = new System.Drawing.Size(104, 29);
+            this.toolStripButton_WaypointsCreator_Settings.Size = new System.Drawing.Size(96, 29);
             this.toolStripButton_WaypointsCreator_Settings.Text = "Settings";
             this.toolStripButton_WaypointsCreator_Settings.ToolTipText = "Setup chart and output SQL.";
             this.toolStripButton_WaypointsCreator_Settings.Click += new System.EventHandler(this.toolStripButton_WCSettings_Click);
@@ -996,7 +994,7 @@
             this.toolStripButton_WaypointsCreator_LoadSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_WaypointsCreator_LoadSniff.Image")));
             this.toolStripButton_WaypointsCreator_LoadSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_WaypointsCreator_LoadSniff.Name = "toolStripButton_WaypointsCreator_LoadSniff";
-            this.toolStripButton_WaypointsCreator_LoadSniff.Size = new System.Drawing.Size(136, 29);
+            this.toolStripButton_WaypointsCreator_LoadSniff.Size = new System.Drawing.Size(128, 29);
             this.toolStripButton_WaypointsCreator_LoadSniff.Text = "Import Sniff";
             this.toolStripButton_WaypointsCreator_LoadSniff.ToolTipText = "Import a parsed wpp sniff file.";
             this.toolStripButton_WaypointsCreator_LoadSniff.Click += new System.EventHandler(this.toolStripButton_WCLoadSniff_Click);
@@ -2058,7 +2056,7 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff});
             this.toolStrip_ParsedFileAdvisor.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_ParsedFileAdvisor.Name = "toolStrip_ParsedFileAdvisor";
-            this.toolStrip_ParsedFileAdvisor.Size = new System.Drawing.Size(2034, 38);
+            this.toolStrip_ParsedFileAdvisor.Size = new System.Drawing.Size(2034, 34);
             this.toolStrip_ParsedFileAdvisor.TabIndex = 16;
             this.toolStrip_ParsedFileAdvisor.Text = "toolStrip1";
             // 
@@ -2066,7 +2064,7 @@
             // 
             this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.AutoToolTip = true;
             this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Name = "toolStripStatusLabel_ParsedFileAdvisor_FileStatus";
-            this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Size = new System.Drawing.Size(131, 31);
+            this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Size = new System.Drawing.Size(131, 27);
             this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = "No File Loaded";
             // 
             // toolStripButton_ParsedFileAdvisor_ImportSniff
@@ -2075,7 +2073,7 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_ParsedFileAdvisor_ImportSniff.Image")));
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Name = "toolStripButton_ParsedFileAdvisor_ImportSniff";
-            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(128, 33);
+            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(128, 29);
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ParsedFileAdvisor_ImportSniff_Click);
             // 
