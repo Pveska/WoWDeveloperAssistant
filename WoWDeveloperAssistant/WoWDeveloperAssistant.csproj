@@ -57,10 +57,6 @@
     <StartupObject>WoWDeveloperAssistant.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DBFileReaderLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DBFileReaderLib\DBFileReaderLib.dll</HintPath>
-    </Reference>
     <Reference Include="MetroFramework">
       <HintPath>..\Packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>
     </Reference>
@@ -79,9 +75,6 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.DataVisualization" />
     <Reference Include="System.Web.DataVisualization.Design" />
     <Reference Include="System.Windows.Controls.DataVisualization.Toolkit">
@@ -125,23 +118,23 @@
     <Compile Include="Database Advisor\GossipMenuAdvisor.cs" />
     <Compile Include="Database Advisor\NpcTextAdvisor.cs" />
     <Compile Include="Database Advisor\PhaseDataAdvisor.cs" />
-    <Compile Include="DBC\Structures\AreaTableEntry.cs" />
-    <Compile Include="DBC\Structures\ConversationLineEntry.cs" />
+    <Compile Include="DB2\DB2_Database.cs" />
+    <Compile Include="DB2\Storage.cs" />
+    <Compile Include="DB2\Structures\Achievement.cs" />
+    <Compile Include="DB2\Structures\AreaTable.cs" />
+    <Compile Include="DB2\Structures\ConversationLine.cs" />
+    <Compile Include="DB2\Structures\Criteria.cs" />
+    <Compile Include="DB2\Structures\CriteriaTree.cs" />
+    <Compile Include="DB2\Structures\Map.cs" />
+    <Compile Include="DB2\Structures\MapDifficulty.cs" />
+    <Compile Include="DB2\Structures\ModifierTree.cs" />
+    <Compile Include="DB2\Structures\SpellEffect.cs" />
+    <Compile Include="DB2\Structures\SpellMisc.cs" />
+    <Compile Include="DB2\Structures\SpellName.cs" />
+    <Compile Include="DB2\Structures\SpellRadius.cs" />
+    <Compile Include="DB2\Structures\SpellRange.cs" />
     <Compile Include="Parsed File Advisor\ParsedFileAdvisor.cs" />
     <Compile Include="Database Advisor\WaypointsHelper.cs" />
-    <Compile Include="DBC\DBC.cs" />
-    <Compile Include="DBC\Structures\AchievementEntry.cs" />
-    <Compile Include="DBC\Structures\SpellRangeEntry.cs" />
-    <Compile Include="DBC\Structures\CriteriaEntry.cs" />
-    <Compile Include="DBC\Structures\CriteriaTreeEntry.cs" />
-    <Compile Include="DBC\Structures\DBFileAttribute.cs" />
-    <Compile Include="DBC\Structures\MapDifficultyEntry.cs" />
-    <Compile Include="DBC\Structures\MapEntry.cs" />
-    <Compile Include="DBC\Structures\ModifierTreeEntry.cs" />
-    <Compile Include="DBC\Structures\SpellCastTimesEntry.cs" />
-    <Compile Include="DBC\Structures\SpellEffectEntry.cs" />
-    <Compile Include="DBC\Structures\SpellMiscEntry.cs" />
-    <Compile Include="DBC\Structures\SpellNameEntry.cs" />
     <Compile Include="Misc\Aura.cs" />
     <Compile Include="Misc\Creature.cs" />
     <Compile Include="Creature Scripts Creator\CreatureScriptsCreator.cs" />

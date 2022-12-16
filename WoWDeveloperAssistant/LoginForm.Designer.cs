@@ -44,12 +44,14 @@
             this.button_CancelLogin = new System.Windows.Forms.Button();
             this.label_HotfixDatabase = new System.Windows.Forms.Label();
             this.textBox_HotfixDatabase = new System.Windows.Forms.TextBox();
+            this.label_DB2Database = new System.Windows.Forms.Label();
+            this.textBox_DB2Database = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label_Host
             // 
             this.label_Host.AutoSize = true;
-            this.label_Host.Location = new System.Drawing.Point(119, 6);
+            this.label_Host.Location = new System.Drawing.Point(120, 5);
             this.label_Host.Name = "label_Host";
             this.label_Host.Size = new System.Drawing.Size(43, 20);
             this.label_Host.TabIndex = 0;
@@ -58,7 +60,7 @@
             // 
             // textBox_Host
             // 
-            this.textBox_Host.Location = new System.Drawing.Point(45, 32);
+            this.textBox_Host.Location = new System.Drawing.Point(45, 30);
             this.textBox_Host.Name = "textBox_Host";
             this.textBox_Host.Size = new System.Drawing.Size(190, 26);
             this.textBox_Host.TabIndex = 1;
@@ -70,7 +72,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_UserName.AutoSize = true;
-            this.label_UserName.Location = new System.Drawing.Point(99, 65);
+            this.label_UserName.Location = new System.Drawing.Point(100, 70);
             this.label_UserName.Name = "label_UserName";
             this.label_UserName.Size = new System.Drawing.Size(83, 20);
             this.label_UserName.TabIndex = 2;
@@ -79,7 +81,7 @@
             // 
             // textBox_UserName
             // 
-            this.textBox_UserName.Location = new System.Drawing.Point(45, 92);
+            this.textBox_UserName.Location = new System.Drawing.Point(45, 95);
             this.textBox_UserName.Name = "textBox_UserName";
             this.textBox_UserName.Size = new System.Drawing.Size(190, 26);
             this.textBox_UserName.TabIndex = 3;
@@ -91,7 +93,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_Password.AutoSize = true;
-            this.label_Password.Location = new System.Drawing.Point(101, 123);
+            this.label_Password.Location = new System.Drawing.Point(100, 135);
             this.label_Password.Name = "label_Password";
             this.label_Password.Size = new System.Drawing.Size(78, 20);
             this.label_Password.TabIndex = 4;
@@ -100,7 +102,7 @@
             // 
             // textBox_Password
             // 
-            this.textBox_Password.Location = new System.Drawing.Point(45, 148);
+            this.textBox_Password.Location = new System.Drawing.Point(45, 160);
             this.textBox_Password.Name = "textBox_Password";
             this.textBox_Password.Size = new System.Drawing.Size(190, 26);
             this.textBox_Password.TabIndex = 5;
@@ -112,7 +114,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_DB.AutoSize = true;
-            this.label_DB.Location = new System.Drawing.Point(78, 179);
+            this.label_DB.Location = new System.Drawing.Point(80, 200);
             this.label_DB.Name = "label_DB";
             this.label_DB.Size = new System.Drawing.Size(124, 20);
             this.label_DB.TabIndex = 6;
@@ -121,7 +123,7 @@
             // 
             // textBox_DB
             // 
-            this.textBox_DB.Location = new System.Drawing.Point(45, 204);
+            this.textBox_DB.Location = new System.Drawing.Point(45, 225);
             this.textBox_DB.Name = "textBox_DB";
             this.textBox_DB.Size = new System.Drawing.Size(190, 26);
             this.textBox_DB.TabIndex = 7;
@@ -133,7 +135,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_Port.AutoSize = true;
-            this.label_Port.Location = new System.Drawing.Point(121, 297);
+            this.label_Port.Location = new System.Drawing.Point(120, 395);
             this.label_Port.Name = "label_Port";
             this.label_Port.Size = new System.Drawing.Size(38, 20);
             this.label_Port.TabIndex = 8;
@@ -142,7 +144,7 @@
             // 
             // textBox_Port
             // 
-            this.textBox_Port.Location = new System.Drawing.Point(45, 324);
+            this.textBox_Port.Location = new System.Drawing.Point(45, 425);
             this.textBox_Port.Name = "textBox_Port";
             this.textBox_Port.Size = new System.Drawing.Size(190, 26);
             this.textBox_Port.TabIndex = 9;
@@ -153,7 +155,7 @@
             this.checkBox_SaveValues.AutoSize = true;
             this.checkBox_SaveValues.Checked = true;
             this.checkBox_SaveValues.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_SaveValues.Location = new System.Drawing.Point(72, 358);
+            this.checkBox_SaveValues.Location = new System.Drawing.Point(70, 460);
             this.checkBox_SaveValues.Name = "checkBox_SaveValues";
             this.checkBox_SaveValues.Size = new System.Drawing.Size(124, 24);
             this.checkBox_SaveValues.TabIndex = 10;
@@ -162,7 +164,7 @@
             // 
             // button_Login
             // 
-            this.button_Login.Location = new System.Drawing.Point(12, 388);
+            this.button_Login.Location = new System.Drawing.Point(12, 491);
             this.button_Login.Name = "button_Login";
             this.button_Login.Size = new System.Drawing.Size(110, 40);
             this.button_Login.TabIndex = 11;
@@ -172,7 +174,7 @@
             // 
             // button_CancelLogin
             // 
-            this.button_CancelLogin.Location = new System.Drawing.Point(152, 388);
+            this.button_CancelLogin.Location = new System.Drawing.Point(152, 491);
             this.button_CancelLogin.Name = "button_CancelLogin";
             this.button_CancelLogin.Size = new System.Drawing.Size(110, 40);
             this.button_CancelLogin.TabIndex = 12;
@@ -186,7 +188,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_HotfixDatabase.AutoSize = true;
-            this.label_HotfixDatabase.Location = new System.Drawing.Point(78, 237);
+            this.label_HotfixDatabase.Location = new System.Drawing.Point(80, 265);
             this.label_HotfixDatabase.Name = "label_HotfixDatabase";
             this.label_HotfixDatabase.Size = new System.Drawing.Size(124, 20);
             this.label_HotfixDatabase.TabIndex = 13;
@@ -195,19 +197,42 @@
             // 
             // textBox_HotfixDatabase
             // 
-            this.textBox_HotfixDatabase.Location = new System.Drawing.Point(45, 264);
+            this.textBox_HotfixDatabase.Location = new System.Drawing.Point(45, 290);
             this.textBox_HotfixDatabase.Name = "textBox_HotfixDatabase";
             this.textBox_HotfixDatabase.Size = new System.Drawing.Size(190, 26);
             this.textBox_HotfixDatabase.TabIndex = 14;
             this.textBox_HotfixDatabase.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label_DB2Database
+            // 
+            this.label_DB2Database.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_DB2Database.AutoSize = true;
+            this.label_DB2Database.Location = new System.Drawing.Point(80, 330);
+            this.label_DB2Database.Name = "label_DB2Database";
+            this.label_DB2Database.Size = new System.Drawing.Size(115, 20);
+            this.label_DB2Database.TabIndex = 15;
+            this.label_DB2Database.Text = "DB2 Database";
+            this.label_DB2Database.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // textBox_DB2Database
+            // 
+            this.textBox_DB2Database.Location = new System.Drawing.Point(45, 355);
+            this.textBox_DB2Database.Name = "textBox_DB2Database";
+            this.textBox_DB2Database.Size = new System.Drawing.Size(190, 26);
+            this.textBox_DB2Database.TabIndex = 16;
+            this.textBox_DB2Database.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(274, 440);
+            this.ClientSize = new System.Drawing.Size(274, 536);
             this.ControlBox = false;
+            this.Controls.Add(this.textBox_DB2Database);
+            this.Controls.Add(this.label_DB2Database);
             this.Controls.Add(this.textBox_HotfixDatabase);
             this.Controls.Add(this.label_HotfixDatabase);
             this.Controls.Add(this.button_CancelLogin);
@@ -251,5 +276,7 @@
         private System.Windows.Forms.Button button_CancelLogin;
         private System.Windows.Forms.Label label_HotfixDatabase;
         private System.Windows.Forms.TextBox textBox_HotfixDatabase;
+        private System.Windows.Forms.Label label_DB2Database;
+        private System.Windows.Forms.TextBox textBox_DB2Database;
     }
 }

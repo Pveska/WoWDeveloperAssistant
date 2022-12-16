@@ -93,9 +93,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DB2.Db2.SpellEffectStore.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DB2.Db2.SpellEffectStore[spellEffectTuple];
 
                     if ((spellEffect.ImplicitTarget[0] == 129 || spellEffect.ImplicitTarget[1] == 129) ||
                         (spellEffect.ImplicitTarget[0] == 130 || spellEffect.ImplicitTarget[1] == 130) ||
@@ -112,18 +112,18 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
         public static string GetSpellName(uint spellId)
         {
-            if (DBC.DBC.SpellName.ContainsKey((int)spellId))
-                return DBC.DBC.SpellName[(int)spellId].Name;
+            if (DB2.Db2.SpellName.ContainsKey((int)spellId))
+                return DB2.Db2.SpellName[(int)spellId].Name;
 
             return "Unknown";
         }
 
         public static double GetSpellRadius(uint spellId)
         {
-            if (DBC.DBC.SpellMisc.ContainsKey((int)spellId))
+            if (DB2.Db2.SpellMisc.ContainsKey((int)spellId))
             {
-                int rangeId = DBC.DBC.SpellMisc[(int)spellId].RangeIndex;
-                return (double)DBC.DBC.SpellRadius[rangeId].RangeMax[1];
+                int rangeId = DB2.Db2.SpellMisc[(int)spellId].RangeIndex;
+                return (double)DB2.Db2.SpellRadius[rangeId].RadiusMax;
             }
 
             return 0.0;
@@ -239,9 +239,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DB2.Db2.SpellEffectStore.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DB2.Db2.SpellEffectStore[spellEffectTuple];
 
                     if (IsSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
                         return 4;
@@ -259,9 +259,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DB2.Db2.SpellEffectStore.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DB2.Db2.SpellEffectStore[spellEffectTuple];
 
                     if (IsSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
                         return 1;
@@ -303,9 +303,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 var spellEffectTuple = Tuple.Create(spellId, i);
 
-                if (DBC.DBC.SpellEffectStores.ContainsKey(spellEffectTuple))
+                if (DB2.Db2.SpellEffectStore.ContainsKey(spellEffectTuple))
                 {
-                    var spellEffect = DBC.DBC.SpellEffectStores[spellEffectTuple];
+                    var spellEffect = DB2.Db2.SpellEffectStore[spellEffectTuple];
 
                     if (spellEffect.ImplicitTarget[0] == 123 || spellEffect.ImplicitTarget[1] == 123)
                         return true;

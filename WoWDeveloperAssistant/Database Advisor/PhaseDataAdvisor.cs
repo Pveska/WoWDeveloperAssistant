@@ -22,9 +22,9 @@ namespace WoWDeveloperAssistant.Database_Advisor
             if (textBox.Text == "")
                 return;
 
-            if (!DBC.DBC.IsLoaded())
+            if (!DB2.Db2.IsLoaded())
             {
-                DBC.DBC.Load();
+                DB2.Db2.Load();
             }
 
             string output = "";
@@ -260,7 +260,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 {
                     for (int j = 0; j < dict.ElementAt(i).Value.Count; j++)
                     {
-                        output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DBC.DBC.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
+                        output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
                     }
                 }
                 else
@@ -269,11 +269,11 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     {
                         if (j + 1 < dict.Values.ElementAt(i).Count())
                         {
-                            output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DBC.DBC.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
+                            output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
                         }
                         else
                         {
-                            output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DBC.DBC.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible');\r\n";
+                            output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible');\r\n";
                         }
                     }
                 }

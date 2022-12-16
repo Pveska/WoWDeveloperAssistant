@@ -377,8 +377,8 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
 
         public static void CreateTemplate(uint objectEntry, ListBox hooksListBox, TreeView hookBodiesTreeView, ref string preview)
         {
-            if (!DBC.DBC.IsLoaded())
-                DBC.DBC.Load();
+            if (!DB2.Db2.IsLoaded())
+                DB2.Db2.Load();
 
             string scriptBody = "";
             string defaultName = "";

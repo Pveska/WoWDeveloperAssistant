@@ -1035,9 +1035,9 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                 string conversationLineText = "";
                 Creature actor = null;
 
-                if (DBC.DBC.ConversationLine.ContainsKey(conversationLineId))
+                if (DB2.Db2.ConversationLine.ContainsKey(conversationLineId))
                 {
-                    DataSet broadcastTextDs = SQLModule.HotfixSelectQuery($"SELECT `Text`, `Text1` FROM `broadcasttext` WHERE `ROW_ID` = {DBC.DBC.ConversationLine[conversationLineId].BroadcastTextId}");
+                    DataSet broadcastTextDs = SQLModule.HotfixSelectQuery($"SELECT `Text`, `Text1` FROM `broadcasttext` WHERE `ROW_ID` = {DB2.Db2.ConversationLine[conversationLineId].BroadcastTextID}");
                     if (broadcastTextDs != null && broadcastTextDs.Tables["table"].Rows.Count != 0)
                     {
                         foreach (string stringRow in broadcastTextDs.Tables["table"].Rows[0].ItemArray)

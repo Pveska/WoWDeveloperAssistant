@@ -90,10 +90,10 @@ namespace WoWDeveloperAssistant
             {
                 creatureScriptsCreator.ImportStarted();
 
-                if (!DBC.DBC.IsLoaded())
+                if (!DB2.Db2.IsLoaded())
                 {
                     SetCurrentStatus("Loading DBC...");
-                    DBC.DBC.Load();
+                    DB2.Db2.Load();
                 }
 
                 if (creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
@@ -208,10 +208,10 @@ namespace WoWDeveloperAssistant
             {
                 waypointsCreator.ImportStarted();
 
-                if (!DBC.DBC.IsLoaded())
+                if (!DB2.Db2.IsLoaded())
                 {
                     SetCurrentStatus("Loading DBC...");
-                    DBC.DBC.Load();
+                    DB2.Db2.Load();
                 }
 
                 if (waypointsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
@@ -556,9 +556,9 @@ namespace WoWDeveloperAssistant
             {
                 parsedFileAdvisor.ImportStarted();
 
-                if (!DBC.DBC.IsLoaded())
+                if (!DB2.Db2.IsLoaded())
                 {
-                    DBC.DBC.Load();
+                    DB2.Db2.Load();
                 }
 
                 if (parsedFileAdvisor.GetDataFromFiles(openFileDialog.FileNames) != 0)

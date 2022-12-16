@@ -18,6 +18,7 @@ namespace WoWDeveloperAssistant
             textBox_DB.Text = Properties.Settings.Default.WorldDatabase;
             textBox_Port.Text = Properties.Settings.Default.Port;
             textBox_HotfixDatabase.Text = Properties.Settings.Default.HotfixDatabase;
+            textBox_DB2Database.Text = Properties.Settings.Default.DB2Database;
         }
 
         private void button_Login_Click(object sender, EventArgs e)
@@ -33,6 +34,7 @@ namespace WoWDeveloperAssistant
                     Properties.Settings.Default.Port = textBox_Port.Text;
                     Properties.Settings.Default.UsingDB = true;
                     Properties.Settings.Default.HotfixDatabase = textBox_HotfixDatabase.Text;
+                    Properties.Settings.Default.DB2Database = textBox_DB2Database.Text;
                     Properties.Settings.Default.Save();
                 }
 

@@ -242,8 +242,8 @@ namespace WoWDeveloperAssistant.Misc
             if (MapIsAzeriteExpeditions((uint)mapId))
                 return "38 39 40 45";
 
-            if (DBC.DBC.MapDifficultyStores.ContainsKey((int)mapId))
-                return DBC.DBC.MapDifficultyStores[(int)mapId];
+            if (DB2.Db2.MapDifficultyStore.ContainsKey((int)mapId))
+                return DB2.Db2.MapDifficultyStore[(int)mapId];
 
             if (MapIsContinent((uint)mapId))
                 return "0";

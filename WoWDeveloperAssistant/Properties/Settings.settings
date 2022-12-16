@@ -41,5 +41,8 @@
     <Setting Name="HotfixDatabase" Type="System.String" Scope="User">
       <Value Profile="(Default)">hotfix_shadowlands</Value>
     </Setting>
+    <Setting Name="DB2Database" Type="System.String" Scope="User">
+      <Value Profile="(Default)">db2</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
