@@ -1095,10 +1095,17 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.chart_WaypointsCreator_Path.Titles[1].Font = new Font("Arial", 16, FontStyle.Bold);
             mainForm.chart_WaypointsCreator_Path.Titles[1].ForeColor = Color.Blue;
             mainForm.chart_WaypointsCreator_Path.Series.Clear();
+            mainForm.chart_WaypointsCreator_Path.Series.Add("Spawn");
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             mainForm.chart_WaypointsCreator_Path.Series.Add("Path");
             mainForm.chart_WaypointsCreator_Path.Series["Path"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             mainForm.chart_WaypointsCreator_Path.Series.Add("Line");
             mainForm.chart_WaypointsCreator_Path.Series["Line"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            mainForm.chart_WaypointsCreator_Path.Enabled = true;
+
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(creature.spawnPosition.x, creature.spawnPosition.y);
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[0].Color = Color.Red;
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[0].Label = "SpawnPos";
 
             for (var i = 0; i < mainForm.grid_WaypointsCreator_Waypoints.RowCount; i++)
             {
