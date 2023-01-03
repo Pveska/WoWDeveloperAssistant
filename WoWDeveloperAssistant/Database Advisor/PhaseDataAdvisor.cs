@@ -30,7 +30,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             string output = "";
             string[] textBoxTextSplitted = textBox.Text.Split('\n');
             Dictionary<string, CreatureData> creaturesData = new Dictionary<string, CreatureData>();
-            Dictionary<uint, List<string>> phasesLinkedToCreatures = new Dictionary<uint, List<string>>();
+            SortedDictionary<uint, List<string>> phasesLinkedToCreatures = new SortedDictionary<uint, List<string>>();
             Dictionary<uint, List<uint>> zonesLinkedToPhases = new Dictionary<uint, List<uint>>();
 
             for (int i = 0; i < textBoxTextSplitted.Count(); i++)
