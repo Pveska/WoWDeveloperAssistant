@@ -38,7 +38,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 if (textBoxTextSplitted[i].Length != 0 && LineGetters.GetLinkedIdFromLine(textBoxTextSplitted[i]) != "")
                 {
                     CreatureData creatureData = GetCreatureDataFromLine(textBoxTextSplitted[i]);
-                    creaturesData.Add(GetRowWithModifyiedPhaseIdFromLine(textBoxTextSplitted[i]), creatureData);
+                    creaturesData.Add(GetRowWithModifiedPhaseIdFromLine(textBoxTextSplitted[i]), creatureData);
 
                     if (!phasesLinkedToCreatures.ContainsKey(creatureData.phaseId))
                     {
@@ -58,6 +58,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                         if (!zonesLinkedToPhases[creatureData.zoneId].Contains(creatureData.phaseId))
                         {
                             zonesLinkedToPhases[creatureData.zoneId].Add(creatureData.phaseId);
+                            zonesLinkedToPhases[creatureData.zoneId].Sort();
                         }
                     }
                 }
@@ -132,20 +133,18 @@ namespace WoWDeveloperAssistant.Database_Advisor
             string output = "";
 
             List<uint> phasesList = creatureData.Select(x => x.Value.phaseId).ToList();
+            phasesList = phasesList.Distinct().ToList();
             phasesList.Sort();
 
             for (int i = 0; i < phasesList.Count(); i++)
             {
-                if (output.Contains($"{creatureData.ElementAt(i).Value.phaseId}, ") || output.Contains($", {creatureData.ElementAt(i).Value.phaseId}"))
-                    continue;
-
                 if (i + 1 < phasesList.Count())
                 {
-                    output += $"{creatureData.ElementAt(i).Value.phaseId}, ";
+                    output += $"{phasesList[i]}, ";
                 }
                 else
                 {
-                    output += creatureData.ElementAt(i).Value.phaseId;
+                    output += phasesList[i];
                 }
             }
 
@@ -155,7 +154,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 return output;
         }
 
-        private static string GetRowWithModifyiedPhaseIdFromLine(string line)
+        private static string GetRowWithModifiedPhaseIdFromLine(string line)
         {
             Regex phaseIdRegex = new Regex(@" '.+'{1}, \w{1}, \w+");
 
@@ -250,30 +249,30 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 return output;
         }
 
-        private static string GetPhaseDefinitionStringFromDictionary(Dictionary<uint, List<uint>> dict, List<CreatureData> creaturesData)
+        private static string GetPhaseDefinitionStringFromDictionary(Dictionary<uint, List<uint>> phases, List<CreatureData> creaturesData)
         {
             string output = "";
 
-            for (int i = 0; i < dict.Keys.Count(); i++)
+            for (int i = 0; i < phases.Keys.Count(); i++)
             {
-                if (i + 1 < dict.Keys.Count())
+                if (i + 1 < phases.Keys.Count())
                 {
-                    for (int j = 0; j < dict.ElementAt(i).Value.Count; j++)
+                    for (int j = 0; j < phases.ElementAt(i).Value.Count; j++)
                     {
-                        output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
+                        output += $"({phases.ElementAt(i).Key}, {phases.Values.ElementAt(i).ElementAt(j)}, 0, {phases.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)phases.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(phases.ElementAt(i).Key, phases.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
                     }
                 }
                 else
                 {
-                    for (int j = 0; j < dict.Values.ElementAt(i).Count(); j++)
+                    for (int j = 0; j < phases.Values.ElementAt(i).Count(); j++)
                     {
-                        if (j + 1 < dict.Values.ElementAt(i).Count())
+                        if (j + 1 < phases.Values.ElementAt(i).Count())
                         {
-                            output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
+                            output += $"({phases.ElementAt(i).Key}, {phases.Values.ElementAt(i).ElementAt(j)}, 0, {phases.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)phases.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(phases.ElementAt(i).Key, phases.Values.ElementAt(i).ElementAt(j), creaturesData)} visible'),\r\n";
                         }
                         else
                         {
-                            output += $"({dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)dict.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(dict.ElementAt(i).Key, dict.Values.ElementAt(i).ElementAt(j), creaturesData)} visible');\r\n";
+                            output += $"({phases.ElementAt(i).Key}, {phases.Values.ElementAt(i).ElementAt(j)}, 0, {phases.Values.ElementAt(i).ElementAt(j)}, 0, 0, 0, '{DB2.Db2.AreaTable[(int)phases.ElementAt(i).Key].AreaName} - Quest XXX - {GetCreatureNamesStringFromList(phases.ElementAt(i).Key, phases.Values.ElementAt(i).ElementAt(j), creaturesData)} visible');\r\n";
                         }
                     }
                 }

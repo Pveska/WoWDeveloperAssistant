@@ -280,12 +280,24 @@ namespace WoWDeveloperAssistant.Misc
 
         public static string GetCreatureNameFromLine(string line)
         {
-            Regex creatureNameRegex = new Regex(@"-- .+ \(Area:");
+            Regex creatureNameByAreaRegex = new Regex(@"-- .+ \(Area:");
+            Regex creatureNameByObjectGuidRegex = new Regex(@"-- .+ \(ObjectGuid:");
 
-            if (creatureNameRegex.IsMatch(line))
+            if (line.Contains("ObjectGuid"))
             {
-                return creatureNameRegex.Match(line).ToString().Replace("--  ", "").Replace("-- ", "").Replace(" (Area:", "").Replace("(", "").Replace(")", "");
+                if (creatureNameByObjectGuidRegex.IsMatch(line))
+                {
+                    return creatureNameByObjectGuidRegex.Match(line).ToString().Replace("--  ", "").Replace("-- ", "").Replace(" (ObjectGuid:", "").Replace("(", "").Replace(")", "");
+                }
             }
+            else
+            {
+                if (creatureNameByAreaRegex.IsMatch(line))
+                {
+                    return creatureNameByAreaRegex.Match(line).ToString().Replace("--  ", "").Replace("-- ", "").Replace(" (Area:", "").Replace("(", "").Replace(")", "");
+                }
+            }
+
 
             return "";
         }
