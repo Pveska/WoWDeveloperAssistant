@@ -285,13 +285,31 @@ namespace WoWDeveloperAssistant.Database_Advisor
         {
             string output = "";
             uint index = 0;
-            List<string> names = creaturesData.Where(x => x.phaseId == phaseId && x.zoneId == zoneId).Select(x => x.name).ToList();
+            List<string> oldNames = creaturesData.Where(x => x.phaseId == phaseId && x.zoneId == zoneId).Select(x => x.name).ToList();
+            List<string> newNames = new List<string>();
 
-            foreach (string name in names)
+            foreach (string name in oldNames)
             {
-                if (index + 1 < names.Count())
+                if (oldNames.Count(x => x == name) > 1)
                 {
-                    if (names.Count > 1 && index + 2 == names.Count())
+                    string newName = name + "s";
+
+                    if (!newNames.Contains(newName))
+                    {
+                        newNames.Add(newName);
+                    }
+                }
+                else
+                {
+                    newNames.Add(name);
+                }
+            }
+
+            foreach (string name in newNames)
+            {
+                if (index + 1 < newNames.Count())
+                {
+                    if (newNames.Count > 1 && index + 2 == newNames.Count())
                     {
                         output += $"{name} and ";
                     }
