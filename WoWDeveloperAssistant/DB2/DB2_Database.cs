@@ -37,7 +37,7 @@ namespace DB2
         public static MySqlStorage<SpellRadius>      SpellRadius { get; set; }
         public static MySqlStorage<SpellRange>       SpellRange { get; set; }
 
-        public static readonly Dictionary<int, string> MapDifficultyStore = new Dictionary<int, string>();
+        public static readonly Dictionary<uint, string> MapDifficultyStore = new Dictionary<uint, string>();
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffect> SpellEffectStore = new Dictionary<Tuple<uint, uint>, SpellEffect>();
 
         public static bool IsLoaded()
@@ -93,10 +93,10 @@ namespace DB2
             {
                 foreach (var mapDifficulty in MapDifficulty)
                 {
-                    if (MapDifficultyStore.ContainsKey(mapDifficulty.Key))
-                        MapDifficultyStore[mapDifficulty.Key] = MapDifficultyStore[mapDifficulty.Key] + " " + mapDifficulty.Value.DifficultyID;
+                    if (MapDifficultyStore.ContainsKey(mapDifficulty.Value.MapID))
+                        MapDifficultyStore[mapDifficulty.Value.MapID] = MapDifficultyStore[mapDifficulty.Value.MapID] + " " + mapDifficulty.Value.DifficultyID;
                     else
-                        MapDifficultyStore.Add(mapDifficulty.Key, Convert.ToString(mapDifficulty.Value.DifficultyID));
+                        MapDifficultyStore.Add(mapDifficulty.Value.MapID, Convert.ToString(mapDifficulty.Value.DifficultyID));
                 }
             }
 
