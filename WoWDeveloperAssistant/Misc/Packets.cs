@@ -360,9 +360,10 @@ namespace WoWDeveloperAssistant.Misc
             public uint? unitFlags;
             public MonsterMovePacket.JumpInfo jumpInfo;
             public ConversationData conversationData;
+            public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
 
-            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData)
-            { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.isCyclic = isCyclic; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; }
+            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData, Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys)
+            { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.isCyclic = isCyclic; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; this.filterKeys = filterKeys; }
 
             public enum ObjectTypes
             {
@@ -491,7 +492,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static bool GetDisableGravityFromLine(string line)
             {
-                if (line.Contains("MovementFlags:") && line.Contains("MOVEMENTFLAG_DISABLE_GRAVITY"))
+                if (line.Contains("MovementFlags:") && line.Contains("DisableGravity"))
                     return true;
 
                 return false;
@@ -627,6 +628,27 @@ namespace WoWDeveloperAssistant.Misc
                 return new KeyValuePair<string, uint>(actorGuid, actorIndex);
             }
 
+            public static uint? GetFilterKeysCountFromLine(string line)
+            {
+                Regex filterKeysCountRegex = new Regex(@"FilterKeysCount:{1}\s{1}\w+");
+                if (filterKeysCountRegex.IsMatch(line))
+                    return Convert.ToUInt32(filterKeysCountRegex.Match(line).ToString().Replace("FilterKeysCount: ", ""));
+
+                return null;
+            }
+
+            public static float GetFilterKeyFromLine(string line)
+            {
+                Regex inRegex = new Regex(@"In:{1}\s+.+");
+                Regex outRegex = new Regex(@"Out:{1}\s+.+");
+                if (inRegex.IsMatch(line))
+                    return float.Parse(inRegex.Match(line).ToString().Replace("In: ", ""), CultureInfo.InvariantCulture.NumberFormat);
+                else if (outRegex.IsMatch(line))
+                    return float.Parse(outRegex.Match(line).ToString().Replace("Out: ", ""), CultureInfo.InvariantCulture.NumberFormat);
+
+                return 0.0f;
+            }
+
             public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
@@ -636,9 +658,10 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>());
                         Position tempPointPosition = new Position();
+                        uint? filterKeysCount = null;
 
                         do
                         {
@@ -812,6 +835,34 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                             }
 
+                            if (filterKeysCount == null)
+                            {
+                                filterKeysCount = GetFilterKeysCountFromLine(lines[index]);
+                                if (filterKeysCount != null)
+                                {
+                                    for (uint i = 0; i < filterKeysCount; i++)
+                                    {
+                                        MonsterMovePacket.FilterKey filterKey = new MonsterMovePacket.FilterKey();
+
+                                        for (uint j = 0; j < 2; j++)
+                                        {
+                                            index++;
+
+                                            if (j == 0)
+                                            {
+                                                filterKey.In = GetFilterKeyFromLine(lines[index]);
+                                            }
+                                            else
+                                            {
+                                                filterKey.Out = GetFilterKeyFromLine(lines[index]);
+                                            }
+                                        }
+
+                                        updatePacket.filterKeys.Add(i, filterKey);
+                                    }
+                                }
+                            }
+
                             index++;
                         }
                         while (IsLineValidForObjectParse(lines[index]));
@@ -823,9 +874,9 @@ namespace WoWDeveloperAssistant.Misc
                         {
                             updatePacket.waypoints.Clear();
                         }
-                        else
+                        else if (updatePacket.waypoints.Count != 0)
                         {
-                            float velocity = MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.spawnPosition, updatePacket.moveTime);
+                            float velocity = MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.isCyclic ? updatePacket.waypoints.First().movePosition : updatePacket.spawnPosition, updatePacket.moveTime);
 
                             if (velocity != 0.0f)
                             {
@@ -867,8 +918,8 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if (lines[index].Contains("UpdateType: Values") && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>());
 
                         do
                         {
@@ -980,8 +1031,8 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if ((lines[index].Contains("UpdateType: CreateObject1") || lines[index].Contains("UpdateType: CreateObject2")) && lines[index + 1].IsConversationLine())
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()));
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()), new Dictionary<uint, MonsterMovePacket.FilterKey>());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>());
 
                         do
                         {
@@ -1085,6 +1136,13 @@ namespace WoWDeveloperAssistant.Misc
                     return moveTime != 0 && jumpGravity != 0.0f && jumpPos.IsValid();
                 }
             }
+
+            [Serializable]
+            public struct FilterKey
+            {
+                public float In;
+                public float Out;
+            };
 
             public MonsterMovePacket(string guid, float orientation, TimeSpan time, List<Waypoint> waypoints, uint moveTime, Position pos, JumpInfo jump)
             { creatureGuid = guid; creatureOrientation = orientation; packetSendTime = time; this.waypoints = waypoints; this.moveTime = moveTime; startPos = pos; jumpInfo = jump; }
@@ -1442,7 +1500,7 @@ namespace WoWDeveloperAssistant.Misc
                     if (movePacket.creatureGuid == "")
                         return movePacket;
 
-                    float velocity = GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime);
+                    float velocity = GetWaypointsVelocity(movePacket.waypoints, isCyclic ? movePacket.waypoints.First().movePosition : movePacket.startPos, movePacket.moveTime);
 
                     if (velocity != 0.0f)
                     {
@@ -1643,7 +1701,7 @@ namespace WoWDeveloperAssistant.Misc
                     if (movePacket.creatureGuid == "")
                         return movePacket;
 
-                    float velocity = GetWaypointsVelocity(movePacket.waypoints, movePacket.startPos, movePacket.moveTime);
+                    float velocity = GetWaypointsVelocity(movePacket.waypoints, isCyclic ? movePacket.waypoints.First().movePosition : movePacket.startPos, movePacket.moveTime);
 
                     if (velocity != 0.0f)
                     {

@@ -26,6 +26,7 @@ namespace WoWDeveloperAssistant.Misc
         public bool hasDisableGravity;
         public bool isCyclic;
         public string transportGuid;
+        public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
 
         public Creature(UpdateObjectPacket updatePacket)
         {
@@ -43,6 +44,7 @@ namespace WoWDeveloperAssistant.Misc
             hasDisableGravity = updatePacket.hasDisableGravity;
             isCyclic = updatePacket.isCyclic;
             transportGuid = updatePacket.transportGuid;
+            filterKeys = updatePacket.filterKeys;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -84,6 +86,11 @@ namespace WoWDeveloperAssistant.Misc
 
             if (transportGuid == "" && updatePacket.transportGuid != "")
                 transportGuid = updatePacket.transportGuid;
+
+            if (filterKeys.Count == 0)
+            {
+                filterKeys = updatePacket.filterKeys;
+            }
         }
 
         public void UpdateSpells(SpellStartPacket spellPacket)

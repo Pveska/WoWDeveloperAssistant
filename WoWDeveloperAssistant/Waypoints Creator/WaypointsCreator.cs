@@ -1149,29 +1149,49 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             string SQLtext = "-- Pathing for " + creature.name + " Entry: " + creature.entry + "\r\n";
-            SQLtext = SQLtext + "SET @LinkedId := '" + creature.GetLinkedId() + "';\r\n";
-            SQLtext = SQLtext + "UPDATE `creature` SET `spawndist` = 0, `MovementType` = " + (creature.isCyclic ? 4 : 3) + " WHERE `linked_id` = @LinkedId;\r\n";
-
-            SQLtext = SQLtext + "DELETE FROM `waypoint_data` WHERE `linked_id` = @LinkedId;" + "\r\n";
-            SQLtext = SQLtext + "INSERT INTO `waypoint_data` (`linked_id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `action`, `action_chance`, `speed`) VALUES" + "\r\n";
+            SQLtext += "SET @LinkedId := '" + creature.GetLinkedId() + "';\r\n";
+            SQLtext += "UPDATE `creature` SET `spawndist` = 0, `MovementType` = " + (creature.isCyclic ? 4 : 3) + " WHERE `linked_id` = @LinkedId;\r\n";
+            SQLtext += "DELETE FROM `waypoint_data` WHERE `linked_id` = @LinkedId;" + "\r\n";
+            SQLtext += "INSERT INTO `waypoint_data` (`linked_id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `action`, `action_chance`, `speed`) VALUES" + "\r\n";
 
             for (int i = 0; i < waypoints.Count; i++)
             {
                 Waypoint waypoint = waypoints[i];
                 float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WaypointsCreator_Waypoints[4, i].Value.ToString());
                 uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WaypointsCreator_Waypoints[6, i].Value.ToString());
+                float dbSpeed = GetDbSpeedFromVelocity(waypoint.velocity, waypoint.moveType);
+                float wpSpeed = dbSpeed >= 1.0f && dbSpeed <= 1.2 ? 0 : (float)Math.Round(waypoint.velocity, 1);
 
                 if (i < (waypoints.Count - 1))
                 {
-                    SQLtext = SQLtext + "(@LinkedId, " + (i + 1) + ", " + waypoint.movePosition.x.GetValueWithoutComma() + ", " + waypoint.movePosition.y.GetValueWithoutComma() + ", " + waypoint.movePosition.z.GetValueWithoutComma() + ", " + orientation.GetValueWithoutComma() + ", " + delay + ", " + (uint)waypoint.moveType + ", " + waypoint.GetScriptId() + ", 100" + ", 0" + "),\r\n";
+                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {(uint)waypoint.moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + "),\r\n";
                 }
                 else
                 {
-                    SQLtext = SQLtext + "(@LinkedId, " + (i + 1) + ", " + waypoint.movePosition.x.GetValueWithoutComma() + ", " + waypoint.movePosition.y.GetValueWithoutComma() + ", " + waypoint.movePosition.z.GetValueWithoutComma() + ", " + orientation.GetValueWithoutComma() + ", " + delay + ", " + (uint)waypoint.moveType + ", " + waypoint.GetScriptId() + ", 100" + ", 0" + ");\r\n";
+                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {(uint)waypoint.moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + ");\r\n";
                 }
             }
 
-            SQLtext = SQLtext + "-- " + creature.guid + " .go " + creature.spawnPosition.x.GetValueWithoutComma() + " " + creature.spawnPosition.y.GetValueWithoutComma() + " " + creature.spawnPosition.z.GetValueWithoutComma() + "\r\n";
+            SQLtext += "-- " + creature.guid + " .go " + creature.spawnPosition.x.GetValueWithoutComma() + " " + creature.spawnPosition.y.GetValueWithoutComma() + " " + creature.spawnPosition.z.GetValueWithoutComma() + "\r\n";
+
+            if (creature.filterKeys.Count != 0)
+            {
+                SQLtext += "\r\n";
+                SQLtext += "DELETE FROM `waypoint_data_filter_keys` WHERE `linked_id` = @LinkedId;\r\n";
+                SQLtext += "INSERT INTO `waypoint_data_filter_keys` (`linked_id`, `id`, `in`, `out`) VALUES\r\n";
+
+                for (int i = 0; i < creature.filterKeys.Count; i++)
+                {
+                    if (i < (creature.filterKeys.Count - 1))
+                    {
+                        SQLtext += $"(@LinkedId, {i}, {creature.filterKeys[(uint)i].In.GetValueWithoutComma()}, {creature.filterKeys[(uint)i].Out.GetValueWithoutComma()}),\r\n";
+                    }
+                    else
+                    {
+                        SQLtext += $"(@LinkedId, {i}, {creature.filterKeys[(uint)i].In.GetValueWithoutComma()}, {creature.filterKeys[(uint)i].Out.GetValueWithoutComma()});\r\n";
+                    }
+                }
+            }
 
             if (Properties.Settings.Default.Scripts && creature.waypoints.GetScriptsCount() != 0)
             {
@@ -1182,8 +1202,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 SQLtext += "\r\n";
                 SQLtext += "-- Waypoint scripts for " + creature.name + " Entry: " + creature.entry + "\r\n";
-                SQLtext = SQLtext + "DELETE FROM `waypoint_scripts` WHERE `id` IN (" + waypoints.GetScriptIds() + ");\r\n";
-                SQLtext = SQLtext + "INSERT INTO `waypoint_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid`) VALUES" + "\r\n";
+                SQLtext += "DELETE FROM `waypoint_scripts` WHERE `id` IN (" + waypoints.GetScriptIds() + ");\r\n";
+                SQLtext += "INSERT INTO `waypoint_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid`) VALUES" + "\r\n";
 
                 uint scriptsCount = waypoints.GetScriptsCount() - 1;
 
@@ -1191,12 +1211,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 {
                     if (scriptsCount != 0)
                     {
-                        SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ")," + " -- " + "Script Type: " + script.type + "\r\n";
+                        SQLtext += "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ")," + " -- " + "Script Type: " + script.type + "\r\n";
                         scriptsCount--;
                     }
                     else
                     {
-                        SQLtext = SQLtext + "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");" + " -- " + "Script Type: " + script.type + "\r\n";
+                        SQLtext += "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");" + " -- " + "Script Type: " + script.type + "\r\n";
                     }
                 }
             }
@@ -1205,8 +1225,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 SQLtext += "\r\n";
                 SQLtext += "-- Vector3 for movement in core for " + creature.name + " Entry: " + creature.entry + "\r\n";
-                SQLtext = SQLtext + "std::vector<G3D::Vector3> const g_Path" + creature.name + " =" + "\r\n";
-                SQLtext = SQLtext + "{" + "\r\n";
+                SQLtext += "std::vector<G3D::Vector3> const g_Path" + creature.name + " =" + "\r\n";
+                SQLtext += "{" + "\r\n";
 
                 for (int i = 0; i < waypoints.Count; i++)
                 {
@@ -1214,15 +1234,15 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                     if (i < (waypoints.Count - 1))
                     {
-                        SQLtext = SQLtext + "{ " + waypoint.movePosition.x.GetValueWithoutComma() + "f, " + waypoint.movePosition.y.GetValueWithoutComma() + "f, " + waypoint.movePosition.z.GetValueWithoutComma() + "f },\r\n";
+                        SQLtext += "{ " + waypoint.movePosition.x.GetValueWithoutComma() + "f, " + waypoint.movePosition.y.GetValueWithoutComma() + "f, " + waypoint.movePosition.z.GetValueWithoutComma() + "f },\r\n";
                     }
                     else
                     {
-                        SQLtext = SQLtext + "{ " + waypoint.movePosition.x.GetValueWithoutComma() + "f, " + waypoint.movePosition.y.GetValueWithoutComma() + "f, " + waypoint.movePosition.z.GetValueWithoutComma() + "f }\r\n";
+                        SQLtext += "{ " + waypoint.movePosition.x.GetValueWithoutComma() + "f, " + waypoint.movePosition.y.GetValueWithoutComma() + "f, " + waypoint.movePosition.z.GetValueWithoutComma() + "f }\r\n";
                     }
                 }
 
-                SQLtext = SQLtext + "};" + "\r\n";
+                SQLtext += "};" + "\r\n";
             }
 
             mainForm.textBox_SqlOutput.Text = SQLtext;
