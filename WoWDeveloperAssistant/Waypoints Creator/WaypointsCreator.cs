@@ -684,9 +684,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
         }
 
-        public bool IsCreatureAlreadyHavePathOrFormationOnDb(string guid)
+        public bool IsCreatureAlreadyHavePathOrFormationOnDb(string guid, string linkedid = "")
         {
-            string linkedId = creaturesDict[guid].GetLinkedId();
+            string linkedId = linkedid == "" ? creaturesDict[guid].GetLinkedId() : linkedid;
             bool alreadyHaveWaypointsOrRelatedToFormation = false;
 
             string oldFormationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` = '" + linkedId + "' OR " + "`memberLinkedId` = '" + linkedId + "';";
@@ -726,12 +726,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (!alreadyHaveWaypointsOrRelatedToFormation)
             {
-                string addonSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` = '" + linkedId + "';";
-                var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
+                string oldWaypointSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` = '" + linkedId + "';";
+                var oldWaypointsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(oldWaypointSqlQuery) : null;
 
-                if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
+                if (oldWaypointSqlQuery != null && oldWaypointsDs.Tables["table"].Rows.Count > 0)
                 {
-                    foreach (DataRow row in creatureAddonDs.Tables["table"].Rows)
+                    foreach (DataRow row in oldWaypointsDs.Tables["table"].Rows)
                     {
                         if (Convert.ToInt32(row.ItemArray[0]) > 0)
                         {
@@ -739,6 +739,17 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             break;
                         }
                     }
+                }
+            }
+
+            if (!alreadyHaveWaypointsOrRelatedToFormation)
+            {
+                string newWaypointSqlQuery = "SELECT `linked_id` FROM `waypoint_data` WHERE `linked_id` = '" + linkedId + "';";
+                var newWaypointsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(newWaypointSqlQuery) : null;
+
+                if (newWaypointSqlQuery != null && newWaypointsDs.Tables["table"].Rows.Count > 0)
+                {
+                    alreadyHaveWaypointsOrRelatedToFormation = true;
                 }
             }
 
@@ -1094,6 +1105,47 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.chart_WaypointsCreator_Path.Titles.Add("Linked Id: " + creature.GetLinkedId());
             mainForm.chart_WaypointsCreator_Path.Titles[1].Font = new Font("Arial", 16, FontStyle.Bold);
             mainForm.chart_WaypointsCreator_Path.Titles[1].ForeColor = Color.Blue;
+
+            if (IsCreatureExistOnDb(creature.guid))
+            {
+                if (IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid))
+                {
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found creature in DB via LinkedId, it's already have path or formation");
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
+                }
+                else
+                {
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found creature in DB via LinkedId, it's doesn't have any path or formation");
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
+                }
+            }
+            else if (FindCreaturesForWaypoints(creature).Count > 0)
+            {
+                Dictionary<string, float> linkedIds = FindCreaturesForWaypoints(creature);
+                linkedIds = linkedIds.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
+
+                if (linkedIds.Count > 0)
+                {
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found possible creatures in DB via comparing");
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
+                }
+                else
+                {
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found possible creatures in DB via comparing, but they already have path or formation");
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
+                    mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
+                }
+            }
+            else
+            {
+                mainForm.chart_WaypointsCreator_Path.Titles.Add("Can't find any creature in DB for those waypoints");
+                mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
+                mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
+            }
+
             mainForm.chart_WaypointsCreator_Path.Series.Clear();
             mainForm.chart_WaypointsCreator_Path.Series.Add("Spawn");
             mainForm.chart_WaypointsCreator_Path.Series["Spawn"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
@@ -1218,6 +1270,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     {
                         SQLtext += "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");" + " -- " + "Script Type: " + script.type + "\r\n";
                     }
+                }
+            }
+
+            if (!IsCreatureExistOnDb(creature.guid) && FindCreaturesForWaypoints(creature).Count > 0)
+            {
+                SQLtext += "\r\n";
+                SQLtext += "List of possible creatures that related to this path:\r\n";
+
+                Dictionary<string, float> linkedIds = FindCreaturesForWaypoints(creature);
+                linkedIds = linkedIds.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+                foreach (var itr in linkedIds)
+                {
+                    SQLtext += $"LinkedId: {itr.Key}, Distance from spawn pos to closest waypoint: {itr.Value.GetValueWithoutComma()}f, .go cre lid {itr.Key}\r\n";
                 }
             }
 
@@ -1407,6 +1473,45 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.toolStripTextBox_WaypointsCreator_Entry.Enabled = true;
             mainForm.toolStripStatusLabel_FileStatus.Text = multiSelect ? "More than 1 file is selected for input" : mainForm.openFileDialog.FileName + " is selected for input.";
             mainForm.Cursor = Cursors.Default;
+        }
+
+        private Dictionary<string, float> FindCreaturesForWaypoints(Creature creature)
+        {
+            string creaturePosSqlQuery = $"SELECT `linked_id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` = {creature.entry};";
+            var creaturePositionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creaturePosSqlQuery) : null;
+            Dictionary<string, float> linkedIds = new Dictionary<string, float>();
+
+            if (creaturePositionsDs != null && creaturePositionsDs.Tables["table"].Rows.Count > 0)
+            {
+                Dictionary<string, Position> spawnPositions = new Dictionary<string, Position>();
+
+                foreach (DataRow row in creaturePositionsDs.Tables["table"].Rows)
+                {
+                    spawnPositions.Add(row.ItemArray[0].ToString(), new Position(float.Parse(row.ItemArray[1].ToString()), float.Parse(row.ItemArray[2].ToString()), float.Parse(row.ItemArray[3].ToString())));
+                }
+
+                foreach (var itr in spawnPositions)
+                {
+                    float lowestDistance = 1000.0f;
+
+                    foreach (Waypoint waypoint in creature.waypoints)
+                    {
+                        float distance = waypoint.movePosition.GetDistance(itr.Value);
+
+                        if (distance <= 5.0f && lowestDistance > distance)
+                        {
+                            lowestDistance = distance;
+                        }
+                    }
+
+                    if (lowestDistance <= 5.0f)
+                    {
+                        linkedIds.Add(itr.Key, lowestDistance);
+                    }
+                }
+            }
+
+            return linkedIds;
         }
     }
 }
