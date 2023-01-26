@@ -191,6 +191,9 @@ namespace DB2Storage
                 if (Count == 0)
                     MessageBox.Show($"Table {lTableName} is empty!");
             }
+
+            lConnection.Close();
+            lConnection.Dispose();
         }
     }
 
