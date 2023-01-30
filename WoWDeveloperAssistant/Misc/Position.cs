@@ -76,5 +76,60 @@ namespace WoWDeveloperAssistant.Misc
         {
             return firstPos.x != secondPos.x || firstPos.y != secondPos.y || firstPos.z != secondPos.z || firstPos.orientation != secondPos.orientation;
         }
+
+        private bool HasInArc(float arc, Position refPos)
+        {
+            if (refPos == this)
+                return true;
+
+            arc = NormalizeOrientation(arc);
+
+            float angle = GetAngle(refPos);
+            angle -= orientation;
+
+            angle = NormalizeOrientation(angle);
+            if (angle > 3.141592653589793f)
+                angle -= 2.0f * 3.141592653589793f;
+
+            float lborder = -1 * (arc / 2.0f);
+            float rborder = (arc / 2.0f);
+            return ((angle >= lborder) && (angle <= rborder));
+        }
+
+        public bool IsInFront(Position refPos,  float arc = 3.141592653589793f)
+        {
+            return HasInArc(arc, refPos);
+        }
+
+        public bool IsInBack(Position refPos, float arc = 3.141592653589793f)
+        {
+            return !HasInArc(2 * 3.141592653589793f - arc, refPos);
+        }
+
+        private float NormalizeOrientation(float o)
+        {
+            if (o >= 0.0f && o < 6.2831864f)
+                return o;
+
+            if (o < 0)
+            {
+                float mod = -o;
+                mod = (float)Math.IEEERemainder(mod, 2.0f * 3.141592653589793f);
+                mod = -mod + 2.0f * 3.141592653589793f;
+                return mod;
+            }
+
+            return (float)Math.IEEERemainder(o, 2.0f * 3.141592653589793f);
+        }
+
+        public float GetAngle(Position refPos)
+        {
+            float dx = refPos.x - x;
+            float dy = refPos.y - y;
+
+            float ang = (float)Math.Atan2(dy, dx);
+            ang = (ang >= 0) ? ang : 2 * 3.141592653589793f + ang;
+            return ang;
+        }
     }
 }

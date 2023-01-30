@@ -602,5 +602,10 @@ namespace WoWDeveloperAssistant
                 PhaseDataAdvisor.GetPhaseDataForCreatures(textBox_DatabaseAdvisor_Output, openFileDialog.FileName);
             }
         }
+
+        private void magicorMaybeNotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.ManageWaypointsUsingAllAlgorithms();
+        }
     }
 }

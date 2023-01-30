@@ -222,6 +222,7 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.magicorMaybeNotToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -744,10 +745,11 @@
             this.removeNearestPointsToolStripMenuItem_WC,
             this.removeDuplicatePointsToolStripMenuItem_WC,
             this.createReturnPathToolStripMenuItem_WC,
+            this.magicorMaybeNotToolStripMenuItem_WC,
             this.toolStripSeparator_WC,
             this.createSQLToolStripMenuItem_WC});
             this.contextMenuStrip_WaypointsCreator.Name = "contextMenuStrip_WC";
-            this.contextMenuStrip_WaypointsCreator.Size = new System.Drawing.Size(281, 170);
+            this.contextMenuStrip_WaypointsCreator.Size = new System.Drawing.Size(281, 235);
             // 
             // cutToolStripMenuItem_WC
             // 
@@ -2157,6 +2159,13 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
+            // magicorMaybeNotToolStripMenuItem_WC
+            // 
+            this.magicorMaybeNotToolStripMenuItem_WC.Name = "magicorMaybeNotToolStripMenuItem_WC";
+            this.magicorMaybeNotToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
+            this.magicorMaybeNotToolStripMenuItem_WC.Text = "Magic! (or maybe not...)";
+            this.magicorMaybeNotToolStripMenuItem_WC.Click += new System.EventHandler(this.magicorMaybeNotToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -2381,6 +2390,7 @@
         private System.Windows.Forms.Label label_ParsedFileAdvisor_LosConversationsOrTexts;
         private System.Windows.Forms.ToolStripMenuItem recalculateTextForGossipMenuToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getPhaseDataForCreatures;
+        private System.Windows.Forms.ToolStripMenuItem magicorMaybeNotToolStripMenuItem_WC;
     }
 }
 
