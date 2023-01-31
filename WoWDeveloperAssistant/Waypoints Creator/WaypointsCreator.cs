@@ -1625,7 +1625,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             while (canLoop);
 
             /// Now, if there is enough points to build our path - we do it, otherwise just remove duplicates
-            if (!creature.spawnPosition.IsInBack(((Waypoint)rowsList[rowsList.Count - 1].Cells[8].Value).movePosition, 2.0f))
+            if (!creature.spawnPosition.IsInBack(((Waypoint)rowsList[rowsList.Count - 1].Cells[8].Value).movePosition, 1.0f))
             {
                 RemoveDuplicatePoints();
             }
