@@ -1547,12 +1547,173 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return possibleCreatures;
         }
 
-        public void ManageWaypointsUsingAllAlgorithms()
+        public void OptimizeCirclePath()
+        {
+            Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
+            List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
+            int startPointIndex = GetIndexOfBestStartPoint();
+            bool canLoop = true;
+
+            if (startPointIndex > 0)
+            {
+                rowsList.RemoveRange(0, startPointIndex);
+            }
+
+            /// Removing duplicate points
+            do
+            {
+                for (int i = 0; i < rowsList.Count; i++)
+                {
+                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
+                    bool needStopForeach = false;
+
+                    /// Remove point if we already had point at this position
+                    for (int j = 0; j < i - 1; j++)
+                    {
+                        if (((Waypoint)rowsList[j].Cells[8].Value).movePosition.GetDistance(currWaypoint.movePosition) <= 1.0f)
+                        {
+                            rowsList.RemoveAt(i);
+                            needStopForeach = true;
+                            break;
+                        }
+                    }
+
+                    if (!needStopForeach && i + 1 == rowsList.Count)
+                    {
+                        canLoop = false;
+                        break;
+                    }
+                }
+
+                if (rowsList.Count == 0)
+                    break;
+            }
+            while (canLoop);
+
+            /// Removing fucked points
+            do
+            {
+                for (int i = 0; i < rowsList.Count; i++)
+                {
+                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
+                    bool needStopForeach = false;
+
+                    /// Remove point if current point is behind of previous point
+                    if (!needStopForeach && i + 1 < rowsList.Count && i > 1)
+                    {
+                        Waypoint prevWaypoint = (Waypoint)rowsList[i - 1].Cells[8].Value;
+                        Waypoint nextWaypoint = (Waypoint)rowsList[i + 1].Cells[8].Value;
+                        currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(nextWaypoint.movePosition);
+
+                        if (currWaypoint.movePosition.IsInFront(prevWaypoint.movePosition, 1.0f))
+                        {
+                            rowsList.RemoveAt(i);
+                            break;
+                        }
+                    }
+
+                    if (!needStopForeach && i + 1 == rowsList.Count)
+                    {
+                        canLoop = false;
+                        break;
+                    }
+                }
+
+                if (rowsList.Count == 0)
+                    break;
+            }
+            while (canLoop);
+
+            /// Now, if there is enough points to build our path - we do it, otherwise just remove duplicates
+            if (!creature.spawnPosition.IsInBack(((Waypoint)rowsList[rowsList.Count - 1].Cells[8].Value).movePosition, 2.0f))
+            {
+                RemoveDuplicatePoints();
+            }
+            else
+            {
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
+
+                foreach (DataGridViewRow row in rowsList)
+                {
+                    Waypoint wp = (Waypoint)row.Cells[8].Value;
+                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(rowsList.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
+                }
+            }
+
+            RemoveNearestPoints();
+            CreateSQL(true);
+            GraphPath();
+        }
+
+        public void OptimizeRegularPath()
+        {
+            List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
+            int startPointIndex = GetIndexOfBestStartPoint();
+            bool canLoop = true;
+
+            if (startPointIndex > 0)
+            {
+                rowsList.RemoveRange(0, startPointIndex);
+            }
+
+            /// Removing fucked points
+            do
+            {
+                for (int i = 0; i < rowsList.Count; i++)
+                {
+                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
+                    bool needStopForeach = false;
+
+                    /// Remove point if current point is behind of previous point
+                    if (!needStopForeach && i + 1 < rowsList.Count && i > 1)
+                    {
+                        Waypoint prevWaypoint = (Waypoint)rowsList[i - 1].Cells[8].Value;
+                        Waypoint nextWaypoint = (Waypoint)rowsList[i + 1].Cells[8].Value;
+                        currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(nextWaypoint.movePosition);
+
+                        if (currWaypoint.movePosition.IsInFront(prevWaypoint.movePosition, 1.0f))
+                        {
+                            rowsList.RemoveAt(i);
+                            break;
+                        }
+                    }
+
+                    if (!needStopForeach && i + 1 == rowsList.Count)
+                    {
+                        canLoop = false;
+                        break;
+                    }
+                }
+
+                if (rowsList.Count == 0)
+                    break;
+            }
+            while (canLoop);
+
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
+
+            foreach (DataGridViewRow row in rowsList)
+            {
+                Waypoint wp = (Waypoint)row.Cells[8].Value;
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(rowsList.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
+            }
+
+            RemoveNearestPoints();
+            CreateSQL(true);
+            GraphPath();
+        }
+
+        int GetIndexOfBestStartPoint()
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
             List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
             int startPointIndex = -1;
-            bool canLoop = true;
+
+            bool isFlyingCreature = creature.hasDisableGravity;
+            if (!isFlyingCreature)
+            {
+                isFlyingCreature = creature.waypoints.Count(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT) != 0;
+            }
 
             /// Here we searching for perfect start point
             foreach (DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows)
@@ -1571,7 +1732,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 Dictionary<int, float> closestPoints = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().Where(x => ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(creature.spawnPosition) <= 5.0f).OrderBy(x => ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(creature.spawnPosition)).ToDictionary(x => mainForm.grid_WaypointsCreator_Waypoints.Rows.IndexOf(x), x => ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(creature.spawnPosition));
 
-                foreach(var point in closestPoints)
+                foreach (var point in closestPoints)
                 {
                     if (startPointIndex != -1)
                         break;
@@ -1595,8 +1756,68 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            /// Didn't find start point in 5 yards with different arcs, need to increase distance with arc in loop
+            /// Didn't find start point in 5 yards with different arcs, need to increase distance & arc in loop
             if (startPointIndex == -1)
+            {
+                float distance = 6.0f;
+
+                do
+                {
+                    Dictionary<int, float> closestPoints = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().Where(x => ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(creature.spawnPosition) <= distance).OrderBy(x => ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(creature.spawnPosition)).ToDictionary(x => mainForm.grid_WaypointsCreator_Waypoints.Rows.IndexOf(x), x => ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(creature.spawnPosition));
+
+                    foreach (var point in closestPoints)
+                    {
+                        if (startPointIndex != -1)
+                            break;
+
+                        Waypoint waypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[point.Key].Cells[8].Value;
+
+                        /// In case of flying creatures, we don't really care about distance to first point, so trying with lowest arcs first
+                        float arc = !isFlyingCreature ? 1.1f : 0.1f;
+
+                        if (isFlyingCreature)
+                        {
+                            do
+                            {
+                                if (creature.spawnPosition.IsInFront(waypoint.movePosition, arc))
+                                {
+                                    startPointIndex = point.Key;
+                                    break;
+                                }
+                                else
+                                {
+                                    arc += 0.1f;
+                                }
+
+                            } while (arc <= 0.5f);
+                        }
+                        else
+                        {
+                            do
+                            {
+                                if (creature.spawnPosition.IsInFront(waypoint.movePosition, arc))
+                                {
+                                    startPointIndex = point.Key;
+                                    break;
+                                }
+                                else
+                                {
+                                    arc += 0.1f;
+                                }
+
+                            } while (arc <= 1.5f);
+                        }
+                    }
+
+                    if (startPointIndex == -1)
+                    {
+                        distance += 1.0f;
+                    }
+                } while (startPointIndex == -1 && distance < 100.0f);
+            }
+
+            /// Start point still not found, but if our creature is flying, we now need to mix increasing distance & arc
+            if (isFlyingCreature)
             {
                 float distance = 6.0f;
 
@@ -1634,57 +1855,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 } while (startPointIndex == -1 && distance < 100.0f);
             }
 
-            rowsList.RemoveRange(0, startPointIndex);
-
-            /// Removing duplicate points
-            do
-            {
-                for (int i = 0; i < rowsList.Count; i++)
-                {
-                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
-                    bool needStopForeach = false;
-
-                    for (int j = 0; j < i - 1; j++)
-                    {
-                        if (((Waypoint)rowsList[j].Cells[8].Value).movePosition.GetDistance(currWaypoint.movePosition) <= 1.0f)
-                        {
-                            rowsList.RemoveAt(i);
-                            needStopForeach = true;
-                            break;
-                        }
-                    }
-
-                    if (!needStopForeach && i + 1 == rowsList.Count)
-                    {
-                        canLoop = false;
-                        break;
-                    }
-                }
-
-                if (rowsList.Count == 0)
-                    break;
-            }
-            while (canLoop);
-
-            /// Now, if there is enough points to build our path - we do it, otherwise just remove duplicates
-            if (!creature.spawnPosition.IsInBack(((Waypoint)rowsList[rowsList.Count - 1].Cells[8].Value).movePosition, 2.0f))
-            {
-                RemoveDuplicatePoints();
-            }
-            else
-            {
-                mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
-
-                foreach (DataGridViewRow row in rowsList)
-                {
-                    Waypoint wp = (Waypoint)row.Cells[8].Value;
-                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(rowsList.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
-                }
-            }
-
-            RemoveNearestPoints();
-            CreateSQL(true);
-            GraphPath();
+            return startPointIndex;
         }
     }
 }

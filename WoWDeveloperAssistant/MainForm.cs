@@ -603,9 +603,14 @@ namespace WoWDeveloperAssistant
             }
         }
 
-        private void magicorMaybeNotToolStripMenuItem_Click(object sender, EventArgs e)
+        private void optimizeCirclePathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            waypointsCreator.ManageWaypointsUsingAllAlgorithms();
+            waypointsCreator.OptimizeCirclePath();
+        }
+
+        private void optimizeRegularPathToolStripMenuItem_WC_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.OptimizeRegularPath();
         }
     }
 }

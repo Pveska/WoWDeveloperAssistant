@@ -98,6 +98,8 @@
             this.removeNearestPointsToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.removeDuplicatePointsToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.createReturnPathToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
+            this.optimizeCirclePathToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
+            this.optimizeRegularPathToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator_WC = new System.Windows.Forms.ToolStripSeparator();
             this.createSQLToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox_WaypointsCreator_CreatureGuids = new System.Windows.Forms.ListBox();
@@ -222,7 +224,6 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.magicorMaybeNotToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -745,11 +746,12 @@
             this.removeNearestPointsToolStripMenuItem_WC,
             this.removeDuplicatePointsToolStripMenuItem_WC,
             this.createReturnPathToolStripMenuItem_WC,
-            this.magicorMaybeNotToolStripMenuItem_WC,
+            this.optimizeCirclePathToolStripMenuItem_WC,
+            this.optimizeRegularPathToolStripMenuItem_WC,
             this.toolStripSeparator_WC,
             this.createSQLToolStripMenuItem_WC});
             this.contextMenuStrip_WaypointsCreator.Name = "contextMenuStrip_WC";
-            this.contextMenuStrip_WaypointsCreator.Size = new System.Drawing.Size(281, 235);
+            this.contextMenuStrip_WaypointsCreator.Size = new System.Drawing.Size(281, 267);
             // 
             // cutToolStripMenuItem_WC
             // 
@@ -778,6 +780,20 @@
             this.createReturnPathToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
             this.createReturnPathToolStripMenuItem_WC.Text = "Create return path";
             this.createReturnPathToolStripMenuItem_WC.Click += new System.EventHandler(this.createReturnPathToolStripMenuItem_WC_Click);
+            // 
+            // optimizeCirclePathToolStripMenuItem_WC
+            // 
+            this.optimizeCirclePathToolStripMenuItem_WC.Name = "optimizeCirclePathToolStripMenuItem_WC";
+            this.optimizeCirclePathToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
+            this.optimizeCirclePathToolStripMenuItem_WC.Text = "Optimize Circle Path";
+            this.optimizeCirclePathToolStripMenuItem_WC.Click += new System.EventHandler(this.optimizeCirclePathToolStripMenuItem_Click);
+            // 
+            // optimizeRegularPathToolStripMenuItem_WC
+            // 
+            this.optimizeRegularPathToolStripMenuItem_WC.Name = "optimizeRegularPathToolStripMenuItem_WC";
+            this.optimizeRegularPathToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
+            this.optimizeRegularPathToolStripMenuItem_WC.Text = "Optimize Regular Path";
+            this.optimizeRegularPathToolStripMenuItem_WC.Click += new System.EventHandler(this.optimizeRegularPathToolStripMenuItem_WC_Click);
             // 
             // toolStripSeparator_WC
             // 
@@ -2159,13 +2175,6 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
-            // magicorMaybeNotToolStripMenuItem_WC
-            // 
-            this.magicorMaybeNotToolStripMenuItem_WC.Name = "magicorMaybeNotToolStripMenuItem_WC";
-            this.magicorMaybeNotToolStripMenuItem_WC.Size = new System.Drawing.Size(280, 32);
-            this.magicorMaybeNotToolStripMenuItem_WC.Text = "Magic! (or maybe not...)";
-            this.magicorMaybeNotToolStripMenuItem_WC.Click += new System.EventHandler(this.magicorMaybeNotToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -2390,7 +2399,8 @@
         private System.Windows.Forms.Label label_ParsedFileAdvisor_LosConversationsOrTexts;
         private System.Windows.Forms.ToolStripMenuItem recalculateTextForGossipMenuToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getPhaseDataForCreatures;
-        private System.Windows.Forms.ToolStripMenuItem magicorMaybeNotToolStripMenuItem_WC;
+        private System.Windows.Forms.ToolStripMenuItem optimizeCirclePathToolStripMenuItem_WC;
+        private System.Windows.Forms.ToolStripMenuItem optimizeRegularPathToolStripMenuItem_WC;
     }
 }
 
