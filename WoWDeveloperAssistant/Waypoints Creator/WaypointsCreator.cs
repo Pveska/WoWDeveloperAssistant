@@ -1357,10 +1357,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 if (currentRowIndex + 3 == mainForm.grid_WaypointsCreator_Waypoints.Rows.Count)
                 {
-                    currentWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[currentRowIndex + 1].Cells[8].Value;
-                    nextWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[currentRowIndex + 2].Cells[8].Value;
+                    nextWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[currentRowIndex + 1].Cells[8].Value;
+                    Waypoint lastWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[currentRowIndex + 2].Cells[8].Value;
 
-                    if (currentWaypoint.movePosition.GetExactDist2d(nextWaypoint.movePosition) <= 5.0f && !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
+                    if ((currentWaypoint.movePosition.GetExactDist2d(nextWaypoint.movePosition) <= 5.0f || nextWaypoint.movePosition.GetExactDist2d(lastWaypoint.movePosition) <= 5.0f) && !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
                     {
                         mainForm.grid_WaypointsCreator_Waypoints.Rows.RemoveAt(currentRowIndex + 1);
                         break;
