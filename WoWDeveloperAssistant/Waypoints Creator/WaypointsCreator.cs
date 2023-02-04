@@ -934,89 +934,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
                 else if (averagedMoveType == 1)
                 {
-                    output += "UPDATE `creature` SET `MovementType` = 20, `spawndist` = " + averagedMoveDistance + " WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + " -- Name: " + creature.name + ", Entry: " + creature.entry + " - Ground creature with run type .go cre lid " + creature.GetLinkedId() + "\r\n";
+                    output += "UPDATE `creature` SET `MovementType` = 21, `spawndist` = " + averagedMoveDistance + " WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + " -- Name: " + creature.name + ", Entry: " + creature.entry + " - Ground creature with run type .go cre lid " + creature.GetLinkedId() + "\r\n";
                 }
                 else if (averagedMoveType == 4)
                 {
                     output += "UPDATE `creature` SET `MovementType` = 1, `spawndist` = " + averagedMoveDistance + " WHERE `linked_id` = '" + creature.GetLinkedId() + "';" + " -- Name: " + creature.name + ", Entry: " + creature.entry + " - Flying creature .go cre lid " + creature.GetLinkedId() + "\r\n";
                 }
-            }
-
-            mainForm.textBox_SqlOutput.Text = output;
-        }
-
-        public void UpdateInhabitTypeAndSpeed()
-        {
-            string output = "";
-
-            foreach (uint entry in creaturesDict.Select(x => x.Value.entry).Distinct())
-            {
-                if (creaturesDict.Where(x => x.Value.entry == entry && x.Value.HasWaypoints()).Count() == 0)
-                    continue;
-
-                List<float> averagedWalkVelocities = new List<float>();
-                List<float> averagedRunVelocities = new List<float>();
-                List<float> averagedFlyVelocities = new List<float>();
-
-                foreach (var creature in creaturesDict.Where(x => x.Value.entry == entry && x.Value.HasWaypoints()))
-                {
-                    if (creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_WALK).Count() > 0)
-                    {
-                        averagedWalkVelocities.Add(creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_WALK).Select(x => x.velocity).Average());
-                    }
-
-                    if (creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_RUN).Count() > 0)
-                    {
-                        averagedRunVelocities.Add(creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_RUN).Select(x => x.velocity).Average());
-                    }
-
-                    if (creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT).Count() > 0)
-                    {
-                        averagedFlyVelocities.Add(creature.Value.waypoints.Where(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT).Select(x => x.velocity).Average());
-                    }
-                }
-
-                int dbInhabitType = averagedFlyVelocities.Count > 0 ? 4 : 3;
-
-                string dbSpeed = "";
-
-                string possibleSpeeds = "";
-
-                if (averagedWalkVelocities.Count > 0)
-                {
-                    possibleSpeeds += "Walk: (" + GetPossibleSpeedsString(averagedWalkVelocities, MonsterMovePacket.MoveType.MOVE_WALK) + ")";
-                    dbSpeed += "`speed_walk` = " + GetDbSpeedFromVelocity(averagedWalkVelocities.Average(), MonsterMovePacket.MoveType.MOVE_WALK).ToString().Replace(",", ".");
-                }
-
-                if (averagedRunVelocities.Count > 0)
-                {
-                    if (averagedWalkVelocities.Count > 0)
-                    {
-                        possibleSpeeds += " Run: (" + GetPossibleSpeedsString(averagedRunVelocities, MonsterMovePacket.MoveType.MOVE_RUN) + ")";
-                        dbSpeed += ", `speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
-                    }
-                    else
-                    {
-                        possibleSpeeds += "Run: (" + GetPossibleSpeedsString(averagedRunVelocities, MonsterMovePacket.MoveType.MOVE_RUN) + ")";
-                        dbSpeed += "`speed_run` = " + GetDbSpeedFromVelocity(averagedRunVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
-                    }
-                }
-
-                if (averagedFlyVelocities.Count > 0)
-                {
-                    if (averagedWalkVelocities.Count > 0 || averagedRunVelocities.Count > 0)
-                    {
-                        possibleSpeeds += " Fly: (" + GetPossibleSpeedsString(averagedFlyVelocities, MonsterMovePacket.MoveType.MOVE_FLIGHT) + ")";
-                        dbSpeed += ", `speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_RUN).ToString().Replace(",", ".");
-                    }
-                    else
-                    {
-                        possibleSpeeds += "Fly: (" + GetPossibleSpeedsString(averagedFlyVelocities, MonsterMovePacket.MoveType.MOVE_FLIGHT) + ")";
-                        dbSpeed += "`speed_fly` = " + GetDbSpeedFromVelocity(averagedFlyVelocities.Average(), MonsterMovePacket.MoveType.MOVE_FLIGHT).ToString().Replace(",", ".");
-                    }
-                }
-
-                output += "UPDATE `creature_template` SET `InhabitType` = " + dbInhabitType + ", " + dbSpeed + " WHERE `entry` = " + entry + ";" + " -- Creature Name: " + MainForm.GetCreatureNameByEntry(entry) + ", Possible speeds was: " + possibleSpeeds + "\r\n";
             }
 
             mainForm.textBox_SqlOutput.Text = output;
@@ -1041,27 +964,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 default:
                     return 0.0f;
             }
-        }
-
-        private string GetPossibleSpeedsString(List<float> speeds, MonsterMovePacket.MoveType moveType)
-        {
-            string speedsString = "";
-
-            for (int i = 0; i < speeds.Count; i++)
-            {
-                string dbSpeed = GetDbSpeedFromVelocity(speeds[i], moveType).ToString();
-
-                if (i + 1 < speeds.Count)
-                {
-                    speedsString += dbSpeed.Length > 1 ? dbSpeed.Replace(",", ".") + "f, " : dbSpeed.Replace(",", ".") + ".0f, ";
-                }
-                else
-                {
-                    speedsString += dbSpeed.Length > 1 ? dbSpeed.Replace(",", ".") + "f" : dbSpeed.Replace(",", ".") + ".0f";
-                }
-            }
-
-            return speedsString;
         }
 
         public void FillWaypointsGrid()

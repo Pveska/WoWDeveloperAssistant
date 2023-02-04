@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Windows.Controls.DataVisualization;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -96,7 +98,7 @@ namespace WoWDeveloperAssistant.Misc
             return ((angle >= lborder) && (angle <= rborder));
         }
 
-        public bool IsInFront(Position refPos,  float arc = 3.141592653589793f)
+        public bool IsInFront(Position refPos, float arc = 3.141592653589793f)
         {
             return HasInArc(arc, refPos);
         }
@@ -130,6 +132,14 @@ namespace WoWDeveloperAssistant.Misc
             float ang = (float)Math.Atan2(dy, dx);
             ang = (ang >= 0) ? ang : 2 * 3.141592653589793f + ang;
             return ang;
+        }
+
+        public Position SimplePosXYRelocationByAngle(float dist, float angle)
+        {
+            float x = this.x + dist * (float)Math.Cos(angle);
+            float y = this.y + dist * (float)Math.Sin(angle);
+            float z = this.z;
+            return new Position(x, y, z);
         }
     }
 }

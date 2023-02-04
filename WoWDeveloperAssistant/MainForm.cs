@@ -500,11 +500,6 @@ namespace WoWDeveloperAssistant
             waypointsCreator.AddRandomMovement();
         }
 
-        private void updateInhabitTypeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            waypointsCreator.UpdateInhabitTypeAndSpeed();
-        }
-
         private void textBox_DatabaseAdvisor_FindDoublePaths_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter)
@@ -611,6 +606,137 @@ namespace WoWDeveloperAssistant
         private void optimizeRegularPathToolStripMenuItem_WC_Click(object sender, EventArgs e)
         {
             waypointsCreator.OptimizeRegularPath();
+        }
+
+        private void textBox_DatabaseAdvisor_FindDoublePaths_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindDoublePaths.Text == "")
+            {
+                textBox_DatabaseAdvisor_FindDoublePaths.Text = "Enter Zone Id";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindDoublePaths_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindDoublePaths.Text == "Enter Zone Id")
+            {
+                textBox_DatabaseAdvisor_FindDoublePaths.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindDoublePaths_Click(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindDoublePaths.Text == "Enter Zone Id")
+            {
+                textBox_DatabaseAdvisor_FindDoublePaths.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_GossipMenuText_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_GossipMenuText.Text == "")
+            {
+                textBox_DatabaseAdvisor_GossipMenuText.Text = "Enter Gossip Menu Id";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_GossipMenuText_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_GossipMenuText.Text == "Enter Gossip Menu Id")
+            {
+                textBox_DatabaseAdvisor_GossipMenuText.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_GossipMenuText_Click(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_GossipMenuText.Text == "Enter Gossip Menu Id")
+            {
+                textBox_DatabaseAdvisor_GossipMenuText.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_QuestFlags_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_QuestFlags.Text == "")
+            {
+                textBox_DatabaseAdvisor_QuestFlags.Text = "Enter Quest Id";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_QuestFlags_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_QuestFlags.Text == "Enter Quest Id")
+            {
+                textBox_DatabaseAdvisor_QuestFlags.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_QuestFlags_Click(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_QuestFlags.Text == "Enter Quest Id")
+            {
+                textBox_DatabaseAdvisor_QuestFlags.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_CreatureFlags_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_CreatureFlags.Text == "")
+            {
+                textBox_DatabaseAdvisor_CreatureFlags.Text = "Enter Creature Entry";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_CreatureFlags_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_CreatureFlags.Text == "Enter Creature Entry")
+            {
+                textBox_DatabaseAdvisor_CreatureFlags.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_CreatureFlags_Click(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_CreatureFlags.Text == "Enter Creature Entry")
+            {
+                textBox_DatabaseAdvisor_CreatureFlags.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindPossibleFormations_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_DatabaseAdvisor_FindPossibleFormations.Text == "")
+                return;
+
+            PossibleFormationsFinder.FindPossibleFormations(textBox_DatabaseAdvisor_Output, textBox_DatabaseAdvisor_FindPossibleFormations.Text);
+        }
+
+        private void textBox_DatabaseAdvisor_FindPossibleFormations_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindPossibleFormations.Text == "")
+            {
+                textBox_DatabaseAdvisor_FindPossibleFormations.Text = "Enter Zone Id";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindPossibleFormations_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindPossibleFormations.Text == "Enter Zone Id")
+            {
+                textBox_DatabaseAdvisor_FindPossibleFormations.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindPossibleFormations_Click(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindPossibleFormations.Text == "Enter Zone Id")
+            {
+                textBox_DatabaseAdvisor_FindPossibleFormations.Text = "";
+            }
         }
     }
 }
