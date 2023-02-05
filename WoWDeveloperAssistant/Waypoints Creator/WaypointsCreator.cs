@@ -1110,25 +1110,52 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void CreateSQL(bool onlyToClipboard = false)
         {
-            Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
+            Creature originalCreature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
+            Creature possibleCreature = null;
+
+            if (!IsCreatureExistOnDb(originalCreature.guid))
+            {
+                List<Creature> possibleCreatures = GetPossibleCreaturesForWaypoints(originalCreature).Keys.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.GetLinkedId())).ToList();
+
+                if (possibleCreatures.Count == 1)
+                {
+                    possibleCreature = possibleCreatures.First();
+                }
+            }
+
             List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
             string SQLtext = "";
 
             if (Properties.Settings.Default.Scripts && waypoints.GetScriptsCount() != 0)
             {
-                if (creature.waypoints.Count != waypoints.Count)
+                if (originalCreature.waypoints.Count != waypoints.Count)
                 {
-                    waypoints.RecalculateIdsAndGuids(creature.entry);
+                    waypoints.RecalculateIdsAndGuids(originalCreature.entry);
                 }
             }
 
             if (!onlyToClipboard)
             {
-                SQLtext += "-- Pathing for " + creature.name + " Entry: " + creature.entry + "\r\n";
+                if (possibleCreature != null)
+                {
+                    SQLtext += $"-- Pathing for possible creature {originalCreature.name} Entry: {originalCreature.entry}\r\n";
+                }
+                else
+                {
+                    SQLtext += $"-- Pathing for {originalCreature.name} Entry: {originalCreature.entry}\r\n";
+                }
             }
 
-            SQLtext += "SET @LinkedId := '" + creature.GetLinkedId() + "';\r\n";
-            SQLtext += "UPDATE `creature` SET `spawndist` = 0, `MovementType` = " + (creature.isCyclic ? 4 : 3) + " WHERE `linked_id` = @LinkedId;\r\n";
+            if (possibleCreature != null)
+            {
+                SQLtext += $"SET @LinkedId := '{possibleCreature.GetLinkedId()}';\r\n";
+            }
+            else
+            {
+                SQLtext += $"SET @LinkedId := '{originalCreature.GetLinkedId()}';\r\n";
+            }
+
+            SQLtext += "UPDATE `creature` SET `spawndist` = 0, `MovementType` = " + (originalCreature.isCyclic ? 4 : 3) + " WHERE `linked_id` = @LinkedId;\r\n";
             SQLtext += "DELETE FROM `waypoint_data` WHERE `linked_id` = @LinkedId;" + "\r\n";
             SQLtext += "INSERT INTO `waypoint_data` (`linked_id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `action`, `action_chance`, `speed`) VALUES" + "\r\n";
 
@@ -1152,37 +1179,44 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (!onlyToClipboard)
             {
-                SQLtext += "-- " + creature.guid + " .go " + creature.spawnPosition.x.GetValueWithoutComma() + " " + creature.spawnPosition.y.GetValueWithoutComma() + " " + creature.spawnPosition.z.GetValueWithoutComma() + "\r\n";
+                if (possibleCreature != null)
+                {
+                    SQLtext += $"-- Guid is unknown because creature is guessed .go {possibleCreature.spawnPosition.x.GetValueWithoutComma()} {possibleCreature.spawnPosition.y.GetValueWithoutComma()} {possibleCreature.spawnPosition.z.GetValueWithoutComma()}\r\n";
+                }
+                else
+                {
+                    SQLtext += $"-- {originalCreature.guid} .go {originalCreature.spawnPosition.x.GetValueWithoutComma()} {originalCreature.spawnPosition.y.GetValueWithoutComma()} {originalCreature.spawnPosition.z.GetValueWithoutComma()}\r\n";
+                }
             }
 
-            if (creature.filterKeys.Count != 0)
+            if (originalCreature.filterKeys.Count != 0)
             {
                 SQLtext += "\r\n";
                 SQLtext += "DELETE FROM `waypoint_data_filter_keys` WHERE `linked_id` = @LinkedId;\r\n";
                 SQLtext += "INSERT INTO `waypoint_data_filter_keys` (`linked_id`, `id`, `in`, `out`) VALUES\r\n";
 
-                for (int i = 0; i < creature.filterKeys.Count; i++)
+                for (int i = 0; i < originalCreature.filterKeys.Count; i++)
                 {
-                    if (i < (creature.filterKeys.Count - 1))
+                    if (i < (originalCreature.filterKeys.Count - 1))
                     {
-                        SQLtext += $"(@LinkedId, {i}, {creature.filterKeys[(uint)i].In.GetValueWithoutComma()}, {creature.filterKeys[(uint)i].Out.GetValueWithoutComma()}),\r\n";
+                        SQLtext += $"(@LinkedId, {i}, {originalCreature.filterKeys[(uint)i].In.GetValueWithoutComma()}, {originalCreature.filterKeys[(uint)i].Out.GetValueWithoutComma()}),\r\n";
                     }
                     else
                     {
-                        SQLtext += $"(@LinkedId, {i}, {creature.filterKeys[(uint)i].In.GetValueWithoutComma()}, {creature.filterKeys[(uint)i].Out.GetValueWithoutComma()});\r\n";
+                        SQLtext += $"(@LinkedId, {i}, {originalCreature.filterKeys[(uint)i].In.GetValueWithoutComma()}, {originalCreature.filterKeys[(uint)i].Out.GetValueWithoutComma()});\r\n";
                     }
                 }
             }
 
-            if (Properties.Settings.Default.Scripts && creature.waypoints.GetScriptsCount() != 0 && !onlyToClipboard)
+            if (Properties.Settings.Default.Scripts && originalCreature.waypoints.GetScriptsCount() != 0 && !onlyToClipboard)
             {
-                if (creature.waypoints.Count != waypoints.Count)
+                if (originalCreature.waypoints.Count != waypoints.Count)
                 {
-                    waypoints.RecalculateIdsAndGuids(creature.entry);
+                    waypoints.RecalculateIdsAndGuids(originalCreature.entry);
                 }
 
                 SQLtext += "\r\n";
-                SQLtext += "-- Waypoint scripts for " + creature.name + " Entry: " + creature.entry + "\r\n";
+                SQLtext += "-- Waypoint scripts for " + originalCreature.name + " Entry: " + originalCreature.entry + "\r\n";
                 SQLtext += "DELETE FROM `waypoint_scripts` WHERE `id` IN (" + waypoints.GetScriptIds() + ");\r\n";
                 SQLtext += "INSERT INTO `waypoint_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid`) VALUES" + "\r\n";
 
@@ -1202,16 +1236,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            if (!IsCreatureExistOnDb(creature.guid) && IsWaypointsHasAnyCreatureOnDb(creature) && !onlyToClipboard)
+            if (possibleCreature == null)
             {
-                SQLtext += "\r\n";
-                SQLtext += "List of possible creatures that related to this path:\r\n";
-
-                Dictionary<Creature, float> possibleCreatures = GetPossibleCreaturesForWaypoints(creature).OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-
-                foreach (var itr in possibleCreatures)
+                if (!IsCreatureExistOnDb(originalCreature.guid) && IsWaypointsHasAnyCreatureOnDb(originalCreature) && !onlyToClipboard)
                 {
-                    if (!IsCreatureAlreadyHavePathOrFormationOnDb("", itr.Key.GetLinkedId()))
+                    SQLtext += "\r\n";
+                    SQLtext += "List of possible creatures that related to this path:\r\n";
+
+                    Dictionary<Creature, float> possibleCreatures = GetPossibleCreaturesForWaypoints(originalCreature).Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key.GetLinkedId())).OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+                    foreach (var itr in possibleCreatures)
                     {
                         SQLtext += $"LinkedId: {itr.Key.GetLinkedId()}, Distance from spawn pos to closest waypoint: {itr.Value.GetValueWithoutComma()}f, .go cre lid {itr.Key.GetLinkedId()}\r\n";
                     }
@@ -1221,8 +1255,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (Properties.Settings.Default.Vector && !onlyToClipboard)
             {
                 SQLtext += "\r\n";
-                SQLtext += "-- Vector3 for movement in core for " + creature.name + " Entry: " + creature.entry + "\r\n";
-                SQLtext += "std::vector<G3D::Vector3> const g_Path" + creature.name + " =" + "\r\n";
+                SQLtext += "-- Vector3 for movement in core for " + originalCreature.name + " Entry: " + originalCreature.entry + "\r\n";
+                SQLtext += "std::vector<G3D::Vector3> const g_Path" + originalCreature.name + " =" + "\r\n";
                 SQLtext += "{" + "\r\n";
 
                 for (int i = 0; i < waypoints.Count; i++)
