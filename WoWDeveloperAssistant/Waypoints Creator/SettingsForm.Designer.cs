@@ -35,6 +35,7 @@
             this.checkBox_CheckExistedPathOnDb = new System.Windows.Forms.CheckBox();
             this.checkBox_SkipCombatMovement = new System.Windows.Forms.CheckBox();
             this.checkBox_CheckCreatureOnDb = new System.Windows.Forms.CheckBox();
+            this.checkBox_CheckCreatureForWypointsOnDb = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_CreateVector
@@ -42,7 +43,7 @@
             this.checkBox_CreateVector.AutoSize = true;
             this.checkBox_CreateVector.Checked = true;
             this.checkBox_CreateVector.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_CreateVector.Location = new System.Drawing.Point(12, 12);
+            this.checkBox_CreateVector.Location = new System.Drawing.Point(13, 12);
             this.checkBox_CreateVector.Name = "checkBox_CreateVector";
             this.checkBox_CreateVector.Size = new System.Drawing.Size(181, 24);
             this.checkBox_CreateVector.TabIndex = 0;
@@ -105,12 +106,23 @@
             this.checkBox_CheckCreatureOnDb.Text = "Check if creature exists in DB";
             this.checkBox_CheckCreatureOnDb.UseVisualStyleBackColor = true;
             // 
+            // checkBox_CheckCreatureForWypointsOnDb
+            // 
+            this.checkBox_CheckCreatureForWypointsOnDb.AutoSize = true;
+            this.checkBox_CheckCreatureForWypointsOnDb.Location = new System.Drawing.Point(13, 192);
+            this.checkBox_CheckCreatureForWypointsOnDb.Name = "checkBox_CheckCreatureForWypointsOnDb";
+            this.checkBox_CheckCreatureForWypointsOnDb.Size = new System.Drawing.Size(357, 24);
+            this.checkBox_CheckCreatureForWypointsOnDb.TabIndex = 28;
+            this.checkBox_CheckCreatureForWypointsOnDb.Text = "Check if there is creature on DB for waypoints";
+            this.checkBox_CheckCreatureForWypointsOnDb.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(346, 190);
+            this.ClientSize = new System.Drawing.Size(370, 222);
+            this.Controls.Add(this.checkBox_CheckCreatureForWypointsOnDb);
             this.Controls.Add(this.checkBox_CheckCreatureOnDb);
             this.Controls.Add(this.checkBox_SkipCombatMovement);
             this.Controls.Add(this.checkBox_CheckExistedPathOnDb);
@@ -140,5 +152,6 @@
         private System.Windows.Forms.CheckBox checkBox_CheckExistedPathOnDb;
         private System.Windows.Forms.CheckBox checkBox_SkipCombatMovement;
         private System.Windows.Forms.CheckBox checkBox_CheckCreatureOnDb;
+        private System.Windows.Forms.CheckBox checkBox_CheckCreatureForWypointsOnDb;
     }
 }

@@ -190,5 +190,17 @@ namespace WoWDeveloperAssistant.Properties {
                 this["DB2Database"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CheckCreatureForWaypointsOnDb {
+            get {
+                return ((bool)(this["CheckCreatureForWaypointsOnDb"]));
+            }
+            set {
+                this["CheckCreatureForWaypointsOnDb"] = value;
+            }
+        }
     }
 }

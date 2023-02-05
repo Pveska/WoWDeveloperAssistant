@@ -597,7 +597,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
                 {
                     if (!creature.HasWaypoints() || (Properties.Settings.Default.CheckPathOnDb && IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid)) ||
-                        (Properties.Settings.Default.Critters && creature.IsCritter()) || (Properties.Settings.Default.CheckCreatureOnDB && !IsCreatureExistOnDb(creature.guid)))
+                        (Properties.Settings.Default.Critters && creature.IsCritter()) || (Properties.Settings.Default.CheckCreatureOnDB && !IsCreatureExistOnDb(creature.guid)) ||
+                        (Properties.Settings.Default.CheckCreatureForWaypointsOnDb && !IsWaypointsHasAnyCreatureOnDb(creature)))
                         continue;
 
                     if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "" && mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "0")
@@ -754,6 +755,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             return alreadyHaveWaypointsOrRelatedToFormation;
+        }
+
+        public bool IsWaypointsHasAnyCreatureOnDb(Creature creature)
+        {
+            return GetPossibleCreaturesForWaypoints(creature).Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key.GetLinkedId())).Count() > 0;
         }
 
         public bool IsCreatureExistOnDb(string guid)
@@ -994,7 +1000,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void GraphPath()
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
-            Dictionary<string, KeyValuePair<Position, float>> possibleCreatures = FindCreaturesForWaypoints(creature);
+            Dictionary<Creature, float> possibleCreatures = GetPossibleCreaturesForWaypoints(creature);
 
             mainForm.chart_WaypointsCreator_Path.BackColor = Color.White;
             mainForm.chart_WaypointsCreator_Path.ChartAreas[0].BackColor = Color.White;
@@ -1026,7 +1032,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
             else if (possibleCreatures.Count > 0)
             {
-                possibleCreatures = possibleCreatures.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
+                possibleCreatures = possibleCreatures.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key.GetLinkedId())).ToDictionary(x => x.Key, x => x.Value);
 
                 if (possibleCreatures.Count > 0)
                 {
@@ -1068,9 +1074,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 foreach (var itr in possibleCreatures)
                 {
                     i++;
-                    mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(itr.Value.Key.x, itr.Value.Key.y);
+                    mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(itr.Key.spawnPosition.x, itr.Key.spawnPosition.y);
                     mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[i].Color = Color.Green;
-                    mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[i].Label = $"{i} - {itr.Key}";
+                    mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[i].Label = $"{i} - {itr.Key.GetLinkedId()}";
                 }
             }
 
@@ -1196,16 +1202,19 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            if (!IsCreatureExistOnDb(creature.guid) && FindCreaturesForWaypoints(creature).Count > 0 && !onlyToClipboard)
+            if (!IsCreatureExistOnDb(creature.guid) && IsWaypointsHasAnyCreatureOnDb(creature) && !onlyToClipboard)
             {
                 SQLtext += "\r\n";
                 SQLtext += "List of possible creatures that related to this path:\r\n";
 
-                Dictionary<string, KeyValuePair<Position, float>> possibleCreatures = FindCreaturesForWaypoints(creature).OrderBy(x => x.Value.Value).ToDictionary(x => x.Key, x => x.Value); ;
+                Dictionary<Creature, float> possibleCreatures = GetPossibleCreaturesForWaypoints(creature).OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
 
                 foreach (var itr in possibleCreatures)
                 {
-                    SQLtext += $"LinkedId: {itr.Key}, Distance from spawn pos to closest waypoint: {itr.Value.Value.GetValueWithoutComma()}f, .go cre lid {itr.Key}\r\n";
+                    if (!IsCreatureAlreadyHavePathOrFormationOnDb("", itr.Key.GetLinkedId()))
+                    {
+                        SQLtext += $"LinkedId: {itr.Key.GetLinkedId()}, Distance from spawn pos to closest waypoint: {itr.Value.GetValueWithoutComma()}f, .go cre lid {itr.Key.GetLinkedId()}\r\n";
+                    }
                 }
             }
 
@@ -1410,28 +1419,56 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.Cursor = Cursors.Default;
         }
 
-        private Dictionary<string, KeyValuePair<Position, float>> FindCreaturesForWaypoints(Creature creature)
+        private Dictionary<Creature, float> GetPossibleCreaturesForWaypoints(Creature creature)
         {
-            string creaturePosSqlQuery = $"SELECT `linked_id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` = {creature.entry};";
+            string creaturePosSqlQuery = $"SELECT `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation` FROM `creature` WHERE `id` = {creature.entry};";
             var creaturePositionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creaturePosSqlQuery) : null;
-            Dictionary<string, KeyValuePair<Position, float>> possibleCreatures = new Dictionary<string, KeyValuePair<Position, float>>();
+            Dictionary<Creature, float> possibleCreatures = new Dictionary<Creature, float>();
 
             if (creaturePositionsDs != null && creaturePositionsDs.Tables["table"].Rows.Count > 0)
             {
-                Dictionary<string, Position> spawnPositions = new Dictionary<string, Position>();
+                List<Waypoint> modifiedWaypoints = new List<Waypoint>();
+
+                for (int i = 0; i < creature.waypoints.Count; i++)
+                {
+                    Waypoint currWaypoint = creature.waypoints[i];
+
+                    if (i == 0)
+                    {
+                        modifiedWaypoints.Add(currWaypoint);
+                    }
+                    else
+                    {
+                        currWaypoint.idFromParse = modifiedWaypoints.Last().idFromParse + 1;
+                    }
+
+                    if (i + 1 < creature.waypoints.Count)
+                    {
+                        Waypoint nextWaypoint = creature.waypoints[i + 1];
+                        float angle = currWaypoint.movePosition.GetAngle(nextWaypoint.movePosition);
+                        int pointsToAddCount = (int)Math.Round(currWaypoint.movePosition.GetDistance(nextWaypoint.movePosition)) - 1;
+
+                        for (int j = 0; j < pointsToAddCount; j++)
+                        {
+                            modifiedWaypoints.Add(new Waypoint() { idFromParse = currWaypoint.idFromParse + (uint)j + 1, movePosition = currWaypoint.movePosition.SimplePosXYRelocationByAngle(j + 1.0f, angle) });
+                        }
+                    }
+                }
+
+                List<Creature> dbCreatures = new List<Creature>();
 
                 foreach (DataRow row in creaturePositionsDs.Tables["table"].Rows)
                 {
-                    spawnPositions.Add(row.ItemArray[0].ToString(), new Position(float.Parse(row.ItemArray[1].ToString()), float.Parse(row.ItemArray[2].ToString()), float.Parse(row.ItemArray[3].ToString())));
+                    dbCreatures.Add(new Creature() { entry = (uint)row.ItemArray[0], mapId = Convert.ToUInt32(row.ItemArray[1]), spawnPosition = new Position((float)row.ItemArray[2], (float)row.ItemArray[3], (float)row.ItemArray[4], (float)row.ItemArray[5]) });
                 }
 
-                foreach (var itr in spawnPositions)
+                foreach (Creature possibleCreature in dbCreatures)
                 {
                     float lowestDistance = 1000.0f;
 
-                    foreach (Waypoint waypoint in creature.waypoints)
+                    foreach (Waypoint waypoint in modifiedWaypoints)
                     {
-                        float distance = waypoint.movePosition.GetDistance(itr.Value);
+                        float distance = waypoint.movePosition.GetDistance(possibleCreature.spawnPosition);
 
                         if (distance <= 5.0f && lowestDistance > distance)
                         {
@@ -1441,7 +1478,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                     if (lowestDistance <= 5.0f)
                     {
-                        possibleCreatures.Add(itr.Key, new KeyValuePair<Position, float>(itr.Value, lowestDistance));
+                        possibleCreatures.Add(possibleCreature, lowestDistance);
                     }
                 }
             }
@@ -1452,6 +1489,17 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void OptimizeCirclePath()
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
+
+            if (!IsCreatureExistOnDb(creature.guid))
+            {
+                List<Creature> possibleCreatures = GetPossibleCreaturesForWaypoints(creature).Keys.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.GetLinkedId())).ToList();
+
+                if (possibleCreatures.Count == 1)
+                {
+                    creature = possibleCreatures.First();
+                }
+            }
+
             List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
             int startPointIndex = GetIndexOfBestStartPoint();
             bool canLoop = true;
@@ -1526,12 +1574,27 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
             while (canLoop);
 
-            /// Now, if there is enough points to build our path - we do it, otherwise just remove duplicates
+            bool canBuildPath = false;
+
+            /// Checking if last point is behind of start point
             if (!creature.spawnPosition.IsInBack(((Waypoint)rowsList[rowsList.Count - 1].Cells[8].Value).movePosition, 1.0f))
             {
-                RemoveDuplicatePoints();
+                /// Step back a bit
+                for(int i = rowsList.Count - 2; i > rowsList.Count - 3; i--)
+                {
+                    if (creature.spawnPosition.IsInBack(((Waypoint)rowsList[i].Cells[8].Value).movePosition, 1.0f))
+                    {
+                        canBuildPath = true;
+                        break;
+                    }
+                }
             }
             else
+            {
+                canBuildPath = true;
+            }
+
+            if (canBuildPath)
             {
                 mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
 
@@ -1540,6 +1603,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     Waypoint wp = (Waypoint)row.Cells[8].Value;
                     mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(rowsList.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
                 }
+            }
+            else
+            {
+                RemoveDuplicatePoints();
             }
 
             RemoveNearestPoints();
@@ -1608,14 +1675,26 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         int GetIndexOfBestStartPoint()
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
-            List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
-            int startPointIndex = -1;
 
             bool isFlyingCreature = creature.hasDisableGravity;
             if (!isFlyingCreature)
             {
                 isFlyingCreature = creature.waypoints.Count(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT) != 0;
             }
+
+
+            if (!IsCreatureExistOnDb(creature.guid))
+            {
+                List<Creature> possibleCreatures = GetPossibleCreaturesForWaypoints(creature).Keys.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.GetLinkedId())).ToList();
+
+                if (possibleCreatures.Count == 1)
+                {
+                    creature = possibleCreatures.First();
+                }
+            }
+
+            List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
+            int startPointIndex = -1;
 
             /// Here we searching for perfect start point
             foreach (DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows)

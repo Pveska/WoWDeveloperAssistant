@@ -18,6 +18,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             checkBox_CheckExistedPathOnDb.Checked = Properties.Settings.Default.CheckPathOnDb;
             checkBox_SkipCombatMovement.Checked = Properties.Settings.Default.CombatMovement;
             checkBox_CheckCreatureOnDb.Checked = Properties.Settings.Default.CheckCreatureOnDB;
+            checkBox_CheckCreatureForWypointsOnDb.Checked = Properties.Settings.Default.CheckCreatureForWaypointsOnDb;
         }
 
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -28,6 +29,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             Properties.Settings.Default.CheckPathOnDb = checkBox_CheckExistedPathOnDb.Checked;
             Properties.Settings.Default.CombatMovement = checkBox_SkipCombatMovement.Checked;
             Properties.Settings.Default.CheckCreatureOnDB = checkBox_CheckCreatureOnDb.Checked;
+            Properties.Settings.Default.CheckCreatureForWaypointsOnDb = checkBox_CheckCreatureForWypointsOnDb.Checked;
         }
     }
 }

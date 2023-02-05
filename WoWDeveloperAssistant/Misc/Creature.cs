@@ -28,6 +28,8 @@ namespace WoWDeveloperAssistant.Misc
         public string transportGuid;
         public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
 
+        public Creature() { }
+
         public Creature(UpdateObjectPacket updatePacket)
         {
             guid = updatePacket.guid;
