@@ -1887,5 +1887,33 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.grid_WaypointsCreator_Waypoints.Rows.AddRange(copyOfWaypoints);
             GraphPath();
         }
+
+        public void SetSelectedPointAsFirst()
+        {
+            int selectedPointIndex = mainForm.grid_WaypointsCreator_Waypoints.SelectedRows.Count == 1 ? mainForm.grid_WaypointsCreator_Waypoints.SelectedRows[0].Index : -1;
+            if (selectedPointIndex == -1)
+                return;
+
+            List<DataGridViewRow> newWaypoints = new List<DataGridViewRow>();
+
+            for (int i = selectedPointIndex; i < mainForm.grid_WaypointsCreator_Waypoints.Rows.Count; i++)
+            {
+                newWaypoints.Add(mainForm.grid_WaypointsCreator_Waypoints.Rows[i]);
+            }
+
+            for (int i = 0; i < selectedPointIndex; i++)
+            {
+                newWaypoints.Add(mainForm.grid_WaypointsCreator_Waypoints.Rows[i]);
+            }
+
+            for (int i = 0; i < newWaypoints.Count; i++)
+            {
+                newWaypoints[i].Cells[0].Value = i + 1;
+            }
+
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.AddRange(newWaypoints.ToArray());
+            GraphPath();
+        }
     }
 }

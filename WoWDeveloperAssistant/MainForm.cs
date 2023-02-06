@@ -743,5 +743,10 @@ namespace WoWDeveloperAssistant
         {
             waypointsCreator.ReversePointsOrder();
         }
+
+        private void setSelectedPointAsFirstToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.SetSelectedPointAsFirst();
+        }
     }
 }

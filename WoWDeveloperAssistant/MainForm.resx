@@ -396,6 +396,9 @@
         Ydn/4f+Te+WD8uvyt5L+ouhjN+yW/cN+/7x3xun0Nz3g/jgmPpzeAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="contextMenuStrip_DatabaseAdvisor.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>1651, 29</value>
+  </metadata>
   <metadata name="toolStrip_ParsedFileAdvisor.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>2873, 35</value>
   </metadata>
@@ -424,9 +427,6 @@
         Ydn/4f+Te+WD8uvyt5L+ouhjN+yW/cN+/7x3xun0Nz3g/jgmPpzeAAAAAElFTkSuQmCC
 </value>
   </data>
-  <metadata name="contextMenuStrip_DatabaseAdvisor.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>1651, 29</value>
-  </metadata>
   <metadata name="statusStrip_LoadedFile.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>2212, 35</value>
   </metadata>
