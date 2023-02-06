@@ -738,5 +738,10 @@ namespace WoWDeveloperAssistant
                 textBox_DatabaseAdvisor_FindPossibleFormations.Text = "";
             }
         }
+
+        private void reversePointsOrderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            waypointsCreator.ReversePointsOrder();
+        }
     }
 }

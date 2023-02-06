@@ -1182,6 +1182,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 if (possibleCreature != null)
                 {
                     SQLtext += $"-- Guid is unknown because creature is guessed .go {possibleCreature.spawnPosition.x.GetValueWithoutComma()} {possibleCreature.spawnPosition.y.GetValueWithoutComma()} {possibleCreature.spawnPosition.z.GetValueWithoutComma()}\r\n";
+                    SQLtext += $"-- Original creature guid is {originalCreature.guid}\r\n";
                 }
                 else
                 {
@@ -1871,6 +1872,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             return startPointIndex;
+        }
+
+        public void ReversePointsOrder()
+        {
+            var copyOfWaypoints = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().Reverse().ToArray();
+
+            for (int i = 1; i < copyOfWaypoints.Length + 1; i++)
+            {
+                copyOfWaypoints[i - 1].Cells[0].Value = i;
+            }
+
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
+            mainForm.grid_WaypointsCreator_Waypoints.Rows.AddRange(copyOfWaypoints);
+            GraphPath();
         }
     }
 }
