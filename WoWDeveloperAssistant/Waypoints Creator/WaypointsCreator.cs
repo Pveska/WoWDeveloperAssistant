@@ -1535,76 +1535,69 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
-            int startPointIndex = GetIndexOfBestStartPoint();
+            SetBestFirstPoint();
+
+            List<DataGridViewRow> copyOfWaypointRows = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
             bool canLoop = true;
 
-            if (startPointIndex > 0)
+            /// Removing points that goes in wrong order (like if current point is behind of previous)
+            do
             {
-                rowsList.RemoveRange(0, startPointIndex);
+                for (int i = 2; i < copyOfWaypointRows.Count; i++)
+                {
+                    if (i + 1 == copyOfWaypointRows.Count)
+                    {
+                        canLoop = false;
+                        break;
+                    }
+
+                    Waypoint currWaypoint = (Waypoint)copyOfWaypointRows[i].Cells[8].Value;
+                    if (currWaypoint.HasScripts() || currWaypoint.HasOrientation())
+                        continue;
+
+                    currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[i + 1].Cells[8].Value).movePosition);
+
+                    Waypoint prevWaypoint = (Waypoint)copyOfWaypointRows[i - 1].Cells[8].Value;
+                    prevWaypoint.movePosition.orientation = prevWaypoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[i].Cells[8].Value).movePosition);
+
+                    if (currWaypoint.movePosition.IsInFront(prevWaypoint.movePosition, 1.0f) && prevWaypoint.movePosition.IsInFront(((Waypoint)copyOfWaypointRows[i - 2].Cells[8].Value).movePosition, 1.0f))
+                    {
+                        copyOfWaypointRows.RemoveAt(i);
+                        break;
+                    }
+                }
             }
+            while (canLoop);
+
+            canLoop = true;
 
             /// Removing duplicate points
             do
             {
-                for (int i = 0; i < rowsList.Count; i++)
+                for (int i = 0; i < copyOfWaypointRows.Count; i++)
                 {
-                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
+                    Waypoint currWaypoint = (Waypoint)copyOfWaypointRows[i].Cells[8].Value;
                     bool needStopForeach = false;
 
                     /// Remove point if we already had point at this position
                     for (int j = 0; j < i - 1; j++)
                     {
-                        if (((Waypoint)rowsList[j].Cells[8].Value).movePosition.GetDistance(currWaypoint.movePosition) <= 1.0f)
+                        if (((Waypoint)copyOfWaypointRows[j].Cells[8].Value).movePosition.GetDistance(currWaypoint.movePosition) <= 1.0f)
                         {
-                            rowsList.RemoveAt(i);
+                            copyOfWaypointRows.RemoveAt(i);
                             needStopForeach = true;
                             break;
                         }
                     }
 
-                    if (!needStopForeach && i + 1 == rowsList.Count)
+                    if (!needStopForeach && i + 1 == copyOfWaypointRows.Count)
                     {
                         canLoop = false;
                         break;
                     }
                 }
 
-                if (rowsList.Count == 0)
-                    break;
-            }
-            while (canLoop);
-
-            /// Removing fucked points
-            do
-            {
-                for (int i = 0; i < rowsList.Count; i++)
-                {
-                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
-                    bool needStopForeach = false;
-
-                    /// Remove point if current point is behind of previous point
-                    if (!needStopForeach && i + 1 < rowsList.Count && i > 1)
-                    {
-                        Waypoint prevWaypoint = (Waypoint)rowsList[i - 1].Cells[8].Value;
-                        Waypoint nextWaypoint = (Waypoint)rowsList[i + 1].Cells[8].Value;
-                        currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(nextWaypoint.movePosition);
-
-                        if (currWaypoint.movePosition.IsInFront(prevWaypoint.movePosition, 1.0f))
-                        {
-                            rowsList.RemoveAt(i);
-                            break;
-                        }
-                    }
-
-                    if (!needStopForeach && i + 1 == rowsList.Count)
-                    {
-                        canLoop = false;
-                        break;
-                    }
-                }
-
-                if (rowsList.Count == 0)
+                if (copyOfWaypointRows.Count == 0)
                     break;
             }
             while (canLoop);
@@ -1612,12 +1605,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             bool canBuildPath = false;
 
             /// Checking if last point is behind of start point
-            if (!creature.spawnPosition.IsInBack(((Waypoint)rowsList[rowsList.Count - 1].Cells[8].Value).movePosition, 1.0f))
+            if (!creature.spawnPosition.IsInBack(((Waypoint)copyOfWaypointRows[copyOfWaypointRows.Count - 1].Cells[8].Value).movePosition, 1.0f))
             {
                 /// Step back a bit
-                for(int i = rowsList.Count - 2; i > rowsList.Count - 3; i--)
+                for(int i = copyOfWaypointRows.Count - 2; i > copyOfWaypointRows.Count - 3; i--)
                 {
-                    if (creature.spawnPosition.IsInBack(((Waypoint)rowsList[i].Cells[8].Value).movePosition, 1.0f))
+                    if (creature.spawnPosition.IsInBack(((Waypoint)copyOfWaypointRows[i].Cells[8].Value).movePosition, 1.0f))
                     {
                         canBuildPath = true;
                         break;
@@ -1633,10 +1626,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
 
-                foreach (DataGridViewRow row in rowsList)
+                foreach (DataGridViewRow row in copyOfWaypointRows)
                 {
                     Waypoint wp = (Waypoint)row.Cells[8].Value;
-                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(rowsList.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
+                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(copyOfWaypointRows.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
                 }
             }
             else
@@ -1651,55 +1644,93 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public void OptimizeRegularPath()
         {
-            List<DataGridViewRow> rowsList = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
-            int startPointIndex = GetIndexOfBestStartPoint();
+            SetBestFirstPoint();
+            List<DataGridViewRow> copyOfWaypointRows = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
             bool canLoop = true;
 
-            if (startPointIndex > 0)
-            {
-                rowsList.RemoveRange(0, startPointIndex);
-            }
-
-            /// Removing fucked points
+            /// Removing points that goes in wrong order (like if current point is behind of previous)
             do
             {
-                for (int i = 0; i < rowsList.Count; i++)
+                for (int i = 2; i < copyOfWaypointRows.Count; i++)
                 {
-                    Waypoint currWaypoint = (Waypoint)rowsList[i].Cells[8].Value;
-                    bool needStopForeach = false;
-
-                    /// Remove point if current point is behind of previous point
-                    if (!needStopForeach && i + 1 < rowsList.Count && i > 1)
-                    {
-                        Waypoint prevWaypoint = (Waypoint)rowsList[i - 1].Cells[8].Value;
-                        Waypoint nextWaypoint = (Waypoint)rowsList[i + 1].Cells[8].Value;
-                        currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(nextWaypoint.movePosition);
-
-                        if (currWaypoint.movePosition.IsInFront(prevWaypoint.movePosition, 1.0f))
-                        {
-                            rowsList.RemoveAt(i);
-                            break;
-                        }
-                    }
-
-                    if (!needStopForeach && i + 1 == rowsList.Count)
+                    if (i + 1 == copyOfWaypointRows.Count)
                     {
                         canLoop = false;
                         break;
                     }
-                }
 
-                if (rowsList.Count == 0)
-                    break;
+                    Waypoint currWaypoint = (Waypoint)copyOfWaypointRows[i].Cells[8].Value;
+                    if (currWaypoint.HasScripts() || currWaypoint.HasOrientation())
+                        continue;
+
+                    currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[i + 1].Cells[8].Value).movePosition);
+
+                    Waypoint prevWaypoint = (Waypoint)copyOfWaypointRows[i - 1].Cells[8].Value;
+                    prevWaypoint.movePosition.orientation = prevWaypoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[i].Cells[8].Value).movePosition);
+
+                    if (currWaypoint.movePosition.IsInFront(prevWaypoint.movePosition, 1.0f) && prevWaypoint.movePosition.IsInFront(((Waypoint)copyOfWaypointRows[i - 2].Cells[8].Value).movePosition, 1.0f))
+                    {
+                        copyOfWaypointRows.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+            while (canLoop);
+
+            canLoop = true;
+
+            /// Removing duplicate points using distance and arc algorithm
+            do
+            {
+                for (int i = 0; i < copyOfWaypointRows.Count; i++)
+                {
+                    bool needToStopLoop = false;
+
+                    if (i + 1 >= copyOfWaypointRows.Count)
+                    {
+                        canLoop = false;
+                        break;
+                    }
+
+                    Waypoint currWaypoint = (Waypoint)copyOfWaypointRows[i].Cells[8].Value;
+                    if (currWaypoint.HasScripts() || currWaypoint.HasOrientation())
+                        continue;
+
+                    currWaypoint.movePosition.orientation = currWaypoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[i + 1].Cells[8].Value).movePosition);
+
+                    List<DataGridViewRow> duplicatePoints = copyOfWaypointRows.Where(x => copyOfWaypointRows.IndexOf(x) != i && ((Waypoint)x.Cells[8].Value).movePosition.GetDistance(currWaypoint.movePosition) <= 1.0f).ToList();
+                    if (duplicatePoints.Count == 0)
+                        continue;
+
+                    foreach (var itr in duplicatePoints)
+                    {
+                        int indexOfcurrDuplicatePoint = copyOfWaypointRows.IndexOf(itr);
+                        Waypoint currDuplicatePoint = (Waypoint)itr.Cells[8].Value;
+                        if (indexOfcurrDuplicatePoint + 1 >= copyOfWaypointRows.Count)
+                            continue;
+
+                        currDuplicatePoint.movePosition.orientation = currDuplicatePoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[indexOfcurrDuplicatePoint + 1].Cells[8].Value).movePosition);
+
+                        if (currDuplicatePoint.movePosition.IsInFront(((Waypoint)copyOfWaypointRows[i + 1].Cells[8].Value).movePosition, 1.0f))
+                        {
+                            needToStopLoop = true;
+                            copyOfWaypointRows.Remove(itr);
+                            break;
+                        }
+                    }
+
+                    if (needToStopLoop)
+                        break;
+                }
             }
             while (canLoop);
 
             mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
 
-            foreach (DataGridViewRow row in rowsList)
+            foreach (DataGridViewRow row in copyOfWaypointRows)
             {
                 Waypoint wp = (Waypoint)row.Cells[8].Value;
-                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(rowsList.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(copyOfWaypointRows.IndexOf(row) + 1, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
             }
 
             RemoveNearestPoints();
@@ -1833,7 +1864,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             /// Start point still not found, but if our creature is flying, we now need to mix increasing distance & arc
-            if (isFlyingCreature)
+            if (startPointIndex == -1 && isFlyingCreature)
             {
                 float distance = 6.0f;
 
@@ -1869,6 +1900,22 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         distance += 1.0f;
                     }
                 } while (startPointIndex == -1 && distance < 100.0f);
+            }
+
+            /// Couldn't find start point by any algorithm, just taking closest point then
+            if (startPointIndex == -1)
+            {
+                KeyValuePair<int, float> closestPoint = new KeyValuePair<int, float>(-1, 1000.0f);
+
+                foreach (DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows)
+                {
+                    if (creature.spawnPosition.GetDistance(((Waypoint)row.Cells[8].Value).movePosition) < closestPoint.Value)
+                    {
+                        closestPoint = new KeyValuePair<int, float>(mainForm.grid_WaypointsCreator_Waypoints.Rows.IndexOf(row), creature.spawnPosition.GetDistance(((Waypoint)row.Cells[8].Value).movePosition));
+                    }
+                }
+
+                startPointIndex = closestPoint.Key;
             }
 
             return startPointIndex;
@@ -1914,6 +1961,35 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
             mainForm.grid_WaypointsCreator_Waypoints.Rows.AddRange(newWaypoints.ToArray());
             GraphPath();
+        }
+
+        private void SetBestFirstPoint()
+        {
+            int startPointIndex = GetIndexOfBestStartPoint();
+
+            if (startPointIndex != -1)
+            {
+                List<DataGridViewRow> newWaypoints = new List<DataGridViewRow>();
+
+                for (int i = startPointIndex; i < mainForm.grid_WaypointsCreator_Waypoints.Rows.Count; i++)
+                {
+                    newWaypoints.Add(mainForm.grid_WaypointsCreator_Waypoints.Rows[i]);
+                }
+
+                for (int i = 0; i < startPointIndex; i++)
+                {
+                    newWaypoints.Add(mainForm.grid_WaypointsCreator_Waypoints.Rows[i]);
+                }
+
+                for (int i = 0; i < newWaypoints.Count; i++)
+                {
+                    newWaypoints[i].Cells[0].Value = i + 1;
+                }
+
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.AddRange(newWaypoints.ToArray());
+                GraphPath();
+            }
         }
     }
 }
