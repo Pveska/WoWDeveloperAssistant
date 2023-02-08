@@ -18,6 +18,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         private readonly MainForm mainForm;
         private Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
         private Dictionary<string, GameObject> gameObjectsDict = new Dictionary<string, GameObject>();
+        private bool firstPointSelectedManually = false;
 
         public WaypointsCreator(MainForm mainForm)
         {
@@ -976,6 +977,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             if (mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem == null)
                 return;
+
+            firstPointSelectedManually = false;
 
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
 
@@ -1965,6 +1968,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 newWaypoints[i].Cells[0].Value = i + 1;
             }
 
+            firstPointSelectedManually = true;
             mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
             mainForm.grid_WaypointsCreator_Waypoints.Rows.AddRange(newWaypoints.ToArray());
             GraphPath();
@@ -1972,6 +1976,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         private void SetBestFirstPoint()
         {
+            if (firstPointSelectedManually)
+                return;
+
             int startPointIndex = GetIndexOfBestStartPoint();
 
             if (startPointIndex != -1)
