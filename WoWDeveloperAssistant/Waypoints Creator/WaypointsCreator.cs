@@ -1126,14 +1126,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
             string SQLtext = "";
 
-            if (Properties.Settings.Default.Scripts && waypoints.GetScriptsCount() != 0)
-            {
-                if (originalCreature.waypoints.Count != waypoints.Count)
-                {
-                    waypoints.RecalculateIdsAndGuids(originalCreature.entry);
-                }
-            }
-
             if (!onlyToClipboard)
             {
                 if (possibleCreature != null)
@@ -1211,10 +1203,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (Properties.Settings.Default.Scripts && originalCreature.waypoints.GetScriptsCount() != 0 && !onlyToClipboard)
             {
-                if (originalCreature.waypoints.Count != waypoints.Count)
-                {
-                    waypoints.RecalculateIdsAndGuids(originalCreature.entry);
-                }
+                waypoints.RecalculateIdsAndGuids(originalCreature.entry);
 
                 SQLtext += "\r\n";
                 SQLtext += "-- Waypoint scripts for " + originalCreature.name + " Entry: " + originalCreature.entry + "\r\n";
@@ -1227,12 +1216,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 {
                     if (scriptsCount != 0)
                     {
-                        SQLtext += "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ")," + " -- " + "Script Type: " + script.type + "\r\n";
+                        SQLtext +=  $"({script.id}, {script.delay}, {(uint)script.type}, {script.dataLong}, {script.dataLongSecond}, {script.dataInt}, {script.x.GetValueWithoutComma()}, {script.y.GetValueWithoutComma()}, {script.z.GetValueWithoutComma()}, {script.o.GetValueWithoutComma()}, {script.guid}), {script.GetComment()}\r\n";
                         scriptsCount--;
                     }
                     else
                     {
-                        SQLtext += "(" + script.id + ", " + script.delay + ", " + (uint)script.type + ", " + script.dataLong + ", " + script.dataLongSecond + ", " + script.dataInt + ", " + script.x.GetValueWithoutComma() + ", " + script.y.GetValueWithoutComma() + ", " + script.z.GetValueWithoutComma() + ", " + script.o.GetValueWithoutComma() + ", " + script.guid + ");" + " -- " + "Script Type: " + script.type + "\r\n";
+                        SQLtext += $"({script.id}, {script.delay}, {(uint)script.type}, {script.dataLong}, {script.dataLongSecond}, {script.dataInt}, {script.x.GetValueWithoutComma()}, {script.y.GetValueWithoutComma()}, {script.z.GetValueWithoutComma()}, {script.o.GetValueWithoutComma()}, {script.guid}); {script.GetComment()}\r\n";
                     }
                 }
             }

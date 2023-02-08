@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.Conditions_Creator;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Packets;
 
@@ -40,8 +41,21 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void RecalculateIdsAndGuids(this IEnumerable<Waypoint> list, uint baseId)
         {
-            uint id = baseId * 100;
-            uint guid = id;
+            uint id = 0;
+            uint guid = 0;
+
+            var scriptIdsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT MAX(id) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
+            var scriptGuidsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT MAX(guid) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
+
+            if (scriptIdsDs != null && scriptIdsDs.Tables["table"].Rows.Count != 0)
+            {
+                id = (uint)scriptIdsDs.Tables["table"].Rows[0][0] + 1;
+            }
+
+            if (scriptGuidsDs != null && scriptGuidsDs.Tables["table"].Rows.Count != 0)
+            {
+                guid = Convert.ToUInt32(scriptGuidsDs.Tables["table"].Rows[0][0]) + 1;
+            }
 
             foreach (Waypoint waypoint in list)
             {
