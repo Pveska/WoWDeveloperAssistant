@@ -47,14 +47,20 @@ namespace WoWDeveloperAssistant.Misc
             var scriptIdsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT MAX(id) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
             var scriptGuidsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT MAX(guid) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
 
-            if (scriptIdsDs != null && scriptIdsDs.Tables["table"].Rows.Count != 0)
+            if (scriptIdsDs != null && scriptIdsDs.Tables["table"].Rows.Count != 0 && scriptIdsDs.Tables["table"].Rows[0][0] != DBNull.Value)
             {
-                id = (uint)scriptIdsDs.Tables["table"].Rows[0][0] + 1;
+                id = Convert.ToUInt32(scriptIdsDs.Tables["table"].Rows[0][0]) + 1;
             }
 
-            if (scriptGuidsDs != null && scriptGuidsDs.Tables["table"].Rows.Count != 0)
+            if (scriptGuidsDs != null && scriptGuidsDs.Tables["table"].Rows.Count != 0 && scriptGuidsDs.Tables["table"].Rows[0][0] != DBNull.Value)
             {
                 guid = Convert.ToUInt32(scriptGuidsDs.Tables["table"].Rows[0][0]) + 1;
+            }
+
+            if (id == 0 || guid == 0)
+            {
+                id = baseId * 100;
+                guid = id;
             }
 
             foreach (Waypoint waypoint in list)
