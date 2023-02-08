@@ -1123,8 +1123,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint) row.Cells[8].Value).ToList();
+            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint)row.Cells[8].Value).ToList();
             string SQLtext = "";
+
+            if (Properties.Settings.Default.Scripts && originalCreature.waypoints.GetScriptsCount() != 0)
+            {
+                waypoints.RecalculateIdsAndGuids(originalCreature.entry);
+            }
 
             if (!onlyToClipboard)
             {
@@ -1203,8 +1208,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (Properties.Settings.Default.Scripts && originalCreature.waypoints.GetScriptsCount() != 0 && !onlyToClipboard)
             {
-                waypoints.RecalculateIdsAndGuids(originalCreature.entry);
-
                 SQLtext += "\r\n";
                 SQLtext += "-- Waypoint scripts for " + originalCreature.name + " Entry: " + originalCreature.entry + "\r\n";
                 SQLtext += "DELETE FROM `waypoint_scripts` WHERE `id` IN (" + waypoints.GetScriptIds() + ");\r\n";
