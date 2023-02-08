@@ -1448,8 +1448,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         private Dictionary<Creature, float> GetPossibleCreaturesForWaypoints(Creature creature)
         {
-            string creaturePosSqlQuery = $"SELECT `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation` FROM `creature` WHERE `id` = {creature.entry};";
-            var creaturePositionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creaturePosSqlQuery) : null;
+            var creaturePositionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `id`, `map`, `position_x`, `position_y`, `position_z`, `orientation` FROM `creature` WHERE `id` = {creature.entry};") : null;
             Dictionary<Creature, float> possibleCreatures = new Dictionary<Creature, float>();
 
             if (creaturePositionsDs != null && creaturePositionsDs.Tables["table"].Rows.Count > 0)
@@ -1505,7 +1504,23 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                     if (lowestDistance <= 5.0f)
                     {
-                        possibleCreatures.Add(possibleCreature, lowestDistance);
+                        var creatureAddonsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `bytes1`, `emote` FROM `creature_addon` WHERE `linked_id` = '{possibleCreature.GetLinkedId()}';") : null;
+
+                        if (creatureAddonsDs != null && creatureAddonsDs.Tables["table"].Rows.Count > 0)
+                        {
+                            foreach (DataRow row in creatureAddonsDs.Tables["table"].Rows)
+                            {
+                                if ((uint)row.ItemArray[0] == 0 && (uint)row.ItemArray[1] == 0)
+                                {
+                                    possibleCreatures.Add(possibleCreature, lowestDistance);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            possibleCreatures.Add(possibleCreature, lowestDistance);
+                        }
                     }
                 }
             }
@@ -1698,7 +1713,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     {
                         int indexOfcurrDuplicatePoint = copyOfWaypointRows.IndexOf(itr);
                         Waypoint currDuplicatePoint = (Waypoint)itr.Cells[8].Value;
-                        if (indexOfcurrDuplicatePoint + 1 >= copyOfWaypointRows.Count)
+                        if (indexOfcurrDuplicatePoint + 1 >= copyOfWaypointRows.Count || currDuplicatePoint.HasScripts() || currDuplicatePoint.HasOrientation())
                             continue;
 
                         currDuplicatePoint.movePosition.orientation = currDuplicatePoint.movePosition.GetAngle(((Waypoint)copyOfWaypointRows[indexOfcurrDuplicatePoint + 1].Cells[8].Value).movePosition);
