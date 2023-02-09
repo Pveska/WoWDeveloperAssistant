@@ -524,6 +524,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return new WaypointScript(0, 0, ScriptType.SetAnimKit, (uint)animKitPacket.aiAnimKitId, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, animKitPacket.packetSendTime);
         }
 
+        public static WaypointScript GetScriptsFromPlayOneShotAnimKitPacket(PlayOneShotAnimKitPacket playOneShotAnimKitPacket)
+        {
+            return new WaypointScript(0, 0, ScriptType.SetAnimKit, (uint)playOneShotAnimKitPacket.animKitId, 1, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, playOneShotAnimKitPacket.packetSendTime);
+        }
+
         public object Clone()
         {
             return MemberwiseClone();
@@ -591,6 +596,19 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 case ScriptType.RemoveAura:
                 {
                     output += $"Remove Aura, Name: {DB2.Db2.SpellName[(int)dataLong].Name}";
+                    break;
+                }
+                case ScriptType.SetAnimKit:
+                {
+                    if (dataLongSecond == 0)
+                    {
+                        output += $"Set Ai Anim Kit";
+                    }
+                    else
+                    {
+                        output += $"Play One Shot Anim Kit";
+                    }
+
                     break;
                 }
                 default:

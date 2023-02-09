@@ -56,6 +56,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> emotePacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> attackStopPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> animKitPacketsDict = new SortedDictionary<long, Packet>();
+            SortedDictionary<long, Packet> playOneShotAnimKitPacketsDict = new SortedDictionary<long, Packet>();
             BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
 
             if (!IsTxtFileValidForParse(fileName, lines, buildVersion))
@@ -150,6 +151,18 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         {
                             if (!attackStopPacketsDict.ContainsKey(index))
                                 attackStopPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_ATTACK_STOP, sendTime, index, new List<object>(), 0));
+                        }
+                    }
+                }
+                else if (needToParseScripts && packetType == Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT)
+                {
+                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
+                    if (sendTime != TimeSpan.Zero)
+                    {
+                        lock (playOneShotAnimKitPacketsDict)
+                        {
+                            if (!playOneShotAnimKitPacketsDict.ContainsKey(index))
+                                playOneShotAnimKitPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT, sendTime, index, new List<object>(), 0));
                         }
                     }
                 }
@@ -340,6 +353,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
+                mainForm.SetCurrentStatus("Parsing SMSG_PLAY_ONE_SHOT_ANIM_KIT packets...");
+
+                Parallel.ForEach(playOneShotAnimKitPacketsDict.Values, packet =>
+                {
+                    PlayOneShotAnimKitPacket playOneShotAnimKitPacket = PlayOneShotAnimKitPacket.ParsePlayOneShotAnimKitPacket(lines, packet.index);
+                    if (playOneShotAnimKitPacket.guid == "" || playOneShotAnimKitPacket.animKitId == null)
+                        return;
+
+                    lock (playOneShotAnimKitPacketsDict)
+                    {
+                        playOneShotAnimKitPacketsDict.AddSourceFromPlayOneShotAnimKitPacket(playOneShotAnimKitPacket, packet.index);
+                    }
+                });
+
                 mainForm.SetCurrentStatus("Creating waypoint scripts for creatures...");
 
                 Parallel.ForEach(creaturesDict.Values, creature =>
@@ -374,6 +401,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         }
 
                         foreach (var packet in animKitPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
+                        {
+                            creaturePacketsDict.Add(packet.index, packet);
+                        }
+
+                        foreach (var packet in playOneShotAnimKitPacketsDict.Values.Where(packet => packet.HasCreatureWithGuid(creature.guid)))
                         {
                             creaturePacketsDict.Add(packet.index, packet);
                         }
@@ -468,6 +500,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                                     {
                                         SetAiAnimKitPacket animKitPacket = (SetAiAnimKitPacket)packet.parsedPacketsList.First();
                                         scriptsList.Add(WaypointScript.GetScriptsFromSetAiAnimKitPacket(animKitPacket));
+                                    }
+
+                                    break;
+                                }
+                                case Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT:
+                                {
+                                    if (scriptsParsingStarted)
+                                    {
+                                        PlayOneShotAnimKitPacket playOneShotAnimKitPacket = (PlayOneShotAnimKitPacket)packet.parsedPacketsList.First();
+                                        scriptsList.Add(WaypointScript.GetScriptsFromPlayOneShotAnimKitPacket(playOneShotAnimKitPacket));
                                     }
 
                                     break;

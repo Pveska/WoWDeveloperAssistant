@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Parsed_File_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
@@ -45,7 +46,8 @@ namespace WoWDeveloperAssistant.Misc
                 CMSG_MOVE_STOP,
                 CMSG_MOVE_HEARTBEAT,
                 SMSG_QUEST_UPDATE_ADD_CREDIT,
-                SMSG_QUEST_UPDATE_COMPLETE
+                SMSG_QUEST_UPDATE_COMPLETE,
+                SMSG_PLAY_ONE_SHOT_ANIM_KIT
             }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
@@ -73,63 +75,56 @@ namespace WoWDeveloperAssistant.Misc
                     case PacketTypes.SMSG_UPDATE_OBJECT:
                     {
                         if (parsedPacketsList.Cast<UpdateObjectPacket>().Any(updatePacket => updatePacket.guid == guid))
-                        {
                             return true;
-                        }
 
                         break;
                     }
                     case PacketTypes.SMSG_ON_MONSTER_MOVE:
                     {
                         if (parsedPacketsList.Cast<MonsterMovePacket>().Any(movementPacket => movementPacket.creatureGuid == guid))
-                        {
                             return true;
-                        }
 
                         break;
                     }
                     case PacketTypes.SMSG_SPELL_START:
                     {
                         if (parsedPacketsList.Cast<SpellStartPacket>().Any(spellPacket => spellPacket.casterGuid == guid))
-                        {
                             return true;
-                        }
 
                         break;
                     }
                     case PacketTypes.SMSG_AURA_UPDATE:
                     {
                         if (parsedPacketsList.Cast<AuraUpdatePacket>().Any(auraPacket => auraPacket.unitGuid == guid))
-                        {
                             return true;
-                        }
 
                         break;
                     }
                     case PacketTypes.SMSG_EMOTE:
                     {
                         if (parsedPacketsList.Cast<EmotePacket>().Any(emotePacket => emotePacket.guid == guid))
-                        {
                             return true;
-                        }
 
                         break;
                     }
                     case PacketTypes.SMSG_ATTACK_STOP:
                     {
                         if (parsedPacketsList.Cast<AttackStopPacket>().Any(attackStopPacket => attackStopPacket.creatureGuid == guid))
-                        {
                             return true;
-                        }
 
                         break;
                     }
                     case PacketTypes.SMSG_SET_AI_ANIM_KIT:
                     {
                         if (parsedPacketsList.Cast<SetAiAnimKitPacket>().Any(animKitPacket => animKitPacket.guid == guid))
-                        {
                             return true;
-                        }
+
+                        break;
+                    }
+                    case PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT:
+                    {
+                        if (parsedPacketsList.Cast<PlayOneShotAnimKitPacket>().Any(playOneShotAnimKitPacket => playOneShotAnimKitPacket.guid == guid))
+                            return true;
 
                         break;
                     }
@@ -2186,6 +2181,58 @@ namespace WoWDeveloperAssistant.Misc
 
                     if (GetAiAnimKitIdFromLine(lines[index]) != null)
                         animPacket.aiAnimKitId = GetAiAnimKitIdFromLine(lines[index]);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return animPacket;
+            }
+        }
+
+        [Serializable]
+        public class PlayOneShotAnimKitPacket
+        {
+            public string guid;
+            public uint? animKitId;
+            public TimeSpan packetSendTime;
+
+            public PlayOneShotAnimKitPacket(string guid, uint animKitId, TimeSpan time)
+            {
+                this.guid = guid;
+                this.animKitId = animKitId;
+                packetSendTime = time;
+            }
+
+            public static string GetGuidFromLine(string line)
+            {
+                Regex guidRegex = new Regex(@"Unit: TypeName: Creature; Full:{1}\s*\w{20,}");
+                if (guidRegex.IsMatch(line))
+                    return guidRegex.Match(line).ToString().Replace("Unit: TypeName: Creature; Full: ", "");
+
+                return "";
+            }
+
+            public static uint? GetAnimKitIdFromLine(string line)
+            {
+                Regex animKitRegex = new Regex(@"AnimKitID:{1}\s+\d+");
+                if (animKitRegex.IsMatch(line))
+                    return Convert.ToUInt32(animKitRegex.Match(line).ToString().Replace("AnimKitID: ", ""));
+
+                return null;
+            }
+
+            public static PlayOneShotAnimKitPacket ParsePlayOneShotAnimKitPacket(string[] lines, long index)
+            {
+                PlayOneShotAnimKitPacket animPacket = new PlayOneShotAnimKitPacket("", 0, LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    if (GetGuidFromLine(lines[index]) != "")
+                        animPacket.guid = GetGuidFromLine(lines[index]);
+
+                    if (GetAnimKitIdFromLine(lines[index]) != null)
+                        animPacket.animKitId = GetAnimKitIdFromLine(lines[index]);
 
                     index++;
                 }

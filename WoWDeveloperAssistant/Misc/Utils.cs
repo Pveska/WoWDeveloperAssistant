@@ -234,6 +234,15 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
+        public static void AddSourceFromPlayOneShotAnimKitPacket(this SortedDictionary<long, Packet> dict, PlayOneShotAnimKitPacket playOneShotAnimKitPacket, long index)
+        {
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT && packet.index == index))
+            {
+                packet.parsedPacketsList.Add(playOneShotAnimKitPacket);
+                return;
+            }
+        }
+
         public static bool ContainPacketWithIndex(this IEnumerable<Packet> list, long index)
         {
             return list.Any(packet => packet.index == index);
