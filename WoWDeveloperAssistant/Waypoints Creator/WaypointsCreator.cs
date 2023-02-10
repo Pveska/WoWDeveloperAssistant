@@ -10,6 +10,7 @@ using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
 using static WoWDeveloperAssistant.Misc.Packets;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Reflection;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
@@ -1459,21 +1460,53 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             waypoints.AddRange(waypointsList);
         }
 
-        public void CreateReturnPath()
+        public void CreateReturnPath(bool needToStartFromSelectedPoint = false)
         {
-            List<Waypoint> waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint)row.Cells[8].Value).ToList();
+            List<Waypoint> waypoints = new List<Waypoint>();
 
-            waypoints.Reverse();
-
-            waypoints.RemoveAt(0);
-            waypoints.RemoveAt(waypoints.Count - 1);
-
-            int index = mainForm.grid_WaypointsCreator_Waypoints.Rows.Count + 1;
-
-            foreach (Waypoint wp in waypoints)
+            if (!needToStartFromSelectedPoint)
             {
-                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
-                index++;
+                waypoints = (from DataGridViewRow row in mainForm.grid_WaypointsCreator_Waypoints.Rows select (Waypoint)row.Cells[8].Value).ToList();
+                waypoints.Reverse();
+                waypoints.RemoveAt(0);
+                waypoints.RemoveAt(waypoints.Count - 1);
+
+                int index = mainForm.grid_WaypointsCreator_Waypoints.Rows.Count + 1;
+
+                foreach (Waypoint wp in waypoints)
+                {
+                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
+                    index++;
+                }
+            }
+            else
+            {
+                int selectedPointIndex = mainForm.grid_WaypointsCreator_Waypoints.SelectedRows[0].Index;
+
+                for (int i = selectedPointIndex; i < mainForm.grid_WaypointsCreator_Waypoints.Rows.Count; i++)
+                {
+                    waypoints.Add((Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[i].Cells[8].Value);
+                }
+
+                for (int i = mainForm.grid_WaypointsCreator_Waypoints.Rows.Count - 2; i >= 0; i--)
+                {
+                    waypoints.Add((Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[i].Cells[8].Value);
+                }
+
+                for (int i = 1; i < selectedPointIndex; i++)
+                {
+                    waypoints.Add((Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[i].Cells[8].Value);
+                }
+
+                mainForm.grid_WaypointsCreator_Waypoints.Rows.Clear();
+
+                int index = 1;
+
+                foreach (Waypoint wp in waypoints)
+                {
+                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp);
+                    index++;
+                }
             }
 
             GraphPath();

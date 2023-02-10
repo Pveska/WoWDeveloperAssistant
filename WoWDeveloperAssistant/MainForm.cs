@@ -279,7 +279,14 @@ namespace WoWDeveloperAssistant
 
         private void createReturnPathToolStripMenuItem_WC_Click(object sender, EventArgs e)
         {
-            waypointsCreator.CreateReturnPath();
+            if (ModifierKeys == Keys.Control)
+            {
+                waypointsCreator.CreateReturnPath(true);
+            }
+            else
+            {
+                waypointsCreator.CreateReturnPath();
+            }
         }
 
         public void SetCurrentStatus(string status)
