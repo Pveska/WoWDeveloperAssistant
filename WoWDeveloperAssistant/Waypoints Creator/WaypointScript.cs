@@ -472,7 +472,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public uint guid;
         public TimeSpan scriptTime;
 
-        WaypointScript(uint id, uint delay, ScriptType type, uint dataLong, uint dataLongSecond, uint dataInt, float x, float y, float z, float o, uint guid, TimeSpan time)
+        public WaypointScript() {}
+
+        public WaypointScript(uint id, uint delay, ScriptType type, uint dataLong, uint dataLongSecond, uint dataInt, float x, float y, float z, float o, uint guid, TimeSpan time)
         { this.id = id; this.delay = delay; this.type = type; this.dataLong = dataLong; this.dataLongSecond = dataLongSecond; this.dataInt = dataInt; this.x = x; this.y = y; this.z = z; this.o = o; this.guid = guid; this.scriptTime = time; }
 
         public static List<WaypointScript> GetScriptsFromUpdatePacket(UpdateObjectPacket updatePacket)

@@ -1272,6 +1272,37 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         SQLtext += $"({script.id}, {script.delay}, {(uint)script.type}, {script.dataLong}, {script.dataLongSecond}, {script.dataInt}, {script.x.GetValueWithoutComma()}, {script.y.GetValueWithoutComma()}, {script.z.GetValueWithoutComma()}, {script.o.GetValueWithoutComma()}, {script.guid}); {script.GetComment()}\r\n";
                     }
                 }
+
+                var waypointScriptsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid` FROM `waypoint_scripts` WHERE `id` LIKE '{originalCreature.entry}%';") : null;
+                List<WaypointScript> waypointScripts = new List<WaypointScript>();
+
+                if (waypointScriptsDs != null && waypointScriptsDs.Tables["table"].Rows.Count > 0)
+                {
+                    foreach (DataRow row in waypointScriptsDs.Tables["table"].Rows)
+                    {
+                        waypointScripts.Add(new WaypointScript() { id = Convert.ToUInt32(row.ItemArray[0]), delay = Convert.ToUInt32(row.ItemArray[1]), type = (WaypointScript.ScriptType)Convert.ToUInt32(row.ItemArray[2]), dataLong = Convert.ToUInt32(row.ItemArray[3]), dataLongSecond = Convert.ToUInt32(row.ItemArray[4]), dataInt = Convert.ToUInt32(row.ItemArray[5]), x = (float)row.ItemArray[6], y = (float)row.ItemArray[7], z = (float)row.ItemArray[8], o = (float)row.ItemArray[9], guid = Convert.ToUInt32(row.ItemArray[10]) });
+                    }
+
+                    waypointScripts = waypointScripts.OrderBy(x => x.guid).ToList();
+
+                    SQLtext += "\r\n";
+                    SQLtext += "-- Already existed scripts in DB:\r\n";
+
+                    scriptsCount = (uint)waypointScripts.Count - 1;
+
+                    foreach (WaypointScript script in waypointScripts)
+                    {
+                        if (scriptsCount != 0)
+                        {
+                            SQLtext += $"({script.id}, {script.delay}, {(uint)script.type}, {script.dataLong}, {script.dataLongSecond}, {script.dataInt}, {script.x.GetValueWithoutComma()}, {script.y.GetValueWithoutComma()}, {script.z.GetValueWithoutComma()}, {script.o.GetValueWithoutComma()}, {script.guid}), {script.GetComment()}\r\n";
+                            scriptsCount--;
+                        }
+                        else
+                        {
+                            SQLtext += $"({script.id}, {script.delay}, {(uint)script.type}, {script.dataLong}, {script.dataLongSecond}, {script.dataInt}, {script.x.GetValueWithoutComma()}, {script.y.GetValueWithoutComma()}, {script.z.GetValueWithoutComma()}, {script.o.GetValueWithoutComma()}, {script.guid}); {script.GetComment()}\r\n";
+                        }
+                    }
+                }
             }
 
             if (possibleCreature == null)
