@@ -1157,7 +1157,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void CreateSQL(bool onlyToClipboard = false)
         {
             Creature originalCreature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
-            KeyValuePair<string, Creature> possibleCreature = new KeyValuePair<string, Creature>();
+            KeyValuePair<string, Creature> possibleCreature = new KeyValuePair<string, Creature>("", new Creature());
 
             if (!IsCreatureExistOnDb(originalCreature.guid))
             {
