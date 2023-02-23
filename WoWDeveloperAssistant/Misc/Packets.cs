@@ -2032,7 +2032,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public bool IsValid()
             {
-                return unitGuid != "" && slot != null && HasAura != null && packetSendTime != TimeSpan.Zero;
+                return slot != null && HasAura != null && packetSendTime != TimeSpan.Zero;
             }
 
             public static string GetUnitGuidFromAuraUpdatePacket(string[] lines, long index, BuildVersions build)
@@ -2053,6 +2053,7 @@ namespace WoWDeveloperAssistant.Misc
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                 List<AuraUpdatePacket> aurasList = new List<AuraUpdatePacket>();
+                string guid = "";
 
                 do
                 {
@@ -2071,8 +2072,10 @@ namespace WoWDeveloperAssistant.Misc
                             if (SpellStartPacket.GetSpellIdFromLine(lines[index]) != 0)
                                 auraUpdatePacket.spellId = SpellStartPacket.GetSpellIdFromLine(lines[index]);
 
-                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true) != "")
-                                auraUpdatePacket.unitGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true);
+                            if (guid == "" && LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true) != "")
+                            {
+                                guid = LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true);
+                            }
 
                             index++;
                         }
@@ -2089,6 +2092,23 @@ namespace WoWDeveloperAssistant.Misc
                     index++;
                 }
                 while (lines[index] != "");
+
+                if (guid == "")
+                {
+                    aurasList.Clear();
+                }
+                else
+                {
+                    AuraUpdatePacket[] auraPackets = new AuraUpdatePacket[aurasList.Count];
+                    auraPackets = aurasList.ToArray();
+
+                    for (int i = 0; i < auraPackets.Length; i++)
+                    {
+                        auraPackets[i].unitGuid = guid;
+                    }
+
+                    aurasList = auraPackets.ToList();
+                }
 
                 return aurasList;
             }
