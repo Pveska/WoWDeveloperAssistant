@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace WoWDeveloperAssistant.Database_Advisor
 {
-    public static class WrongCreatureAddonFinder
+    public static class WrongCreatureAddonAurasFinder
     {
         public static void FindWrongAurasInCreatureAddons(TextBox textBox, string zoneId)
         {

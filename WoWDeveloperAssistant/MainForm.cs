@@ -772,7 +772,7 @@ namespace WoWDeveloperAssistant
             if (textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text == "")
                 return;
 
-            WrongCreatureAddonFinder.FindWrongAurasInCreatureAddons(textBox_DatabaseAdvisor_Output, textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text);
+            WrongCreatureAddonAurasFinder.FindWrongAurasInCreatureAddons(textBox_DatabaseAdvisor_Output, textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text);
         }
 
         private void textBox_DatabaseAdvisor_FindWrongAurasInAddons_MouseEnter(object sender, EventArgs e)

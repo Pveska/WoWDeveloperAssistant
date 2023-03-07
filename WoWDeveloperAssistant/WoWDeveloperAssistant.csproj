@@ -119,7 +119,7 @@
     <Compile Include="Database Advisor\NpcTextAdvisor.cs" />
     <Compile Include="Database Advisor\PhaseDataAdvisor.cs" />
     <Compile Include="Database Advisor\PossibleFormationsFinder.cs" />
-    <Compile Include="Database Advisor\WrongCreatureAddonFinder.cs" />
+    <Compile Include="Database Advisor\WrongCreatureAddonAurasFinder.cs" />
     <Compile Include="DB2\DB2_Database.cs" />
     <Compile Include="DB2\Storage.cs" />
     <Compile Include="DB2\Structures\Achievement.cs" />
