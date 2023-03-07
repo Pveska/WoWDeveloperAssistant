@@ -119,6 +119,7 @@
     <Compile Include="Database Advisor\NpcTextAdvisor.cs" />
     <Compile Include="Database Advisor\PhaseDataAdvisor.cs" />
     <Compile Include="Database Advisor\PossibleFormationsFinder.cs" />
+    <Compile Include="Database Advisor\WrongCreatureAddonFinder.cs" />
     <Compile Include="DB2\DB2_Database.cs" />
     <Compile Include="DB2\Storage.cs" />
     <Compile Include="DB2\Structures\Achievement.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="DB2\Structures\Map.cs" />
     <Compile Include="DB2\Structures\MapDifficulty.cs" />
     <Compile Include="DB2\Structures\ModifierTree.cs" />
+    <Compile Include="DB2\Structures\SpellDuration.cs" />
     <Compile Include="DB2\Structures\SpellEffect.cs" />
     <Compile Include="DB2\Structures\SpellMisc.cs" />
     <Compile Include="DB2\Structures\SpellName.cs" />

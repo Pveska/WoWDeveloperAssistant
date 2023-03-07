@@ -3,6 +3,7 @@ using DB2Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -36,9 +37,11 @@ namespace DB2
         public static MySqlStorage<SpellName>        SpellName { get; set; }
         public static MySqlStorage<SpellRadius>      SpellRadius { get; set; }
         public static MySqlStorage<SpellRange>       SpellRange { get; set; }
+        public static MySqlStorage<SpellDuration>    SpellDuration { get; set; }
 
         public static readonly Dictionary<uint, string> MapDifficultyStore = new Dictionary<uint, string>();
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffect> SpellEffectStore = new Dictionary<Tuple<uint, uint>, SpellEffect>();
+        public static readonly Dictionary<uint, int> SpellDurationStore = new Dictionary<uint, int>();
 
         public static bool IsLoaded()
         {
@@ -97,6 +100,18 @@ namespace DB2
                         MapDifficultyStore[mapDifficulty.Value.MapID] = MapDifficultyStore[mapDifficulty.Value.MapID] + " " + mapDifficulty.Value.DifficultyID;
                     else
                         MapDifficultyStore.Add(mapDifficulty.Value.MapID, Convert.ToString(mapDifficulty.Value.DifficultyID));
+                }
+            }
+
+
+            if (SpellMisc != null && SpellDuration != null && SpellDurationStore.Count == 0)
+            {
+                foreach (var spellMisc in SpellMisc.Where(x => x.Value.DurationIndex != 0))
+                {
+                    if (!SpellDurationStore.ContainsKey(spellMisc.Value.SpellId))
+                    {
+                        SpellDurationStore.Add(spellMisc.Value.SpellId, SpellDuration[spellMisc.Value.DurationIndex].MaxDuration != 2147483647 ? SpellDuration[spellMisc.Value.DurationIndex].MaxDuration : -1);
+                    }
                 }
             }
 

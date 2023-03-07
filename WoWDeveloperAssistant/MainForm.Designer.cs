@@ -100,6 +100,8 @@
             this.createReturnPathToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.optimizeCirclePathToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.optimizeRegularPathToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
+            this.reversePointsOrderToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
+            this.setSelectedPointAsFirstToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator_WC = new System.Windows.Forms.ToolStripSeparator();
             this.createSQLToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox_WaypointsCreator_CreatureGuids = new System.Windows.Forms.ListBox();
@@ -117,6 +119,8 @@
             this.tabPage_SqlOutput = new System.Windows.Forms.TabPage();
             this.textBox_SqlOutput = new System.Windows.Forms.TextBox();
             this.tabPage_DatabaseAdvisor = new System.Windows.Forms.TabPage();
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons = new System.Windows.Forms.TextBox();
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons = new System.Windows.Forms.Label();
             this.textBox_DatabaseAdvisor_FindPossibleFormations = new System.Windows.Forms.TextBox();
             this.label_DatabaseAdvisor_FindPossibleFormations = new System.Windows.Forms.Label();
             this.textBox_DatabaseAdvisor_FindDoublePaths = new System.Windows.Forms.TextBox();
@@ -225,8 +229,6 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.reversePointsOrderToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
-            this.setSelectedPointAsFirstToolStripMenuItem_WC = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -756,7 +758,7 @@
             this.toolStripSeparator_WC,
             this.createSQLToolStripMenuItem_WC});
             this.contextMenuStrip_WaypointsCreator.Name = "contextMenuStrip_WC";
-            this.contextMenuStrip_WaypointsCreator.Size = new System.Drawing.Size(289, 331);
+            this.contextMenuStrip_WaypointsCreator.Size = new System.Drawing.Size(289, 298);
             // 
             // cutToolStripMenuItem_WC
             // 
@@ -799,6 +801,20 @@
             this.optimizeRegularPathToolStripMenuItem_WC.Size = new System.Drawing.Size(288, 32);
             this.optimizeRegularPathToolStripMenuItem_WC.Text = "Optimize Regular Path";
             this.optimizeRegularPathToolStripMenuItem_WC.Click += new System.EventHandler(this.optimizeRegularPathToolStripMenuItem_WC_Click);
+            // 
+            // reversePointsOrderToolStripMenuItem_WC
+            // 
+            this.reversePointsOrderToolStripMenuItem_WC.Name = "reversePointsOrderToolStripMenuItem_WC";
+            this.reversePointsOrderToolStripMenuItem_WC.Size = new System.Drawing.Size(288, 32);
+            this.reversePointsOrderToolStripMenuItem_WC.Text = "Reverse Points Order";
+            this.reversePointsOrderToolStripMenuItem_WC.Click += new System.EventHandler(this.reversePointsOrderToolStripMenuItem_Click);
+            // 
+            // setSelectedPointAsFirstToolStripMenuItem_WC
+            // 
+            this.setSelectedPointAsFirstToolStripMenuItem_WC.Name = "setSelectedPointAsFirstToolStripMenuItem_WC";
+            this.setSelectedPointAsFirstToolStripMenuItem_WC.Size = new System.Drawing.Size(288, 32);
+            this.setSelectedPointAsFirstToolStripMenuItem_WC.Text = "Set Selected Point As First";
+            this.setSelectedPointAsFirstToolStripMenuItem_WC.Click += new System.EventHandler(this.setSelectedPointAsFirstToolStripMenuItem_Click);
             // 
             // toolStripSeparator_WC
             // 
@@ -1041,6 +1057,8 @@
             // 
             // tabPage_DatabaseAdvisor
             // 
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_DatabaseAdvisor_FindWrongAurasInAddons);
+            this.tabPage_DatabaseAdvisor.Controls.Add(this.label_DatabaseAdvisor_FindWrongAurasInAddons);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_DatabaseAdvisor_FindPossibleFormations);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.label_DatabaseAdvisor_FindPossibleFormations);
             this.tabPage_DatabaseAdvisor.Controls.Add(this.textBox_DatabaseAdvisor_FindDoublePaths);
@@ -1060,6 +1078,28 @@
             this.tabPage_DatabaseAdvisor.TabIndex = 2;
             this.tabPage_DatabaseAdvisor.Text = "Database Advisor";
             this.tabPage_DatabaseAdvisor.UseVisualStyleBackColor = true;
+            // 
+            // textBox_DatabaseAdvisor_FindWrongAurasInAddons
+            // 
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.Location = new System.Drawing.Point(8, 342);
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.Name = "textBox_DatabaseAdvisor_FindWrongAurasInAddons";
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.Size = new System.Drawing.Size(162, 26);
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.TabIndex = 18;
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.Click += new System.EventHandler(this.textBox_DatabaseAdvisor_FindWrongAurasInAddons_Click);
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_DatabaseAdvisor_FindWrongAurasInAddons_KeyDown);
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.MouseEnter += new System.EventHandler(this.textBox_DatabaseAdvisor_FindWrongAurasInAddons_MouseEnter);
+            this.textBox_DatabaseAdvisor_FindWrongAurasInAddons.MouseLeave += new System.EventHandler(this.textBox_DatabaseAdvisor_FindWrongAurasInAddons_MouseLeave);
+            // 
+            // label_DatabaseAdvisor_FindWrongAurasInAddons
+            // 
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons.AutoSize = true;
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons.Location = new System.Drawing.Point(6, 320);
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons.Name = "label_DatabaseAdvisor_FindWrongAurasInAddons";
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons.Size = new System.Drawing.Size(204, 20);
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons.TabIndex = 17;
+            this.label_DatabaseAdvisor_FindWrongAurasInAddons.Text = "Find wrong auras in addons";
             // 
             // textBox_DatabaseAdvisor_FindPossibleFormations
             // 
@@ -1109,13 +1149,13 @@
             // 
             this.textBox_DatabaseAdvisor_Output.ContextMenuStrip = this.contextMenuStrip_DatabaseAdvisor;
             this.textBox_DatabaseAdvisor_Output.Font = new System.Drawing.Font("Courier New", 9.75F);
-            this.textBox_DatabaseAdvisor_Output.Location = new System.Drawing.Point(189, 2);
+            this.textBox_DatabaseAdvisor_Output.Location = new System.Drawing.Point(216, 2);
             this.textBox_DatabaseAdvisor_Output.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_DatabaseAdvisor_Output.MaxLength = 1000000;
             this.textBox_DatabaseAdvisor_Output.Multiline = true;
             this.textBox_DatabaseAdvisor_Output.Name = "textBox_DatabaseAdvisor_Output";
             this.textBox_DatabaseAdvisor_Output.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_DatabaseAdvisor_Output.Size = new System.Drawing.Size(1848, 939);
+            this.textBox_DatabaseAdvisor_Output.Size = new System.Drawing.Size(1821, 939);
             this.textBox_DatabaseAdvisor_Output.TabIndex = 10;
             this.textBox_DatabaseAdvisor_Output.WordWrap = false;
             // 
@@ -2111,7 +2151,7 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff});
             this.toolStrip_ParsedFileAdvisor.Location = new System.Drawing.Point(3, 3);
             this.toolStrip_ParsedFileAdvisor.Name = "toolStrip_ParsedFileAdvisor";
-            this.toolStrip_ParsedFileAdvisor.Size = new System.Drawing.Size(2034, 34);
+            this.toolStrip_ParsedFileAdvisor.Size = new System.Drawing.Size(2034, 38);
             this.toolStrip_ParsedFileAdvisor.TabIndex = 16;
             this.toolStrip_ParsedFileAdvisor.Text = "toolStrip1";
             // 
@@ -2119,7 +2159,7 @@
             // 
             this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.AutoToolTip = true;
             this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Name = "toolStripStatusLabel_ParsedFileAdvisor_FileStatus";
-            this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Size = new System.Drawing.Size(131, 27);
+            this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Size = new System.Drawing.Size(131, 31);
             this.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = "No File Loaded";
             // 
             // toolStripButton_ParsedFileAdvisor_ImportSniff
@@ -2128,7 +2168,7 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_ParsedFileAdvisor_ImportSniff.Image")));
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Name = "toolStripButton_ParsedFileAdvisor_ImportSniff";
-            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(128, 29);
+            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(128, 33);
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ParsedFileAdvisor_ImportSniff_Click);
             // 
@@ -2211,20 +2251,6 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
-            // 
-            // reversePointsOrderToolStripMenuItem_WC
-            // 
-            this.reversePointsOrderToolStripMenuItem_WC.Name = "reversePointsOrderToolStripMenuItem_WC";
-            this.reversePointsOrderToolStripMenuItem_WC.Size = new System.Drawing.Size(288, 32);
-            this.reversePointsOrderToolStripMenuItem_WC.Text = "Reverse Points Order";
-            this.reversePointsOrderToolStripMenuItem_WC.Click += new System.EventHandler(this.reversePointsOrderToolStripMenuItem_Click);
-            // 
-            // setSelectedPointAsFirstToolStripMenuItem_WC
-            // 
-            this.setSelectedPointAsFirstToolStripMenuItem_WC.Name = "setSelectedPointAsFirstToolStripMenuItem_WC";
-            this.setSelectedPointAsFirstToolStripMenuItem_WC.Size = new System.Drawing.Size(288, 32);
-            this.setSelectedPointAsFirstToolStripMenuItem_WC.Text = "Set Selected Point As First";
-            this.setSelectedPointAsFirstToolStripMenuItem_WC.Click += new System.EventHandler(this.setSelectedPointAsFirstToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2455,6 +2481,8 @@
         private System.Windows.Forms.Label label_DatabaseAdvisor_FindPossibleFormations;
         private System.Windows.Forms.ToolStripMenuItem reversePointsOrderToolStripMenuItem_WC;
         private System.Windows.Forms.ToolStripMenuItem setSelectedPointAsFirstToolStripMenuItem_WC;
+        private System.Windows.Forms.TextBox textBox_DatabaseAdvisor_FindWrongAurasInAddons;
+        private System.Windows.Forms.Label label_DatabaseAdvisor_FindWrongAurasInAddons;
     }
 }
 

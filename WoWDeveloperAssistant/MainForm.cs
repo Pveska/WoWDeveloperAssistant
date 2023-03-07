@@ -755,5 +755,40 @@ namespace WoWDeveloperAssistant
         {
             waypointsCreator.SetSelectedPointAsFirst();
         }
+
+        private void textBox_DatabaseAdvisor_FindWrongAurasInAddons_Click(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text == "Enter Zone Id")
+            {
+                textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text = "";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindWrongAurasInAddons_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            if (textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text == "")
+                return;
+
+            WrongCreatureAddonFinder.FindWrongAurasInCreatureAddons(textBox_DatabaseAdvisor_Output, textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text);
+        }
+
+        private void textBox_DatabaseAdvisor_FindWrongAurasInAddons_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text == "")
+            {
+                textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text = "Enter Zone Id";
+            }
+        }
+
+        private void textBox_DatabaseAdvisor_FindWrongAurasInAddons_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text == "Enter Zone Id")
+            {
+                textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text = "";
+            }
+        }
     }
 }
