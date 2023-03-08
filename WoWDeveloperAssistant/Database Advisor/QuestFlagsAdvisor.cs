@@ -124,12 +124,12 @@ namespace WoWDeveloperAssistant.Database_Advisor
         public static void GetQuestFlags(string questEntry)
         {
             string questFlagsSqlQuery = "SELECT `Flags`, `FlagsEx`, `FlagsEx2` FROM `quest_template` WHERE `Id` = " + questEntry + ";";
-            var questFlagsDs = SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
+            var questFlagsDs = SQLModule.WorldSelectQuery(questFlagsSqlQuery);
             if (questFlagsDs == null)
                 return;
 
             questFlagsSqlQuery = "SELECT `SpecialFlags` FROM `quest_template_addon` WHERE `Id` = " + questEntry + ";";
-            DataSet AddonQuestFlagsDs = SQLModule.DatabaseSelectQuery(questFlagsSqlQuery);
+            DataSet AddonQuestFlagsDs = SQLModule.WorldSelectQuery(questFlagsSqlQuery);
             if (AddonQuestFlagsDs == null)
                 return;
 

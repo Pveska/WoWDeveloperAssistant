@@ -530,7 +530,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             string scriptName = "";
 
             string creatureNameQuery = $"SELECT `Name1` FROM `creature_template_wdb` WHERE `entry` = {creature.entry};";
-            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureNameQuery) : null;
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(creatureNameQuery) : null;
 
             if (creatureNameDs != null)
             {

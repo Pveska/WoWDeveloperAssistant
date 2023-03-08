@@ -518,7 +518,7 @@ namespace WoWDeveloperAssistant
 
         private static DataRowCollection GetDataRowCollectionFromQuery (string query)
         {
-            DataSet dataSet = SQLModule.DatabaseSelectQuery(query);
+            DataSet dataSet = SQLModule.WorldSelectQuery(query);
 
             if (dataSet != null && dataSet.Tables["table"].Rows.Count > 0)
             {

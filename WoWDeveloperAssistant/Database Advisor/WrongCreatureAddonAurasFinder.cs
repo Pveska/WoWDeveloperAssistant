@@ -16,7 +16,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             if (Properties.Settings.Default.UsingDB)
             {
-                DataSet creatureAddonsDs = SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `auras` FROM `creature_addon` WHERE `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `zoneid` = {zoneId}) AND `auras` != '';");
+                DataSet creatureAddonsDs = SQLModule.WorldSelectQuery($"SELECT `linked_id`, `auras` FROM `creature_addon` WHERE `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `zoneid` = {zoneId}) AND `auras` != '';");
 
                 if (creatureAddonsDs != null && creatureAddonsDs.Tables["table"].Rows.Count > 0)
                 {

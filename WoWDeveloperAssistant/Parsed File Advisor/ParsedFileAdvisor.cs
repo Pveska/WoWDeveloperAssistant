@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DB2.Structures;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Waypoints_Creator;
@@ -505,6 +507,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             mainForm.textBox_ParsedFileAdvisor_SpellDestinations.Enabled = true;
             mainForm.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Enabled = true;
             mainForm.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Enabled = true;
+            mainForm.textBox_ParsedFileAdvisor_CreatureEquipmentId.Enabled = true;
             mainForm.Update();
         }
         public void ImportFailed()
@@ -686,7 +689,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     uint objectiveId = 0;
                     string description = "";
 
-                    var objectiveIdDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `ID`, `Description` FROM `quest_objectives` WHERE `QuestID` = {creditPacket.questId} AND `ObjectID` = {creditPacket.objectId};") : null;
+                    var objectiveIdDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `ID`, `Description` FROM `quest_objectives` WHERE `QuestID` = {creditPacket.questId} AND `ObjectID` = {creditPacket.objectId};") : null;
 
                     if (objectiveIdDs != null)
                     {
@@ -718,7 +721,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     uint objectiveId = 0;
                     string description = "";
 
-                    var objectiveIdDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `ID`, `Description` FROM `quest_objectives` WHERE `QuestID` = {creditPacket.questId} AND `ObjectID` = {creditPacket.objectId};") : null;
+                    var objectiveIdDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `ID`, `Description` FROM `quest_objectives` WHERE `QuestID` = {creditPacket.questId} AND `ObjectID` = {creditPacket.objectId};") : null;
 
                     if (objectiveIdDs != null)
                     {
@@ -1113,6 +1116,128 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             output += "\r\n";
 
             return output;
+        }
+
+        public void GetEquipmentIdForCreature()
+        {
+            string output = "";
+
+            Dictionary<uint, List<KeyValuePair<byte, List<uint>>>> equipTemplates = new Dictionary<uint, List<KeyValuePair<byte, List<uint>>>>();
+
+            DataSet creatureEquipTemplateDs = SQLModule.WorldSelectQuery($"SELECT `CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3` FROM `creature_equip_template` WHERE `CreatureID` IN ({creatures.GetCreatureEntries()});");
+            if (creatureEquipTemplateDs != null && creatureEquipTemplateDs.Tables["table"].Rows.Count != 0)
+            {
+                foreach (DataRow row in creatureEquipTemplateDs.Tables["table"].Rows)
+                {
+                    uint creatureId = Convert.ToUInt32(row[0]);
+                    List<uint> itemsIds = new List<uint>();
+
+                    for (int i = 2; i < 5; i++)
+                    {
+                        itemsIds.Add(Convert.ToUInt32(row[i]));
+                    }
+
+                    if (!equipTemplates.ContainsKey(creatureId))
+                    {
+                        equipTemplates.Add(creatureId, new List<KeyValuePair<byte, List<uint>>>() { new KeyValuePair<byte, List<uint>>(Convert.ToByte(row[1]), itemsIds) });
+                    }
+                    else
+                    {
+                        equipTemplates[creatureId].Add(new KeyValuePair<byte, List<uint>>(Convert.ToByte(row[1]), itemsIds));
+                    }
+                }
+            }
+
+            creatureEquipTemplateDs.Clear();
+
+            if (mainForm.textBox_ParsedFileAdvisor_CreatureEquipmentId.Text == "")
+            {
+                foreach (Creature creature in creatures.Values)
+                {
+                    if (!equipTemplates.ContainsKey(creature.entry) || !IsCreatureExistOnDb(creature.guid) || equipTemplates[creature.entry].Count == 1)
+                        continue;
+
+                    foreach (var equip in equipTemplates[creature.entry])
+                    {
+                        bool equipFound = true;
+
+                        for (int i = 0; i < 3; i++)
+                        {
+                            if (equip.Value[i] != creature.virtualItems[i])
+                            {
+                                equipFound = false;
+                                break;
+                            }
+                        }
+
+                        if (equipFound)
+                        {
+                            output += $"UPDATE `creature` SET `equipment_id` = {equip.Key} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- {creature.name}\r\n";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                uint creatureEntry = Convert.ToUInt32(mainForm.textBox_ParsedFileAdvisor_CreatureEquipmentId.Text);
+
+                if (creatures.Values.Count(x => x.entry == creatureEntry) == 0)
+                {
+                    mainForm.textBox_ParsedFileAdvisor_Output.Text = $"There is no creatures in sniff with entry {creatureEntry}!";
+                    return;
+                }
+
+                if (!equipTemplates.ContainsKey(creatureEntry))
+                {
+                    mainForm.textBox_ParsedFileAdvisor_Output.Text = $"Creature with entry {creatureEntry} doesn't have any equip template!";
+                    return;
+                }
+
+                List<KeyValuePair<byte, List<uint>>> equipTemplatesByEntry = equipTemplates[creatureEntry];
+                if (equipTemplatesByEntry.Count == 1)
+                {
+                    mainForm.textBox_ParsedFileAdvisor_Output.Text = $"Creature with entry {creatureEntry} has only 1 equip template!";
+                }
+                else
+                {
+                    foreach (Creature creature in creatures.Values.Where(x => x.entry == creatureEntry))
+                    {
+                        foreach (var equip in equipTemplatesByEntry)
+                        {
+                            bool equipFound = true;
+
+                            for (int i = 0; i < 3; i++)
+                            {
+                                if (equip.Value[i] != creature.virtualItems[i])
+                                {
+                                    equipFound = false;
+                                    break;
+                                }
+                            }
+
+                            if (equipFound)
+                            {
+                                output += $"UPDATE `creature` SET `equipment_id` = {equip.Key} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- {creature.name}\r\n";
+                            }
+                        }
+                    }
+                }
+            }
+
+            mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
+        }
+
+        public bool IsCreatureExistOnDb(string guid)
+        {
+            string linkedId = creatures[guid].GetLinkedId();
+
+            string creatureQuery = "SELECT `linked_id` FROM `creature` WHERE `linked_id` = '" + linkedId + "';";
+            var creatureDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(creatureQuery) : null;
+
+            if (creatureDs != null && creatureDs.Tables["table"].Rows.Count > 0)
+                return true;
+
+            return false;
         }
     }
 }

@@ -790,5 +790,13 @@ namespace WoWDeveloperAssistant
                 textBox_DatabaseAdvisor_FindWrongAurasInAddons.Text = "";
             }
         }
+
+        private void textBox_ParsedFileAdvisor_CreatureEquipmentId_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.GetEquipmentIdForCreature();
+        }
     }
 }

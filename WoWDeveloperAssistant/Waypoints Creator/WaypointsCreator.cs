@@ -735,7 +735,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             bool alreadyHaveWaypointsOrRelatedToFormation = false;
 
             string oldFormationSqlQuery = "SELECT `leaderLinkedId`, `memberLinkedId` FROM `creature_formations` WHERE `leaderLinkedId` = '" + linkedId + "' OR " + "`memberLinkedId` = '" + linkedId + "';";
-            var oldCreatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(oldFormationSqlQuery) : null;
+            var oldCreatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(oldFormationSqlQuery) : null;
 
             if (oldCreatureFormationDs != null && oldCreatureFormationDs.Tables["table"].Rows.Count > 0)
             {
@@ -753,7 +753,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (!alreadyHaveWaypointsOrRelatedToFormation)
             {
                 string newFormationSqlQuery = "SELECT `LeaderLinkedId`, `MemberLinkedId` FROM `creature_group_members` WHERE `LeaderLinkedId` = '" + linkedId + "' OR " + "`MemberLinkedId` = '" + linkedId + "';";
-                var newCreatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(newFormationSqlQuery) : null;
+                var newCreatureFormationDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(newFormationSqlQuery) : null;
 
                 if (newCreatureFormationDs != null && newCreatureFormationDs.Tables["table"].Rows.Count > 0)
                 {
@@ -772,7 +772,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (!alreadyHaveWaypointsOrRelatedToFormation)
             {
                 string oldWaypointSqlQuery = "SELECT `path_id` FROM `creature_addon` WHERE `linked_id` = '" + linkedId + "';";
-                var oldWaypointsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(oldWaypointSqlQuery) : null;
+                var oldWaypointsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(oldWaypointSqlQuery) : null;
 
                 if (oldWaypointSqlQuery != null && oldWaypointsDs.Tables["table"].Rows.Count > 0)
                 {
@@ -790,7 +790,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (!alreadyHaveWaypointsOrRelatedToFormation)
             {
                 string newWaypointSqlQuery = "SELECT `linked_id` FROM `waypoint_data` WHERE `linked_id` = '" + linkedId + "';";
-                var newWaypointsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(newWaypointSqlQuery) : null;
+                var newWaypointsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(newWaypointSqlQuery) : null;
 
                 if (newWaypointSqlQuery != null && newWaypointsDs.Tables["table"].Rows.Count > 0)
                 {
@@ -806,7 +806,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string linkedId = linkedid == "" ? creaturesDict[guid].GetLinkedId() : linkedid;
             bool alreadyHaveRandomMovement = false;
 
-            var creatureMovementDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `MovementType` FROM `creature` WHERE `linked_id` = '{linkedId}';") : null;
+            var creatureMovementDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `MovementType` FROM `creature` WHERE `linked_id` = '{linkedId}';") : null;
 
             if (creatureMovementDs != null && creatureMovementDs.Tables["table"].Rows.Count > 0)
             {
@@ -833,7 +833,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string linkedId = creaturesDict[guid].GetLinkedId();
 
             string creatureQuery = "SELECT `linked_id` FROM `creature` WHERE `linked_id` = '" + linkedId + "';";
-            var creatureDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(creatureQuery) : null;
+            var creatureDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(creatureQuery) : null;
 
             if (creatureDs != null && creatureDs.Tables["table"].Rows.Count > 0)
                 return true;
@@ -852,10 +852,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string addonSqlQuery = "SELECT `linked_id` FROM `creature_addon` WHERE `linked_id` IN (" + linkedIds + ") AND `path_id` != 0;";
             string waypointDataSqlQuery = "SELECT `linked_id` FROM `waypoint_data` WHERE `linked_id` IN (" + linkedIds + ");";
 
-            var oldCreatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(oldFormationSqlQuery) : null;
-            var newCreatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(newFormationSqlQuery) : null;
-            var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(addonSqlQuery) : null;
-            var waypointDataDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(waypointDataSqlQuery) : null;
+            var oldCreatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(oldFormationSqlQuery) : null;
+            var newCreatureFormationsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(newFormationSqlQuery) : null;
+            var creatureAddonDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(addonSqlQuery) : null;
+            var waypointDataDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(waypointDataSqlQuery) : null;
 
             if (oldCreatureFormationsDs != null && oldCreatureFormationsDs.Tables["table"].Rows.Count > 0)
             {
@@ -1333,7 +1333,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 }
 
-                var waypointScriptsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid` FROM `waypoint_scripts` WHERE `id` LIKE '{originalCreature.entry}%';") : null;
+                var waypointScriptsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`, `guid` FROM `waypoint_scripts` WHERE `id` LIKE '{originalCreature.entry}%';") : null;
                 List<WaypointScript> waypointScripts = new List<WaypointScript>();
 
                 if (waypointScriptsDs != null && waypointScriptsDs.Tables["table"].Rows.Count > 0)
@@ -1616,7 +1616,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         private Dictionary<string, KeyValuePair<Creature, float>> GetPossibleCreaturesForWaypoints(Creature creature)
         {
-            var creaturePositionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z`, `orientation` FROM `creature` WHERE `id` = {creature.entry};") : null;
+            var creaturePositionsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z`, `orientation` FROM `creature` WHERE `id` = {creature.entry};") : null;
             Dictionary<string, KeyValuePair<Creature, float>> possibleCreatures = new Dictionary<string, KeyValuePair<Creature, float>>();
 
             if (creaturePositionsDs != null && creaturePositionsDs.Tables["table"].Rows.Count > 0)

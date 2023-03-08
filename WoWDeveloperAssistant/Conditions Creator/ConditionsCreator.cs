@@ -72,7 +72,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
 
             string checkConditionInDbQuery = "SELECT * FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + sourceType + " AND `SourceGroup` = " + sourceGroup + " AND `SourceEntry` = " + sourceEntry + ";";
 
-            var conditionsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery(checkConditionInDbQuery) : null;
+            var conditionsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(checkConditionInDbQuery) : null;
 
             if (conditionsDs != null && conditionsDs.Tables["table"].Rows.Count != 0)
             {

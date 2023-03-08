@@ -54,7 +54,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 for (int j = 0; j < gossip.Value.Count(); j++)
                 {
                     int broadcastTextId = gossip.Value[j];
-                    DataSet npcTexts = SQLModule.DatabaseSelectQuery($"SELECT `id` FROM `npc_text` WHERE `BroadcastTextID0` = {broadcastTextId} OR `BroadcastTextID1` = {broadcastTextId} OR `BroadcastTextID2` = {broadcastTextId} OR `BroadcastTextID3` = {broadcastTextId} OR `BroadcastTextID4` = {broadcastTextId} OR `BroadcastTextID5` = {broadcastTextId} OR `BroadcastTextID6` = {broadcastTextId} OR `BroadcastTextID7` = {broadcastTextId};");
+                    DataSet npcTexts = SQLModule.WorldSelectQuery($"SELECT `id` FROM `npc_text` WHERE `BroadcastTextID0` = {broadcastTextId} OR `BroadcastTextID1` = {broadcastTextId} OR `BroadcastTextID2` = {broadcastTextId} OR `BroadcastTextID3` = {broadcastTextId} OR `BroadcastTextID4` = {broadcastTextId} OR `BroadcastTextID5` = {broadcastTextId} OR `BroadcastTextID6` = {broadcastTextId} OR `BroadcastTextID7` = {broadcastTextId};");
                     if (npcTexts == null || npcTexts.Tables["table"].Rows.Count == 0)
                     {
                         gossipWithNpcTextsDict[gossip.Key].Add(broadcastTextId * 10);
@@ -224,7 +224,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
         private static bool IsGossipMenuExistsInDb(string[] gossipRow)
         {
-            DataSet gossipMenu = SQLModule.DatabaseSelectQuery($"SELECT `entry` FROM `gossip_menu` WHERE `entry` = {gossipRow[0].Replace("(", "")} AND `text_id` = {gossipRow[1]};");
+            DataSet gossipMenu = SQLModule.WorldSelectQuery($"SELECT `entry` FROM `gossip_menu` WHERE `entry` = {gossipRow[0].Replace("(", "")} AND `text_id` = {gossipRow[1]};");
             if (gossipMenu == null || gossipMenu.Tables["table"].Rows.Count == 0)
                 return false;
 

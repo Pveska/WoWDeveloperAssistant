@@ -27,6 +27,7 @@ namespace WoWDeveloperAssistant.Misc
         public bool isCyclic;
         public string transportGuid;
         public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
+        public List<uint> virtualItems;
 
         public Creature() { }
 
@@ -47,6 +48,7 @@ namespace WoWDeveloperAssistant.Misc
             isCyclic = updatePacket.isCyclic;
             transportGuid = updatePacket.transportGuid;
             filterKeys = updatePacket.filterKeys;
+            virtualItems = updatePacket.virtualItems;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -92,6 +94,11 @@ namespace WoWDeveloperAssistant.Misc
             if (filterKeys.Count == 0)
             {
                 filterKeys = updatePacket.filterKeys;
+            }
+
+            if (virtualItems.Count == 0)
+            {
+                virtualItems = updatePacket.virtualItems;
             }
         }
 
@@ -410,7 +417,7 @@ namespace WoWDeveloperAssistant.Misc
             if (!Properties.Settings.Default.UsingDB)
                 return false;
 
-            var creatureTemplateWdbDs = SQLModule.DatabaseSelectQuery("SELECT `Type` FROM `creature_template_wdb` WHERE `entry` = " + entry + ";");
+            var creatureTemplateWdbDs = SQLModule.WorldSelectQuery("SELECT `Type` FROM `creature_template_wdb` WHERE `entry` = " + entry + ";");
 
             if (creatureTemplateWdbDs != null && creatureTemplateWdbDs.Tables["table"].Rows.Count > 0)
             {

@@ -18,7 +18,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             if (Properties.Settings.Default.UsingDB)
             {
-                DataSet creatureAddonDs = SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `path_id` FROM `creature_addon` WHERE `path_id` > 0 AND `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `linked_id` != 0 AND `zoneId` = {zoneId});");
+                DataSet creatureAddonDs = SQLModule.WorldSelectQuery($"SELECT `linked_id`, `path_id` FROM `creature_addon` WHERE `path_id` > 0 AND `linked_id` IN (SELECT `linked_id` FROM `creature` WHERE `linked_id` != 0 AND `zoneId` = {zoneId});");
 
                 if (creatureAddonDs != null && creatureAddonDs.Tables["table"].Rows.Count > 0)
                 {
@@ -53,7 +53,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
 
-            DataSet waypointDataDs = SQLModule.DatabaseSelectQuery($"SELECT `id`, `position_x`, `position_y`, `position_z` FROM `waypoint_data` WHERE `id` IN ({pahtIds});");
+            DataSet waypointDataDs = SQLModule.WorldSelectQuery($"SELECT `id`, `position_x`, `position_y`, `position_z` FROM `waypoint_data` WHERE `id` IN ({pahtIds});");
 
             pahtIds = "";
 
@@ -88,7 +88,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
             }
 
-            DataSet creatureDatasDs = SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `id`, `map`, `phaseId`, `phaseMask` FROM `creature` WHERE `linked_id` IN ({linkedIds});");
+            DataSet creatureDatasDs = SQLModule.WorldSelectQuery($"SELECT `linked_id`, `id`, `map`, `phaseId`, `phaseMask` FROM `creature` WHERE `linked_id` IN ({linkedIds});");
 
             Dictionary<string, object[]> creatureDatasDict = new Dictionary<string, object[]>();
 
@@ -173,7 +173,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             try
             {
                 uint creatureEntry = (uint)creatureDatas[linkedId][1];
-                string creatureName = (string)SQLModule.DatabaseSelectQuery($"SELECT `Name1` FROM `creature_template_wdb` WHERE `entry` = {creatureEntry}").Tables["table"].Rows[0].ItemArray[0];
+                string creatureName = (string)SQLModule.WorldSelectQuery($"SELECT `Name1` FROM `creature_template_wdb` WHERE `entry` = {creatureEntry}").Tables["table"].Rows[0].ItemArray[0];
                 return creatureData += $"Entry: {creatureEntry}, Name: {creatureName}";
             }
             catch

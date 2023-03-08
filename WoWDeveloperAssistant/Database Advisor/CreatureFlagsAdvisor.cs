@@ -278,8 +278,8 @@ namespace WoWDeveloperAssistant.Database_Advisor
             DataSet typeFlagsDs = new DataSet();
             string unitFlagsSqlQuery = "SELECT `npcflag`, `npcflag2`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `flags_extra` FROM `creature_template` WHERE `entry` = " + creatureEntry + ";";
             string typeFlagsSqlQuery = "SELECT `TypeFlags`, `TypeFlags2` FROM `creature_template_wdb` WHERE `entry` = " + creatureEntry + ";";
-            unitFlagsDs = SQLModule.DatabaseSelectQuery(unitFlagsSqlQuery);
-            typeFlagsDs = SQLModule.DatabaseSelectQuery(typeFlagsSqlQuery);
+            unitFlagsDs = SQLModule.WorldSelectQuery(unitFlagsSqlQuery);
+            typeFlagsDs = SQLModule.WorldSelectQuery(typeFlagsSqlQuery);
             if (unitFlagsDs == null || typeFlagsDs == null)
                 return;
 

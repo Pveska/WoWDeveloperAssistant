@@ -45,8 +45,8 @@ namespace WoWDeveloperAssistant.Misc
             uint id = 0;
             uint guid = 0;
 
-            var scriptIdsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT MAX(id) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
-            var scriptGuidsDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT MAX(guid) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
+            var scriptIdsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT MAX(id) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
+            var scriptGuidsDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT MAX(guid) FROM `waypoint_scripts` WHERE `id` LIKE '{baseId}%';") : null;
 
             if (scriptIdsDs != null && scriptIdsDs.Tables["table"].Rows.Count != 0 && scriptIdsDs.Tables["table"].Rows[0][0] != DBNull.Value)
             {
@@ -331,7 +331,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static uint GetMapIdForTransport(uint transportEntry)
         {
-            var mapIdDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery($"SELECT `data6` FROM `gameobject_template` WHERE `entry` = {transportEntry};") : null;
+            var mapIdDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `data6` FROM `gameobject_template` WHERE `entry` = {transportEntry};") : null;
 
             if (mapIdDs != null)
                 return Convert.ToUInt16(mapIdDs.Tables["table"].Rows[0][0].ToString());
@@ -343,7 +343,7 @@ namespace WoWDeveloperAssistant.Misc
         {
             Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
 
-            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery("SELECT `entry`, `Name1` FROM `creature_template_wdb`;") : null;
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery("SELECT `entry`, `Name1` FROM `creature_template_wdb`;") : null;
 
             if (creatureNameDs != null)
             {
@@ -360,7 +360,7 @@ namespace WoWDeveloperAssistant.Misc
         {
             Dictionary<uint, string> namesDict = new Dictionary<uint, string>();
 
-            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.DatabaseSelectQuery("SELECT `ID`, `LogTitle` FROM `quest_template`;") : null;
+            var creatureNameDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery("SELECT `ID`, `LogTitle` FROM `quest_template`;") : null;
 
             if (creatureNameDs != null)
             {
@@ -388,6 +388,18 @@ namespace WoWDeveloperAssistant.Misc
             }
 
             return true;
+        }
+
+        public static string GetCreatureEntries(this Dictionary<string, Creature> creatures)
+        {
+            string output = "";
+
+            foreach (uint entry in creatures.Select(x => x.Value.entry).Distinct())
+            {
+                output += $"{entry}, ";
+            }
+
+            return output.Remove(output.Length - 2);
         }
     }
 }

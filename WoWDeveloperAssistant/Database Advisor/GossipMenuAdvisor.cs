@@ -14,7 +14,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
         {
             string output = "";
 
-            DataSet gossipMenuTextIdDs = SQLModule.DatabaseSelectQuery("SELECT `text_id` FROM `gossip_menu` WHERE `entry` = " + menuId + ";");
+            DataSet gossipMenuTextIdDs = SQLModule.WorldSelectQuery("SELECT `text_id` FROM `gossip_menu` WHERE `entry` = " + menuId + ";");
             if (gossipMenuTextIdDs == null || gossipMenuTextIdDs.Tables["table"].Rows.Count == 0)
             {
                 MessageBox.Show("There is no gossip menu with this Id in your database!");
@@ -27,7 +27,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 {
                     output += "Text Id: " + gossipMenuRow[0].ToString() + "\r\n";
 
-                    DataSet npcTextBroadcastIdDs = SQLModule.DatabaseSelectQuery("SELECT `BroadcastTextID0`, `BroadcastTextID1`, `BroadcastTextID2`, `BroadcastTextID3`, `BroadcastTextID4`, `BroadcastTextID5`, `BroadcastTextID6`, `BroadcastTextID7` FROM `npc_text` WHERE `ID` = " + gossipMenuRow[0].ToString() + ";");
+                    DataSet npcTextBroadcastIdDs = SQLModule.WorldSelectQuery("SELECT `BroadcastTextID0`, `BroadcastTextID1`, `BroadcastTextID2`, `BroadcastTextID3`, `BroadcastTextID4`, `BroadcastTextID5`, `BroadcastTextID6`, `BroadcastTextID7` FROM `npc_text` WHERE `ID` = " + gossipMenuRow[0].ToString() + ";");
                     if (npcTextBroadcastIdDs == null || npcTextBroadcastIdDs.Tables["table"].Rows.Count == 0)
                     {
                         output += "There is no npc text with this TextId in your database!";
@@ -57,7 +57,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 output += "Text Id: " + gossipMenuTextIdDs.Tables["table"].Rows[0][0].ToString() + "\r\n";
 
-                DataSet npcTextBroadcastIdDs = SQLModule.DatabaseSelectQuery("SELECT `BroadcastTextID0`, `BroadcastTextID1`, `BroadcastTextID2`, `BroadcastTextID3`, `BroadcastTextID4`, `BroadcastTextID5`, `BroadcastTextID6`, `BroadcastTextID7` FROM `npc_text` WHERE `ID` = " + gossipMenuTextIdDs.Tables["table"].Rows[0][0].ToString() + ";");
+                DataSet npcTextBroadcastIdDs = SQLModule.WorldSelectQuery("SELECT `BroadcastTextID0`, `BroadcastTextID1`, `BroadcastTextID2`, `BroadcastTextID3`, `BroadcastTextID4`, `BroadcastTextID5`, `BroadcastTextID6`, `BroadcastTextID7` FROM `npc_text` WHERE `ID` = " + gossipMenuTextIdDs.Tables["table"].Rows[0][0].ToString() + ";");
                 if (npcTextBroadcastIdDs == null || npcTextBroadcastIdDs.Tables["table"].Rows.Count == 0)
                 {
                     MessageBox.Show("There is no npc text with this TextId in your database!");

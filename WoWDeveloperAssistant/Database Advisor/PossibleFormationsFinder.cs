@@ -19,7 +19,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
             if (Properties.Settings.Default.UsingDB)
             {
-                DataSet creaturesDs = SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `id` FROM `creature` WHERE `MovementType` IN (3, 4) AND `zoneId` = {zoneId};");
+                DataSet creaturesDs = SQLModule.WorldSelectQuery($"SELECT `linked_id`, `id` FROM `creature` WHERE `MovementType` IN (3, 4) AND `zoneId` = {zoneId};");
 
                 if (creaturesDs != null && creaturesDs.Tables["table"].Rows.Count > 0)
                 {
@@ -39,7 +39,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             {
                 List<Waypoint> leaderWaypoints = new List<Waypoint>();
 
-                DataSet waypointsDs = SQLModule.DatabaseSelectQuery($"SELECT `point`, `position_x`, `position_y`, `position_z` FROM `waypoint_data` WHERE `linked_id` = '{leaderItr.Key}';");
+                DataSet waypointsDs = SQLModule.WorldSelectQuery($"SELECT `point`, `position_x`, `position_y`, `position_z` FROM `waypoint_data` WHERE `linked_id` = '{leaderItr.Key}';");
 
                 if (waypointsDs != null && waypointsDs.Tables["table"].Rows.Count > 0)
                 {
@@ -79,15 +79,15 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 }
 
                 Dictionary<string, KeyValuePair<uint, Position>> possibleFormationMembers = new Dictionary<string, KeyValuePair<uint, Position>>();
-                DataSet creaturesDs = SQLModule.DatabaseSelectQuery($"SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `MovementType` = 0 AND `zoneId` = {zoneId} AND `id` = {leaderItr.Value};");
+                DataSet creaturesDs = SQLModule.WorldSelectQuery($"SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `MovementType` = 0 AND `zoneId` = {zoneId} AND `id` = {leaderItr.Value};");
 
                 if (creaturesDs != null && creaturesDs.Tables["table"].Rows.Count > 0)
                 {
                     foreach (DataRow row in creaturesDs.Tables["table"].Rows)
                     {
-                        DataSet leadersDs = SQLModule.DatabaseSelectQuery($"SELECT * FROM `creature_group_leaders` WHERE `LeaderLinkedId` = '{(string)row.ItemArray[0]}';");
-                        DataSet membersDs = SQLModule.DatabaseSelectQuery($"SELECT * FROM `creature_group_members` WHERE `MemberLinkedId` = '{(string)row.ItemArray[0]}';");
-                        DataSet memberWaypointsDs = SQLModule.DatabaseSelectQuery($"SELECT * FROM `waypoint_data` WHERE `linked_id` = '{(string)row.ItemArray[0]}';");
+                        DataSet leadersDs = SQLModule.WorldSelectQuery($"SELECT * FROM `creature_group_leaders` WHERE `LeaderLinkedId` = '{(string)row.ItemArray[0]}';");
+                        DataSet membersDs = SQLModule.WorldSelectQuery($"SELECT * FROM `creature_group_members` WHERE `MemberLinkedId` = '{(string)row.ItemArray[0]}';");
+                        DataSet memberWaypointsDs = SQLModule.WorldSelectQuery($"SELECT * FROM `waypoint_data` WHERE `linked_id` = '{(string)row.ItemArray[0]}';");
 
                         if ((leadersDs == null || leadersDs.Tables["table"].Rows.Count == 0) && (membersDs == null || membersDs.Tables["table"].Rows.Count == 0) && (memberWaypointsDs == null || memberWaypointsDs.Tables["table"].Rows.Count == 0))
                         {
