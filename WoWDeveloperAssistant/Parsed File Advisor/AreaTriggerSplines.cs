@@ -16,7 +16,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             for (int i = 0; i < lines.Count(); i++)
             {
-                if (lines[i].Contains("UpdateType: CreateObject2"))
+                if (lines[i].Contains("UpdateType: 2 (CreateObject2)"))
                 {
                     if (lines[i + 1].Contains("AreaTrigger") &&
                         LineGetters.GetAreatriggerEntryFromLine(lines[i + 1]) == customEntry)
