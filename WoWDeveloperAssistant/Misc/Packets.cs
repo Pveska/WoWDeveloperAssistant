@@ -661,7 +661,7 @@ namespace WoWDeveloperAssistant.Misc
 
                 do
                 {
-                    if ((lines[index].Contains("UpdateType: 2 (CreateObject1)") || lines[index].Contains("UpdateType: 2 (CreateObject2)")) && ObjectIsValidForParse(lines[index + 1]))
+                    if ((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: 2 (CreateObject2)")) && ObjectIsValidForParse(lines[index + 1]))
                     {
                         UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
                         UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
