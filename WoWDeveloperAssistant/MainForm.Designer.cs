@@ -651,6 +651,7 @@
             this.grid_WaypointsCreator_Waypoints.Size = new System.Drawing.Size(770, 886);
             this.grid_WaypointsCreator_Waypoints.TabIndex = 28;
             this.grid_WaypointsCreator_Waypoints.TabStop = false;
+            this.grid_WaypointsCreator_Waypoints.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_WaypointsCreator_Waypoints_CellContentClick);
             // 
             // gridColumn_Id
             // 

@@ -798,5 +798,13 @@ namespace WoWDeveloperAssistant
 
             parsedFileAdvisor.GetEquipmentIdForCreature();
         }
+
+        private void grid_WaypointsCreator_Waypoints_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (ModifierKeys == Keys.Alt && grid_WaypointsCreator_Waypoints.SelectedRows.Count == 1)
+            {
+                Clipboard.SetText($".go {grid_WaypointsCreator_Waypoints.SelectedCells[1].Value} {grid_WaypointsCreator_Waypoints.SelectedCells[2].Value} {grid_WaypointsCreator_Waypoints.SelectedCells[3].Value}");
+            }
+        }
     }
 }
