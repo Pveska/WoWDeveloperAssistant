@@ -33,7 +33,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     {
                         creatureAddons.Add(LineGetters.GetLinkedIdFromLine(lines[i]), lines[i]);
                         i++;
-                    } while (lines[i] != "");
+                    } while (lines[i] != "" && lines[i] != "-- Commented rows (no insert cap):");
                 }
                 else if (lines[i].Contains("INSERT INTO `gameobject_addon`"))
                 {
