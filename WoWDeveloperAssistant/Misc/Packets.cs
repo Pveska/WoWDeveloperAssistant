@@ -386,13 +386,13 @@ namespace WoWDeveloperAssistant.Misc
                 if (line == "")
                     return false;
 
-                if (line.Contains("UpdateType: 1 (CreateObject1)"))
+                if (line.Contains("UpdateType: 1 (CreateObject1)") || line.Contains("UpdateType: CreateObject1"))
                     return false;
 
-                if (line.Contains("UpdateType: 2 (CreateObject2)"))
+                if (line.Contains("UpdateType: 2 (CreateObject2)") || line.Contains("UpdateType: CreateObject2"))
                     return false;
 
-                if (line.Contains("UpdateType: 0 (Values)"))
+                if (line.Contains("UpdateType: 0 (Values)") || line.Contains("UpdateType: Values"))
                     return false;
 
                 return true;
@@ -661,7 +661,7 @@ namespace WoWDeveloperAssistant.Misc
 
                 do
                 {
-                    if ((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: 2 (CreateObject2)")) && ObjectIsValidForParse(lines[index + 1]))
+                    if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && ObjectIsValidForParse(lines[index + 1]))
                     {
                         UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
                         UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
@@ -932,7 +932,7 @@ namespace WoWDeveloperAssistant.Misc
 
                         --index;
                     }
-                    else if (lines[index].Contains("UpdateType: 0 (Values)") && ObjectIsValidForParse(lines[index + 1]))
+                    else if ((lines[index].Contains("UpdateType: 0 (Values)") || lines[index].Contains("UpdateType: Values")) && ObjectIsValidForParse(lines[index + 1]))
                     {
                         UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
                         UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
@@ -1045,7 +1045,7 @@ namespace WoWDeveloperAssistant.Misc
 
                         --index;
                     }
-                    else if ((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: 2 (CreateObject2)")) && lines[index + 1].IsConversationLine())
+                    else if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && lines[index + 1].IsConversationLine())
                     {
                         UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
                         UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>());
