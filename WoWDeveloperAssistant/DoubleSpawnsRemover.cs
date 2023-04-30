@@ -105,7 +105,7 @@ namespace WoWDeveloperAssistant
 
             if (creatureEntries.Count != 0)
             {
-                creaturesDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `creature` WHERE `id` IN (" + GetStringFromList(creatureEntries) + ")");
+                creaturesDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z`, `map` FROM `creature` WHERE `id` IN (" + GetStringFromList(creatureEntries) + ")");
 
                 foreach (DataRow row in creaturesDataRowCollection)
                 {
@@ -123,7 +123,7 @@ namespace WoWDeveloperAssistant
 
             if (gameobjectEntries.Count != 0)
             {
-                gameobjectsDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z` FROM `gameobject` WHERE `id` IN (" + GetStringFromList(gameobjectEntries) + ")");
+                gameobjectsDataRowCollection = GetDataRowCollectionFromQuery("SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z`, `map` FROM `gameobject` WHERE `id` IN (" + GetStringFromList(gameobjectEntries) + ")");
 
                 foreach (DataRow row in gameobjectsDataRowCollection)
                 {
@@ -164,6 +164,7 @@ namespace WoWDeveloperAssistant
                         string linkedId = LineGetters.GetLinkedIdFromLine(lines[i]);
                         uint entry = LineGetters.GetEntryFromLine(lines[i]);
                         Position spawnPos = GetPositionFromLine(lines[i]);
+                        uint map = LineGetters.GetMapIdFromLine(lines[i]);
                         if (linkedId == "" || entry == 0 || !spawnPos.IsValid())
                             continue;
 
@@ -178,20 +179,23 @@ namespace WoWDeveloperAssistant
 
                         foreach (DataRow row in creaturesDataRowDictionary[entry.ToString()])
                         {
-                            if (linkedId == row[0].ToString())
+                            if (Convert.ToUInt32(row[5]) == map)
                             {
-                                creaturesRemovedUsingLinkedIdCount++;
-                                creatureFound = true;
-                                break;
-                            }
+                                if (linkedId == row[0].ToString())
+                                {
+                                    creaturesRemovedUsingLinkedIdCount++;
+                                    creatureFound = true;
+                                    break;
+                                }
 
-                            if (CoorsIsEqual(spawnPos.x, GetRoundedValueFromStringCoor(row[2].ToString())) &&
-                                CoorsIsEqual(spawnPos.y, GetRoundedValueFromStringCoor(row[3].ToString())) &&
-                                CoorsIsEqual(spawnPos.z, GetRoundedValueFromStringCoor(row[4].ToString())))
-                            {
-                                creaturesRemovedUsingPositionCompareCount++;
-                                creatureFound = true;
-                                break;
+                                if (CoorsIsEqual(spawnPos.x, GetRoundedValueFromStringCoor(row[2].ToString())) &&
+                                    CoorsIsEqual(spawnPos.y, GetRoundedValueFromStringCoor(row[3].ToString())) &&
+                                    CoorsIsEqual(spawnPos.z, GetRoundedValueFromStringCoor(row[4].ToString())))
+                                {
+                                    creaturesRemovedUsingPositionCompareCount++;
+                                    creatureFound = true;
+                                    break;
+                                }
                             }
                         }
 
@@ -272,6 +276,7 @@ namespace WoWDeveloperAssistant
                         string linkedId = LineGetters.GetLinkedIdFromLine(lines[i]);
                         uint entry = LineGetters.GetEntryFromLine(lines[i]);
                         Position spawnPos = GetPositionFromLine(lines[i]);
+                        uint map = LineGetters.GetMapIdFromLine(lines[i]);
                         if (linkedId == "" || entry == 0 || !spawnPos.IsValid())
                             continue;
 
@@ -286,20 +291,23 @@ namespace WoWDeveloperAssistant
 
                         foreach (DataRow row in gameobjectDataRowDictionary[entry.ToString()])
                         {
-                            if (linkedId == row[0].ToString())
+                            if (Convert.ToUInt32(row[5]) == map)
                             {
-                                gameobjectsRemovedUsingLinkedIdCount++;
-                                gameobjectFound = true;
-                                break;
-                            }
+                                if (linkedId == row[0].ToString())
+                                {
+                                    gameobjectsRemovedUsingLinkedIdCount++;
+                                    gameobjectFound = true;
+                                    break;
+                                }
 
-                            if (CoorsIsEqual(spawnPos.x, GetRoundedValueFromStringCoor(row[2].ToString())) &&
-                                CoorsIsEqual(spawnPos.y, GetRoundedValueFromStringCoor(row[3].ToString())) &&
-                                CoorsIsEqual(spawnPos.z, GetRoundedValueFromStringCoor(row[4].ToString())))
-                            {
-                                gameobjectsRemovedUsingPositionCompareCount++;
-                                gameobjectFound = true;
-                                break;
+                                if (CoorsIsEqual(spawnPos.x, GetRoundedValueFromStringCoor(row[2].ToString())) &&
+                                    CoorsIsEqual(spawnPos.y, GetRoundedValueFromStringCoor(row[3].ToString())) &&
+                                    CoorsIsEqual(spawnPos.z, GetRoundedValueFromStringCoor(row[4].ToString())))
+                                {
+                                    gameobjectsRemovedUsingPositionCompareCount++;
+                                    gameobjectFound = true;
+                                    break;
+                                }
                             }
                         }
 
