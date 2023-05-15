@@ -43,12 +43,12 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
                 try
                 {
-                    if (auras.Count(x => DB2.Db2.SpellDurationStore[Convert.ToUInt32(x)] != -1) != 0)
+                    if (auras.Count(x => DB2.Db2.SpellDurationStore[Convert.ToInt32(x)] != -1) != 0)
                     {
                         string updateString = "UPDATE `creature_addon` SET `auras` = '";
                         string commentString = "-- Removed auras: ";
 
-                        foreach (string auraToAdd in auras.Where(x => DB2.Db2.SpellDurationStore[Convert.ToUInt32(x)] == -1))
+                        foreach (string auraToAdd in auras.Where(x => DB2.Db2.SpellDurationStore[Convert.ToInt32(x)] == -1))
                         {
                             int auraId = Convert.ToInt32(auraToAdd);
                             updateString += $"{auraToAdd} ";
@@ -61,7 +61,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
 
                         updateString += $"' WHERE `linked_id` = '{addon.Key}';";
 
-                        foreach (string auraToRemove in auras.Where(x => DB2.Db2.SpellDurationStore[Convert.ToUInt32(x)] != -1))
+                        foreach (string auraToRemove in auras.Where(x => DB2.Db2.SpellDurationStore[Convert.ToInt32(x)] != -1))
                         {
                             int auraId = Convert.ToInt32(auraToRemove);
                             commentString += $"{auraId} - ({DB2.Db2.SpellName[auraId].Name}), ";

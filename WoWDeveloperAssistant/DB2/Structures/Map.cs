@@ -12,7 +12,7 @@
         public float Corpse0;
         public float Corpse1;
         public byte MapType;
-        public byte InstanceType;
+        public sbyte InstanceType;
         public byte ExpansionId;
         public ushort AreaTableId;
         public short LoadingScreenId;
@@ -26,9 +26,9 @@
         public short WindSettingsId;
         public int ZmpFileDataId;
         public int WdtFileDataId;
-        public int Field_10_0_0_44649_022;
-        public uint Flags;
-        public uint Flags2;
-        public uint Flags3;
+        public int NavigationMaxDistance;
+        public int Flags;
+        public int Flags2;
+        public int Flags3;
     }
 }

@@ -17,15 +17,14 @@
         public ushort IntroSound;
         public uint UwIntroSound;
         public byte FactionGroupMask;
-        public float Ambient_multiplier;
+        public float AmbientMultiplier;
         public byte MountFlags;
-        public ushort PvpCombatWorldStateId;
+        public short PvpCombatWorldStateId;
         public byte WildBattlePetLevelMin;
         public byte WildBattlePetLevelMax;
         public byte WindSettingsId;
-        public uint ContentTuningId;
-        public uint Flags;
-        public uint Flags2;
+        public int ContentTuningId;
+        public int[] Flags = new int[2];
         public ushort[] LiquidTypeId = new ushort[4];
     }
 }

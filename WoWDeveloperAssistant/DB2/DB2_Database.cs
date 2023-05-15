@@ -39,9 +39,9 @@ namespace DB2
         public static MySqlStorage<SpellRange>       SpellRange { get; set; }
         public static MySqlStorage<SpellDuration>    SpellDuration { get; set; }
 
-        public static readonly Dictionary<uint, string> MapDifficultyStore = new Dictionary<uint, string>();
+        public static readonly Dictionary<int, string> MapDifficultyStore = new Dictionary<int, string>();
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffect> SpellEffectStore = new Dictionary<Tuple<uint, uint>, SpellEffect>();
-        public static readonly Dictionary<uint, int> SpellDurationStore = new Dictionary<uint, int>();
+        public static readonly Dictionary<int, int> SpellDurationStore = new Dictionary<int, int>();
 
         public static bool IsLoaded()
         {

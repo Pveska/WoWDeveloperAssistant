@@ -3,22 +3,22 @@
     [Hotfix("SpellEffect")]
     public class SpellEffect
     {
-        public ushort EffectAura;
-        public uint DifficultyId;
-        public uint EffectIndex;
-        public uint Effect;
+        public short EffectAura;
+        public int DifficultyId;
+        public int EffectIndex;
+        public int Effect;
         public float EffectAmplitude;
-        public uint EffectAttributes;
-        public uint EffectAuraPeriod;
+        public int EffectAttributes;
+        public int EffectAuraPeriod;
         public float EffectBonusCoefficient;
         public float EffectChainAmplitude;
-        public uint EffectChainTargets;
-        public uint EffectItemType;
-        public uint EffectMechanic;
+        public int EffectChainTargets;
+        public int EffectItemType;
+        public int EffectMechanic;
         public float EffectPointsPerResource;
         public float EffectPosFacing;
         public float EffectRealPointsPerLevel;
-        public uint EffectTriggerSpell;
+        public int EffectTriggerSpell;
         public float BonusCoefficientFromAP;
         public float PvpMultiplier;
         public float Coefficient;
@@ -29,8 +29,8 @@
         public int ScalingClass;
         public int[] EffectMiscValue = new int[2];
         public uint[] EffectRadiusIndex = new uint[2];
-        public uint[] EffectSpellClassMask = new uint[4];
-        public uint[] ImplicitTarget = new uint[2];
+        public int[] EffectSpellClassMask = new int[4];
+        public short[] ImplicitTarget = new short[2];
         public int SpellId;
     }
 }
