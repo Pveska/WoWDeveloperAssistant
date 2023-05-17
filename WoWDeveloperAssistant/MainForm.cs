@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Core_Script_Templates;
 using WoWDeveloperAssistant.Database_Advisor;
