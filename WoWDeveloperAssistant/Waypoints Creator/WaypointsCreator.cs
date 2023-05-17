@@ -10,7 +10,6 @@ using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Utils;
 using static WoWDeveloperAssistant.Misc.Packets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Reflection;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {

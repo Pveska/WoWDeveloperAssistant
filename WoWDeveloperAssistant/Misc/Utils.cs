@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-using WoWDeveloperAssistant.Conditions_Creator;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Packets;
 
@@ -33,7 +32,8 @@ namespace WoWDeveloperAssistant.Misc
             BUILD_9_2_7,
             BUILD_10_0_2,
             BUILD_10_0_5,
-            BUILD_10_0_7
+            BUILD_10_0_7,
+            BUILD_10_1_0,
         };
 
         public static string GetValueWithoutComma(this float value)
