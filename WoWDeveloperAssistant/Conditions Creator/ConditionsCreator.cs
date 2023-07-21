@@ -37,12 +37,12 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             if (createdConditionsList.Count == 0)
             {
                 createdConditionsList.Add("DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = " + condition.sourceType + " AND `SourceGroup` = " + condition.sourceGroup + " AND `SourceEntry` = " + condition.sourceEntry + ";");
-                createdConditionsList.Add("INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ScriptName`, `Comment`) VALUES");
+                createdConditionsList.Add("INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ConditionString`, `ScriptName`, `Comment`) VALUES");
             }
 
             if (condition.scriptName == "")
             {
-                string conditionString = "(" + condition.sourceType + ", " + condition.sourceGroup + ", " + condition.sourceEntry + ", " + condition.sourceId + ", " + condition.elseGroup + ", " + condition.conditionType + ", " + condition.conditionTarget + ", " + condition.conditionValue1 + ", " + condition.conditionValue2 + ", " + condition.conditionValue3 + ", " + condition.negativeCondition + ", " + "\"\"" + ", " + GetCommentForCondition(condition) + ")";
+                string conditionString = $"({condition.sourceType}, {condition.sourceGroup}, {condition.sourceEntry}, {condition.sourceId}, {condition.elseGroup}, {condition.conditionType}, {condition.conditionTarget}, {condition.conditionValue1}, {condition.conditionValue2}, {condition.conditionValue3}, {condition.negativeCondition}, \"\", \"\", {GetCommentForCondition(condition)})";
 
                 if (!createdConditionsList.Contains(conditionString))
                 {
@@ -51,7 +51,7 @@ namespace WoWDeveloperAssistant.Conditions_Creator
             }
             else
             {
-                string conditionString = "(" + condition.sourceType + ", " + condition.sourceGroup + ", " + condition.sourceEntry + ", " + condition.sourceId + ", " + condition.elseGroup + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + 0 + ", " + "\"" + condition.scriptName + "\"" + ", " + GetCommentForCondition(condition) + ")";
+                string conditionString = $"({condition.sourceType}, {condition.sourceGroup}, {condition.sourceEntry}, {condition.sourceId}, {condition.elseGroup}, 0, 0, 0, 0, 0, 0, \"\", \"{condition.scriptName}\", {GetCommentForCondition(condition)})";
 
                 if (!createdConditionsList.Contains(conditionString))
                 {

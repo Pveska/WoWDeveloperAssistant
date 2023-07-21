@@ -85,7 +85,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
             output += GetPhaseDefinitionStringFromDictionary(zonesLinkedToPhases, creaturesData.Values.ToList());
 
             output += $"\r\nDELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 26 AND `SourceGroup` IN ({GetZoneIdsStringFromDictionary(zonesLinkedToPhases)}) AND `SourceEntry` IN ({GetPhaseIdsStringFromDictionary(zonesLinkedToPhases)});\r\n";
-            output += "INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES\r\n";
+            output += "INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ConditionString`, `ScriptName`, `Comment`) VALUES\r\n";
             output += GetPhaseConditionsStringFromDictionary(zonesLinkedToPhases);
 
             textBox.Text = output;
@@ -339,7 +339,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
                 {
                     for (int j = 0; j < dict.ElementAt(i).Value.Count; j++)
                     {
-                        output += $"(26, {dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 47, 0, 12345, 74, 0, 0, 0, 0, '', 'Phase {dict.Values.ElementAt(i).ElementAt(j)} in zone {dict.ElementAt(i).Key} if player XXX quest 12345'),\r\n";
+                        output += $"(26, {dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 47, 0, 12345, 74, 0, 0, 0, 0, '', '', 'Phase {dict.Values.ElementAt(i).ElementAt(j)} in zone {dict.ElementAt(i).Key} if player XXX quest 12345'),\r\n";
                     }
                 }
                 else
@@ -348,11 +348,11 @@ namespace WoWDeveloperAssistant.Database_Advisor
                     {
                         if (j + 1 < dict.Values.ElementAt(i).Count())
                         {
-                            output += $"(26, {dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 47, 0, 12345, 74, 0, 0, 0, 0, '', 'Phase {dict.Values.ElementAt(i).ElementAt(j)} in zone {dict.ElementAt(i).Key} if player XXX quest 12345'),\r\n";
+                            output += $"(26, {dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 47, 0, 12345, 74, 0, 0, 0, 0, '', '', 'Phase {dict.Values.ElementAt(i).ElementAt(j)} in zone {dict.ElementAt(i).Key} if player XXX quest 12345'),\r\n";
                         }
                         else
                         {
-                            output += $"(26, {dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 47, 0, 12345, 74, 0, 0, 0, 0, '', 'Phase {dict.Values.ElementAt(i).ElementAt(j)} in zone {dict.ElementAt(i).Key} if player XXX quest 12345');\r\n";
+                            output += $"(26, {dict.ElementAt(i).Key}, {dict.Values.ElementAt(i).ElementAt(j)}, 0, 0, 47, 0, 12345, 74, 0, 0, 0, 0, '', '', 'Phase {dict.Values.ElementAt(i).ElementAt(j)} in zone {dict.ElementAt(i).Key} if player XXX quest 12345');\r\n";
                         }
                     }
                 }
