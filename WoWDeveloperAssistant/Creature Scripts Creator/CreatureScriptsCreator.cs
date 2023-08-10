@@ -37,7 +37,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             if (mainForm.checkBox_CreatureScriptsCreator_OnlyCombatSpells.Checked)
             {
-                foreach (var spell in spellsList.Where(spell => spell.isCombatSpell))
+                foreach (var spell in spellsList.Where(spell => spell.isCombatSpell && spell.name != "Unknown"))
                 {
                     mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Add(spell.spellId, spell.name, spell.spellStartCastTimes.Min().ToFormattedString(), spell.combatCastTimings.minCastTime.ToFormattedString(), spell.combatCastTimings.maxCastTime.ToFormattedString(), spell.combatCastTimings.minRepeatTime.ToFormattedString(), spell.combatCastTimings.maxRepeatTime.ToFormattedString(), spell.castTimes, spell);
                 }
@@ -46,7 +46,10 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 foreach (Spell spell in spellsList)
                 {
-                    mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Add(spell.spellId, spell.name, spell.combatCastTimings.minCastTime.ToFormattedString(), 0, 0, 0, 0, spell.castTimes, spell);
+                    if (spell.name != "Unknown")
+                    {
+                        mainForm.dataGridView_CreatureScriptsCreator_Spells.Rows.Add(spell.spellId, spell.name, spell.combatCastTimings.minCastTime.ToFormattedString(), 0, 0, 0, 0, spell.castTimes, spell);
+                    }
                 }
             }
 

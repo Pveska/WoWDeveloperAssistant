@@ -18,7 +18,7 @@
         public uint UwIntroSound;
         public byte FactionGroupMask;
         public float AmbientMultiplier;
-        public byte MountFlags;
+        public int MountFlags;
         public short PvpCombatWorldStateId;
         public byte WildBattlePetLevelMin;
         public byte WildBattlePetLevelMax;
