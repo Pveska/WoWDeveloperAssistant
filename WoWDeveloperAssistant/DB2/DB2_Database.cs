@@ -38,10 +38,13 @@ namespace DB2
         public static MySqlStorage<SpellRadius>      SpellRadius { get; set; }
         public static MySqlStorage<SpellRange>       SpellRange { get; set; }
         public static MySqlStorage<SpellDuration>    SpellDuration { get; set; }
+        public static MySqlStorage<QuestV2>          QuestV2 { get; set; }
+
 
         public static readonly Dictionary<int, string> MapDifficultyStore = new Dictionary<int, string>();
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffect> SpellEffectStore = new Dictionary<Tuple<uint, uint>, SpellEffect>();
         public static readonly Dictionary<int, int> SpellDurationStore = new Dictionary<int, int>();
+        public static readonly Dictionary<int, int> QuestBitsStore = new Dictionary<int, int>();
 
         public static bool IsLoaded()
         {
@@ -111,6 +114,17 @@ namespace DB2
                     if (!SpellDurationStore.ContainsKey(spellMisc.Value.SpellId))
                     {
                         SpellDurationStore.Add(spellMisc.Value.SpellId, SpellDuration[spellMisc.Value.DurationIndex].MaxDuration != 2147483647 ? SpellDuration[spellMisc.Value.DurationIndex].MaxDuration : -1);
+                    }
+                }
+            }
+
+            if (QuestV2 != null && QuestBitsStore.Count == 0)
+            {
+                foreach (var quest in QuestV2)
+                {
+                    if (!QuestBitsStore.ContainsKey(quest.Value.UniqueBitFlag))
+                    {
+                        QuestBitsStore.Add(quest.Value.UniqueBitFlag, quest.Key);
                     }
                 }
             }

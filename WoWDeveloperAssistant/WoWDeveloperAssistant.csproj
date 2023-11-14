@@ -130,6 +130,7 @@
     <Compile Include="DB2\Structures\Map.cs" />
     <Compile Include="DB2\Structures\MapDifficulty.cs" />
     <Compile Include="DB2\Structures\ModifierTree.cs" />
+    <Compile Include="DB2\Structures\QuestV2.cs" />
     <Compile Include="DB2\Structures\SpellDuration.cs" />
     <Compile Include="DB2\Structures\SpellEffect.cs" />
     <Compile Include="DB2\Structures\SpellMisc.cs" />

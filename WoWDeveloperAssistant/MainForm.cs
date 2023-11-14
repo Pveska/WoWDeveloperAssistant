@@ -804,5 +804,13 @@ namespace WoWDeveloperAssistant
                 Clipboard.SetText($".go {grid_WaypointsCreator_Waypoints.SelectedCells[1].Value} {grid_WaypointsCreator_Waypoints.SelectedCells[2].Value} {grid_WaypointsCreator_Waypoints.SelectedCells[3].Value}");
             }
         }
+
+        private void textBox_ParsedFileAdvisor_PlayerCompletedQuests_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.GetPlayerCompletedQuests();
+        }
     }
 }
