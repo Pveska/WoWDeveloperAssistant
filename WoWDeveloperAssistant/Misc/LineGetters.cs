@@ -197,6 +197,8 @@ namespace WoWDeveloperAssistant.Misc
                         return BuildVersions.BUILD_10_2_5;
                     else if (line.Contains("V10_2_6"))
                         return BuildVersions.BUILD_10_2_6;
+                    else if (line.Contains("V10_2_7"))
+                        return BuildVersions.BUILD_10_2_7;
 
                     return BuildVersions.BUILD_UNKNOWN;
                 }
