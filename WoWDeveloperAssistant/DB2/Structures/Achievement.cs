@@ -19,5 +19,7 @@
         public uint CriteriaTree;
         public short SharesCriteria;
         public int CovenantID;
+        public int HiddenBeforeDisplaySeason;
+        public int LegacyAfterTimeEvent;
     }
 }

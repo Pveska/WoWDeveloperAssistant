@@ -46,7 +46,9 @@ namespace WoWDeveloperAssistant.Misc
                 CMSG_MOVE_HEARTBEAT,
                 SMSG_QUEST_UPDATE_ADD_CREDIT,
                 SMSG_QUEST_UPDATE_COMPLETE,
-                SMSG_PLAY_ONE_SHOT_ANIM_KIT
+                SMSG_PLAY_ONE_SHOT_ANIM_KIT,
+                SMSG_INIT_WORLD_STATES,
+                SMSG_UPDATE_WORLD_STATE
             }
 
             public static PacketTypes GetPacketTypeFromLine(string line)
@@ -127,6 +129,8 @@ namespace WoWDeveloperAssistant.Misc
 
                         break;
                     }
+                    default:
+                        return false;
                 }
 
                 return false;
@@ -2528,6 +2532,100 @@ namespace WoWDeveloperAssistant.Misc
                     return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("QuestID: ", ""));
 
                 return 0;
+            }
+        }
+
+        [Serializable]
+
+        public struct InitWorldStatesPacket
+        {
+            public Dictionary<uint, uint> worldStates;
+            public TimeSpan packetSendTime;
+
+            public InitWorldStatesPacket(Dictionary<uint, uint> worldStates, TimeSpan time)
+            {
+                this.worldStates = worldStates;
+                packetSendTime = time;
+            }
+
+            public static InitWorldStatesPacket ParseInitWorldStatesPacket(string[] lines, long index)
+            {
+                InitWorldStatesPacket initWorldStatesPacket = new InitWorldStatesPacket(new Dictionary<uint, uint>(), LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    KeyValuePair<uint, uint> worldState = GetWorldStateFromLine(lines[index]);
+                    if (worldState.Key != 0)
+                        initWorldStatesPacket.worldStates.Add(worldState.Key, worldState.Value);
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return initWorldStatesPacket;
+            }
+
+            private static KeyValuePair<uint, uint> GetWorldStateFromLine(string line)
+            {
+                uint worldStateId = 0;
+                uint worldStateValue = 0;
+                Regex worldStateIdRegex = new Regex(@"VariableID:{1}\s{1}\d+");
+                Regex worldStateValueRegex = new Regex(@"Value:{1}\s{1}\d+");
+
+                if (worldStateIdRegex.IsMatch(line))
+                    worldStateId = Convert.ToUInt32(worldStateIdRegex.Match(line).ToString().Replace("VariableID: ", ""));
+
+                if (worldStateValueRegex.IsMatch(line))
+                    worldStateValue = Convert.ToUInt32(worldStateValueRegex.Match(line).ToString().Replace("Value: ", ""));
+
+                return new KeyValuePair<uint, uint>(worldStateId, worldStateValue);
+            }
+        }
+
+        [Serializable]
+
+        public struct UpdateWorldStatePacket
+        {
+            public KeyValuePair<uint, uint> worldState;
+            public TimeSpan packetSendTime;
+
+            public UpdateWorldStatePacket(KeyValuePair<uint, uint> worldState, TimeSpan time)
+            {
+                this.worldState = worldState;
+                packetSendTime = time;
+            }
+
+            public static UpdateWorldStatePacket ParseUpdateWorldStatePacket(string[] lines, long index)
+            {
+                UpdateWorldStatePacket updateWorldStatePacket = new UpdateWorldStatePacket(new KeyValuePair<uint, uint>(), LineGetters.GetTimeSpanFromLine(lines[index]));
+
+                do
+                {
+                    KeyValuePair<uint, uint> worldState = GetWorldStateFromLine(lines[index]);
+                    if (worldState.Key != 0)
+                        updateWorldStatePacket.worldState = worldState;
+
+                    index++;
+                }
+                while (lines[index] != "");
+
+                return updateWorldStatePacket;
+            }
+
+            private static KeyValuePair<uint, uint> GetWorldStateFromLine(string line)
+            {
+                uint worldStateId = 0;
+                uint worldStateValue = 0;
+                Regex worldStateIdRegex = new Regex(@"VariableID:{1}\s{1}\d+");
+                Regex worldStateValueRegex = new Regex(@"Value:{1}\s{1}\d+");
+
+                if (worldStateIdRegex.IsMatch(line))
+                    worldStateId = Convert.ToUInt32(worldStateIdRegex.Match(line).ToString().Replace("VariableID: ", ""));
+
+                if (worldStateValueRegex.IsMatch(line))
+                    worldStateValue = Convert.ToUInt32(worldStateValueRegex.Match(line).ToString().Replace("Value: ", ""));
+
+                return new KeyValuePair<uint, uint>(worldStateId, worldStateValue);
             }
         }
     }

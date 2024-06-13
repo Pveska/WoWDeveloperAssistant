@@ -233,6 +233,8 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Label();
+            this.button_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -2057,6 +2059,8 @@
             // 
             // tabPage_ParsedFileAdvisor
             // 
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.button_ParsedFileAdvisor_WorldStates);
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_WorldStates);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_PlayerCompletedQuests);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_PlayerCompletedQuests);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_CreatureEquipmentId);
@@ -2299,6 +2303,25 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
+            // label_ParsedFileAdvisor_WorldStates
+            // 
+            this.label_ParsedFileAdvisor_WorldStates.AutoSize = true;
+            this.label_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(37, 487);
+            this.label_ParsedFileAdvisor_WorldStates.Name = "label_ParsedFileAdvisor_WorldStates";
+            this.label_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(101, 20);
+            this.label_ParsedFileAdvisor_WorldStates.TabIndex = 41;
+            this.label_ParsedFileAdvisor_WorldStates.Text = "World States";
+            // 
+            // button_ParsedFileAdvisor_WorldStates
+            // 
+            this.button_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(50, 510);
+            this.button_ParsedFileAdvisor_WorldStates.Name = "button_ParsedFileAdvisor_WorldStates";
+            this.button_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(75, 33);
+            this.button_ParsedFileAdvisor_WorldStates.TabIndex = 4;
+            this.button_ParsedFileAdvisor_WorldStates.Text = "Run!";
+            this.button_ParsedFileAdvisor_WorldStates.UseVisualStyleBackColor = true;
+            this.button_ParsedFileAdvisor_WorldStates.Click += new System.EventHandler(this.button_ParsedFileAdvisor_WorldStates_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -2534,6 +2557,8 @@
         private System.Windows.Forms.Label label_ParsedFileAdvisor_CreatureEquipmentId;
         public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_PlayerCompletedQuests;
         private System.Windows.Forms.Label label_ParsedFileAdvisor_PlayerCompletedQuests;
+        private System.Windows.Forms.Label label_ParsedFileAdvisor_WorldStates;
+        private System.Windows.Forms.Button button_ParsedFileAdvisor_WorldStates;
     }
 }
 

@@ -812,5 +812,10 @@ namespace WoWDeveloperAssistant
 
             parsedFileAdvisor.GetPlayerCompletedQuests();
         }
+
+        private void button_ParsedFileAdvisor_WorldStates_Click(object sender, EventArgs e)
+        {
+            parsedFileAdvisor.ShowWorldStates();
+        }
     }
 }
