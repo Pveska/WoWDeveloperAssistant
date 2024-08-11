@@ -1,4 +1,6 @@
-﻿namespace DB2.Structures
+﻿using System;
+
+namespace DB2.Structures
 {
     [Hotfix("Map")]
     public class Map
@@ -27,6 +29,7 @@
         public int ZmpFileDataId;
         public int WdtFileDataId;
         public int NavigationMaxDistance;
+        public int PreloadFileDataId;
         public int Flags;
         public int Flags2;
         public int Flags3;

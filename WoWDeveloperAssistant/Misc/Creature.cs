@@ -406,6 +406,7 @@ namespace WoWDeveloperAssistant.Misc
                 case 1718: // Nazjatar
                 case 2241: // New Uldum
                 case 2222: // Shadowlands
+                case 2552: // Khaz Algar
                     return true;
                 default:
                     return false;

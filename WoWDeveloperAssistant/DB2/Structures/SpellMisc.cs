@@ -7,6 +7,7 @@
         public byte DifficultyId;
         public ushort CastingTimeIndex;
         public ushort DurationIndex;
+        public ushort PvPDurationIndex;
         public ushort RangeIndex;
         public byte SchoolMask;
         public float Speed;
@@ -15,7 +16,7 @@
         public int SpellIconFileDataId;
         public int ActiveIconFileDataId;
         public int ContentTuningId;
-        public int PlayerConditionId;
+        public int ShowFutureSpellPlayerConditionId;
         public int SpellVisualScript;
         public int ActiveSpellVisualScript;
         public int SpellId;

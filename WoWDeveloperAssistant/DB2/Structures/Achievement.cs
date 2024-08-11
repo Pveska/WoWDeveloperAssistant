@@ -1,4 +1,6 @@
-﻿namespace DB2.Structures
+﻿using System;
+
+namespace DB2.Structures
 {
     [Hotfix("Achievement")]
     public sealed class Achievement
@@ -8,7 +10,7 @@
         public string Reward;
         public short InstanceID;
         public sbyte Faction;
-        public short Supercedes;
+        public int Supercedes;
         public short Category;
         public sbyte MinimumCriteria;
         public sbyte Points;
