@@ -19,7 +19,7 @@ namespace DB2Storage
             MySql.Data.MySqlClient.MySqlConnection lConnection;
             try
             {
-                lConnection = new MySql.Data.MySqlClient.MySqlConnection($"Server={Settings.Default.Host};Port={Settings.Default.Port};UserID={Settings.Default.Username};Password={Settings.Default.Password};Database={Settings.Default.DB2Database};CharacterSet=utf8;ConnectionTimeout=5;");
+                lConnection = new MySql.Data.MySqlClient.MySqlConnection($"Server={Settings.Default.Host};Port={Settings.Default.Port};UserID={Settings.Default.Username};Password={Settings.Default.Password};Database={Settings.Default.DB2Database};CharacterSet=utf8;ConnectionTimeout=5;sslmode={Settings.Default.SSLMode}");
                 lConnection.Open();
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)

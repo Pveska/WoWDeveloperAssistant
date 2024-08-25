@@ -12,7 +12,7 @@ namespace WoWDeveloperAssistant
             DataSet dataSet = new DataSet();
             MySqlConnection sqlConnection = new MySqlConnection
             {
-                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.WorldDatabase
+                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.WorldDatabase + "; sslmode = " + Properties.Settings.Default.SSLMode
             };
 
             try
@@ -44,7 +44,7 @@ namespace WoWDeveloperAssistant
             DataSet dataSet = new DataSet();
             MySqlConnection sqlConnection = new MySqlConnection
             {
-                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.HotfixDatabase
+                ConnectionString = "server = " + Properties.Settings.Default.Host + "; port = " + Properties.Settings.Default.Port + "; user id = " + Properties.Settings.Default.Username + "; password = " + Properties.Settings.Default.Password + "; database = " + Properties.Settings.Default.HotfixDatabase + "; sslmode = " + Properties.Settings.Default.SSLMode
             };
 
             try
@@ -75,7 +75,7 @@ namespace WoWDeveloperAssistant
         {
             MySqlConnection sqlConnection = new MySqlConnection
             {
-                ConnectionString = "server = " + hostName + "; port = " + port + "; user id = " + userName + "; password = " + password + "; database = " + databaseName
+                ConnectionString = "server = " + hostName + "; port = " + port + "; user id = " + userName + "; password = " + password + "; database = " + databaseName + "; sslmode = " + Properties.Settings.Default.SSLMode
             };
 
             try
