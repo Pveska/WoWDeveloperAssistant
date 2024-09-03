@@ -1001,7 +1001,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 foreach (Waypoint waypoint in waypoints)
                 {
-                    moveDistances.Add((float)Math.Round((double)originalCreature.spawnPosition.GetExactDist2d(waypoint.movePosition), 1));
+                    moveDistances.Add((float)Math.Round((double)originalCreature.spawnPosition.GetDistance(waypoint.movePosition), 1));
                 }
 
                 int averagedMoveDistance = (int)moveDistances.Average();
@@ -1433,14 +1433,14 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     nextWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[currentRowIndex + 1].Cells[8].Value;
                     Waypoint lastWaypoint = (Waypoint)mainForm.grid_WaypointsCreator_Waypoints.Rows[currentRowIndex + 2].Cells[8].Value;
 
-                    if ((currentWaypoint.movePosition.GetExactDist2d(nextWaypoint.movePosition) <= 5.0f || nextWaypoint.movePosition.GetExactDist2d(lastWaypoint.movePosition) <= 5.0f) && !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
+                    if ((currentWaypoint.movePosition.GetDistance(nextWaypoint.movePosition) <= 5.0f || nextWaypoint.movePosition.GetDistance(lastWaypoint.movePosition) <= 5.0f) && !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
                     {
                         mainForm.grid_WaypointsCreator_Waypoints.Rows.RemoveAt(currentRowIndex + 1);
                         break;
                     }
                 }
 
-                if (currentWaypoint.movePosition.GetExactDist2d(nextWaypoint.movePosition) <= 5.0f && !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
+                if (currentWaypoint.movePosition.GetDistance(nextWaypoint.movePosition) <= 5.0f && !nextWaypoint.HasOrientation() && !nextWaypoint.HasScripts())
                 {
                     mainForm.grid_WaypointsCreator_Waypoints.Rows.RemoveAt(currentRowIndex + 1);
                 }
@@ -1472,7 +1472,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     continue;
                 }
 
-                bool waypointIsValid = waypointsList.All(compareWaypoint => !(waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f));
+                bool waypointIsValid = waypointsList.All(compareWaypoint => !(waypoint.movePosition.GetDistance(compareWaypoint.movePosition) <= 1.0f));
 
                 if (waypointIsValid)
                 {
@@ -1505,7 +1505,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     continue;
                 }
 
-                bool waypointIsValid = waypointsList.All(compareWaypoint => !(waypoint.movePosition.GetExactDist2d(compareWaypoint.movePosition) <= 1.0f));
+                bool waypointIsValid = waypointsList.All(compareWaypoint => !(waypoint.movePosition.GetDistance(compareWaypoint.movePosition) <= 1.0f));
 
                 if (waypointIsValid)
                 {

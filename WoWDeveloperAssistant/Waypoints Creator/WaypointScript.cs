@@ -592,12 +592,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
                 case ScriptType.CastSpell:
                 {
-                    output += $"Cast Spell, Name: {DB2.Db2.SpellName[(int)dataLong].Name}";
+                    output += DB2.Db2.SpellName.ContainsKey((int)dataLong) ? $"Cast Spell, Name: {DB2.Db2.SpellName[(int)dataLong].Name}" : "Cast Spell, Name: Unknown";
                     break;
                 }
                 case ScriptType.RemoveAura:
                 {
-                    output += $"Remove Aura, Name: {DB2.Db2.SpellName[(int)dataLong].Name}";
+                    output += DB2.Db2.SpellName.ContainsKey((int)dataLong) ? $"Remove Aura, Name: {DB2.Db2.SpellName[(int)dataLong].Name}" : "Remove Aura, Name: Unknown";
                     break;
                 }
                 case ScriptType.SetAnimKit:
