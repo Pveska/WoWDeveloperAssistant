@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -138,6 +139,34 @@ namespace WoWDeveloperAssistant.Misc
             float y = this.y + dist * (float)Math.Sin(angle);
             float z = this.z;
             return new Position(x, y, z);
+        }
+
+        public static float toRadians(float deg)
+        {
+            return deg * (float)3.1415926535898f / 180.0f;
+        }
+
+        public bool IsInPolygon(List<Position> polygon)
+        {
+            if (polygon.Count < 3)
+                return false;
+
+            int count = polygon.Count;
+            bool ok = false;
+
+            for (int i = 0, j = count - 1; i < count; j = i++)
+            {
+                Position point = new Position(x, y, z);
+                Position curr = polygon[i];
+                Position prev = polygon[j];
+
+                if (((curr.y > point.y) != (prev.y > point.y)) && (point.x < (prev.x - curr.x) * (point.y - curr.y) / (prev.y - curr.y) + curr.x))
+                {
+                    ok = !ok;
+                }
+            }
+
+            return ok;
         }
     }
 }

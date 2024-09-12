@@ -502,7 +502,7 @@ namespace WoWDeveloperAssistant
 
         private void createRandomMovementsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            waypointsCreator.AddRandomMovement();
+            waypointsCreator.CreateRandomMovements();
         }
 
         private void textBox_DatabaseAdvisor_FindDoublePaths_KeyDown(object sender, KeyEventArgs e)
