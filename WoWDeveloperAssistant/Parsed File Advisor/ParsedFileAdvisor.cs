@@ -1469,7 +1469,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             }
 
             output += $"DELETE FROM `quest_template_addon` WHERE `ID` = {questId};\r\n";
-            output += $"INSERT INTO `quest_template_addon` (`ID`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `AllowableClasses`, `AllowableRaces`, `SourceSpellId`, `RequiredSkillId`, `RequiredSkillPoints`, `RequiredMinRepFaction`, `RequiredMaxRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepValue`, `RewardMailTemplateId`, `RewardMailDelay`, `SpecialFlags`, `ResetType`, `OverrideFlags`, `OverrideFlagsEx`, `OverrideFlagsEx2`, `InProgressPhaseId`, `CompletedPhaseId`, `StartScript`, `CompleteScript`, `ScriptName`, `FromPatch`) VALUES;\r\n";
+            output += $"INSERT INTO `quest_template_addon` (`ID`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `AllowableClasses`, `AllowableRaces`, `SourceSpellId`, `RequiredSkillId`, `RequiredSkillPoints`, `RequiredMinRepFaction`, `RequiredMaxRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepValue`, `RewardMailTemplateId`, `RewardMailDelay`, `SpecialFlags`, `ResetType`, `OverrideFlags`, `OverrideFlagsEx`, `OverrideFlagsEx2`, `InProgressPhaseId`, `CompletedPhaseId`, `StartScript`, `CompleteScript`, `ScriptName`, `FromPatch`) VALUES\r\n";
             output += $"({questId}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0);";
             mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
         }
