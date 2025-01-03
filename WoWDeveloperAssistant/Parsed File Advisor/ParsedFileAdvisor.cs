@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Packets.UpdateObjectPacket;
 using static WoWDeveloperAssistant.Misc.Utils;
+using HtmlAgilityPack;
 
 namespace WoWDeveloperAssistant.Parsed_File_Advisor
 {
@@ -516,7 +517,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         }
         public void ImportStarted()
         {
-            mainForm.Cursor = Cursors.WaitCursor;
+            mainForm.Cursor = System.Windows.Forms.Cursors.WaitCursor;
             mainForm.toolStripButton_ParsedFileAdvisor_ImportSniff.Enabled = false;
             mainForm.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = "Loading File...";
             mainForm.Update();
@@ -524,7 +525,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
         public void ImportSuccessful()
         {
-            mainForm.Cursor = Cursors.Default;
+            mainForm.Cursor = System.Windows.Forms.Cursors.Default;
             mainForm.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = mainForm.openFileDialog.FileName + " is selected for input.";
             mainForm.toolStripButton_ParsedFileAdvisor_ImportSniff.Enabled = true;
             mainForm.textBox_ParsedFileAdvisor_PlayerCastedSpells.Enabled = true;
@@ -538,7 +539,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         }
         public void ImportFailed()
         {
-            mainForm.Cursor = Cursors.Default;
+            mainForm.Cursor = System.Windows.Forms.Cursors.Default;
             mainForm.toolStripButton_ParsedFileAdvisor_ImportSniff.Enabled = true;
             mainForm.toolStripStatusLabel_ParsedFileAdvisor_FileStatus.Text = "No File Loaded";
             mainForm.Update();
@@ -1337,6 +1338,148 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         public void ShowWorldStates()
         {
 
+        }
+
+        public void ParseQuestgiverData()
+        {
+            if (mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text == "")
+                return;
+
+            string output = "";
+
+            HtmlDocument html = LoadHtml(mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text);
+            string name = html.DocumentNode.SelectSingleNode("//div[@class=\"text\"]//h1").InnerText;
+            string questId = mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text;
+            string[] questRawData = html.DocumentNode.SelectSingleNode("//table[@class=\"infobox\"]").SelectSingleNode("//script[text()[contains(., 'Requires')]]").InnerText.Split(' ');
+
+            List<string> questStarterIds = new List<string>();
+
+            for (int i = 0; i < questRawData.Length; i++)
+            {
+                if (questRawData[i].Contains("Start"))
+                {
+                    string questStarterRow = "";
+
+                    do
+                    {
+                        questStarterRow += questRawData[i] + " ";
+                        i++;
+                    } while (i < questRawData.Length - 1 && !questRawData[i].Contains("Start") && !questRawData[i].Contains("End"));
+
+                    i--;
+
+                    questStarterIds.Add(new Regex(@"\d+").Match(new Regex(@"Start:{1}.*npc={1}\d+").Match(questStarterRow).Value).Value);
+                }
+            }
+
+            List<string> questEnderIds = new List<string>();
+
+            for (int i = 0; i < questRawData.Length; i++)
+            {
+                if (questRawData[i].Contains("End"))
+                {
+                    string questEnderRow = "";
+
+                    do
+                    {
+                        questEnderRow += questRawData[i] + " ";
+                        i++;
+                    } while (i < questRawData.Length - 1 && !questRawData[i].Contains("End"));
+
+                    i--;
+
+                    questEnderIds.Add(new Regex(@"\d+").Match(new Regex(@"End:{1}.*npc={1}\d+").Match(questEnderRow).Value).Value);
+                }
+            }
+
+            output = $"-- {name} https://www.wowhead.com/quest={questId}\r\n";
+
+            if (questStarterIds.Count > 1)
+            {
+                output += $"DELETE FROM `creature_queststarter` WHERE `id` IN (";
+
+                for (int i = 0; i < questStarterIds.Count; i++)
+                {
+                    if (i + 1 < questStarterIds.Count)
+                    {
+                        output += questStarterIds[i] + ", ";
+                    }
+                    else
+                    {
+                        output += questStarterIds[i] + ");\r\n";
+                    }
+                }
+
+                output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
+
+                for (int i = 0; i < questStarterIds.Count; i++)
+                {
+                    if (i + 1 < questStarterIds.Count)
+                    {
+                        output += $"({questStarterIds[i]}, {questId}),\r\n";
+                    }
+                    else
+                    {
+                        output += $"({questStarterIds[i]}, {questId});\r\n\r\n";
+                    }
+                }
+            }
+            else if (questStarterIds.Count == 1)
+            {
+                output += $"DELETE FROM `creature_queststarter` WHERE `id` = {questStarterIds.FirstOrDefault()};\r\n";
+                output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
+                output += $"({questStarterIds.FirstOrDefault()}, {questId});\r\n\r\n";
+            }
+
+            if (questEnderIds.Count > 1)
+            {
+                output += $"DELETE FROM `creature_questender` WHERE `id` IN (";
+
+                for (int i = 0; i < questEnderIds.Count; i++)
+                {
+                    if (i + 1 < questEnderIds.Count)
+                    {
+                        output += questEnderIds[i] + ", ";
+                    }
+                    else
+                    {
+                        output += questEnderIds[i] + ");\r\n\r\n";
+                    }
+                }
+
+                output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
+
+                for (int i = 0; i < questEnderIds.Count; i++)
+                {
+                    if (i + 1 < questEnderIds.Count)
+                    {
+                        output += $"({questEnderIds[i]}, {questId}),\r\n";
+                    }
+                    else
+                    {
+                        output += $"({questEnderIds[i]}, {questId});\r\n\r\n";
+                    }
+                }
+            }
+            else if (questEnderIds.Count == 1)
+            {
+                output += $"DELETE FROM `creature_questender` WHERE `id` = {questEnderIds.FirstOrDefault()};\r\n";
+                output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
+                output += $"({questEnderIds.FirstOrDefault()}, {questId});\r\n\r\n";
+            }
+
+            output += $"DELETE FROM `quest_template_addon` WHERE `ID` = {questId};\r\n";
+            output += $"INSERT INTO `quest_template_addon` (`ID`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `AllowableClasses`, `AllowableRaces`, `SourceSpellId`, `RequiredSkillId`, `RequiredSkillPoints`, `RequiredMinRepFaction`, `RequiredMaxRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepValue`, `RewardMailTemplateId`, `RewardMailDelay`, `SpecialFlags`, `ResetType`, `OverrideFlags`, `OverrideFlagsEx`, `OverrideFlagsEx2`, `InProgressPhaseId`, `CompletedPhaseId`, `StartScript`, `CompleteScript`, `ScriptName`, `FromPatch`) VALUES;\r\n";
+            output += $"({questId}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0);";
+            mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
+        }
+
+        private HtmlDocument LoadHtml(string questId)
+        {
+            HtmlWeb web = new HtmlWeb();
+            string url = $"https://www.wowhead.com/quest={questId}";
+            HtmlDocument doc = web.Load(url);
+            return doc;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace WoWDeveloperAssistant.Database_Advisor
         {
             string output = "";
 
-            DataSet broadCastTextIds = SQLModule.WorldSelectQuery("SELECT `broadcast_text_id` FROM `gossip_menu` WHERE `entry` = " + menuId + ";");
+            DataSet broadCastTextIds = SQLModule.WorldSelectQuery("SELECT `BroadcastTextId` FROM `gossip_menu` WHERE `entry` = " + menuId + ";");
             if (broadCastTextIds == null || broadCastTextIds.Tables["table"].Rows.Count == 0)
             {
                 MessageBox.Show("There is no gossip menu with this Id in your database!");

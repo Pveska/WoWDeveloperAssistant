@@ -210,6 +210,10 @@
             this.label_ModifierTrees_ModifierTrees = new System.Windows.Forms.Label();
             this.treeView_ModifierTrees_ModifierTrees = new System.Windows.Forms.TreeView();
             this.tabPage_ParsedFileAdvisor = new System.Windows.Forms.TabPage();
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData = new System.Windows.Forms.TextBox();
+            this.label_ParsedFileAdvisor_ParseQuestgiverData = new System.Windows.Forms.Label();
+            this.button_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Button();
+            this.label_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Label();
             this.textBox_ParsedFileAdvisor_PlayerCompletedQuests = new System.Windows.Forms.TextBox();
             this.label_ParsedFileAdvisor_PlayerCompletedQuests = new System.Windows.Forms.Label();
             this.textBox_ParsedFileAdvisor_CreatureEquipmentId = new System.Windows.Forms.TextBox();
@@ -233,8 +237,6 @@
             this.toolStripStatusLabel_FileStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_CurrentAction = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.label_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Label();
-            this.button_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage_CreatureScriptsCreator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CreatureScriptsCreator_Spells)).BeginInit();
@@ -2059,6 +2061,8 @@
             // 
             // tabPage_ParsedFileAdvisor
             // 
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_ParseQuestgiverData);
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_ParseQuestgiverData);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.button_ParsedFileAdvisor_WorldStates);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_WorldStates);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_PlayerCompletedQuests);
@@ -2085,6 +2089,43 @@
             this.tabPage_ParsedFileAdvisor.TabIndex = 9;
             this.tabPage_ParsedFileAdvisor.Text = "Parsed File Advisor";
             this.tabPage_ParsedFileAdvisor.UseVisualStyleBackColor = true;
+            // 
+            // textBox_ParsedFileAdvisor_ParseQuestgiverData
+            // 
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Location = new System.Drawing.Point(21, 575);
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Name = "textBox_ParsedFileAdvisor_ParseQuestgiverData";
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Size = new System.Drawing.Size(140, 26);
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.TabIndex = 43;
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_ParsedFileAdvisor_ParseQuestgiverData_KeyDown);
+            // 
+            // label_ParsedFileAdvisor_ParseQuestgiverData
+            // 
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.AutoSize = true;
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.Location = new System.Drawing.Point(6, 553);
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.Name = "label_ParsedFileAdvisor_ParseQuestgiverData";
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.Size = new System.Drawing.Size(169, 20);
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.TabIndex = 42;
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.Text = "Parse Questgiver Data";
+            // 
+            // button_ParsedFileAdvisor_WorldStates
+            // 
+            this.button_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(50, 510);
+            this.button_ParsedFileAdvisor_WorldStates.Name = "button_ParsedFileAdvisor_WorldStates";
+            this.button_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(75, 33);
+            this.button_ParsedFileAdvisor_WorldStates.TabIndex = 4;
+            this.button_ParsedFileAdvisor_WorldStates.Text = "Run!";
+            this.button_ParsedFileAdvisor_WorldStates.UseVisualStyleBackColor = true;
+            this.button_ParsedFileAdvisor_WorldStates.Click += new System.EventHandler(this.button_ParsedFileAdvisor_WorldStates_Click);
+            // 
+            // label_ParsedFileAdvisor_WorldStates
+            // 
+            this.label_ParsedFileAdvisor_WorldStates.AutoSize = true;
+            this.label_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(37, 487);
+            this.label_ParsedFileAdvisor_WorldStates.Name = "label_ParsedFileAdvisor_WorldStates";
+            this.label_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(101, 20);
+            this.label_ParsedFileAdvisor_WorldStates.TabIndex = 41;
+            this.label_ParsedFileAdvisor_WorldStates.Text = "World States";
             // 
             // textBox_ParsedFileAdvisor_PlayerCompletedQuests
             // 
@@ -2219,7 +2260,7 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_ParsedFileAdvisor_ImportSniff.Image")));
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Name = "toolStripButton_ParsedFileAdvisor_ImportSniff";
-            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(128, 33);
+            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(136, 33);
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ParsedFileAdvisor_ImportSniff_Click);
             // 
@@ -2302,25 +2343,6 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
-            // 
-            // label_ParsedFileAdvisor_WorldStates
-            // 
-            this.label_ParsedFileAdvisor_WorldStates.AutoSize = true;
-            this.label_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(37, 487);
-            this.label_ParsedFileAdvisor_WorldStates.Name = "label_ParsedFileAdvisor_WorldStates";
-            this.label_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(101, 20);
-            this.label_ParsedFileAdvisor_WorldStates.TabIndex = 41;
-            this.label_ParsedFileAdvisor_WorldStates.Text = "World States";
-            // 
-            // button_ParsedFileAdvisor_WorldStates
-            // 
-            this.button_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(50, 510);
-            this.button_ParsedFileAdvisor_WorldStates.Name = "button_ParsedFileAdvisor_WorldStates";
-            this.button_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(75, 33);
-            this.button_ParsedFileAdvisor_WorldStates.TabIndex = 4;
-            this.button_ParsedFileAdvisor_WorldStates.Text = "Run!";
-            this.button_ParsedFileAdvisor_WorldStates.UseVisualStyleBackColor = true;
-            this.button_ParsedFileAdvisor_WorldStates.Click += new System.EventHandler(this.button_ParsedFileAdvisor_WorldStates_Click);
             // 
             // MainForm
             // 
@@ -2559,6 +2581,8 @@
         private System.Windows.Forms.Label label_ParsedFileAdvisor_PlayerCompletedQuests;
         private System.Windows.Forms.Label label_ParsedFileAdvisor_WorldStates;
         private System.Windows.Forms.Button button_ParsedFileAdvisor_WorldStates;
+        public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_ParseQuestgiverData;
+        private System.Windows.Forms.Label label_ParsedFileAdvisor_ParseQuestgiverData;
     }
 }
 

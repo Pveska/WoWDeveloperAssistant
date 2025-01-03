@@ -817,5 +817,13 @@ namespace WoWDeveloperAssistant
         {
             parsedFileAdvisor.ShowWorldStates();
         }
+
+        private void textBox_ParsedFileAdvisor_ParseQuestgiverData_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.ParseQuestgiverData();
+        }
     }
 }
