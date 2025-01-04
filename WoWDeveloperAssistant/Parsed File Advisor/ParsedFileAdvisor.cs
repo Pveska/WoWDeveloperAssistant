@@ -1426,7 +1426,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             }
             else if (questStarterIds.Count == 1)
             {
-                output += $"DELETE FROM `creature_queststarter` WHERE `id` = {questStarterIds.FirstOrDefault()};\r\n";
+                output += $"DELETE FROM `creature_queststarter` WHERE `id` = {questStarterIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
                 output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
                 output += $"({questStarterIds.FirstOrDefault()}, {questId});\r\n\r\n";
             }
@@ -1463,7 +1463,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             }
             else if (questEnderIds.Count == 1)
             {
-                output += $"DELETE FROM `creature_questender` WHERE `id` = {questEnderIds.FirstOrDefault()};\r\n";
+                output += $"DELETE FROM `creature_questender` WHERE `id` = {questEnderIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
                 output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
                 output += $"({questEnderIds.FirstOrDefault()}, {questId});\r\n\r\n";
             }
