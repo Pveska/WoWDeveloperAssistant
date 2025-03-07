@@ -1406,7 +1406,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     }
                     else
                     {
-                        output += questStarterIds[i] + ");\r\n";
+                        output += questStarterIds[i] + $") AND `quest` = {questId};\r\n";
                     }
                 }
 
@@ -1443,7 +1443,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     }
                     else
                     {
-                        output += questEnderIds[i] + ");\r\n\r\n";
+                        output += questEnderIds[i] + $") AND `quest` = {questId};\r\n";
                     }
                 }
 

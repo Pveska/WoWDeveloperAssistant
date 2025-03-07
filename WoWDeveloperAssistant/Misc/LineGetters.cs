@@ -203,6 +203,8 @@ namespace WoWDeveloperAssistant.Misc
                         return BuildVersions.BUILD_11_0_2;
                     else if (line.Contains("11_0_5"))
                         return BuildVersions.BUILD_11_0_5;
+                    else if (line.Contains("11_0_7"))
+                        return BuildVersions.BUILD_11_0_7;
 
                     return BuildVersions.BUILD_UNKNOWN;
                 }
