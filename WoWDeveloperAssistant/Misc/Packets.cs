@@ -677,17 +677,17 @@ namespace WoWDeveloperAssistant.Misc
                 QuestCompletedData questCompletedData = new QuestCompletedData();
                 questCompletedData.Index = -1;
 
-                if (!line.Contains("ActivePlayerData") || !line.Contains("QuestCompleted"))
+                if (!line.Contains("(ActivePlayerData) (BitVectors) (Values) [9]"))
                     return questCompletedData;
 
-                Regex indexRegex = new Regex(@"\(ActivePlayerData\)\s{1}\[{1}\w+");
-                Regex flagsRegex = new Regex(@"QuestCompleted:{1}\s{1}\w+");
+                Regex indexRegex = new Regex(@"\(ActivePlayerData\) \(BitVectors\) \(Values\) \[9] \[{1}\w+");
+                Regex flagsRegex = new Regex(@"Values:{1}\s{1}\w+");
 
                 if (indexRegex.IsMatch(line))
-                    questCompletedData.Index = Convert.ToInt32(indexRegex.Match(line).ToString().Replace("(ActivePlayerData) [", ""));
+                    questCompletedData.Index = Convert.ToInt32(indexRegex.Match(line).ToString().Replace("(ActivePlayerData) (BitVectors) (Values) [9] [", ""));
 
                 if (flagsRegex.IsMatch(line))
-                    questCompletedData.Flags = Convert.ToUInt64(flagsRegex.Match(line).ToString().Replace("QuestCompleted: ", ""));
+                    questCompletedData.Flags = Convert.ToUInt64(flagsRegex.Match(line).ToString().Replace("Values: ", ""));
 
                 return questCompletedData;
             }
