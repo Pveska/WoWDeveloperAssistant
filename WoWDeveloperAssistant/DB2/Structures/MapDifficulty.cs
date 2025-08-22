@@ -1,4 +1,6 @@
-﻿namespace DB2.Structures
+﻿using System;
+
+namespace DB2.Structures
 {
     [Hotfix("MapDifficulty")]
     public class MapDifficulty
@@ -12,6 +14,7 @@
         public int ItemContextPickerID;
         public int Flags;
         public int ContentTuningID;
+        public int WorldStateExpressionId;
         public int MapID;
     }
 }

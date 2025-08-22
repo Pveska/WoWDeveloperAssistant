@@ -604,7 +604,7 @@ namespace WoWDeveloperAssistant.Misc
 
             public static bool ObjectIsValidForParse(string line)
             {
-                if (line.Contains("Creature") || line.Contains("Vehicle") || line.Contains("Transport") || line.Contains("Player"))
+                if (line.Contains("TypeName: Creature") || line.Contains("TypeName: Vehicle") || line.Contains("TypeName: Transport") || line.Contains("TypeName: Player"))
                     return true;
 
                 return false;
