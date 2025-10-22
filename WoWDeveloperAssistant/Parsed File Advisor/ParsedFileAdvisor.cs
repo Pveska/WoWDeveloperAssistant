@@ -1345,132 +1345,201 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             if (mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text == "")
                 return;
 
+            mainForm.textBox_ParsedFileAdvisor_Output.Text = "";
             string output = "";
+            string[] questIds = mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text.Split(',');
 
-            HtmlDocument html = LoadHtml(mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text);
-            string name = html.DocumentNode.SelectSingleNode("//div[@class=\"text\"]//h1").InnerText;
-            string questId = mainForm.textBox_ParsedFileAdvisor_ParseQuestgiverData.Text;
-            string[] questRawData = html.DocumentNode.SelectSingleNode("//table[@class=\"infobox\"]").SelectSingleNode("//script[text()[contains(., 'Requires')]]").InnerText.Split(' ');
-
-            List<string> questStarterIds = new List<string>();
-
-            for (int i = 0; i < questRawData.Length; i++)
+            foreach (string questId in questIds)
             {
-                if (questRawData[i].Contains("Start"))
+                HtmlDocument html = LoadHtml(questId);
+                string name = html.DocumentNode.SelectSingleNode("//div[@class=\"text\"]//h1").InnerText;
+                string[] questRawData = html.DocumentNode.SelectSingleNode("//table[@class=\"infobox\"]").SelectSingleNode("//script[text()[contains(., 'Requires')]]").InnerText.Split(' ');
+                bool questStarterIsGameObject = false;
+
+                List<string> questStarterIds = new List<string>();
+
+                for (int i = 0; i < questRawData.Length; i++)
                 {
-                    string questStarterRow = "";
-
-                    do
+                    if (questRawData[i].Contains("Start:"))
                     {
-                        questStarterRow += questRawData[i] + " ";
-                        i++;
-                    } while (i < questRawData.Length - 1 && !questRawData[i].Contains("Start") && !questRawData[i].Contains("End"));
+                        string questStarterRow = "";
 
-                    i--;
+                        do
+                        {
+                            questStarterRow += questRawData[i] + " ";
+                            i++;
+                        } while (i < questRawData.Length - 1 && !questRawData[i].Contains("Start") && !questRawData[i].Contains("End"));
 
-                    questStarterIds.Add(new Regex(@"\d+").Match(new Regex(@"Start:{1}.*npc={1}\d+").Match(questStarterRow).Value).Value);
+                        i--;
+
+                        if (questStarterRow.Contains("npc"))
+                        {
+                            questStarterIds.Add(new Regex(@"\d+").Match(new Regex(@"Start:{1}.*npc={1}\d+").Match(questStarterRow).Value).Value);
+                        }
+                        else if (questStarterRow.Contains("object"))
+                        {
+                            questStarterIsGameObject = true;
+                            questStarterIds.Add(new Regex(@"\d+").Match(new Regex(@"Start:{1}.*object={1}\d+").Match(questStarterRow).Value).Value);
+                        }
+                    }
                 }
-            }
 
-            List<string> questEnderIds = new List<string>();
+                List<string> questEnderIds = new List<string>();
 
-            for (int i = 0; i < questRawData.Length; i++)
-            {
-                if (questRawData[i].Contains("End"))
+                for (int i = 0; i < questRawData.Length; i++)
                 {
-                    string questEnderRow = "";
-
-                    do
+                    if (questRawData[i].Contains("End:"))
                     {
-                        questEnderRow += questRawData[i] + " ";
-                        i++;
-                    } while (i < questRawData.Length - 1 && !questRawData[i].Contains("End"));
+                        string questEnderRow = "";
 
-                    i--;
+                        do
+                        {
+                            questEnderRow += questRawData[i] + " ";
+                            i++;
+                        } while (i < questRawData.Length - 1 && !questRawData[i].Contains("End"));
 
-                    questEnderIds.Add(new Regex(@"\d+").Match(new Regex(@"End:{1}.*npc={1}\d+").Match(questEnderRow).Value).Value);
+                        i--;
+
+                        if (questEnderRow.Contains("npc"))
+                        {
+                            questEnderIds.Add(new Regex(@"\d+").Match(new Regex(@"End:{1}.*npc={1}\d+").Match(questEnderRow).Value).Value);
+                        }
+                        else if (questEnderRow.Contains("object"))
+                        {
+                            questStarterIsGameObject = true;
+                            questEnderIds.Add(new Regex(@"\d+").Match(new Regex(@"End:{1}.*object={1}\d+").Match(questEnderRow).Value).Value);
+                        }
+                    }
                 }
-            }
 
-            output = $"-- {name} https://www.wowhead.com/quest={questId}\r\n";
+                output += $"-- {name} https://www.wowhead.com/quest={questId}\r\n";
 
-            if (questStarterIds.Count > 1)
-            {
-                output += $"DELETE FROM `creature_queststarter` WHERE `id` IN (";
-
-                for (int i = 0; i < questStarterIds.Count; i++)
+                if (questStarterIds.Count > 1)
                 {
-                    if (i + 1 < questStarterIds.Count)
+                    if (questStarterIsGameObject)
                     {
-                        output += questStarterIds[i] + ", ";
+                        output += $"DELETE FROM `gameobject_queststarter` WHERE `id` IN (";
                     }
                     else
                     {
-                        output += questStarterIds[i] + $") AND `quest` = {questId};\r\n";
+                        output += $"DELETE FROM `creature_queststarter` WHERE `id` IN (";
                     }
-                }
 
-                output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
-
-                for (int i = 0; i < questStarterIds.Count; i++)
-                {
-                    if (i + 1 < questStarterIds.Count)
+                    for (int i = 0; i < questStarterIds.Count; i++)
                     {
-                        output += $"({questStarterIds[i]}, {questId}),\r\n";
+                        if (i + 1 < questStarterIds.Count)
+                        {
+                            output += questStarterIds[i] + ", ";
+                        }
+                        else
+                        {
+                            output += questStarterIds[i] + $") AND `quest` = {questId};\r\n";
+                        }
+                    }
+
+                    if (questStarterIsGameObject)
+                    {
+                        output += "INSERT INTO `gameobject_queststarter` (`id`, `quest`) VALUES\r\n";
                     }
                     else
                     {
-                        output += $"({questStarterIds[i]}, {questId});\r\n\r\n";
+                        output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
+                    }
+
+                    for (int i = 0; i < questStarterIds.Count; i++)
+                    {
+                        if (i + 1 < questStarterIds.Count)
+                        {
+                            output += $"({questStarterIds[i]}, {questId}),\r\n";
+                        }
+                        else
+                        {
+                            output += $"({questStarterIds[i]}, {questId});\r\n\r\n";
+                        }
                     }
                 }
-            }
-            else if (questStarterIds.Count == 1)
-            {
-                output += $"DELETE FROM `creature_queststarter` WHERE `id` = {questStarterIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
-                output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
-                output += $"({questStarterIds.FirstOrDefault()}, {questId});\r\n\r\n";
-            }
-
-            if (questEnderIds.Count > 1)
-            {
-                output += $"DELETE FROM `creature_questender` WHERE `id` IN (";
-
-                for (int i = 0; i < questEnderIds.Count; i++)
+                else if (questStarterIds.Count == 1)
                 {
-                    if (i + 1 < questEnderIds.Count)
+                    if (questStarterIsGameObject)
                     {
-                        output += questEnderIds[i] + ", ";
+                        output += $"DELETE FROM `gameobject_queststarter` WHERE `id` = {questStarterIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
+                        output += "INSERT INTO `gameobject_queststarter` (`id`, `quest`) VALUES\r\n";
+                        output += $"({questStarterIds.FirstOrDefault()}, {questId});\r\n\r\n";
                     }
                     else
                     {
-                        output += questEnderIds[i] + $") AND `quest` = {questId};\r\n";
+                        output += $"DELETE FROM `creature_queststarter` WHERE `id` = {questStarterIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
+                        output += "INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES\r\n";
+                        output += $"({questStarterIds.FirstOrDefault()}, {questId});\r\n\r\n";
                     }
                 }
 
-                output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
-
-                for (int i = 0; i < questEnderIds.Count; i++)
+                if (questEnderIds.Count > 1)
                 {
-                    if (i + 1 < questEnderIds.Count)
+                    if (questStarterIsGameObject)
                     {
-                        output += $"({questEnderIds[i]}, {questId}),\r\n";
+                        output += $"DELETE FROM `gameobject_questender` WHERE `id` IN (";
                     }
                     else
                     {
-                        output += $"({questEnderIds[i]}, {questId});\r\n\r\n";
+                        output += $"DELETE FROM `creature_questender` WHERE `id` IN (";
+                    }
+
+                    for (int i = 0; i < questEnderIds.Count; i++)
+                    {
+                        if (i + 1 < questEnderIds.Count)
+                        {
+                            output += questEnderIds[i] + ", ";
+                        }
+                        else
+                        {
+                            output += questEnderIds[i] + $") AND `quest` = {questId};\r\n";
+                        }
+                    }
+
+                    if (questStarterIsGameObject)
+                    {
+                        output += "INSERT INTO `gameobject_questender` (`id`, `quest`) VALUES\r\n";
+                    }
+                    else
+                    {
+                        output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
+                    }
+
+                    for (int i = 0; i < questEnderIds.Count; i++)
+                    {
+                        if (i + 1 < questEnderIds.Count)
+                        {
+                            output += $"({questEnderIds[i]}, {questId}),\r\n";
+                        }
+                        else
+                        {
+                            output += $"({questEnderIds[i]}, {questId});\r\n\r\n";
+                        }
                     }
                 }
-            }
-            else if (questEnderIds.Count == 1)
-            {
-                output += $"DELETE FROM `creature_questender` WHERE `id` = {questEnderIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
-                output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
-                output += $"({questEnderIds.FirstOrDefault()}, {questId});\r\n\r\n";
+                else if (questEnderIds.Count == 1)
+                {
+                    if (questStarterIsGameObject)
+                    {
+                        output += $"DELETE FROM `gameobject_questender` WHERE `id` = {questEnderIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
+                        output += "INSERT INTO `gameobject_questender` (`id`, `quest`) VALUES\r\n";
+                        output += $"({questEnderIds.FirstOrDefault()}, {questId});\r\n\r\n";
+                    }
+                    else
+                    {
+                        output += $"DELETE FROM `creature_questender` WHERE `id` = {questEnderIds.FirstOrDefault()} AND `quest` = {questId};\r\n";
+                        output += "INSERT INTO `creature_questender` (`id`, `quest`) VALUES\r\n";
+                        output += $"({questEnderIds.FirstOrDefault()}, {questId});\r\n\r\n";
+                    }
+                }
+
+                output += $"DELETE FROM `quest_template_addon` WHERE `ID` = {questId};\r\n";
+                output += $"INSERT INTO `quest_template_addon` (`ID`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `AllowableClasses`, `AllowableRaces`, `SourceSpellId`, `RequiredSkillId`, `RequiredSkillPoints`, `RequiredMinRepFaction`, `RequiredMaxRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepValue`, `RewardMailTemplateId`, `RewardMailDelay`, `SpecialFlags`, `ResetType`, `OverrideFlags`, `OverrideFlagsEx`, `OverrideFlagsEx2`, `InProgressPhaseId`, `CompletedPhaseId`, `StartScript`, `CompleteScript`, `ScriptName`, `FromPatch`) VALUES\r\n";
+                output += $"({questId}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0);";
+                output += "\r\n\r\n";
             }
 
-            output += $"DELETE FROM `quest_template_addon` WHERE `ID` = {questId};\r\n";
-            output += $"INSERT INTO `quest_template_addon` (`ID`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `AllowableClasses`, `AllowableRaces`, `SourceSpellId`, `RequiredSkillId`, `RequiredSkillPoints`, `RequiredMinRepFaction`, `RequiredMaxRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepValue`, `RewardMailTemplateId`, `RewardMailDelay`, `SpecialFlags`, `ResetType`, `OverrideFlags`, `OverrideFlagsEx`, `OverrideFlagsEx2`, `InProgressPhaseId`, `CompletedPhaseId`, `StartScript`, `CompleteScript`, `ScriptName`, `FromPatch`) VALUES\r\n";
-            output += $"({questId}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0);";
             mainForm.textBox_ParsedFileAdvisor_Output.Text = output;
         }
 
