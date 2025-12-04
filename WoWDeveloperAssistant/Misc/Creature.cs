@@ -14,7 +14,7 @@ namespace WoWDeveloperAssistant.Misc
         public string guid;
         public uint entry;
         public string name;
-        public uint maxhealth;
+        public ulong maxhealth;
         public TimeSpan combatStartTime;
         public TimeSpan deathTime;
         public Position spawnPosition;
@@ -28,6 +28,7 @@ namespace WoWDeveloperAssistant.Misc
         public string transportGuid;
         public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
         public List<uint> virtualItems;
+        public float hoverHeight;
 
         public Creature() { }
 
@@ -49,6 +50,7 @@ namespace WoWDeveloperAssistant.Misc
             transportGuid = updatePacket.transportGuid;
             filterKeys = updatePacket.filterKeys;
             virtualItems = updatePacket.virtualItems;
+            hoverHeight = updatePacket.hoverData.HoverHeight;
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -100,6 +102,9 @@ namespace WoWDeveloperAssistant.Misc
             {
                 virtualItems = updatePacket.virtualItems;
             }
+
+            if (hoverHeight == 0.0f && updatePacket.hoverData.HoverHeight != 0.0f)
+                hoverHeight = updatePacket.hoverData.HoverHeight;
         }
 
         public void UpdateSpells(SpellStartPacket spellPacket)
@@ -165,7 +170,8 @@ namespace WoWDeveloperAssistant.Misc
 
         public string GetLinkedId()
         {
-            var linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.z / 0.25)) + " ";
+            float z = hoverHeight != 0.0f ? spawnPosition.z - hoverHeight : spawnPosition.z;
+            var linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(z / 0.25)) + " ";
             linkedId += Convert.ToString(entry) + " " + Convert.ToString(mapId) + " 0 1 " + GetSpawnDifficulties();
             return Utils.SHA1HashStringForUTF8String(linkedId).ToUpper();
         }

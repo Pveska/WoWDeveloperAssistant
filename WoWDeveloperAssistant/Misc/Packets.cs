@@ -344,7 +344,7 @@ namespace WoWDeveloperAssistant.Misc
             public string guid;
             public string transportGuid;
             public int currentHealth;
-            public uint maxHealth;
+            public ulong maxHealth;
             public TimeSpan packetSendTime;
             public Position spawnPosition;
             public uint? mapId;
@@ -361,9 +361,10 @@ namespace WoWDeveloperAssistant.Misc
             public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
             public List<uint> virtualItems;
             public List<QuestCompletedData> questCompletedData;
+            public HoverData hoverData;
 
-            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData, Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys, List<uint> virtualItems, List<QuestCompletedData> questCompletedData)
-            { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.isCyclic = isCyclic; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; this.filterKeys = filterKeys; this.virtualItems = virtualItems; this.questCompletedData = questCompletedData; }
+            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData, Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys, List<uint> virtualItems, List<QuestCompletedData> questCompletedData, HoverData hoverData)
+            { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.isCyclic = isCyclic; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; this.filterKeys = filterKeys; this.virtualItems = virtualItems; this.questCompletedData = questCompletedData; this.hoverData = hoverData; }
 
             public enum ObjectTypes
             {
@@ -393,6 +394,24 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     Index = index;
                     Flags = flags;
+                }
+            }
+
+            [Serializable]
+            public class HoverData
+            {
+                public bool Hover = false;
+                public float HoverHeight = 0.0f;
+
+                public HoverData(bool hover, ulong hoverHeight)
+                {
+                    Hover = hover;
+                    HoverHeight = hoverHeight;
+                }
+                public HoverData()
+                {
+                    Hover = false;
+                    HoverHeight = 0.0f;
                 }
             }
 
@@ -443,11 +462,11 @@ namespace WoWDeveloperAssistant.Misc
                 return -1;
             }
 
-            public static uint GetMaxHealthFromLine(string line)
+            public static ulong GetMaxHealthFromLine(string line)
             {
                 Regex maxHealthRegex = new Regex(@"MaxHealth:{1}\s+\d+");
                 if (maxHealthRegex.IsMatch(line))
-                    return Convert.ToUInt32(maxHealthRegex.Match(line).ToString().Replace("MaxHealth: ", ""));
+                    return Convert.ToUInt64(maxHealthRegex.Match(line).ToString().Replace("MaxHealth: ", ""));
 
                 return 0;
             }
@@ -692,6 +711,23 @@ namespace WoWDeveloperAssistant.Misc
                 return questCompletedData;
             }
 
+            public static bool GetHoverFromLine(string line)
+            {
+                if (line.Contains("MovementFlags:") && line.Contains("Hover"))
+                    return true;
+
+                return false;
+            }
+
+            public static float GetHoverHeightFromLine(string line)
+            {
+                Regex jumpGravityRegex = new Regex(@"HoverHeight:{1}\s+.+");
+                if (jumpGravityRegex.IsMatch(line))
+                    return float.Parse((jumpGravityRegex.Match(line).ToString().Replace("HoverHeight: ", "")), CultureInfo.InvariantCulture.NumberFormat);
+
+                return 0.0f;
+            }
+
             public static IEnumerable<UpdateObjectPacket> ParseObjectUpdatePacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
             {
                 TimeSpan packetSendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
@@ -701,8 +737,8 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
                         Position tempPointPosition = new Position();
                         uint? filterKeysCount = null;
 
@@ -924,6 +960,30 @@ namespace WoWDeveloperAssistant.Misc
                                 updatePacket.questCompletedData.Add(questCompletedData);
                             }
 
+                            if (!updatePacket.hoverData.Hover)
+                            {
+                                tempUpdatePacket.hoverData.Hover = GetHoverFromLine(lines[index]);
+
+                                if (tempUpdatePacket.hoverData.Hover)
+                                {
+                                    updatePacket.hoverData.Hover = tempUpdatePacket.hoverData.Hover;
+                                    index++;
+                                    continue;
+                                }
+                            }
+
+                            if (updatePacket.hoverData.HoverHeight == 0.0f)
+                            {
+                                tempUpdatePacket.hoverData.HoverHeight = GetHoverHeightFromLine(lines[index]);
+
+                                if (tempUpdatePacket.hoverData.HoverHeight != 0.0f)
+                                {
+                                    updatePacket.hoverData.HoverHeight = tempUpdatePacket.hoverData.HoverHeight;
+                                    index++;
+                                    continue;
+                                }
+                            }
+
                             index++;
                         }
                         while (IsLineValidForObjectParse(lines[index]));
@@ -973,14 +1033,19 @@ namespace WoWDeveloperAssistant.Misc
                             }
                         }
 
+                        if (!updatePacket.hoverData.Hover && updatePacket.hoverData.HoverHeight != 0.0f)
+                        {
+                            updatePacket.hoverData.HoverHeight = 0.0f;
+                        }
+
                         updatePacketsList.Add(updatePacket);
 
                         --index;
                     }
                     else if ((lines[index].Contains("UpdateType: 0 (Values)") || lines[index].Contains("UpdateType: Values")) && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
 
                         do
                         {
@@ -1099,8 +1164,8 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && lines[index + 1].IsConversationLine())
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
 
                         do
                         {
