@@ -26,7 +26,6 @@ namespace WoWDeveloperAssistant
         public MainForm()
         {
             InitializeComponent();
-
             creatureScriptsCreator = new CreatureScriptsCreator(this);
             waypointsCreator = new WaypointsCreator(this);
             coreScriptTemplate = new CoreScriptTemplates(this);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WoWDeveloperAssistant.Misc;
@@ -6,21 +7,80 @@ using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
-    [Serializable]
+    [ProtoContract]
     public class Waypoint : ICloneable
     {
-        public Position movePosition;
-        public float orientation;
-        public uint delay;
-        public Position startPosition;
-        public uint moveTime;
-        public TimeSpan moveStartTime;
-        public TimeSpan orientationSetTime;
-        public List<WaypointScript> scripts;
-        public uint idFromParse;
-        public MoveType moveType;
-        public float velocity;
-        public long packetNumber;
+        [ProtoMember(1)]
+        public Position movePosition
+        {
+            get; set;
+        }
+
+        [ProtoMember(2)]
+        public float orientation
+        {
+            get; set;
+        }
+
+        [ProtoMember(3)]
+        public uint delay
+        {
+            get; set;
+        }
+
+        [ProtoMember(4)]
+        public Position startPosition
+        {
+            get; set;
+        }
+
+        [ProtoMember(5)]
+        public uint moveTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(6)]
+        public TimeSpan moveStartTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(7)]
+        public TimeSpan orientationSetTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(8)]
+        public List<WaypointScript> scripts
+        {
+            get; set;
+        } = new List<WaypointScript>();
+
+        [ProtoMember(9)]
+        public uint idFromParse
+        {
+            get; set;
+        }
+
+        [ProtoMember(10)]
+        public MoveType moveType
+        {
+            get; set;
+        }
+
+        [ProtoMember(11)]
+        public float velocity
+        {
+            get; set;
+        }
+
+        [ProtoMember(12)]
+        public long packetNumber
+        {
+            get; set;
+        }
 
         public Waypoint()
         { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); idFromParse = 0; moveType = MoveType.MOVE_MAX; velocity = 0.0f; packetNumber = 0; }

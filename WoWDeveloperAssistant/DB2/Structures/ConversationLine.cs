@@ -4,7 +4,7 @@
     public class ConversationLine
     {
         public uint BroadcastTextID;
-        public int Unused1020;
+        public uint Unused1020;
         public uint SpellVisualKitID;
         public int AdditionalDuration;
         public ushort NextConversationLineID;

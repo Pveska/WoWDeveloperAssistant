@@ -48,6 +48,8 @@ namespace WoWDeveloperAssistant.Misc
             BUILD_11_1_7,
             BUILD_11_2_0,
             BUILD_11_2_5,
+            BUILD_11_2_7,
+            BUILD_12_0_1
         };
 
         public static string GetValueWithoutComma(this float value)

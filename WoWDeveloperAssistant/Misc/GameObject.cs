@@ -1,13 +1,23 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Misc
 {
-    [Serializable]
+    [ProtoContract]
     public class GameObject
     {
-        public string guid;
-        public uint entry;
+        [ProtoMember(1)]
+        public string guid
+        {
+            get; set;
+        }
+
+        [ProtoMember(2)]
+        public uint entry
+        {
+            get; set;
+        }
 
         public GameObject(UpdateObjectPacket updatePacket)
         {

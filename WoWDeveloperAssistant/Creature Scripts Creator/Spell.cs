@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,27 +7,95 @@ using WoWDeveloperAssistant.Misc;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
-    [Serializable]
+    [ProtoContract]
     public class Spell
     {
-        public uint spellId;
-        public TimeSpan spellCastTime;
-        public bool hasConeType;
-        public bool needConeDelay;
-        public List<TimeSpan> spellStartCastTimes;
-        public uint castTimes;
-        public bool isCombatSpell;
-        public string name;
-        public CombatCastTimings combatCastTimings;
-        public bool isDeathSpell;
+        [ProtoMember(1)]
+        public uint spellId
+        {
+            get; set;
+        }
 
-        [Serializable]
+        [ProtoMember(2)]
+        public TimeSpan spellCastTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(3)]
+        public bool hasConeType
+        {
+            get; set;
+        }
+
+        [ProtoMember(4)]
+        public bool needConeDelay
+        {
+            get; set;
+        }
+
+        [ProtoMember(5)]
+        public List<TimeSpan> spellStartCastTimes
+        {
+            get; set;
+        } = new List<TimeSpan>();
+
+        [ProtoMember(6)]
+        public uint castTimes
+        {
+            get; set;
+        }
+
+        [ProtoMember(7)]
+        public bool isCombatSpell
+        {
+            get; set;
+        }
+
+        [ProtoMember(8)]
+        public string name
+        {
+            get; set;
+        }
+
+        [ProtoMember(9)]
+        public CombatCastTimings combatCastTimings
+        {
+            get; set;
+        }
+
+        [ProtoMember(10)]
+        public bool isDeathSpell
+        {
+            get; set;
+        }
+
+        [ProtoContract]
         public struct CombatCastTimings
         {
-            public TimeSpan minCastTime;
-            public TimeSpan maxCastTime;
-            public TimeSpan minRepeatTime;
-            public TimeSpan maxRepeatTime;
+            [ProtoMember(1)]
+            public TimeSpan minCastTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public TimeSpan maxCastTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan minRepeatTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(4)]
+            public TimeSpan maxRepeatTime
+            {
+                get; set;
+            }
 
             public CombatCastTimings(TimeSpan minCast, TimeSpan maxCast, TimeSpan minRepeat, TimeSpan maxRepeat)
             { minCastTime = minCast; maxCastTime = maxCast; minRepeatTime = minRepeat; maxRepeatTime = maxRepeat; }

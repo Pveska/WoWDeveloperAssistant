@@ -3,7 +3,7 @@
     [Hotfix("ModifierTree")]
     public sealed class ModifierTree
     {
-        public int Parent;
+        public uint Parent;
         public sbyte Operator;
         public sbyte Amount;
         public int Type;

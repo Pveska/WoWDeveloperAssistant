@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,27 +9,116 @@ using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Misc
 {
-    [Serializable]
+    [ProtoContract]
     public class Creature
     {
-        public string guid;
-        public uint entry;
-        public string name;
-        public ulong maxhealth;
-        public TimeSpan combatStartTime;
-        public TimeSpan deathTime;
-        public Position spawnPosition;
-        public uint? mapId;
-        public List<Waypoint> waypoints;
-        public List<Aura> auras;
-        public Dictionary<uint, Spell> castedSpells;
-        public TimeSpan lastUpdatePacketTime;
-        public bool hasDisableGravity;
-        public bool isCyclic;
-        public string transportGuid;
-        public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
-        public List<uint> virtualItems;
-        public float hoverHeight;
+        [ProtoMember(1)]
+        public string guid
+        {
+            get; set;
+        }
+
+        [ProtoMember(2)]
+        public uint entry
+        {
+            get; set;
+        }
+
+        [ProtoMember(3)]
+        public string name
+        {
+            get; set;
+        }
+
+        [ProtoMember(4)]
+        public ulong maxhealth
+        {
+            get; set;
+        }
+
+        [ProtoMember(5)]
+        public TimeSpan combatStartTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(6)]
+        public TimeSpan deathTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(7)]
+        public Position spawnPosition
+        {
+            get; set;
+        }
+
+        [ProtoMember(8)]
+        public uint? mapId
+        {
+            get; set;
+        }
+
+        [ProtoMember(9)]
+        public List<Waypoint> waypoints
+        {
+            get; set;
+        } = new List<Waypoint>();
+
+        [ProtoMember(10)]
+        public List<Aura> auras
+        {
+            get; set;
+        } = new List<Aura>();
+
+        [ProtoMember(11)]
+        public Dictionary<uint, Spell> castedSpells
+        {
+            get; set;
+        } = new Dictionary<uint, Spell>();
+
+        [ProtoMember(12)]
+        public TimeSpan lastUpdatePacketTime
+        {
+            get; set;
+        }
+
+        [ProtoMember(13)]
+        public bool hasDisableGravity
+        {
+            get; set;
+        }
+
+        [ProtoMember(14)]
+        public bool isCyclic
+        {
+            get; set;
+        }
+
+        [ProtoMember(15)]
+        public string transportGuid
+        {
+            get; set;
+        }
+
+        [ProtoMember(16)]
+        public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys
+        {
+            get; set;
+        } = new Dictionary<uint, MonsterMovePacket.FilterKey>();
+
+        [ProtoMember(17)]
+        public List<uint> virtualItems
+        {
+            get; set;
+        } = new List<uint>();
+
+        [ProtoMember(18)]
+        public float hoverHeight
+        {
+            get; set;
+        }
 
         public Creature() { }
 

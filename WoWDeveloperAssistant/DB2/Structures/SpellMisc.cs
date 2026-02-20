@@ -5,8 +5,8 @@ namespace DB2.Structures
     [Hotfix("SpellMisc")]
     public class SpellMisc
     {
-        public int[] Attributes = new int[16];
-        public byte DifficultyId;
+        public int[] Attributes = new int[17];
+        public short DifficultyId;
         public ushort CastingTimeIndex;
         public ushort DurationIndex;
         public ushort PvPDurationIndex;

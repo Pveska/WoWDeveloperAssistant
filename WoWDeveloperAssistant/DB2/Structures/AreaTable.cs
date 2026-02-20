@@ -19,7 +19,7 @@
         public byte FactionGroupMask;
         public float AmbientMultiplier;
         public int MountFlags;
-        public short PvpCombatWorldStateId;
+        public int PvpCombatWorldStateId;
         public byte WildBattlePetLevelMin;
         public byte WildBattlePetLevelMax;
         public byte WindSettingsId;

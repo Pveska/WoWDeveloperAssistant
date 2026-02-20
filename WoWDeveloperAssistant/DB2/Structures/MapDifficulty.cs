@@ -6,11 +6,11 @@ namespace DB2.Structures
     public class MapDifficulty
     {
         public string Message;
-        public int DifficultyID;
+        public short DifficultyID;
         public int LockID;
         public byte ResetInterval;
         public int MaxPlayers;
-        public int ItemContext;
+        public byte ItemContext;
         public int ItemContextPickerID;
         public int Flags;
         public int ContentTuningID;

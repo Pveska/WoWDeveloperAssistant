@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
-    [Serializable]
+    [ProtoContract]
     public class WaypointScript : ICloneable
     {
         public enum ScriptType : byte
@@ -459,18 +460,77 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             MAX_SHEATH_STATE
         };
 
-        public uint id;
-        public uint delay;
-        public ScriptType type;
-        public uint dataLong;
-        public uint dataLongSecond;
-        public uint dataInt;
-        public float x;
-        public float y;
-        public float z;
-        public float o;
-        public uint guid;
-        public TimeSpan scriptTime;
+        [ProtoMember(1)]
+        public uint id
+        {
+            get; set;
+        }
+
+        [ProtoMember(2)]
+        public uint delay
+        {
+            get; set;
+        }
+
+        [ProtoMember(3)]
+        public ScriptType type
+        {
+            get; set;
+        }
+
+        [ProtoMember(4)]
+        public uint dataLong
+        {
+            get; set;
+        }
+
+        [ProtoMember(5)]
+        public uint dataLongSecond
+        {
+            get; set;
+        }
+
+        [ProtoMember(6)]
+        public uint dataInt
+        {
+            get; set;
+        }
+
+        [ProtoMember(7)]
+        public float x
+        {
+            get; set;
+        }
+
+        [ProtoMember(8)]
+        public float y
+        {
+            get; set;
+        }
+
+        [ProtoMember(9)]
+        public float z
+        {
+            get; set;
+        }
+
+        [ProtoMember(10)]
+        public float o
+        {
+            get; set;
+        }
+
+        [ProtoMember(11)]
+        public uint guid
+        {
+            get; set;
+        }
+
+        [ProtoMember(12)]
+        public TimeSpan scriptTime
+        {
+            get; set;
+        }
 
         public WaypointScript() {}
 

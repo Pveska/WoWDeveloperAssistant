@@ -1,15 +1,18 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using System.Web.UI.DataVisualization.Charting;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
-using static WoWDeveloperAssistant.Misc.Utils;
 using static WoWDeveloperAssistant.Misc.Packets;
-using System.Runtime.Serialization.Formatters.Binary;
+using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
+using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {
@@ -20,9 +23,20 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         private Dictionary<string, GameObject> gameObjectsDict = new Dictionary<string, GameObject>();
         private bool firstPointSelectedManually = false;
 
+        [ProtoContract]
+        public class WaypointData
+        {
+            [ProtoMember(1)]
+            public Dictionary<string, Creature> Creatures { get; set; }
+
+            [ProtoMember(2)]
+            public Dictionary<string, GameObject> GameObjects { get; set; }
+        }
+
         public WaypointsCreator(MainForm mainForm)
         {
             this.mainForm = mainForm;
+            mainForm.chart_WaypointsCreator_Path.PostPaint += DrawSpawnArrows;
         }
 
         public uint GetDataFromFiles(string[] fileNames)
@@ -35,7 +49,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 {
                     successfullyParsedFilesCount++;
                 }
-                else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
+                else if (fileName.Contains("proto") && GetDataFromBinFile(fileName, fileNames.Length > 1))
                 {
                     successfullyParsedFilesCount++;
                 }
@@ -522,33 +536,15 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
             {
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-
-                if (!multiSelect)
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.proto"), FileMode.OpenOrCreate))
                 {
-                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.dat"), FileMode.OpenOrCreate))
+                    WaypointData data = new WaypointData
                     {
-                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
-                        {
-                            { 0, creaturesDict },
-                            { 1, gameObjectsDict }
-                        };
+                        Creatures = creaturesDict,
+                        GameObjects = gameObjectsDict
+                    };
 
-                        binaryFormatter.Serialize(fileStream, dictToSerialize);
-                    }
-                }
-                else
-                {
-                    using (FileStream fileStream = new FileStream("multi_selected_waypoint_packets.dat", FileMode.OpenOrCreate))
-                    {
-                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
-                        {
-                            { 0, creaturesDict },
-                            { 1, gameObjectsDict }
-                        };
-
-                        binaryFormatter.Serialize(fileStream, dictToSerialize);
-                    }
+                    Serializer.Serialize(fileStream, data);
                 }
             }
 
@@ -560,23 +556,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
             Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
 
-            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
             {
-                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
-            }
-
-            if (multiSelect)
-            {
-                creaturesDict.Union((Dictionary<string, Creature>)dictFromSerialize[0]);
-                gameObjectsDict.Union((Dictionary<string, GameObject>)dictFromSerialize[1]);
-            }
-            else
-            {
-                creaturesDict = (Dictionary<string, Creature>)dictFromSerialize[0];
-                gameObjectsDict = (Dictionary<string, GameObject>)dictFromSerialize[1];
+                WaypointData data = Serializer.Deserialize<WaypointData>(fileStream);
+                creaturesDict = data.Creatures;
+                gameObjectsDict = data.GameObjects;
             }
 
             return true;
@@ -1180,6 +1166,56 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.grid_WaypointsCreator_Waypoints.Enabled = true;
         }
 
+        private void DrawSpawnArrows(object sender, System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs e)
+        {
+            var chart = mainForm.chart_WaypointsCreator_Path;
+            if (chart.Series.IndexOf("Spawn") < 0)
+                return;
+
+            var spawnSeries = chart.Series["Spawn"];
+            var area = chart.ChartAreas[0];
+
+            var inner = area.InnerPlotPosition;
+            float plotWidth = chart.Width * inner.Width / 100f;
+
+            double shaftPx = plotWidth * 0.04;
+            double headPx = shaftPx * 0.4;
+            double headAng = 0.55;
+
+            using (var pen = new Pen(Color.DarkRed, 2))
+            {
+                pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                e.ChartGraphics.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                foreach (var point in spawnSeries.Points)
+                {
+                    if (!(point.Tag is Creature creature))
+                        continue;
+
+                    double px = area.AxisX.ValueToPixelPosition(creature.spawnPosition.x);
+                    double py = area.AxisY.ValueToPixelPosition(creature.spawnPosition.y);
+
+                    double angle = creature.spawnPosition.orientation + Math.PI;
+
+                    double tipX = px + shaftPx * Math.Cos(angle);
+                    double tipY = py - shaftPx * Math.Sin(angle);
+
+                    double wingAng1 = angle + Math.PI + headAng;
+                    double wingAng2 = angle + Math.PI - headAng;
+
+                    double w1X = tipX + headPx * Math.Cos(wingAng1);
+                    double w1Y = tipY - headPx * Math.Sin(wingAng1);
+
+                    double w2X = tipX + headPx * Math.Cos(wingAng2);
+                    double w2Y = tipY - headPx * Math.Sin(wingAng2);
+
+                    e.ChartGraphics.Graphics.DrawLine(pen, (float)px, (float)py, (float)tipX, (float)tipY);
+                    e.ChartGraphics.Graphics.DrawLine(pen, (float)tipX, (float)tipY, (float)w1X, (float)w1Y);
+                    e.ChartGraphics.Graphics.DrawLine(pen, (float)tipX, (float)tipY, (float)w2X, (float)w2Y);
+                }
+            }
+        }
+
         public void GraphPath()
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
@@ -1246,9 +1282,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.chart_WaypointsCreator_Path.Series["Line"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
             mainForm.chart_WaypointsCreator_Path.Enabled = true;
 
-            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(creature.spawnPosition.x, creature.spawnPosition.y);
-            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[0].Color = Color.Red;
-            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[0].Label = "SniffSpawnPos";
+            var point = mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(creature.spawnPosition.x, creature.spawnPosition.y);
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[point].Color = Color.Red;
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[point].Label = "SniffSpawnPos";
+            mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[point].Tag = creature;
 
             if (!IsCreatureExistOnDb(creature.guid) && possibleCreatures.Count > 0)
             {
@@ -1260,6 +1297,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(itr.Value.Key.spawnPosition.x, itr.Value.Key.spawnPosition.y);
                     mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[i].Color = Color.Green;
                     mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[i].Label = $"{i} - {itr.Key}";
+                    var idx = mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points.AddXY(itr.Value.Key.spawnPosition.x, itr.Value.Key.spawnPosition.y);
+                    var p = mainForm.chart_WaypointsCreator_Path.Series["Spawn"].Points[idx];
+                    p.Color = Color.Green;
+                    p.Label = $"{i} - {itr.Key}";
+                    p.Tag = itr.Value.Key;
                 }
             }
 
@@ -1274,6 +1316,8 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 mainForm.chart_WaypointsCreator_Path.Series["Line"].Points.AddXY(posX, posY);
                 mainForm.chart_WaypointsCreator_Path.Series["Line"].Points[i].Color = Color.Cyan;
             }
+
+            mainForm.chart_WaypointsCreator_Path.Invalidate();
         }
 
         public void CutFromGrid()
@@ -1339,21 +1383,26 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SQLtext += "DELETE FROM `waypoint_data` WHERE `linked_id` = @LinkedId;" + "\r\n";
             SQLtext += "INSERT INTO `waypoint_data` (`linked_id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `action`, `action_chance`, `speed`) VALUES" + "\r\n";
 
+            float dominantSpeed = GetDominantSpeed(waypoints);
+
             for (int i = 0; i < waypoints.Count; i++)
             {
                 Waypoint waypoint = waypoints[i];
                 float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WaypointsCreator_Waypoints[4, i].Value.ToString());
                 uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WaypointsCreator_Waypoints[6, i].Value.ToString());
-                float dbSpeed = GetDbSpeedFromVelocity(waypoint.velocity, waypoint.moveType);
-                float wpSpeed = dbSpeed >= 1.0f && dbSpeed <= 1.2 ? 0 : (float)Math.Round(waypoint.velocity, 1);
+                uint moveType = GetDominantMoveType(waypoints);
+                float wpDbSpeed = GetDbSpeedFromVelocity(waypoint.velocity, (MonsterMovePacket.MoveType)moveType);
+                float dominantDbSpeed = GetDbSpeedFromVelocity(dominantSpeed, (MonsterMovePacket.MoveType)moveType);
+
+                float wpSpeed = (Math.Abs(dominantDbSpeed - 1.1f) <= 0.15f) ? 0 : (float)Math.Round(waypoint.velocity, 1);
 
                 if (i < (waypoints.Count - 1))
                 {
-                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {(uint)waypoint.moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + "),\r\n";
+                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + "),\r\n";
                 }
                 else
                 {
-                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {(uint)waypoint.moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + ");\r\n";
+                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + ");\r\n";
                 }
             }
 
@@ -1489,6 +1538,21 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             Clipboard.SetText(SQLtext);
+        }
+
+        private float GetDominantSpeed(List<Waypoint> waypoints)
+        {
+            var speeds = waypoints.Where(w => w.velocity > 0.1f).Select(w => (float)Math.Round(w.velocity, 1)).ToList();
+
+            if (speeds.Count == 0)
+                return 0;
+
+            return speeds.GroupBy(s => s).OrderByDescending(g => g.Count()).First().Key;
+        }
+
+        private uint GetDominantMoveType(List<Waypoint> waypoints)
+        {
+            return waypoints.GroupBy(w => (uint)w.moveType).OrderByDescending(g => g.Count()).First().Key;
         }
 
         public void RemoveNearestPoints()
@@ -1660,7 +1724,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed sniff or data file with waypoints (*.txt;*.dat)|*parsed.txt;*waypoint_packets.dat";
+            mainForm.openFileDialog.Filter = "Parsed sniff or data file with waypoints (*.txt;*.proto)|*parsed.txt;*waypoint_packets.proto";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
             mainForm.openFileDialog.Multiselect = true;
@@ -1911,8 +1975,72 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             GraphPath();
         }
 
+        private void FilterBestTimeSegment()
+        {
+            var grid = mainForm.grid_WaypointsCreator_Waypoints;
+
+            if (grid.Rows.Count <= 1)
+                return;
+
+            List<DataGridViewRow> rows = grid.Rows
+                .Cast<DataGridViewRow>()
+                .ToList();
+
+            rows = rows
+                .OrderBy(r => ((Waypoint)r.Cells[8].Value).moveStartTime)
+                .ToList();
+
+            const int MAX_GAP_SECONDS = 60;
+
+            List<List<DataGridViewRow>> segments = new List<List<DataGridViewRow>>();
+            segments.Add(new List<DataGridViewRow>());
+
+            foreach (var row in rows)
+            {
+                Waypoint wp = (Waypoint)row.Cells[8].Value;
+
+                if (segments.Last().Count == 0)
+                {
+                    segments.Last().Add(row);
+                    continue;
+                }
+
+                Waypoint prev = (Waypoint)segments.Last().Last().Cells[8].Value;
+
+                double diff = (wp.moveStartTime - prev.moveStartTime).TotalSeconds;
+
+                if (diff > MAX_GAP_SECONDS)
+                    segments.Add(new List<DataGridViewRow>());
+
+                segments.Last().Add(row);
+            }
+
+            var bestSegment = segments
+                .OrderByDescending(s => s.Count)
+                .First();
+
+            grid.Rows.Clear();
+
+            foreach (var row in bestSegment)
+            {
+                Waypoint wp = (Waypoint)row.Cells[8].Value;
+
+                grid.Rows.Add(
+                    bestSegment.IndexOf(row) + 1,
+                    wp.movePosition.x,
+                    wp.movePosition.y,
+                    wp.movePosition.z,
+                    wp.orientation,
+                    wp.moveStartTime.ToFormattedString(),
+                    wp.delay,
+                    wp.HasScripts(),
+                    wp.Clone());
+            }
+        }
+
         public void OptimizeRegularPath()
         {
+            FilterBestTimeSegment();
             SetBestFirstPoint();
             List<DataGridViewRow> copyOfWaypointRows = mainForm.grid_WaypointsCreator_Waypoints.Rows.Cast<DataGridViewRow>().ToList();
             bool canLoop = true;

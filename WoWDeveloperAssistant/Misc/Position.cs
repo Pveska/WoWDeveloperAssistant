@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 
 namespace WoWDeveloperAssistant.Misc
 {
-    [Serializable]
-    public struct Position
+    [ProtoContract]
+    public class Position
     {
         public bool Equals(Position other)
         {
@@ -28,10 +29,32 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        public float x;
-        public float y;
-        public float z;
-        public float orientation;
+        [ProtoMember(1)]
+        public float x
+        {
+            get; set;
+        }
+
+        [ProtoMember(2)]
+        public float y
+        {
+            get; set;
+        }
+
+        [ProtoMember(3)]
+        public float z
+        {
+            get; set;
+        }
+
+        [ProtoMember(4)]
+        public float orientation
+        {
+            get; set;
+        }
+
+        public Position()
+        { x = 0.0f; y = 0.0f; z = 0.0f; orientation = 0.0f; }
 
         public Position(float x, float y, float z)
         { this.x = x; this.y = y; this.z = z; orientation = 0.0f; }

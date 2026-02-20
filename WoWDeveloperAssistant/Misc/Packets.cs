@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -1235,16 +1236,50 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
+        [ProtoContract]
         public struct MonsterMovePacket
         {
-            public string creatureGuid;
-            public float creatureOrientation;
-            public TimeSpan packetSendTime;
-            public List<Waypoint> waypoints;
-            public uint moveTime;
-            public Position startPos;
-            public JumpInfo jumpInfo;
+            [ProtoMember(1)]
+            public string creatureGuid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public float creatureOrientation
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(4)]
+            public List<Waypoint> waypoints
+            {
+                get; set;
+            }
+
+            [ProtoMember(5)]
+            public uint moveTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(6)]
+            public Position startPos
+            {
+                get; set;
+            }
+
+            [ProtoMember(7)]
+            public JumpInfo jumpInfo
+            {
+                get; set;
+            }
 
             public enum MoveType
             {
@@ -1254,12 +1289,29 @@ namespace WoWDeveloperAssistant.Misc
                 MOVE_MAX    = 5
             };
 
-            [Serializable]
-            public struct JumpInfo
+            [ProtoContract]
+            public class JumpInfo
             {
-                public uint moveTime;
-                public float jumpGravity;
-                public Position jumpPos;
+                [ProtoMember(1)]
+                public uint moveTime
+                {
+                    get; set;
+                }
+
+                [ProtoMember(2)]
+                public float jumpGravity
+                {
+                    get; set;
+                }
+
+                [ProtoMember(3)]
+                public Position jumpPos
+                {
+                    get; set;
+                }
+
+                public JumpInfo()
+                { moveTime = 0; jumpGravity = 0.0f; jumpPos = new Position(); }
 
                 public JumpInfo(uint time, float gravity, Position positon)
                 { moveTime = time; jumpGravity = gravity; jumpPos = positon; }
@@ -1270,11 +1322,20 @@ namespace WoWDeveloperAssistant.Misc
                 }
             }
 
-            [Serializable]
+            [ProtoContract]
             public struct FilterKey
             {
-                public float In;
-                public float Out;
+                [ProtoMember(1)]
+                public float In
+                {
+                    get; set;
+                }
+
+                [ProtoMember(2)]
+                public float Out
+                {
+                    get; set;
+                }
             };
 
             public MonsterMovePacket(string guid, float orientation, TimeSpan time, List<Waypoint> waypoints, uint moveTime, Position pos, JumpInfo jump)
