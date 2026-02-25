@@ -71,7 +71,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         }
 
         [ProtoContract]
-        public struct CombatCastTimings
+        public class CombatCastTimings
         {
             [ProtoMember(1)]
             public TimeSpan minCastTime

@@ -14,43 +14,43 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public Position movePosition
         {
             get; set;
-        }
+        } = new Position();
 
         [ProtoMember(2)]
         public float orientation
         {
             get; set;
-        }
+        } = 0.0f;
 
         [ProtoMember(3)]
         public uint delay
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(4)]
         public Position startPosition
         {
             get; set;
-        }
+        } = new Position();
 
         [ProtoMember(5)]
         public uint moveTime
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(6)]
         public TimeSpan moveStartTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
         [ProtoMember(7)]
         public TimeSpan orientationSetTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
         [ProtoMember(8)]
         public List<WaypointScript> scripts
@@ -62,28 +62,27 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public uint idFromParse
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(10)]
         public MoveType moveType
         {
             get; set;
-        }
+        } = MoveType.MOVE_UNKNOWN;
 
         [ProtoMember(11)]
         public float velocity
         {
             get; set;
-        }
+        } = 0.0f;
 
         [ProtoMember(12)]
         public long packetNumber
         {
             get; set;
-        }
+        } = 0;
 
-        public Waypoint()
-        { movePosition = new Position(); orientation = 0.0f; delay = 0; startPosition = new Position(); moveTime = 0; moveStartTime = new TimeSpan(); orientationSetTime = new TimeSpan(); scripts = new List<WaypointScript>(); idFromParse = 0; moveType = MoveType.MOVE_MAX; velocity = 0.0f; packetNumber = 0; }
+        public Waypoint() { }
 
         public Waypoint(Position movePos, float ori, uint delay, Position startPos, uint moveTime, TimeSpan moveStartTime, TimeSpan oriTime, List<WaypointScript> scripts, uint id, MoveType moveType)
         { movePosition = movePos; orientation = ori; this.delay = delay; startPosition = startPos; this.moveTime = moveTime; this.moveStartTime = moveStartTime; orientationSetTime = oriTime; this.scripts = scripts; idFromParse = id; this.moveType = moveType; }

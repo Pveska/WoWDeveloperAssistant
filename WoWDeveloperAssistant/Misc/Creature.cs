@@ -16,49 +16,49 @@ namespace WoWDeveloperAssistant.Misc
         public string guid
         {
             get; set;
-        }
+        } = "";
 
         [ProtoMember(2)]
         public uint entry
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(3)]
         public string name
         {
             get; set;
-        }
+        } = "";
 
         [ProtoMember(4)]
         public ulong maxhealth
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(5)]
         public TimeSpan combatStartTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
         [ProtoMember(6)]
         public TimeSpan deathTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
         [ProtoMember(7)]
         public Position spawnPosition
         {
             get; set;
-        }
+        } = new Position();
 
         [ProtoMember(8)]
         public uint? mapId
         {
             get; set;
-        }
+        } = null;
 
         [ProtoMember(9)]
         public List<Waypoint> waypoints
@@ -82,25 +82,25 @@ namespace WoWDeveloperAssistant.Misc
         public TimeSpan lastUpdatePacketTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
         [ProtoMember(13)]
         public bool hasDisableGravity
         {
             get; set;
-        }
+        } = false;
 
         [ProtoMember(14)]
         public bool isCyclic
         {
             get; set;
-        }
+        } = false;
 
         [ProtoMember(15)]
         public string transportGuid
         {
             get; set;
-        }
+        } = "";
 
         [ProtoMember(16)]
         public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys
@@ -118,7 +118,7 @@ namespace WoWDeveloperAssistant.Misc
         public float hoverHeight
         {
             get; set;
-        }
+        } = 0.0f;
 
         public Creature() { }
 
@@ -308,7 +308,7 @@ namespace WoWDeveloperAssistant.Misc
 
             for (int i = 0; i < auras.Count; i++)
             {
-                if (auras[i].HasAura == false && auras[i].time == auraPacket.packetSendTime && auras[i].slot == auraPacket.slot)
+                if (auras[i].hasAura == false && auras[i].time == auraPacket.packetSendTime && auras[i].slot == auraPacket.slot)
                 {
                     auraIndex = i;
                     break;
@@ -319,7 +319,7 @@ namespace WoWDeveloperAssistant.Misc
             {
                 for (int i = auraIndex; i >= 0; i--)
                 {
-                    if (auras[i].HasAura && auras[i].slot == auraPacket.slot)
+                    if (auras[i].hasAura && auras[i].slot == auraPacket.slot)
                         spellId = auras[i].spellId;
                 }
             }

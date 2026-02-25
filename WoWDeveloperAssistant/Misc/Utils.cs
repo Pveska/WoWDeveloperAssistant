@@ -57,6 +57,21 @@ namespace WoWDeveloperAssistant.Misc
             return value.ToString().Replace(",", ".");
         }
 
+        public static uint GetMoveTypeNumber(this MonsterMovePacket.MoveType value)
+        {
+            switch (value)
+            {
+                case MonsterMovePacket.MoveType.MOVE_WALK:
+                    return 0;
+                case MonsterMovePacket.MoveType.MOVE_RUN:
+                    return 1;
+                case MonsterMovePacket.MoveType.MOVE_FLIGHT:
+                    return 4;
+                default:
+                    return 5;
+            }
+        }
+
         public static void RecalculateIdsAndGuids(this IEnumerable<Waypoint> list, uint baseId)
         {
             uint id = 0;

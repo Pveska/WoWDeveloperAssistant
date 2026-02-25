@@ -9,6 +9,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
     [ProtoContract]
     public class WaypointScript : ICloneable
     {
+        [ProtoContract]
         public enum ScriptType : byte
         {
             Talk           = 0,
@@ -24,6 +25,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             Unknown        = 99
         };
 
+        [ProtoContract]
         enum Emotes
         {
             EMOTE_ONESHOT_NONE = 0,
@@ -435,6 +437,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             MAX_EMOTE
         };
 
+        [ProtoContract]
         enum UnitStandStateTypes
         {
             UNIT_STAND_STATE_STAND = 0,
@@ -452,6 +455,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             UNIT_STAND_STATE_HOVER2 = 50331648,
         };
 
+        [ProtoContract]
         enum SheathStates
         {
             SHEATH_STATE_UNARMED = 0,
@@ -464,75 +468,75 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public uint id
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(2)]
         public uint delay
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(3)]
         public ScriptType type
         {
             get; set;
-        }
+        } = ScriptType.Unknown;
 
         [ProtoMember(4)]
         public uint dataLong
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(5)]
         public uint dataLongSecond
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(6)]
         public uint dataInt
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(7)]
         public float x
         {
             get; set;
-        }
+        } = 0.0f;
 
         [ProtoMember(8)]
         public float y
         {
             get; set;
-        }
+        } = 0.0f;
 
         [ProtoMember(9)]
         public float z
         {
             get; set;
-        }
+        } = 0.0f;
 
         [ProtoMember(10)]
         public float o
         {
             get; set;
-        }
+        } = 0.0f;
 
         [ProtoMember(11)]
         public uint guid
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(12)]
         public TimeSpan scriptTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
-        public WaypointScript() {}
+        public WaypointScript() { }
 
         public WaypointScript(uint id, uint delay, ScriptType type, uint dataLong, uint dataLongSecond, uint dataInt, float x, float y, float z, float o, uint guid, TimeSpan time)
         { this.id = id; this.delay = delay; this.type = type; this.dataLong = dataLong; this.dataLongSecond = dataLongSecond; this.dataInt = dataInt; this.x = x; this.y = y; this.z = z; this.o = o; this.guid = guid; this.scriptTime = time; }

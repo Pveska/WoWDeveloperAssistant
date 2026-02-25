@@ -556,8 +556,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
-            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
-
             using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
             {
                 WaypointData data = Serializer.Deserialize<WaypointData>(fileStream);
@@ -1051,12 +1049,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 Dictionary<uint, uint> moveTypesCount = new Dictionary<uint, uint>();
 
-                foreach (uint moveType in waypoints.Select(x => x.moveType).Distinct())
+                foreach (MoveType moveType in waypoints.Select(x => x.moveType).Distinct())
                 {
-                    moveTypesCount.Add(moveType, (uint)waypoints.Where(x => x.moveType == (MonsterMovePacket.MoveType)moveType).Count());
+                    moveTypesCount.Add(moveType.GetMoveTypeNumber(), (uint)waypoints.Where(x => x.moveType == moveType).Count());
                 }
 
-                uint averagedMoveType = moveTypesCount.First(x => x.Value == moveTypesCount.Values.Max()).Key;
+                uint averagedMoveType = (uint)moveTypesCount.First(x => x.Value == moveTypesCount.Values.Max()).Key;
 
                 List<float> moveDistances = new List<float>();
 
@@ -1118,19 +1116,19 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.textBox_SqlOutput.Text = mainOutput;
         }
 
-        private float GetDbSpeedFromVelocity(float velocity, MonsterMovePacket.MoveType moveType)
+        private float GetDbSpeedFromVelocity(float velocity, MoveType moveType)
         {
             switch (moveType)
             {
-                case MonsterMovePacket.MoveType.MOVE_WALK:
+                case MoveType.MOVE_WALK:
                 {
                     return (float)(Math.Round((velocity / 2.5f), 1));
                 }
-                case MonsterMovePacket.MoveType.MOVE_RUN:
+                case MoveType.MOVE_RUN:
                 {
                     return (float)(Math.Round((velocity / 7.0f), 1));
                 }
-                case MonsterMovePacket.MoveType.MOVE_FLIGHT:
+                case MoveType.MOVE_FLIGHT:
                 {
                     return (float)(Math.Round((velocity / 7.0f), 1));
                 }
@@ -1390,19 +1388,18 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 Waypoint waypoint = waypoints[i];
                 float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WaypointsCreator_Waypoints[4, i].Value.ToString());
                 uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WaypointsCreator_Waypoints[6, i].Value.ToString());
-                uint moveType = GetDominantMoveType(waypoints);
-                float wpDbSpeed = GetDbSpeedFromVelocity(waypoint.velocity, (MonsterMovePacket.MoveType)moveType);
-                float dominantDbSpeed = GetDbSpeedFromVelocity(dominantSpeed, (MonsterMovePacket.MoveType)moveType);
+                MoveType moveType = GetDominantMoveType(waypoints);
+                float dominantDbSpeed = GetDbSpeedFromVelocity(dominantSpeed, moveType);
 
-                float wpSpeed = (Math.Abs(dominantDbSpeed - 1.1f) <= 0.15f) ? 0 : (float)Math.Round(waypoint.velocity, 1);
+                float wpSpeed = (Math.Abs(dominantDbSpeed - 1.1f) <= 0.15f) ? 0 : (float)Math.Round(dominantSpeed, 1);
 
                 if (i < (waypoints.Count - 1))
                 {
-                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + "),\r\n";
+                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {moveType.GetMoveTypeNumber()}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + "),\r\n";
                 }
                 else
                 {
-                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {moveType}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + ");\r\n";
+                    SQLtext += $"(@LinkedId, {i + 1}, {waypoint.movePosition.x.GetValueWithoutComma()}, {waypoint.movePosition.y.GetValueWithoutComma()}, {waypoint.movePosition.z.GetValueWithoutComma()}, {orientation.GetValueWithoutComma()}, {delay}, {moveType.GetMoveTypeNumber()}, {waypoint.GetScriptId()}, 100, {wpSpeed.GetValueWithoutComma()}" + ");\r\n";
                 }
             }
 
@@ -1550,9 +1547,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return speeds.GroupBy(s => s).OrderByDescending(g => g.Count()).First().Key;
         }
 
-        private uint GetDominantMoveType(List<Waypoint> waypoints)
+        private MoveType GetDominantMoveType(List<Waypoint> waypoints)
         {
-            return waypoints.GroupBy(w => (uint)w.moveType).OrderByDescending(g => g.Count()).First().Key;
+            return waypoints.GroupBy(w => w.moveType).OrderByDescending(g => g.Count()).First().Key;
         }
 
         public void RemoveNearestPoints()
@@ -2142,7 +2139,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             bool isFlyingCreature = creature.hasDisableGravity;
             if (!isFlyingCreature)
             {
-                isFlyingCreature = creature.waypoints.Count(x => x.moveType == MonsterMovePacket.MoveType.MOVE_FLIGHT) != 0;
+                isFlyingCreature = creature.waypoints.Count(x => x.moveType == MoveType.MOVE_FLIGHT) != 0;
             }
 
 
