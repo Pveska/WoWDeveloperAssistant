@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Misc;
-using WoWDeveloperAssistant.Creature_Scripts_Creator;
+using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Core_Script_Templates
 {
@@ -384,7 +384,7 @@ namespace WoWDeveloperAssistant.Core_Script_Templates
             string defaultName = "";
             string scriptName = "";
 
-            defaultName = Spell.GetSpellName(objectEntry);
+            defaultName = GetSpellName(objectEntry);
             if (defaultName == "")
                 return;
 

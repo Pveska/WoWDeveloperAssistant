@@ -210,10 +210,12 @@
             this.label_ModifierTrees_ModifierTrees = new System.Windows.Forms.Label();
             this.treeView_ModifierTrees_ModifierTrees = new System.Windows.Forms.TreeView();
             this.tabPage_ParsedFileAdvisor = new System.Windows.Forms.TabPage();
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns = new System.Windows.Forms.TextBox();
+            this.label_ParsedFileAdvisor_FindDoubleSpawns = new System.Windows.Forms.Label();
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents = new System.Windows.Forms.TextBox();
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents = new System.Windows.Forms.Label();
             this.textBox_ParsedFileAdvisor_ParseQuestgiverData = new System.Windows.Forms.TextBox();
             this.label_ParsedFileAdvisor_ParseQuestgiverData = new System.Windows.Forms.Label();
-            this.button_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Button();
-            this.label_ParsedFileAdvisor_WorldStates = new System.Windows.Forms.Label();
             this.textBox_ParsedFileAdvisor_PlayerCompletedQuests = new System.Windows.Forms.TextBox();
             this.label_ParsedFileAdvisor_PlayerCompletedQuests = new System.Windows.Forms.Label();
             this.textBox_ParsedFileAdvisor_CreatureEquipmentId = new System.Windows.Forms.TextBox();
@@ -2061,10 +2063,12 @@
             // 
             // tabPage_ParsedFileAdvisor
             // 
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_FindDoubleSpawns);
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_FindDoubleSpawns);
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_ParseRolePlayEvents);
+            this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_ParseRolePlayEvents);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_ParseQuestgiverData);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_ParseQuestgiverData);
-            this.tabPage_ParsedFileAdvisor.Controls.Add(this.button_ParsedFileAdvisor_WorldStates);
-            this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_WorldStates);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_PlayerCompletedQuests);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.label_ParsedFileAdvisor_PlayerCompletedQuests);
             this.tabPage_ParsedFileAdvisor.Controls.Add(this.textBox_ParsedFileAdvisor_CreatureEquipmentId);
@@ -2090,9 +2094,48 @@
             this.tabPage_ParsedFileAdvisor.Text = "Parsed File Advisor";
             this.tabPage_ParsedFileAdvisor.UseVisualStyleBackColor = true;
             // 
+            // textBox_ParsedFileAdvisor_FindDoubleSpawns
+            // 
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.Enabled = false;
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.Location = new System.Drawing.Point(21, 610);
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.Name = "textBox_ParsedFileAdvisor_FindDoubleSpawns";
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.Size = new System.Drawing.Size(140, 26);
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.TabIndex = 47;
+            this.textBox_ParsedFileAdvisor_FindDoubleSpawns.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_ParsedFileAdvisor_FindDoubleSpawns_KeyDown);
+            // 
+            // label_ParsedFileAdvisor_FindDoubleSpawns
+            // 
+            this.label_ParsedFileAdvisor_FindDoubleSpawns.AutoSize = true;
+            this.label_ParsedFileAdvisor_FindDoubleSpawns.Location = new System.Drawing.Point(15, 590);
+            this.label_ParsedFileAdvisor_FindDoubleSpawns.Name = "label_ParsedFileAdvisor_FindDoubleSpawns";
+            this.label_ParsedFileAdvisor_FindDoubleSpawns.Size = new System.Drawing.Size(156, 20);
+            this.label_ParsedFileAdvisor_FindDoubleSpawns.TabIndex = 46;
+            this.label_ParsedFileAdvisor_FindDoubleSpawns.Text = "Find Double Spawns";
+            // 
+            // textBox_ParsedFileAdvisor_ParseRolePlayEvents
+            // 
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.Enabled = false;
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.Location = new System.Drawing.Point(21, 490);
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.Name = "textBox_ParsedFileAdvisor_ParseRolePlayEvents";
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.Size = new System.Drawing.Size(140, 26);
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.TabIndex = 45;
+            this.textBox_ParsedFileAdvisor_ParseRolePlayEvents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_ParsedFileAdvisor_ParseRolePlayEvents_KeyDown);
+            // 
+            // label_ParsedFileAdvisor_ParseRolePlayEvents
+            // 
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents.AutoSize = true;
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents.Location = new System.Drawing.Point(6, 470);
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents.Name = "label_ParsedFileAdvisor_ParseRolePlayEvents";
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents.Size = new System.Drawing.Size(173, 20);
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents.TabIndex = 44;
+            this.label_ParsedFileAdvisor_ParseRolePlayEvents.Text = "Parse Role Play Events";
+            // 
             // textBox_ParsedFileAdvisor_ParseQuestgiverData
             // 
-            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Location = new System.Drawing.Point(21, 575);
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Enabled = false;
+            this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Location = new System.Drawing.Point(21, 550);
             this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Name = "textBox_ParsedFileAdvisor_ParseQuestgiverData";
             this.textBox_ParsedFileAdvisor_ParseQuestgiverData.Size = new System.Drawing.Size(140, 26);
@@ -2102,35 +2145,16 @@
             // label_ParsedFileAdvisor_ParseQuestgiverData
             // 
             this.label_ParsedFileAdvisor_ParseQuestgiverData.AutoSize = true;
-            this.label_ParsedFileAdvisor_ParseQuestgiverData.Location = new System.Drawing.Point(6, 553);
+            this.label_ParsedFileAdvisor_ParseQuestgiverData.Location = new System.Drawing.Point(8, 530);
             this.label_ParsedFileAdvisor_ParseQuestgiverData.Name = "label_ParsedFileAdvisor_ParseQuestgiverData";
             this.label_ParsedFileAdvisor_ParseQuestgiverData.Size = new System.Drawing.Size(169, 20);
             this.label_ParsedFileAdvisor_ParseQuestgiverData.TabIndex = 42;
             this.label_ParsedFileAdvisor_ParseQuestgiverData.Text = "Parse Questgiver Data";
             // 
-            // button_ParsedFileAdvisor_WorldStates
-            // 
-            this.button_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(50, 510);
-            this.button_ParsedFileAdvisor_WorldStates.Name = "button_ParsedFileAdvisor_WorldStates";
-            this.button_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(75, 33);
-            this.button_ParsedFileAdvisor_WorldStates.TabIndex = 4;
-            this.button_ParsedFileAdvisor_WorldStates.Text = "Run!";
-            this.button_ParsedFileAdvisor_WorldStates.UseVisualStyleBackColor = true;
-            this.button_ParsedFileAdvisor_WorldStates.Click += new System.EventHandler(this.button_ParsedFileAdvisor_WorldStates_Click);
-            // 
-            // label_ParsedFileAdvisor_WorldStates
-            // 
-            this.label_ParsedFileAdvisor_WorldStates.AutoSize = true;
-            this.label_ParsedFileAdvisor_WorldStates.Location = new System.Drawing.Point(37, 487);
-            this.label_ParsedFileAdvisor_WorldStates.Name = "label_ParsedFileAdvisor_WorldStates";
-            this.label_ParsedFileAdvisor_WorldStates.Size = new System.Drawing.Size(101, 20);
-            this.label_ParsedFileAdvisor_WorldStates.TabIndex = 41;
-            this.label_ParsedFileAdvisor_WorldStates.Text = "World States";
-            // 
             // textBox_ParsedFileAdvisor_PlayerCompletedQuests
             // 
             this.textBox_ParsedFileAdvisor_PlayerCompletedQuests.Enabled = false;
-            this.textBox_ParsedFileAdvisor_PlayerCompletedQuests.Location = new System.Drawing.Point(21, 448);
+            this.textBox_ParsedFileAdvisor_PlayerCompletedQuests.Location = new System.Drawing.Point(21, 430);
             this.textBox_ParsedFileAdvisor_PlayerCompletedQuests.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_PlayerCompletedQuests.Name = "textBox_ParsedFileAdvisor_PlayerCompletedQuests";
             this.textBox_ParsedFileAdvisor_PlayerCompletedQuests.Size = new System.Drawing.Size(140, 26);
@@ -2140,7 +2164,7 @@
             // label_ParsedFileAdvisor_PlayerCompletedQuests
             // 
             this.label_ParsedFileAdvisor_PlayerCompletedQuests.AutoSize = true;
-            this.label_ParsedFileAdvisor_PlayerCompletedQuests.Location = new System.Drawing.Point(6, 426);
+            this.label_ParsedFileAdvisor_PlayerCompletedQuests.Location = new System.Drawing.Point(4, 410);
             this.label_ParsedFileAdvisor_PlayerCompletedQuests.Name = "label_ParsedFileAdvisor_PlayerCompletedQuests";
             this.label_ParsedFileAdvisor_PlayerCompletedQuests.Size = new System.Drawing.Size(188, 20);
             this.label_ParsedFileAdvisor_PlayerCompletedQuests.TabIndex = 39;
@@ -2149,7 +2173,7 @@
             // textBox_ParsedFileAdvisor_CreatureEquipmentId
             // 
             this.textBox_ParsedFileAdvisor_CreatureEquipmentId.Enabled = false;
-            this.textBox_ParsedFileAdvisor_CreatureEquipmentId.Location = new System.Drawing.Point(21, 387);
+            this.textBox_ParsedFileAdvisor_CreatureEquipmentId.Location = new System.Drawing.Point(21, 370);
             this.textBox_ParsedFileAdvisor_CreatureEquipmentId.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_CreatureEquipmentId.Name = "textBox_ParsedFileAdvisor_CreatureEquipmentId";
             this.textBox_ParsedFileAdvisor_CreatureEquipmentId.Size = new System.Drawing.Size(140, 26);
@@ -2159,7 +2183,7 @@
             // label_ParsedFileAdvisor_CreatureEquipmentId
             // 
             this.label_ParsedFileAdvisor_CreatureEquipmentId.AutoSize = true;
-            this.label_ParsedFileAdvisor_CreatureEquipmentId.Location = new System.Drawing.Point(6, 365);
+            this.label_ParsedFileAdvisor_CreatureEquipmentId.Location = new System.Drawing.Point(6, 350);
             this.label_ParsedFileAdvisor_CreatureEquipmentId.Name = "label_ParsedFileAdvisor_CreatureEquipmentId";
             this.label_ParsedFileAdvisor_CreatureEquipmentId.Size = new System.Drawing.Size(170, 20);
             this.label_ParsedFileAdvisor_CreatureEquipmentId.TabIndex = 37;
@@ -2168,7 +2192,7 @@
             // textBox_ParsedFileAdvisor_LosConversationsOrTexts
             // 
             this.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Enabled = false;
-            this.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Location = new System.Drawing.Point(21, 326);
+            this.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Location = new System.Drawing.Point(21, 310);
             this.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Name = "textBox_ParsedFileAdvisor_LosConversationsOrTexts";
             this.textBox_ParsedFileAdvisor_LosConversationsOrTexts.Size = new System.Drawing.Size(140, 26);
@@ -2178,7 +2202,7 @@
             // label_ParsedFileAdvisor_LosConversationsOrTexts
             // 
             this.label_ParsedFileAdvisor_LosConversationsOrTexts.AutoSize = true;
-            this.label_ParsedFileAdvisor_LosConversationsOrTexts.Location = new System.Drawing.Point(6, 304);
+            this.label_ParsedFileAdvisor_LosConversationsOrTexts.Location = new System.Drawing.Point(6, 290);
             this.label_ParsedFileAdvisor_LosConversationsOrTexts.Name = "label_ParsedFileAdvisor_LosConversationsOrTexts";
             this.label_ParsedFileAdvisor_LosConversationsOrTexts.Size = new System.Drawing.Size(182, 20);
             this.label_ParsedFileAdvisor_LosConversationsOrTexts.TabIndex = 35;
@@ -2187,7 +2211,7 @@
             // textBox_ParsedFileAdvisor_QuestConversationsOrTexts
             // 
             this.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Enabled = false;
-            this.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Location = new System.Drawing.Point(21, 265);
+            this.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Location = new System.Drawing.Point(21, 250);
             this.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Name = "textBox_ParsedFileAdvisor_QuestConversationsOrTexts";
             this.textBox_ParsedFileAdvisor_QuestConversationsOrTexts.Size = new System.Drawing.Size(140, 26);
@@ -2197,7 +2221,7 @@
             // label_ParsedFileAdvisor_QuestConversationsOrTexts
             // 
             this.label_ParsedFileAdvisor_QuestConversationsOrTexts.AutoSize = true;
-            this.label_ParsedFileAdvisor_QuestConversationsOrTexts.Location = new System.Drawing.Point(2, 243);
+            this.label_ParsedFileAdvisor_QuestConversationsOrTexts.Location = new System.Drawing.Point(2, 230);
             this.label_ParsedFileAdvisor_QuestConversationsOrTexts.Name = "label_ParsedFileAdvisor_QuestConversationsOrTexts";
             this.label_ParsedFileAdvisor_QuestConversationsOrTexts.Size = new System.Drawing.Size(199, 20);
             this.label_ParsedFileAdvisor_QuestConversationsOrTexts.TabIndex = 33;
@@ -2206,7 +2230,7 @@
             // textBox_ParsedFileAdvisor_SpellDestinations
             // 
             this.textBox_ParsedFileAdvisor_SpellDestinations.Enabled = false;
-            this.textBox_ParsedFileAdvisor_SpellDestinations.Location = new System.Drawing.Point(21, 199);
+            this.textBox_ParsedFileAdvisor_SpellDestinations.Location = new System.Drawing.Point(21, 190);
             this.textBox_ParsedFileAdvisor_SpellDestinations.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_SpellDestinations.Name = "textBox_ParsedFileAdvisor_SpellDestinations";
             this.textBox_ParsedFileAdvisor_SpellDestinations.Size = new System.Drawing.Size(140, 26);
@@ -2216,7 +2240,7 @@
             // label_ParsedFileAdvisor_SpellDestinations
             // 
             this.label_ParsedFileAdvisor_SpellDestinations.AutoSize = true;
-            this.label_ParsedFileAdvisor_SpellDestinations.Location = new System.Drawing.Point(17, 177);
+            this.label_ParsedFileAdvisor_SpellDestinations.Location = new System.Drawing.Point(19, 170);
             this.label_ParsedFileAdvisor_SpellDestinations.Name = "label_ParsedFileAdvisor_SpellDestinations";
             this.label_ParsedFileAdvisor_SpellDestinations.Size = new System.Drawing.Size(137, 20);
             this.label_ParsedFileAdvisor_SpellDestinations.TabIndex = 31;
@@ -2260,14 +2284,14 @@
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_ParsedFileAdvisor_ImportSniff.Image")));
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Name = "toolStripButton_ParsedFileAdvisor_ImportSniff";
-            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(136, 33);
+            this.toolStripButton_ParsedFileAdvisor_ImportSniff.Size = new System.Drawing.Size(128, 33);
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Text = "Import Sniff";
             this.toolStripButton_ParsedFileAdvisor_ImportSniff.Click += new System.EventHandler(this.toolStripButton_ParsedFileAdvisor_ImportSniff_Click);
             // 
             // textBox_ParsedFileAdvisor_PlayerCastedSpells
             // 
             this.textBox_ParsedFileAdvisor_PlayerCastedSpells.Enabled = false;
-            this.textBox_ParsedFileAdvisor_PlayerCastedSpells.Location = new System.Drawing.Point(21, 134);
+            this.textBox_ParsedFileAdvisor_PlayerCastedSpells.Location = new System.Drawing.Point(21, 130);
             this.textBox_ParsedFileAdvisor_PlayerCastedSpells.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_PlayerCastedSpells.Name = "textBox_ParsedFileAdvisor_PlayerCastedSpells";
             this.textBox_ParsedFileAdvisor_PlayerCastedSpells.Size = new System.Drawing.Size(139, 26);
@@ -2277,7 +2301,7 @@
             // label_ParsedFileAdvisor_PlayerCastedSpells
             // 
             this.label_ParsedFileAdvisor_PlayerCastedSpells.AutoSize = true;
-            this.label_ParsedFileAdvisor_PlayerCastedSpells.Location = new System.Drawing.Point(17, 112);
+            this.label_ParsedFileAdvisor_PlayerCastedSpells.Location = new System.Drawing.Point(14, 110);
             this.label_ParsedFileAdvisor_PlayerCastedSpells.Name = "label_ParsedFileAdvisor_PlayerCastedSpells";
             this.label_ParsedFileAdvisor_PlayerCastedSpells.Size = new System.Drawing.Size(154, 20);
             this.label_ParsedFileAdvisor_PlayerCastedSpells.TabIndex = 14;
@@ -2286,7 +2310,7 @@
             // textBox_ParsedFileAdvisor_AreaTriggerSplines
             // 
             this.textBox_ParsedFileAdvisor_AreaTriggerSplines.Enabled = false;
-            this.textBox_ParsedFileAdvisor_AreaTriggerSplines.Location = new System.Drawing.Point(21, 74);
+            this.textBox_ParsedFileAdvisor_AreaTriggerSplines.Location = new System.Drawing.Point(21, 70);
             this.textBox_ParsedFileAdvisor_AreaTriggerSplines.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_ParsedFileAdvisor_AreaTriggerSplines.Name = "textBox_ParsedFileAdvisor_AreaTriggerSplines";
             this.textBox_ParsedFileAdvisor_AreaTriggerSplines.Size = new System.Drawing.Size(139, 26);
@@ -2295,7 +2319,7 @@
             // label_ParsedFileAdvisor_AreaTriggerSplines
             // 
             this.label_ParsedFileAdvisor_AreaTriggerSplines.AutoSize = true;
-            this.label_ParsedFileAdvisor_AreaTriggerSplines.Location = new System.Drawing.Point(17, 52);
+            this.label_ParsedFileAdvisor_AreaTriggerSplines.Location = new System.Drawing.Point(19, 50);
             this.label_ParsedFileAdvisor_AreaTriggerSplines.Name = "label_ParsedFileAdvisor_AreaTriggerSplines";
             this.label_ParsedFileAdvisor_AreaTriggerSplines.Size = new System.Drawing.Size(144, 20);
             this.label_ParsedFileAdvisor_AreaTriggerSplines.TabIndex = 12;
@@ -2579,10 +2603,12 @@
         private System.Windows.Forms.Label label_ParsedFileAdvisor_CreatureEquipmentId;
         public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_PlayerCompletedQuests;
         private System.Windows.Forms.Label label_ParsedFileAdvisor_PlayerCompletedQuests;
-        private System.Windows.Forms.Label label_ParsedFileAdvisor_WorldStates;
-        private System.Windows.Forms.Button button_ParsedFileAdvisor_WorldStates;
         public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_ParseQuestgiverData;
         private System.Windows.Forms.Label label_ParsedFileAdvisor_ParseQuestgiverData;
+        public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_ParseRolePlayEvents;
+        private System.Windows.Forms.Label label_ParsedFileAdvisor_ParseRolePlayEvents;
+        public System.Windows.Forms.TextBox textBox_ParsedFileAdvisor_FindDoubleSpawns;
+        private System.Windows.Forms.Label label_ParsedFileAdvisor_FindDoubleSpawns;
     }
 }
 

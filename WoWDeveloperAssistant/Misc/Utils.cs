@@ -6,7 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Waypoints_Creator;
+using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 using static WoWDeveloperAssistant.Misc.Packets;
+using static WoWDeveloperAssistant.Misc.Packets.UpdateObjectPacket;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -49,7 +51,8 @@ namespace WoWDeveloperAssistant.Misc
             BUILD_11_2_0,
             BUILD_11_2_5,
             BUILD_11_2_7,
-            BUILD_12_0_1
+            BUILD_12_0_1,
+            BUILD_12_0_5
         };
 
         public static string GetValueWithoutComma(this float value)
@@ -57,15 +60,15 @@ namespace WoWDeveloperAssistant.Misc
             return value.ToString().Replace(",", ".");
         }
 
-        public static uint GetMoveTypeNumber(this MonsterMovePacket.MoveType value)
+        public static uint GetMoveTypeNumber(this MoveType value)
         {
             switch (value)
             {
-                case MonsterMovePacket.MoveType.MOVE_WALK:
+                case MoveType.MOVE_WALK:
                     return 0;
-                case MonsterMovePacket.MoveType.MOVE_RUN:
+                case MoveType.MOVE_RUN:
                     return 1;
-                case MonsterMovePacket.MoveType.MOVE_FLIGHT:
+                case MoveType.MOVE_FLIGHT:
                     return 4;
                 default:
                     return 5;
@@ -182,17 +185,17 @@ namespace WoWDeveloperAssistant.Misc
             return waypoint;
         }
 
-        public static UpdateObjectPacket? GetUpdatePacketForCreatureWithGuid(this IEnumerable<object> list, string guid)
+        public static UpdateObjectPacket GetUpdatePacketForCreatureWithGuid(this IEnumerable<object> list, string guid)
         {
             foreach (var updateObjectPacket in list.Cast<UpdateObjectPacket>().Where(updateObjectPacket => updateObjectPacket.guid == guid))
             {
                 return updateObjectPacket;
             }
 
-            return null;
+            return new UpdateObjectPacket();
         }
 
-        public static uint GetObjectstWithTypeCount(this IEnumerable<Packet> list, Packet.PacketTypes type)
+        public static uint GetObjectstWithTypeCount(this IEnumerable<Packet> list, PacketType type)
         {
             uint packetsCount = 0;
 
@@ -206,7 +209,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromEmotePacket(this SortedDictionary<long, Packet> dict, EmotePacket emotePacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_EMOTE && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_EMOTE && packet.index == index))
             {
                 packet.parsedPacketsList.Add(emotePacket);
                 return;
@@ -215,16 +218,16 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromAuraUpdatePacket(this SortedDictionary<long, Packet> dict, AuraUpdatePacket auraPacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_AURA_UPDATE && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_AURA_UPDATE && packet.index == index))
             {
                 packet.parsedPacketsList.Add(auraPacket);
                 return;
             }
         }
 
-        public static void AddSourceFromSpellPacket(this SortedDictionary<long, Packet> dict, SpellStartPacket spellPacket, long index)
+        public static void AddSourceFromSpellPacket(this SortedDictionary<long, Packet> dict, SpellPacket spellPacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_SPELL_START && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_SPELL_START && packet.index == index))
             {
                 packet.parsedPacketsList.Add(spellPacket);
                 return;
@@ -233,7 +236,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromMovementPacket(this SortedDictionary<long, Packet> dict, MonsterMovePacket movementPacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_ON_MONSTER_MOVE && packet.index == index))
             {
                 packet.parsedPacketsList.Add(movementPacket);
                 return;
@@ -242,7 +245,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromUpdatePacket(this SortedDictionary<long, Packet> dict, UpdateObjectPacket updatePacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_UPDATE_OBJECT && packet.index == index))
             {
                 packet.parsedPacketsList.Add(updatePacket);
                 return;
@@ -251,7 +254,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromAttackStopPacket(this SortedDictionary<long, Packet> dict, AttackStopPacket attackStopPacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_ATTACK_STOP && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_ATTACK_STOP && packet.index == index))
             {
                 packet.parsedPacketsList.Add(attackStopPacket);
                 return;
@@ -260,7 +263,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromSetAiAnimKitPacket(this SortedDictionary<long, Packet> dict, SetAiAnimKitPacket animKitPacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_SET_AI_ANIM_KIT && packet.index == index))
             {
                 packet.parsedPacketsList.Add(animKitPacket);
                 return;
@@ -269,7 +272,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static void AddSourceFromPlayOneShotAnimKitPacket(this SortedDictionary<long, Packet> dict, PlayOneShotAnimKitPacket playOneShotAnimKitPacket, long index)
         {
-            foreach (var packet in dict.Values.Where(packet => packet.packetType == Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT && packet.index == index))
+            foreach (var packet in dict.Values.Where(packet => packet.packetType == PacketType.SMSG_PLAY_ONE_SHOT_ANIM_KIT && packet.index == index))
             {
                 packet.parsedPacketsList.Add(playOneShotAnimKitPacket);
                 return;
@@ -432,6 +435,60 @@ namespace WoWDeveloperAssistant.Misc
             }
 
             return output.Remove(output.Length - 2);
+        }
+
+        public static string GetEmoteIds(this List<KeyValuePair<uint, TimeSpan>> emotes)
+        {
+            return string.Join(" ", emotes.Select(x => x.Key).Distinct());
+        }
+
+        public static string GetEmoteTimers(this KeyValuePair<uint, uint> emoteTimers)
+        {
+            return $"{emoteTimers.Key} {emoteTimers.Value}";
+        }
+
+        public static bool IsCombatTimer(this List<CombatTimingsData> combatTimings, TimeSpan time)
+        {
+            if (combatTimings == null || combatTimings.Count == 0)
+                return false;
+
+            foreach (var timing in combatTimings)
+            {
+                if (timing.CombatStartTime != TimeSpan.Zero && timing.CombatStopTime == TimeSpan.Zero && time >= timing.CombatStartTime)
+                    return true;
+                else if (timing.CombatStartTime != TimeSpan.Zero && timing.CombatStopTime != TimeSpan.Zero && time >= timing.CombatStartTime &&
+                    time <= timing.CombatStopTime)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsInCombat(this uint? unitFlags)
+        {
+            if (unitFlags == null)
+                return false;
+
+            return (((UnitFlags)unitFlags) & UnitFlags.AffectingCombat) != 0;
+        }
+
+        public static string GetSpellName(uint spellId)
+        {
+            if (DB2.Db2.SpellName.ContainsKey((int)spellId))
+                return DB2.Db2.SpellName[(int)spellId].Name;
+
+            return "Unknown";
+        }
+
+        public static double GetSpellRadius(uint spellId)
+        {
+            if (DB2.Db2.SpellMisc.ContainsKey((int)spellId))
+            {
+                int rangeId = DB2.Db2.SpellMisc[(int)spellId].RangeIndex;
+                return (double)DB2.Db2.SpellRadius[rangeId].RadiusMax;
+            }
+
+            return 0.0;
         }
     }
 }

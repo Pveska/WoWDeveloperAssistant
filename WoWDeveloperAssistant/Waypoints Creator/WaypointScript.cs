@@ -560,7 +560,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return waypointScripts;
         }
 
-        public static WaypointScript GetScriptsFromSpellPacket(SpellStartPacket spellPacket)
+        public static WaypointScript GetScriptsFromSpellPacket(SpellPacket spellPacket)
         {
             return new WaypointScript(0, 0, ScriptType.CastSpell, spellPacket.spellId, 1, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0, spellPacket.spellCastStartTime);
         }

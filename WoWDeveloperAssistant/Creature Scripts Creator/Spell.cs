@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WoWDeveloperAssistant.Misc;
+using  WoWDeveloperAssistant.Misc;
+using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
@@ -101,7 +102,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             { minCastTime = minCast; maxCastTime = maxCast; minRepeatTime = minRepeat; maxRepeatTime = maxRepeat; }
         }
 
-        public Spell(Packets.SpellStartPacket spellPacket)
+        public Spell(Packets.SpellPacket spellPacket)
         {
             spellId = spellPacket.spellId;
             spellCastTime = spellPacket.spellCastTime;
@@ -179,26 +180,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             return false;
         }
 
-        public static string GetSpellName(uint spellId)
-        {
-            if (DB2.Db2.SpellName.ContainsKey((int)spellId))
-                return DB2.Db2.SpellName[(int)spellId].Name;
-
-            return "Unknown";
-        }
-
-        public static double GetSpellRadius(uint spellId)
-        {
-            if (DB2.Db2.SpellMisc.ContainsKey((int)spellId))
-            {
-                int rangeId = DB2.Db2.SpellMisc[(int)spellId].RangeIndex;
-                return (double)DB2.Db2.SpellRadius[rangeId].RadiusMax;
-            }
-
-            return 0.0;
-        }
-
-        public void UpdateIfNeeded(Packets.SpellStartPacket spellPacket)
+        public void UpdateIfNeeded(Packets.SpellPacket spellPacket)
         {
             if (spellId == spellPacket.spellId)
             {
@@ -224,7 +206,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         {
             Parallel.ForEach(spellStartCastTimes.ToList(), time =>
             {
-                if (time < creature.combatStartTime && time != creature.combatStartTime)
+                if (!creature.combatTimings.IsCombatTimer(time))
                 {
                     lock (spellStartCastTimes)
                     {
@@ -247,7 +229,10 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             List<TimeSpan> maxCastTimesList = new List<TimeSpan>();
             List<TimeSpan> maxRepeatCastTimesList = new List<TimeSpan>();
 
-            spellStartCastTimes = new List<TimeSpan>(from time in spellStartCastTimes orderby time.TotalSeconds ascending select time);
+            spellStartCastTimes = new List<TimeSpan>(
+                from time in spellStartCastTimes
+                orderby time.TotalSeconds ascending
+                select time);
 
             Parallel.ForEach(CreatureScriptsCreator.creaturesDict, creature =>
             {
@@ -255,40 +240,29 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 {
                     if (creature.Value.castedSpells.ContainsKey(spellId))
                     {
-                        if (creature.Value.castedSpells[spellId].isCombatSpell)
+                        var spellData = creature.Value.castedSpells[spellId];
+
+                        if (spellData.isCombatSpell)
                         {
-                            lock (maxCastTimesList)
+                            foreach (var castTime in spellData.spellStartCastTimes)
                             {
-                                maxCastTimesList.Add(Utils.GetMinTimeSpanFromList(creature.Value.castedSpells[spellId].spellStartCastTimes) - creature.Value.combatStartTime);
+                                var combatTiming = creature.Value.combatTimings?
+                                    .FirstOrDefault(t =>
+                                        castTime >= t.CombatStartTime &&
+                                        castTime <= t.CombatStopTime);
+
+                                if (combatTiming != null)
+                                {
+                                    lock (maxCastTimesList)
+                                    {
+                                        maxCastTimesList.Add(castTime - combatTiming.CombatStartTime);
+                                    }
+                                }
                             }
                         }
                     }
                 }
             });
-
-            castTimings.minCastTime = maxCastTimesList.Min();
-            castTimings.maxCastTime = Utils.GetAverageTimeSpanFromList(maxCastTimesList) >= castTimings.minCastTime ? Utils.GetAverageTimeSpanFromList(maxCastTimesList) : castTimings.minCastTime;
-            maxCastTimesList.Clear();
-
-            if (spellStartCastTimes.Count == 1)
-            {
-                combatCastTimings = castTimings;
-                return;
-            }
-
-            castTimings.minRepeatTime = spellStartCastTimes[1] - spellStartCastTimes[0];
-
-            for(int i = 0; i < spellStartCastTimes.Count; i++)
-            {
-                if (i + 1 < spellStartCastTimes.Count)
-                {
-                    maxRepeatCastTimesList.Add(spellStartCastTimes[i + 1] - spellStartCastTimes[i]);
-                }
-            }
-
-            castTimings.maxRepeatTime = Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) >= castTimings.minRepeatTime ? Utils.GetAverageTimeSpanFromList(maxRepeatCastTimesList) : castTimings.minRepeatTime;
-
-            combatCastTimings = castTimings;
         }
 
         public void MarkSpellAsDeath(Creature currentCreature)

@@ -105,7 +105,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
-            Dictionary<long, Packet.PacketTypes> packetIndexes = new Dictionary<long, Packet.PacketTypes>();
+            Dictionary<long, PacketType> packetIndexes = new Dictionary<long, PacketType>();
             BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
 
             if (!IsTxtFileValidForParse(fileName, lines, buildVersion))
@@ -120,37 +120,37 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             Parallel.For(0, lines.Length, index =>
             {
-                Packet.PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+                PacketType packetType = Packet.GetPacketTypeFromLine(lines[index]);
 
-                if (packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT && !packetIndexes.ContainsKey(index))
+                if (packetType == PacketType.SMSG_UPDATE_OBJECT && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_UPDATE_OBJECT);
+                        packetIndexes.Add(index, PacketType.SMSG_UPDATE_OBJECT);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_AI_REACTION && !packetIndexes.ContainsKey(index))
+                else if (packetType == PacketType.SMSG_AI_REACTION && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_AI_REACTION);
+                        packetIndexes.Add(index, PacketType.SMSG_AI_REACTION);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_SPELL_START && !packetIndexes.ContainsKey(index))
+                else if (packetType == PacketType.SMSG_SPELL_START && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_SPELL_START);
+                        packetIndexes.Add(index, PacketType.SMSG_SPELL_START);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_CHAT && !packetIndexes.ContainsKey(index))
+                else if (packetType == PacketType.SMSG_CHAT && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_CHAT);
+                        packetIndexes.Add(index, PacketType.SMSG_CHAT);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE && !packetIndexes.ContainsKey(index))
+                else if (packetType == PacketType.SMSG_ON_MONSTER_MOVE && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_ON_MONSTER_MOVE);
+                        packetIndexes.Add(index, PacketType.SMSG_ON_MONSTER_MOVE);
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_ATTACK_STOP && !packetIndexes.ContainsKey(index))
+                else if (packetType == PacketType.SMSG_ATTACK_STOP && !packetIndexes.ContainsKey(index))
                 {
                     lock (packetIndexes)
-                        packetIndexes.Add(index, Packet.PacketTypes.SMSG_ATTACK_STOP);
+                        packetIndexes.Add(index, PacketType.SMSG_ATTACK_STOP);
                 }
             });
 
@@ -158,7 +158,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             foreach (var value in packetIndexes)
             {
-                if (value.Value == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
+                if (value.Value == PacketType.SMSG_UPDATE_OBJECT)
                 {
                     Parallel.ForEach(UpdateObjectPacket.ParseObjectUpdatePacket(lines, value.Key, buildVersion, 0), packet =>
                     {
@@ -186,9 +186,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             Parallel.ForEach(packetIndexes, value =>
             {
-                if (value.Value == Packet.PacketTypes.SMSG_SPELL_START)
+                if (value.Value == PacketType.SMSG_SPELL_START)
                 {
-                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, value.Key, buildVersion, value.Value);
+                    SpellPacket spellPacket = SpellPacket.ParseSpellPacket(lines, value.Key, buildVersion, value.Value);
                     if (spellPacket.spellId == 0)
                         return;
 
@@ -209,7 +209,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             Parallel.ForEach(packetIndexes, value =>
             {
-                if (value.Value == Packet.PacketTypes.SMSG_AI_REACTION)
+                if (value.Value == PacketType.SMSG_AI_REACTION)
                 {
                     AIReactionPacket reactionPacket = AIReactionPacket.ParseAIReactionPacket(lines, value.Key, buildVersion);
                     if (reactionPacket.creatureGuid == "")
@@ -219,10 +219,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     {
                         if (creaturesDict.ContainsKey(reactionPacket.creatureGuid))
                         {
-                            if (creaturesDict[reactionPacket.creatureGuid].combatStartTime == TimeSpan.Zero ||
-                                creaturesDict[reactionPacket.creatureGuid].combatStartTime < reactionPacket.packetSendTime)
+                            if (creaturesDict[reactionPacket.creatureGuid].combatTimings.Count(x => x.CombatStartTime == reactionPacket.packetSendTime) == 0)
                             {
-                                creaturesDict[reactionPacket.creatureGuid].combatStartTime = reactionPacket.packetSendTime;
+                                creaturesDict[reactionPacket.creatureGuid].combatTimings.Add(new UpdateObjectPacket.CombatTimingsData(reactionPacket.packetSendTime, new TimeSpan()));
                             }
 
                             creaturesDict[reactionPacket.creatureGuid].UpdateCombatSpells(reactionPacket);
@@ -235,7 +234,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             Parallel.ForEach(packetIndexes, value =>
             {
-                if (value.Value == Packet.PacketTypes.SMSG_CHAT)
+                if (value.Value == PacketType.SMSG_CHAT)
                 {
                     ChatPacket chatPacket = ChatPacket.ParseChatPacket(lines, value.Key, buildVersion);
                     if (chatPacket.creatureGuid == "")
@@ -249,9 +248,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                             {
                                 CreatureText text = new CreatureText(chatPacket, true);
 
-                                if (Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                                Math.Floor(creature.Value.combatStartTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
+                                if (creature.Value.combatTimings.IsCombatTimer(chatPacket.packetSendTime))
                                 {
                                     lock (creatureTextsDict)
                                     {
@@ -297,7 +294,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             {
                 switch (value.Value)
                 {
-                    case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
+                    case PacketType.SMSG_ON_MONSTER_MOVE:
                     {
                         MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, value.Key, buildVersion, 0);
                         if (movePacket.creatureGuid == "")
@@ -313,9 +310,9 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
                         break;
                     }
-                    case Packet.PacketTypes.SMSG_ATTACK_STOP:
+                    case PacketType.SMSG_ATTACK_STOP:
                     {
-                        AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, value.Key, buildVersion);
+                        AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopPacket(lines, value.Key, buildVersion);
                         if (attackStopPacket.creatureGuid == "")
                             return;
 
@@ -440,18 +437,18 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     if (spell.ShouldBeCastedBeforeDeath())
                     {
                         SQLtext += "(" + creature.entry + ", " + i + ", " + 1000 + ", " + 1000 + ", " + 0 + ", " + 0 + ", 1000, " + spell.spellId + ", " +
-                         spell.GetCombatAITargetType() + "4, " + Spell.GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast On Death " + spell.name + ")";
+                         spell.GetCombatAITargetType() + "4, " + GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast On Death " + spell.name + ")";
                     }
                     else
                     {
                         SQLtext += "(" + creature.entry + ", " + i + ", " + 1000 + ", " + 1000 + ", " + 0 + ", " + 0 + ", 1000, " + spell.spellId + ", " +
-                         spell.GetCombatAITargetType() + "2, " + Spell.GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast After Death " + spell.name + ")";
+                         spell.GetCombatAITargetType() + "2, " + GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast After Death " + spell.name + ")";
                     }
                 }
                 else
                 {
                     SQLtext += "(" + creature.entry + ", " + i + ", " + startMin + ", " + startMax + ", " + repeatMin + ", " + repeatMax + ", 1000, " + spell.spellId + ", " +
-                        spell.GetCombatAITargetType() + ", 0, " + Spell.GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast: " + spell.name + "\")";
+                        spell.GetCombatAITargetType() + ", 0, " + GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast: " + spell.name + "\")";
                 }
 
                 if (l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount - 1)

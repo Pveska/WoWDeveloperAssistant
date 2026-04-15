@@ -211,7 +211,7 @@ namespace WoWDeveloperAssistant
                     DB2.Db2.Load();
                 }
 
-                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
+                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileName) != 0)
                 {
                     waypointsCreator.ImportSuccessful(false);
                 }
@@ -249,6 +249,11 @@ namespace WoWDeveloperAssistant
             if (Properties.Settings.Default.CheckPathOnDb)
             {
                 waypointsCreator.RemoveGuidsWithExistingDataFromListBox();
+            }
+
+            if (Properties.Settings.Default.CombatMovement)
+            {
+                waypointsCreator.RemoveGuidsWithEmptyWaypointsDueToCombat();
             }
 
             waypointsCreator.FillWaypointsGrid();
@@ -560,7 +565,7 @@ namespace WoWDeveloperAssistant
                     DB2.Db2.Load();
                 }
 
-                if (parsedFileAdvisor.GetDataFromFiles(openFileDialog.FileNames) != 0)
+                if (parsedFileAdvisor.GetDataFromFiles(openFileDialog.FileName))
                 {
                     parsedFileAdvisor.ImportSuccessful();
                 }
@@ -793,7 +798,7 @@ namespace WoWDeveloperAssistant
             if (e.KeyCode != Keys.Enter)
                 return;
 
-            parsedFileAdvisor.GetEquipmentIdForCreature();
+            parsedFileAdvisor.UpdateEquipmentForCreatures();
         }
 
         private void grid_WaypointsCreator_Waypoints_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -812,17 +817,28 @@ namespace WoWDeveloperAssistant
             parsedFileAdvisor.GetPlayerCompletedQuests();
         }
 
-        private void button_ParsedFileAdvisor_WorldStates_Click(object sender, EventArgs e)
-        {
-            parsedFileAdvisor.ShowWorldStates();
-        }
-
         private void textBox_ParsedFileAdvisor_ParseQuestgiverData_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter)
                 return;
 
             parsedFileAdvisor.ParseQuestgiverData();
+        }
+
+        private void textBox_ParsedFileAdvisor_ParseRolePlayEvents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.ParseRolePlayEvents();
+        }
+
+        private void textBox_ParsedFileAdvisor_FindDoubleSpawns_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            parsedFileAdvisor.FindDoubleSpawns();
         }
     }
 }

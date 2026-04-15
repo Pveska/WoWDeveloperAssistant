@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Misc.Packets;
+using static WoWDeveloperAssistant.Misc.Packets.UpdateObjectPacket;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -37,10 +38,10 @@ namespace WoWDeveloperAssistant.Misc
         } = 0;
 
         [ProtoMember(5)]
-        public TimeSpan combatStartTime
+        public List<CombatTimingsData> combatTimings
         {
             get; set;
-        } = new TimeSpan();
+        } = new List<CombatTimingsData>();
 
         [ProtoMember(6)]
         public TimeSpan deathTime
@@ -109,16 +110,22 @@ namespace WoWDeveloperAssistant.Misc
         } = new Dictionary<uint, MonsterMovePacket.FilterKey>();
 
         [ProtoMember(17)]
-        public List<uint> virtualItems
+        public List<VirtualItemData> virtualItems
         {
             get; set;
-        } = new List<uint>();
+        } = new List<VirtualItemData>();
 
         [ProtoMember(18)]
         public float hoverHeight
         {
             get; set;
         } = 0.0f;
+
+        [ProtoMember(19)]
+        public string linkedId
+        {
+            get; set;
+        } = "";
 
         public Creature() { }
 
@@ -129,7 +136,6 @@ namespace WoWDeveloperAssistant.Misc
             maxhealth = updatePacket.maxHealth;
             deathTime = updatePacket.currentHealth == 0 ? updatePacket.packetSendTime : new TimeSpan();
             castedSpells = new Dictionary<uint, Spell>();
-            combatStartTime = new TimeSpan();
             spawnPosition = updatePacket.spawnPosition;
             mapId = updatePacket.mapId;
             waypoints = updatePacket.waypoints;
@@ -141,6 +147,29 @@ namespace WoWDeveloperAssistant.Misc
             filterKeys = updatePacket.filterKeys;
             virtualItems = updatePacket.virtualItems;
             hoverHeight = updatePacket.hoverData.HoverHeight;
+            linkedId = GetLinkedId();
+
+            if (updatePacket.unitFlags != null)
+            {
+                if (updatePacket.unitFlags.IsInCombat())
+                {
+                    if (combatTimings.Count(x => x.CombatStartTime == updatePacket.packetSendTime) == 0)
+                    {
+                        combatTimings.Add(new CombatTimingsData { CombatStartTime = updatePacket.packetSendTime });
+                    }
+                }
+                else
+                {
+                    foreach (var timing in combatTimings.OrderBy(t => t.CombatStartTime))
+                    {
+                        if (updatePacket.packetSendTime > timing.CombatStartTime && (timing.CombatStopTime == TimeSpan.Zero || timing.CombatStopTime > updatePacket.packetSendTime))
+                        {
+                            timing.CombatStopTime = updatePacket.packetSendTime;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public void UpdateCreature(UpdateObjectPacket updatePacket)
@@ -184,20 +213,51 @@ namespace WoWDeveloperAssistant.Misc
                 transportGuid = updatePacket.transportGuid;
 
             if (filterKeys.Count == 0)
-            {
                 filterKeys = updatePacket.filterKeys;
-            }
 
             if (virtualItems.Count == 0)
-            {
                 virtualItems = updatePacket.virtualItems;
-            }
 
             if (hoverHeight == 0.0f && updatePacket.hoverData.HoverHeight != 0.0f)
                 hoverHeight = updatePacket.hoverData.HoverHeight;
+
+            if (linkedId == "")
+                linkedId = GetLinkedId();
+
+            if (updatePacket.unitFlags != null)
+            {
+                if (updatePacket.unitFlags.IsInCombat())
+                {
+                    if (combatTimings.Count(x => x.CombatStartTime == updatePacket.packetSendTime) == 0)
+                    {
+                        combatTimings.Add(new CombatTimingsData { CombatStartTime = updatePacket.packetSendTime });
+                    }
+                }
+                else
+                {
+                    foreach (var timing in combatTimings.OrderBy(t => t.CombatStartTime))
+                    {
+                        if (updatePacket.packetSendTime > timing.CombatStartTime && (timing.CombatStopTime == TimeSpan.Zero || timing.CombatStopTime > updatePacket.packetSendTime))
+                        {
+                            timing.CombatStopTime = updatePacket.packetSendTime;
+                            break;
+                        }
+                    }
+
+                    combatTimings = combatTimings
+                        .OrderBy(t => t.CombatStartTime)
+                        .Aggregate(new List<CombatTimingsData>(), (list, current) =>
+                        {
+                            if (list.Count == 0 || current.CombatStartTime >= list.Last().CombatStopTime)
+                                list.Add(current);
+
+                            return list;
+                        });
+                }
+            }
         }
 
-        public void UpdateSpells(SpellStartPacket spellPacket)
+        public void UpdateSpells(SpellPacket spellPacket)
         {
             Parallel.ForEach(castedSpells, spell =>
             {
@@ -260,8 +320,19 @@ namespace WoWDeveloperAssistant.Misc
 
         public string GetLinkedId()
         {
-            float z = hoverHeight != 0.0f ? spawnPosition.z - hoverHeight : spawnPosition.z;
-            var linkedId = Convert.ToString(Math.Round(spawnPosition.x / 0.25)) + " " + Convert.ToString(Math.Round(spawnPosition.y / 0.25)) + " " + Convert.ToString(Math.Round(z / 0.25)) + " ";
+            if (this.linkedId != "")
+                return this.linkedId;
+            else
+                return BuildLinkedId(spawnPosition);
+        }
+
+        public string BuildLinkedId(Position position)
+        {
+            if (mapId == null)
+                return "";
+
+            float z = hoverHeight != 0.0f ? position.z - hoverHeight : position.z;
+            var linkedId = Convert.ToString(Math.Round(position.x / 0.25)) + " " + Convert.ToString(Math.Round(position.y / 0.25)) + " " + Convert.ToString(Math.Round(z / 0.25)) + " ";
             linkedId += Convert.ToString(entry) + " " + Convert.ToString(mapId) + " 0 1 " + GetSpawnDifficulties();
             return Utils.SHA1HashStringForUTF8String(linkedId).ToUpper();
         }

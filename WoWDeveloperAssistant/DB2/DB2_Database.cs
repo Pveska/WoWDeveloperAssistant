@@ -45,6 +45,8 @@ namespace DB2
         public static readonly Dictionary<Tuple<uint, uint>, SpellEffect> SpellEffectStore = new Dictionary<Tuple<uint, uint>, SpellEffect>();
         public static readonly Dictionary<int, int> SpellDurationStore = new Dictionary<int, int>();
         public static readonly Dictionary<int, int> QuestBitsStore = new Dictionary<int, int>();
+        public static readonly Dictionary<int, List<uint>> SpellTriggerStore = new Dictionary<int, List<uint>>();
+        public static readonly Dictionary<uint, Tuple<float, float>> SpellRangeStore = new Dictionary<uint, Tuple<float, float>>();
 
         public static bool IsLoaded()
         {
@@ -92,6 +94,14 @@ namespace DB2
                 {
                     var tuple = Tuple.Create((uint)effect.Value.SpellId, (uint)effect.Value.EffectIndex);
                     SpellEffectStore[tuple] = effect.Value;
+
+                    if (effect.Value.EffectTriggerSpell != 0)
+                    {
+                        if (SpellTriggerStore.ContainsKey(effect.Value.EffectTriggerSpell))
+                            SpellTriggerStore[effect.Value.EffectTriggerSpell].Add(tuple.Item1);
+                        else
+                            SpellTriggerStore.Add(effect.Value.EffectTriggerSpell, new List<uint> { tuple.Item1 });
+                    }
                 }
             }
 
@@ -107,13 +117,30 @@ namespace DB2
             }
 
 
-            if (SpellMisc != null && SpellDuration != null && SpellDurationStore.Count == 0)
+            if (SpellMisc != null)
             {
-                foreach (var spellMisc in SpellMisc.Where(x => x.Value.DurationIndex != 0))
+                if (SpellDuration != null && SpellDurationStore.Count == 0)
                 {
-                    if (!SpellDurationStore.ContainsKey(spellMisc.Value.SpellId))
+                    foreach (var spellMisc in SpellMisc.Where(x => x.Value.DurationIndex != 0))
                     {
-                        SpellDurationStore.Add(spellMisc.Value.SpellId, SpellDuration[spellMisc.Value.DurationIndex].MaxDuration != 2147483647 ? SpellDuration[spellMisc.Value.DurationIndex].MaxDuration : -1);
+                        if (!SpellDurationStore.ContainsKey(spellMisc.Value.SpellId))
+                        {
+                            SpellDurationStore.Add(spellMisc.Value.SpellId, SpellDuration[spellMisc.Value.DurationIndex].MaxDuration != 2147483647 ? SpellDuration[spellMisc.Value.DurationIndex].MaxDuration : -1);
+                        }
+                    }
+                }
+
+                if (SpellRange != null && SpellRangeStore.Count == 0)
+                {
+                    foreach (var spellMisc in SpellMisc)
+                    {
+                        if (SpellRange.ContainsKey(spellMisc.Value.RangeIndex))
+                        {
+                            if (!SpellRangeStore.ContainsKey((uint)spellMisc.Value.SpellId))
+                            {
+                                SpellRangeStore.Add((uint)spellMisc.Value.SpellId, Tuple.Create(SpellRange[spellMisc.Value.RangeIndex].RangeMin[1], SpellRange[spellMisc.Value.RangeIndex].RangeMax[1]));
+                            }
+                        }
                     }
                 }
             }

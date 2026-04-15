@@ -9,7 +9,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using System.Web.UI.DataVisualization.Charting;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Misc;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
+using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
 using static WoWDeveloperAssistant.Misc.Utils;
@@ -22,6 +25,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         private Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
         private Dictionary<string, GameObject> gameObjectsDict = new Dictionary<string, GameObject>();
         private bool firstPointSelectedManually = false;
+
+        private void ClearContainers()
+        {
+            creaturesDict.Clear();
+            gameObjectsDict.Clear();
+        }
 
         [ProtoContract]
         public class WaypointData
@@ -39,27 +48,25 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.chart_WaypointsCreator_Path.PostPaint += DrawSpawnArrows;
         }
 
-        public uint GetDataFromFiles(string[] fileNames)
+        public uint GetDataFromFiles(string fileName)
         {
             uint successfullyParsedFilesCount = 0;
 
-            foreach (string fileName in fileNames)
+            if (fileName.Contains("txt") && GetDataFromTxtFile(fileName))
             {
-                if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
-                {
-                    successfullyParsedFilesCount++;
-                }
-                else if (fileName.Contains("proto") && GetDataFromBinFile(fileName, fileNames.Length > 1))
-                {
-                    successfullyParsedFilesCount++;
-                }
+                successfullyParsedFilesCount++;
+            }
+            else if (fileName.Contains("proto") && GetDataFromBinFile(fileName))
+            {
+                successfullyParsedFilesCount++;
             }
 
             return successfullyParsedFilesCount;
         }
 
-        public bool GetDataFromTxtFile(string fileName, bool multiSelect)
+        public bool GetDataFromTxtFile(string fileName)
         {
+            ClearContainers();
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
@@ -68,7 +75,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SortedDictionary<long, Packet> spellPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> auraPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> emotePacketsDict = new SortedDictionary<long, Packet>();
-            SortedDictionary<long, Packet> attackStopPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> animKitPacketsDict = new SortedDictionary<long, Packet>();
             SortedDictionary<long, Packet> playOneShotAnimKitPacketsDict = new SortedDictionary<long, Packet>();
             BuildVersions buildVersion = LineGetters.GetBuildVersion(lines);
@@ -78,13 +84,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
 
-            bool needToParseScripts = Properties.Settings.Default.Scripts;
-
             Parallel.For(0, lines.Length, index =>
             {
-                Packet.PacketTypes packetType = Packet.GetPacketTypeFromLine(lines[index]);
+                PacketType packetType = Packet.GetPacketTypeFromLine(lines[index]);
 
-                if (packetType == Packet.PacketTypes.SMSG_UPDATE_OBJECT)
+                if (packetType == PacketType.SMSG_UPDATE_OBJECT)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -92,11 +96,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (updateObjectPacketsDict)
                         {
                             if (!updateObjectPacketsDict.ContainsKey(index))
-                                updateObjectPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_UPDATE_OBJECT, sendTime, index, new List<object>(), LineGetters.GetPacketNumberFromLine(lines[index])));
+                                updateObjectPacketsDict.Add(index, new Packet(PacketType.SMSG_UPDATE_OBJECT, sendTime, index, new List<object>(), LineGetters.GetPacketNumberFromLine(lines[index])));
                         }
                     }
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_ON_MONSTER_MOVE)
+                else if (packetType == PacketType.SMSG_ON_MONSTER_MOVE)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -104,11 +108,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (movementPacketsDict)
                         {
                             if (!movementPacketsDict.ContainsKey(index))
-                                movementPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_ON_MONSTER_MOVE, sendTime, index, new List<object>(), LineGetters.GetPacketNumberFromLine(lines[index])));
+                                movementPacketsDict.Add(index, new Packet(PacketType.SMSG_ON_MONSTER_MOVE, sendTime, index, new List<object>(), LineGetters.GetPacketNumberFromLine(lines[index])));
                         }
                     }
                 }
-                else if (needToParseScripts && packetType == Packet.PacketTypes.SMSG_SPELL_START)
+                else if (Properties.Settings.Default.Scripts && packetType == PacketType.SMSG_SPELL_START)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -116,11 +120,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (spellPacketsDict)
                         {
                             if (!spellPacketsDict.ContainsKey(index))
-                                spellPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_SPELL_START, sendTime, index, new List<object>(), 0));
+                                spellPacketsDict.Add(index, new Packet(PacketType.SMSG_SPELL_START, sendTime, index, new List<object>(), 0));
                         }
                     }
                 }
-                else if (needToParseScripts && packetType == Packet.PacketTypes.SMSG_AURA_UPDATE)
+                else if (Properties.Settings.Default.Scripts && packetType == PacketType.SMSG_AURA_UPDATE)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -128,11 +132,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (auraPacketsDict)
                         {
                             if (!auraPacketsDict.ContainsKey(index))
-                                auraPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_AURA_UPDATE, sendTime, index, new List<object>(), 0));
+                                auraPacketsDict.Add(index, new Packet(PacketType.SMSG_AURA_UPDATE, sendTime, index, new List<object>(), 0));
                         }
                     }
                 }
-                else if (needToParseScripts && packetType == Packet.PacketTypes.SMSG_EMOTE)
+                else if (Properties.Settings.Default.Scripts && packetType == PacketType.SMSG_EMOTE)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -140,11 +144,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (emotePacketsDict)
                         {
                             if (!emotePacketsDict.ContainsKey(index))
-                                emotePacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_EMOTE, sendTime, index, new List<object>(), 0));
+                                emotePacketsDict.Add(index, new Packet(PacketType.SMSG_EMOTE, sendTime, index, new List<object>(), 0));
                         }
                     }
                 }
-                else if (needToParseScripts && packetType == Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT)
+                else if (Properties.Settings.Default.Scripts && packetType == PacketType.SMSG_SET_AI_ANIM_KIT)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -152,23 +156,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (animKitPacketsDict)
                         {
                             if (!animKitPacketsDict.ContainsKey(index))
-                                animKitPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT, sendTime, index, new List<object>(), 0));
+                                animKitPacketsDict.Add(index, new Packet(PacketType.SMSG_SET_AI_ANIM_KIT, sendTime, index, new List<object>(), 0));
                         }
                     }
                 }
-                else if (packetType == Packet.PacketTypes.SMSG_ATTACK_STOP)
-                {
-                    TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
-                    if (sendTime != TimeSpan.Zero)
-                    {
-                        lock (attackStopPacketsDict)
-                        {
-                            if (!attackStopPacketsDict.ContainsKey(index))
-                                attackStopPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_ATTACK_STOP, sendTime, index, new List<object>(), 0));
-                        }
-                    }
-                }
-                else if (needToParseScripts && packetType == Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT)
+                else if (Properties.Settings.Default.Scripts && packetType == PacketType.SMSG_PLAY_ONE_SHOT_ANIM_KIT)
                 {
                     TimeSpan sendTime = LineGetters.GetTimeSpanFromLine(lines[index]);
                     if (sendTime != TimeSpan.Zero)
@@ -176,16 +168,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         lock (playOneShotAnimKitPacketsDict)
                         {
                             if (!playOneShotAnimKitPacketsDict.ContainsKey(index))
-                                playOneShotAnimKitPacketsDict.Add(index, new Packet(Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT, sendTime, index, new List<object>(), 0));
+                                playOneShotAnimKitPacketsDict.Add(index, new Packet(PacketType.SMSG_PLAY_ONE_SHOT_ANIM_KIT, sendTime, index, new List<object>(), 0));
                         }
                     }
                 }
             });
-
-            if (!multiSelect)
-            {
-                creaturesDict.Clear();
-            }
 
             mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
 
@@ -193,9 +180,12 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             {
                 foreach (UpdateObjectPacket updatePacket in UpdateObjectPacket.ParseObjectUpdatePacket(lines, packet.index, buildVersion, packet.number))
                 {
+                    if (updatePacket.updateType == PacketUpdateType.Destroy)
+                        continue;
+
                     updateObjectPacketsDict.AddSourceFromUpdatePacket(updatePacket, packet.index);
 
-                    if (updatePacket.objectType == UpdateObjectPacket.ObjectTypes.Unit)
+                    if (updatePacket.objectType == ObjectTypes.Creature)
                     {
                         if (!creaturesDict.ContainsKey(updatePacket.guid))
                         {
@@ -208,7 +198,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                             creaturesDict[updatePacket.guid].SortWaypoints();
                         }
                     }
-                    else if (updatePacket.objectType == UpdateObjectPacket.ObjectTypes.GameObject)
+                    else if (updatePacket.objectType == ObjectTypes.GameObject)
                     {
                         if (!gameObjectsDict.ContainsKey(updatePacket.guid))
                         {
@@ -243,7 +233,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             Parallel.ForEach(movementPacketsDict.Values, packet =>
             {
-                MonsterMovePacket movePacket = MonsterMovePacket.ParseMovementPacket(lines, packet.index, buildVersion, updateObjectPacketsDict, packet.number);
+                MonsterMovePacket movePacket = ParseMovementPacket(lines, packet.index, buildVersion, updateObjectPacketsDict, packet.number);
                 if (movePacket.creatureGuid != "" && (movePacket.HasWaypoints() || movePacket.HasOrientation() || movePacket.HasJump()))
                 {
                     lock (movementPacketsDict)
@@ -281,32 +271,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             });
 
-            if (Properties.Settings.Default.CombatMovement)
-            {
-                mainForm.SetCurrentStatus("Parsing SMSG_ATTACK_STOP packets...");
-
-                Parallel.ForEach(attackStopPacketsDict.Values, packet =>
-                {
-                    AttackStopPacket attackStopPacket = AttackStopPacket.ParseAttackStopkPacket(lines, packet.index, buildVersion);
-                    if (attackStopPacket.creatureGuid == "")
-                        return;
-
-                    lock (attackStopPacketsDict)
-                    {
-                        attackStopPacketsDict.AddSourceFromAttackStopPacket(attackStopPacket, packet.index);
-                    }
-                });
-
-                RemoveCombatMovementForCreatures(attackStopPacketsDict);
-            }
-
             if (Properties.Settings.Default.Scripts)
             {
                 mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
 
                 Parallel.ForEach(spellPacketsDict.Values, packet =>
                 {
-                    SpellStartPacket spellPacket = SpellStartPacket.ParseSpellStartPacket(lines, packet.index, buildVersion, Packet.PacketTypes.SMSG_SPELL_START);
+                    SpellPacket spellPacket = SpellPacket.ParseSpellPacket(lines, packet.index, buildVersion, PacketType.SMSG_SPELL_START);
                     if (spellPacket.spellId == 0)
                         return;
 
@@ -432,7 +403,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         {
                             switch (packet.packetType)
                             {
-                                case Packet.PacketTypes.SMSG_ON_MONSTER_MOVE:
+                                case PacketType.SMSG_ON_MONSTER_MOVE:
                                 {
                                     MonsterMovePacket movePacket = (MonsterMovePacket)packet.parsedPacketsList.First();
                                     if (movePacket.HasWaypoints() && !scriptsParsingStarted)
@@ -457,13 +428,13 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case Packet.PacketTypes.SMSG_UPDATE_OBJECT:
+                                case PacketType.SMSG_UPDATE_OBJECT:
                                 {
                                     if (scriptsParsingStarted && packet.parsedPacketsList.Count != 0)
                                     {
-                                        if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid) != null)
+                                        if (packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid).guid != "")
                                         {
-                                            UpdateObjectPacket updatePacket = (UpdateObjectPacket)packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
+                                            UpdateObjectPacket updatePacket = packet.parsedPacketsList.GetUpdatePacketForCreatureWithGuid(creature.guid);
 
                                             List<WaypointScript> updateScriptsList = WaypointScript.GetScriptsFromUpdatePacket(updatePacket);
                                             if (updateScriptsList.Count != 0)
@@ -475,17 +446,17 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case Packet.PacketTypes.SMSG_SPELL_START:
+                                case PacketType.SMSG_SPELL_START:
                                 {
                                     if (scriptsParsingStarted)
                                     {
-                                        SpellStartPacket spellPacket = (SpellStartPacket)packet.parsedPacketsList.First();
+                                        SpellPacket spellPacket = (SpellPacket)packet.parsedPacketsList.First();
                                         scriptsList.Add(WaypointScript.GetScriptsFromSpellPacket(spellPacket));
                                     }
 
                                     break;
                                 }
-                                case Packet.PacketTypes.SMSG_AURA_UPDATE:
+                                case PacketType.SMSG_AURA_UPDATE:
                                 {
                                     if (scriptsParsingStarted)
                                     {
@@ -498,7 +469,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case Packet.PacketTypes.SMSG_EMOTE:
+                                case PacketType.SMSG_EMOTE:
                                 {
                                     if (scriptsParsingStarted)
                                     {
@@ -508,7 +479,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case Packet.PacketTypes.SMSG_SET_AI_ANIM_KIT:
+                                case PacketType.SMSG_SET_AI_ANIM_KIT:
                                 {
                                     if (scriptsParsingStarted)
                                     {
@@ -518,7 +489,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                                     break;
                                 }
-                                case Packet.PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT:
+                                case PacketType.SMSG_PLAY_ONE_SHOT_ANIM_KIT:
                                 {
                                     if (scriptsParsingStarted)
                                     {
@@ -552,8 +523,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return true;
         }
 
-        public bool GetDataFromBinFile(string fileName, bool multiSelect)
+        public bool GetDataFromBinFile(string fileName)
         {
+            ClearContainers();
             mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
             using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
@@ -564,35 +536,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             return true;
-        }
-
-        private void RemoveCombatMovementForCreatures(SortedDictionary<long, Packet> attackStopPackets)
-        {
-            foreach (Creature creature in creaturesDict.Values)
-            {
-                if (creature.HasWaypoints())
-                {
-                    List<uint> attackStopPacketTimes = attackStopPackets.Where(x => x.Value.HasCreatureWithGuid(creature.guid)).Select(x => (uint)x.Value.sendTime.TotalSeconds).ToList();
-                    if (attackStopPacketTimes.Count == 0)
-                        return;
-
-                    List<Waypoint> newWaypoints = new List<Waypoint>();
-
-                    foreach (Waypoint waypoint in creature.waypoints)
-                    {
-                        if (!attackStopPacketTimes.Contains((uint)waypoint.moveStartTime.TotalSeconds))
-                        {
-                            newWaypoints.Add(waypoint);
-                        }
-                    }
-
-                    if (creature.waypoints.Count != newWaypoints.Count)
-                    {
-                        creature.waypoints = newWaypoints;
-
-                    }
-                }
-            }
         }
 
         public void FillListBoxWithGuids()
@@ -623,9 +566,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
                 foreach (Creature creature in creaturesDict.Values.OrderBy(x => x.lastUpdatePacketTime))
                 {
-                    if (!creature.HasWaypoints() || (Properties.Settings.Default.CheckPathOnDb && IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid)) ||
-                        (Properties.Settings.Default.Critters && creature.IsCritter()) || (Properties.Settings.Default.CheckCreatureOnDB && !IsCreatureExistOnDb(creature.guid)) ||
-                        (Properties.Settings.Default.CheckCreatureForWaypointsOnDb && !IsWaypointsHasAnyCreatureOnDb(creature)))
+                    if (!creature.HasWaypoints())
+                        continue;
+
+                    if (Properties.Settings.Default.CheckPathOnDb && IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid))
+                        continue;
+
+                    if (Properties.Settings.Default.Critters && creature.IsCritter())
+                        continue;
+
+                    if (Properties.Settings.Default.CheckCreatureOnDB && !IsCreatureExistOnDb(creature.guid) && !Properties.Settings.Default.CheckCreatureForWaypointsOnDb || (Properties.Settings.Default.CheckCreatureForWaypointsOnDb && !IsWaypointsHasAnyCreatureOnDb(creature)))
                         continue;
 
                     if (mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "" && mainForm.toolStripTextBox_WaypointsCreator_Entry.Text != "0")
@@ -662,6 +612,69 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             if (linkedIdsToRemove.Count != 0)
             {
                 object[] items = mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().Where(x => !linkedIdsToRemove.Contains(creaturesDict[x.ToString()].GetLinkedId())).ToArray();
+                bool guidFound = false;
+
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Clear();
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Items.AddRange(items);
+
+                for (int i = 0; i < mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Count; i++)
+                {
+                    if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items[i].ToString() == currentSelectedGuid)
+                    {
+                        guidFound = true;
+                        mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(i, true);
+                        break;
+                    }
+                }
+
+                if (!guidFound)
+                {
+                    for (int i = 0; i < listBoxOriginalItems.Count; i++)
+                    {
+                        if (listBoxOriginalItems[i].ToString() == currentSelectedGuid)
+                        {
+                            for (int j = i + 1; j < listBoxOriginalItems.Count; j++)
+                            {
+                                if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().FirstOrDefault(x => x.ToString() == listBoxOriginalItems[j].ToString()) != null)
+                                {
+                                    for (int l = 0; l < mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Count; l++)
+                                    {
+                                        if (mainForm.listBox_WaypointsCreator_CreatureGuids.Items[l].ToString() == listBoxOriginalItems[j].ToString())
+                                        {
+                                            guidFound = true;
+                                            mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(l, true);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (guidFound)
+                                    break;
+                            }
+                        }
+
+                        if (guidFound)
+                            break;
+                    }
+                }
+
+                mainForm.listBox_WaypointsCreator_CreatureGuids.Refresh();
+            }
+        }
+
+        public void RemoveGuidsWithEmptyWaypointsDueToCombat()
+        {
+            if (mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex == -1)
+            {
+                mainForm.listBox_WaypointsCreator_CreatureGuids.SetSelected(0, true);
+            }
+
+            List<object> listBoxOriginalItems = mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().ToList();
+            object[] items = mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Cast<object>().Where(x => creaturesDict[x.ToString()].waypoints.Count(j => !creaturesDict[x.ToString()].combatTimings.IsCombatTimer(j.moveStartTime)) != 0).ToArray();
+            string currentSelectedGuid = mainForm.listBox_WaypointsCreator_CreatureGuids.Items[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedIndex].ToString();
+
+            if (items.Count() != listBoxOriginalItems.Count)
+            {
                 bool guidFound = false;
 
                 mainForm.listBox_WaypointsCreator_CreatureGuids.Items.Clear();
@@ -806,7 +819,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return alreadyHaveRandomMovement;
         }
 
-        public KeyValuePair<bool, bool> IsCreatureHasCosmeticDataOnAddon(string linkedid)
+        public KeyValuePair<bool, bool> GetCosmeticDataFromCreatureAddon(string linkedid)
         {
             bool hasCosmeticData = false;
             bool hasSleepAura = false;
@@ -843,6 +856,23 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
             return new KeyValuePair<bool, bool>(hasCosmeticData, hasSleepAura);
+        }
+
+        private bool IsCreatureHasRolePlayEvents(string linkedId)
+        {
+            string randomEmotesSqlQuery = "SELECT `LinkedId` FROM `creature_role_play_events` WHERE `LinkedId` = '" + linkedId + "';";
+            var randomEmotesDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(randomEmotesSqlQuery) : null;
+
+            if (randomEmotesDs != null && randomEmotesDs.Tables["table"].Rows.Count > 0)
+            {
+                foreach (DataRow row in randomEmotesDs.Tables["table"].Rows)
+                {
+                    if (Convert.ToString(row.ItemArray[0]) != "")
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsWaypointsHasAnyCreatureOnDb(Creature creature)
@@ -982,18 +1012,39 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void CreateRandomMovements()
         {
             string mainOutput = "";
+            string largePointsOutput = "";
+            string mediumPointsOutput = "";
+            string smallPointsOutput = "";
             string invalidDistanceOutput = "";
             string sleepAuraOutput = "";
+            string emotesOutput = "";
+            string rolePlayEventsOutput = "";
 
             List<string> linkedIds = new List<string>();
+            List<Creature> creatures = new List<Creature>();
 
             foreach (object item in mainForm.listBox_WaypointsCreator_CreatureGuids.Items)
             {
-                Creature creature = creaturesDict[item.ToString()];
+                creatures.Add(creaturesDict[item.ToString()]);
+            }
+
+            creatures = creatures.OrderByDescending(x => x.waypoints.Count).ToList();
+
+            foreach (Creature itr in creatures)
+            {
+                Creature creature = itr;
                 List<Waypoint> waypoints = creature.waypoints;
 
-                if (IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid) || IsCreatureAlreadyHaveRandomMovementOnDb(creature.guid) || IsCreatureHasCosmeticDataOnAddon(creature.GetLinkedId()).Key)
+                if (IsCreatureAlreadyHavePathOrFormationOnDb(creature.guid) || IsCreatureAlreadyHaveRandomMovementOnDb(creature.guid))
                     continue;
+
+                if (Properties.Settings.Default.CombatMovement)
+                {
+                    waypoints = creature.waypoints.Where(x => !creature.combatTimings.IsCombatTimer(x.moveStartTime)).ToList();
+
+                    if (waypoints.Count == 0)
+                        continue;
+                }
 
                 float totalX = 0.0f, totalY = 0.0f, totalZ = 0.0f;
 
@@ -1034,7 +1085,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 if (!IsCreatureExistOnDb(creature.guid))
                 {
                     List<Creature> possibleCreatures = GetPossibleCreaturesForRandomMovement(creature, polygonPositions);
-                    if (possibleCreatures.Count != 1 || IsCreatureAlreadyHavePathOrFormationOnDb("", possibleCreatures.First().GetLinkedId()) || IsCreatureAlreadyHaveRandomMovementOnDb("", possibleCreatures.First().GetLinkedId()) || IsCreatureHasCosmeticDataOnAddon(possibleCreatures.First().GetLinkedId()).Key)
+                    if (possibleCreatures.Count == 0)
+                        continue;
+
+                    var possibleCreatureCosmeticData = GetCosmeticDataFromCreatureAddon(possibleCreatures.First().GetLinkedId());
+                    if (possibleCreatures.Count != 1 || IsCreatureAlreadyHavePathOrFormationOnDb("", possibleCreatures.First().GetLinkedId()) || IsCreatureAlreadyHaveRandomMovementOnDb("", possibleCreatures.First().GetLinkedId()) || possibleCreatureCosmeticData.Key || possibleCreatureCosmeticData.Value)
                         continue;
 
                     creature = possibleCreatures[0];
@@ -1064,55 +1119,125 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
 
                 int averagedMoveDistance = (int)moveDistances.Average();
+                var cosmeticData = GetCosmeticDataFromCreatureAddon(creature.GetLinkedId());
 
-                if (IsCreatureHasCosmeticDataOnAddon(creature.GetLinkedId()).Value)
+                if (cosmeticData.Value)
                 {
                     if (averagedMoveType == 0)
                     {
-                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
                     }
                     else if (averagedMoveType == 1)
                     {
-                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
                     }
                     else if (averagedMoveType == 4)
                     {
-                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                    }
+                }
+                else if (cosmeticData.Key)
+                {
+                    if (averagedMoveType == 0)
+                    {
+                        emotesOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                    }
+                    else if (averagedMoveType == 1)
+                    {
+                        emotesOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                    }
+                    else if (averagedMoveType == 4)
+                    {
+                        emotesOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                    }
+                }
+                else if (IsCreatureHasRolePlayEvents(creature.linkedId))
+                {
+                    if (averagedMoveType == 0)
+                    {
+                        rolePlayEventsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                    }
+                    else if (averagedMoveType == 1)
+                    {
+                        rolePlayEventsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                    }
+                    else if (averagedMoveType == 4)
+                    {
+                        rolePlayEventsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
                     }
                 }
                 else if (averagedMoveDistance == 0 || averagedMoveDistance >= 15)
                 {
                     if (averagedMoveType == 0)
                     {
-                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
                     }
                     else if (averagedMoveType == 1)
                     {
-                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
                     }
                     else if (averagedMoveType == 4)
                     {
-                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
                     }
                 }
                 else
                 {
-                    if (averagedMoveType == 0)
+                    if (waypoints.Count >= 500)
                     {
-                        mainOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                        if (averagedMoveType == 0)
+                        {
+                            largePointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
+                        else if (averagedMoveType == 1)
+                        {
+                            largePointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
+                        else if (averagedMoveType == 4)
+                        {
+                            largePointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
                     }
-                    else if (averagedMoveType == 1)
+                    else if (waypoints.Count < 500 && waypoints.Count >= 100)
                     {
-                        mainOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                        if (averagedMoveType == 0)
+                        {
+                            mediumPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
+                        else if (averagedMoveType == 1)
+                        {
+                            mediumPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
+                        else if (averagedMoveType == 4)
+                        {
+                            mediumPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
                     }
-                    else if (averagedMoveType == 4)
+                    else if (waypoints.Count < 100)
                     {
-                        mainOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Name: {creature.name}, Entry: {creature.entry} - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                        if (averagedMoveType == 0)
+                        {
+                            smallPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
+                        else if (averagedMoveType == 1)
+                        {
+                            smallPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
+                        else if (averagedMoveType == 4)
+                        {
+                            smallPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                        }
                     }
                 }
             }
 
-            mainOutput += "\r\n -- Movements with invalid distance:\r\n" + invalidDistanceOutput + "\r\n -- Movements with sleeping auras in addon:\r\n" + sleepAuraOutput;
+            mainOutput += largePointsOutput != "" ? "-- Movements with large count of points:\r\n" + largePointsOutput + "\r\n" : "";
+            mainOutput += mediumPointsOutput != "" ? "-- Movements with medium count of points:\r\n" + mediumPointsOutput + "\r\n" : "";
+            mainOutput += smallPointsOutput != "" ? "-- Movements with small count of points:\r\n" + smallPointsOutput + "\r\n" : "";
+            mainOutput += invalidDistanceOutput != "" ? "-- Movements with invalid distance:\r\n" + invalidDistanceOutput + "\r\n" : "";
+            mainOutput += sleepAuraOutput != "" ? "-- Movements with sleeping auras in addon:\r\n" + sleepAuraOutput + "\r\n" : "";
+            mainOutput += emotesOutput != "" ? "-- Movements with emotes in addon:\r\n" + emotesOutput + "\r\n" : "";
+            mainOutput += rolePlayEventsOutput != "" ? "-- Movements with role play events:\r\n" + rolePlayEventsOutput + "\r\n" : "";
             mainForm.textBox_SqlOutput.Text = mainOutput;
         }
 
@@ -1155,8 +1280,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             foreach (Waypoint wp in creature.waypoints)
             {
-                mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
-                index++;
+                if (!Properties.Settings.Default.CombatMovement || (Properties.Settings.Default.CombatMovement && !creature.combatTimings.IsCombatTimer(wp.moveStartTime)))
+                {
+                    mainForm.grid_WaypointsCreator_Waypoints.Rows.Add(index, wp.movePosition.x, wp.movePosition.y, wp.movePosition.z, wp.orientation, wp.moveStartTime.ToFormattedString(), wp.delay, wp.HasScripts(), wp.Clone());
+                    index++;
+                }
             }
 
             GraphPath();
@@ -1217,7 +1345,19 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void GraphPath()
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
-            Dictionary<string, KeyValuePair<Creature, float>> possibleCreatures = GetPossibleCreaturesForWaypoints(creature);
+            Dictionary<string, KeyValuePair<Creature, float>> possibleCreatures = new Dictionary<string, KeyValuePair<Creature, float>>();
+
+            if (Properties.Settings.Default.CheckCreatureForWaypointsOnDb)
+            {
+                if (!Properties.Settings.Default.CheckPathOnDb)
+                {
+                    possibleCreatures = GetPossibleCreaturesForWaypoints(creature);
+                }
+                else
+                {
+                    possibleCreatures = GetPossibleCreaturesForWaypoints(creature).Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
+                }
+            }
 
             mainForm.chart_WaypointsCreator_Path.BackColor = Color.White;
             mainForm.chart_WaypointsCreator_Path.ChartAreas[0].BackColor = Color.White;
@@ -1246,20 +1386,48 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
                     mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
                 }
+
+                var cosmeticData = GetCosmeticDataFromCreatureAddon(creature.GetLinkedId());
+
+                if (cosmeticData.Key)
+                {
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Creature has emotes or stand state in addon");
+                    mainForm.chart_WaypointsCreator_Path.Titles[3].Font = new Font("Arial", 16, FontStyle.Bold);
+                    mainForm.chart_WaypointsCreator_Path.Titles[3].ForeColor = Color.Blue;
+                }
+                else if (cosmeticData.Value)
+                {
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Creature has sleep aura in addon");
+                    mainForm.chart_WaypointsCreator_Path.Titles[3].Font = new Font("Arial", 16, FontStyle.Bold);
+                    mainForm.chart_WaypointsCreator_Path.Titles[3].ForeColor = Color.Blue;
+                }
             }
             else if (possibleCreatures.Count > 0)
             {
-                possibleCreatures = possibleCreatures.Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
-
-                if (possibleCreatures.Count > 0)
+                if (possibleCreatures.Count == 1)
                 {
-                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found possible creatures in DB via comparing");
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found possible creature in DB via comparing");
                     mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
                     mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
+
+                    var cosmeticData = GetCosmeticDataFromCreatureAddon(possibleCreatures.First().Key);
+
+                    if (cosmeticData.Key)
+                    {
+                        mainForm.chart_WaypointsCreator_Path.Titles.Add("Creature has emotes or stand state in addon");
+                        mainForm.chart_WaypointsCreator_Path.Titles[3].Font = new Font("Arial", 16, FontStyle.Bold);
+                        mainForm.chart_WaypointsCreator_Path.Titles[3].ForeColor = Color.Blue;
+                    }
+                    else if (cosmeticData.Value)
+                    {
+                        mainForm.chart_WaypointsCreator_Path.Titles.Add("Creature has sleep aura in addon");
+                        mainForm.chart_WaypointsCreator_Path.Titles[3].Font = new Font("Arial", 16, FontStyle.Bold);
+                        mainForm.chart_WaypointsCreator_Path.Titles[3].ForeColor = Color.Blue;
+                    }
                 }
                 else
                 {
-                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found possible creatures in DB via comparing, but they already have path or formation");
+                    mainForm.chart_WaypointsCreator_Path.Titles.Add("Found possible creatures in DB via comparing");
                     mainForm.chart_WaypointsCreator_Path.Titles[2].Font = new Font("Arial", 16, FontStyle.Bold);
                     mainForm.chart_WaypointsCreator_Path.Titles[2].ForeColor = Color.Blue;
                 }
@@ -1338,7 +1506,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             Creature originalCreature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
             KeyValuePair<string, Creature> possibleCreature = new KeyValuePair<string, Creature>("", new Creature());
 
-            if (!IsCreatureExistOnDb(originalCreature.guid))
+            if (!IsCreatureExistOnDb(originalCreature.guid) && Properties.Settings.Default.CheckCreatureForWaypointsOnDb)
             {
                 Dictionary<string, KeyValuePair<Creature, float>> possibleCreatures = GetPossibleCreaturesForWaypoints(originalCreature).Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
 
@@ -1381,17 +1549,27 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             SQLtext += "DELETE FROM `waypoint_data` WHERE `linked_id` = @LinkedId;" + "\r\n";
             SQLtext += "INSERT INTO `waypoint_data` (`linked_id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `action`, `action_chance`, `speed`) VALUES" + "\r\n";
 
-            float dominantSpeed = GetDominantSpeed(waypoints);
+            float dominantSpeed = GetDominantSpeed(originalCreature.waypoints);
 
             for (int i = 0; i < waypoints.Count; i++)
             {
                 Waypoint waypoint = waypoints[i];
                 float orientation = waypoint.HasOrientation() ? waypoint.orientation : float.Parse(mainForm.grid_WaypointsCreator_Waypoints[4, i].Value.ToString());
                 uint delay = waypoint.delay > 0 ? waypoint.delay : Convert.ToUInt32(mainForm.grid_WaypointsCreator_Waypoints[6, i].Value.ToString());
-                MoveType moveType = GetDominantMoveType(waypoints);
+                MoveType moveType = GetDominantMoveType(originalCreature.waypoints);
                 float dominantDbSpeed = GetDbSpeedFromVelocity(dominantSpeed, moveType);
+                float waypointDbSpeed = GetDbSpeedFromVelocity(waypoint.velocity, waypoint.moveType);
+                float wpSpeed = 0.0f;
 
-                float wpSpeed = (Math.Abs(dominantDbSpeed - 1.1f) <= 0.15f) ? 0 : (float)Math.Round(dominantSpeed, 1);
+                if (Properties.Settings.Default.Scripts && originalCreature.waypoints.GetScriptsCount() != 0 && !onlyToClipboard)
+                {
+                    wpSpeed = (Math.Abs(waypointDbSpeed - 1.1f) <= 0.15f) ? 0 : (float)Math.Round(waypoint.velocity, 1);
+                    moveType = waypoint.moveType;
+                }
+                else
+                {
+                    wpSpeed = (Math.Abs(dominantDbSpeed - 1.1f) <= 0.15f) ? 0 : (float)Math.Round(dominantSpeed, 1);
+                }
 
                 if (i < (waypoints.Count - 1))
                 {
@@ -1489,7 +1667,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             }
 
-            if (possibleCreature.Key == "")
+            if (possibleCreature.Key == "" && Properties.Settings.Default.CheckCreatureForWaypointsOnDb)
             {
                 if (!IsCreatureExistOnDb(originalCreature.guid) && IsWaypointsHasAnyCreatureOnDb(originalCreature) && !onlyToClipboard)
                 {
@@ -1855,7 +2033,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         {
             Creature creature = creaturesDict[mainForm.listBox_WaypointsCreator_CreatureGuids.SelectedItem.ToString()];
 
-            if (!IsCreatureExistOnDb(creature.guid))
+            if (!IsCreatureExistOnDb(creature.guid) && Properties.Settings.Default.CheckCreatureForWaypointsOnDb)
             {
                 Dictionary<string, KeyValuePair<Creature, float>> possibleCreatures = GetPossibleCreaturesForWaypoints(creature).Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
 
@@ -2143,7 +2321,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             }
 
 
-            if (!IsCreatureExistOnDb(creature.guid))
+            if (!IsCreatureExistOnDb(creature.guid) && Properties.Settings.Default.CheckCreatureForWaypointsOnDb)
             {
                 Dictionary<string, KeyValuePair<Creature, float>> possibleCreatures = GetPossibleCreaturesForWaypoints(creature).Where(x => !IsCreatureAlreadyHavePathOrFormationOnDb("", x.Key)).ToDictionary(x => x.Key, x => x.Value);
 

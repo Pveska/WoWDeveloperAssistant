@@ -4,67 +4,157 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Parsed_File_Advisor;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
-using static WoWDeveloperAssistant.Misc.Packets.Packet;
 using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Misc
 {
+    [ProtoContract]
+    public enum MoveType
+    {
+        [ProtoEnum]
+        MOVE_UNKNOWN = 0,
+
+        [ProtoEnum]
+        MOVE_WALK    = 1,
+
+        [ProtoEnum]
+        MOVE_RUN     = 2,
+
+        [ProtoEnum]
+        MOVE_FLIGHT  = 3
+    }
+
+    [ProtoContract]
+    public enum PacketType : byte
+    {
+        [ProtoEnum]
+        UNKNOWN_PACKET = 0,
+
+        [ProtoEnum]
+        SMSG_UPDATE_OBJECT = 1,
+
+        [ProtoEnum]
+        SMSG_AI_REACTION = 2,
+
+        [ProtoEnum]
+        SMSG_SPELL_START = 3,
+
+        [ProtoEnum]
+        SMSG_CHAT = 4,
+
+        [ProtoEnum]
+        SMSG_ON_MONSTER_MOVE = 5,
+
+        [ProtoEnum]
+        SMSG_ATTACK_STOP = 6,
+
+        [ProtoEnum]
+        SMSG_AURA_UPDATE = 7,
+
+        [ProtoEnum]
+        SMSG_EMOTE = 8,
+
+        [ProtoEnum]
+        SMSG_SPELL_GO = 9,
+
+        [ProtoEnum]
+        SMSG_SET_AI_ANIM_KIT = 10,
+
+        [ProtoEnum]
+        CMSG_QUEST_GIVER_ACCEPT_QUEST = 11,
+
+        [ProtoEnum]
+        SMSG_QUEST_GIVER_QUEST_COMPLETE = 12,
+
+        [ProtoEnum]
+        CMSG_MOVE_START_FORWARD = 13,
+
+        [ProtoEnum]
+        CMSG_MOVE_STOP = 14,
+
+        [ProtoEnum]
+        CMSG_MOVE_HEARTBEAT = 15,
+
+        [ProtoEnum]
+        SMSG_QUEST_UPDATE_ADD_CREDIT = 16,
+
+        [ProtoEnum]
+        SMSG_QUEST_UPDATE_COMPLETE = 17,
+
+        [ProtoEnum]
+        SMSG_PLAY_ONE_SHOT_ANIM_KIT = 18,
+
+        [ProtoEnum]
+        SMSG_INIT_WORLD_STATES = 19
+    }
+
+    [ProtoContract]
+    public enum PacketUpdateType
+    {
+        [ProtoEnum]
+        Unknown = 0,
+
+        [ProtoEnum]
+        CreateObject = 1,
+
+        [ProtoEnum]
+        Values = 2,
+
+        [ProtoEnum]
+        Destroy = 3
+    }
+
+    [ProtoContract]
+    public enum ObjectTypes
+    {
+        [ProtoEnum]
+        Unknown = 0,
+
+        [ProtoEnum]
+        Creature = 1,
+
+        [ProtoEnum]
+        GameObject = 2,
+
+        [ProtoEnum]
+        Player = 3,
+
+        [ProtoEnum]
+        Conversation = 4
+    }
+
     public static class Packets
     {
         [Serializable]
         public struct Packet
         {
-            public PacketTypes packetType;
+            public PacketType packetType;
             public TimeSpan sendTime;
             public long index;
             public List<object> parsedPacketsList;
             public long number;
 
-            public Packet(PacketTypes type, TimeSpan time, long index, List<object> parsedList, long number)
+            public Packet(PacketType type, TimeSpan time, long index, List<object> parsedList, long number)
             { packetType = type; sendTime = time; this.index = index; parsedPacketsList = parsedList; this.number = number; }
 
-            public enum PacketTypes : byte
+            public static PacketType GetPacketTypeFromLine(string line)
             {
-                UNKNOWN_PACKET,
-                SMSG_UPDATE_OBJECT,
-                SMSG_AI_REACTION,
-                SMSG_SPELL_START,
-                SMSG_CHAT,
-                SMSG_ON_MONSTER_MOVE,
-                SMSG_ATTACK_STOP,
-                SMSG_AURA_UPDATE,
-                SMSG_EMOTE,
-                SMSG_SPELL_GO,
-                SMSG_SET_AI_ANIM_KIT,
-                CMSG_QUEST_GIVER_ACCEPT_QUEST,
-                SMSG_QUEST_GIVER_QUEST_COMPLETE,
-                CMSG_MOVE_START_FORWARD,
-                CMSG_MOVE_STOP,
-                CMSG_MOVE_HEARTBEAT,
-                SMSG_QUEST_UPDATE_ADD_CREDIT,
-                SMSG_QUEST_UPDATE_COMPLETE,
-                SMSG_PLAY_ONE_SHOT_ANIM_KIT,
-                SMSG_INIT_WORLD_STATES,
-                SMSG_UPDATE_WORLD_STATE
-            }
-
-            public static PacketTypes GetPacketTypeFromLine(string line)
-            {
-                foreach (string packetName in Enum.GetNames(typeof(PacketTypes)))
+                foreach (string packetName in Enum.GetNames(typeof(PacketType)))
                 {
                     if (line.Contains(packetName))
                     {
                         Regex packetnameRegex = new Regex(packetName + @"{1}\s+");
                         if (packetnameRegex.IsMatch(line))
-                            return (PacketTypes)Enum.Parse(typeof(PacketTypes), packetnameRegex.Match(line).ToString());
+                            return (PacketType)Enum.Parse(typeof(PacketType), packetnameRegex.Match(line).ToString());
                     }
                 }
 
-                return PacketTypes.UNKNOWN_PACKET;
+                return PacketType.UNKNOWN_PACKET;
             }
 
             public bool HasCreatureWithGuid(string guid)
@@ -74,56 +164,56 @@ namespace WoWDeveloperAssistant.Misc
 
                 switch (packetType)
                 {
-                    case PacketTypes.SMSG_UPDATE_OBJECT:
+                    case PacketType.SMSG_UPDATE_OBJECT:
                     {
                         if (parsedPacketsList.Cast<UpdateObjectPacket>().Any(updatePacket => updatePacket.guid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_ON_MONSTER_MOVE:
+                    case PacketType.SMSG_ON_MONSTER_MOVE:
                     {
                         if (parsedPacketsList.Cast<MonsterMovePacket>().Any(movementPacket => movementPacket.creatureGuid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_SPELL_START:
+                    case PacketType.SMSG_SPELL_START:
                     {
-                        if (parsedPacketsList.Cast<SpellStartPacket>().Any(spellPacket => spellPacket.casterGuid == guid))
+                        if (parsedPacketsList.Cast<SpellPacket>().Any(spellPacket => spellPacket.casterGuid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_AURA_UPDATE:
+                    case PacketType.SMSG_AURA_UPDATE:
                     {
                         if (parsedPacketsList.Cast<AuraUpdatePacket>().Any(auraPacket => auraPacket.unitGuid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_EMOTE:
+                    case PacketType.SMSG_EMOTE:
                     {
                         if (parsedPacketsList.Cast<EmotePacket>().Any(emotePacket => emotePacket.guid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_ATTACK_STOP:
+                    case PacketType.SMSG_ATTACK_STOP:
                     {
                         if (parsedPacketsList.Cast<AttackStopPacket>().Any(attackStopPacket => attackStopPacket.creatureGuid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_SET_AI_ANIM_KIT:
+                    case PacketType.SMSG_SET_AI_ANIM_KIT:
                     {
                         if (parsedPacketsList.Cast<SetAiAnimKitPacket>().Any(animKitPacket => animKitPacket.guid == guid))
                             return true;
 
                         break;
                     }
-                    case PacketTypes.SMSG_PLAY_ONE_SHOT_ANIM_KIT:
+                    case PacketType.SMSG_PLAY_ONE_SHOT_ANIM_KIT:
                     {
                         if (parsedPacketsList.Cast<PlayOneShotAnimKitPacket>().Any(playOneShotAnimKitPacket => playOneShotAnimKitPacket.guid == guid))
                             return true;
@@ -141,36 +231,73 @@ namespace WoWDeveloperAssistant.Misc
             {
                 switch (packetType)
                 {
-                    case PacketTypes.SMSG_UPDATE_OBJECT:
-                    case PacketTypes.SMSG_SPELL_START:
+                    case PacketType.SMSG_UPDATE_OBJECT:
+                    case PacketType.SMSG_SPELL_START:
                         return true;
                     default:
                         return false;
                 }
             }
 
-            public static bool IsPlayerMovePacket(PacketTypes packetType)
+            public static bool IsPlayerMovePacket(PacketType packetType)
             {
-                return packetType == PacketTypes.CMSG_MOVE_START_FORWARD || packetType == PacketTypes.CMSG_MOVE_STOP || packetType == PacketTypes.CMSG_MOVE_HEARTBEAT;
+                return packetType == PacketType.CMSG_MOVE_START_FORWARD || packetType == PacketType.CMSG_MOVE_STOP || packetType == PacketType.CMSG_MOVE_HEARTBEAT;
             }
 
-            public static bool IsQuestPacket(PacketTypes packetType)
+            public static bool IsQuestPacket(PacketType packetType)
             {
-                return packetType == PacketTypes.CMSG_QUEST_GIVER_ACCEPT_QUEST || packetType == PacketTypes.SMSG_QUEST_GIVER_QUEST_COMPLETE || packetType == PacketTypes.SMSG_QUEST_UPDATE_ADD_CREDIT || packetType == PacketTypes.SMSG_QUEST_UPDATE_COMPLETE;
+                return packetType == PacketType.CMSG_QUEST_GIVER_ACCEPT_QUEST || packetType == PacketType.SMSG_QUEST_GIVER_QUEST_COMPLETE || packetType == PacketType.SMSG_QUEST_UPDATE_ADD_CREDIT || packetType == PacketType.SMSG_QUEST_UPDATE_COMPLETE;
             }
         }
 
-        [Serializable]
-        public struct SpellStartPacket
+        [ProtoContract]
+        public class SpellPacket
         {
-            public string casterGuid;
-            public uint spellId;
-            public TimeSpan spellCastTime;
-            public TimeSpan spellCastStartTime;
-            public Position spellDestination;
-            public PacketTypes type;
+            [ProtoMember(1)]
+            public string casterGuid
+            {
+                get; set;
+            }
 
-            public SpellStartPacket(string guid, uint id, TimeSpan castTime, TimeSpan startTime, Position spellDest, PacketTypes type)
+            [ProtoMember(2)]
+            public uint spellId
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan spellCastTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(4)]
+            public TimeSpan spellCastStartTime
+            {
+                get; set;
+            }
+
+            [ProtoMember(5)]
+            public Position spellDestination
+            {
+                get; set;
+            }
+
+            [ProtoMember(6)]
+            public PacketType type
+            {
+                get; set;
+            }
+
+            [ProtoMember(7)]
+            public string targetGuid
+            {
+                get; set;
+            }
+
+            public SpellPacket() { }
+
+            public SpellPacket(string guid, uint id, TimeSpan castTime, TimeSpan startTime, Position spellDest, PacketType type)
             { casterGuid = guid; spellId = id; spellCastTime = castTime; spellCastStartTime = startTime; spellDestination = spellDest; this.type = type; }
 
             public static uint GetSpellIdFromLine(string line)
@@ -219,9 +346,9 @@ namespace WoWDeveloperAssistant.Misc
                 return firstLine.Contains("CasterGUID: TypeName: Player;") || secondLine.Contains("CasterUnit: TypeName: Player;");
             }
 
-            public static SpellStartPacket ParseSpellStartPacket(string[] lines, long index, BuildVersions buildVersion, PacketTypes type, bool playerPacket = false)
+            public static SpellPacket ParseSpellPacket(string[] lines, long index, BuildVersions buildVersion, PacketType type, bool playerPacket = false)
             {
-                SpellStartPacket spellPacket = new SpellStartPacket("", 0, new TimeSpan(), LineGetters.GetTimeSpanFromLine(lines[index]), new Position(), type);
+                SpellPacket spellPacket = new SpellPacket("", 0, new TimeSpan(), LineGetters.GetTimeSpanFromLine(lines[index]), new Position(), type);
 
                 if (playerPacket)
                 {
@@ -271,6 +398,9 @@ namespace WoWDeveloperAssistant.Misc
                             if (GetSpellDestinationFromLine(lines[index]).IsValid())
                                 spellPacket.spellDestination = GetSpellDestinationFromLine(lines[index]);
 
+                            if (LineGetters.GetGuidFromLine(lines[index], buildVersion, targetUnit: true) != "")
+                                spellPacket.targetGuid = LineGetters.GetGuidFromLine(lines[index], buildVersion, targetUnit: true);
+
                             index++;
                         }
                         while (lines[index] != "");
@@ -281,13 +411,34 @@ namespace WoWDeveloperAssistant.Misc
             }
         };
 
-        [Serializable]
-        public struct ChatPacket
+        [ProtoContract]
+        public class ChatPacket
         {
-            public string creatureGuid;
-            public uint creatureEntry;
-            public string creatureText;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string creatureGuid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint creatureEntry
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public string creatureText
+            {
+                get; set;
+            }
+
+            [ProtoMember(4)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public ChatPacket() { }
 
             public ChatPacket(string guid, uint entry, string text, TimeSpan time)
             { creatureGuid = guid; creatureEntry = entry; creatureText = text; packetSendTime = time; }
@@ -337,59 +488,237 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct UpdateObjectPacket
+        [ProtoContract]
+        public class UpdateObjectPacket
         {
-            public ObjectTypes objectType;
-            public uint entry;
-            public string guid;
-            public string transportGuid;
-            public int currentHealth;
-            public ulong maxHealth;
-            public TimeSpan packetSendTime;
-            public Position spawnPosition;
-            public uint? mapId;
-            public List<Waypoint> waypoints;
-            public uint? emoteStateId;
-            public uint? sheatheState;
-            public uint? standState;
-            public bool hasDisableGravity;
-            public bool isCyclic;
-            public uint moveTime;
-            public uint? unitFlags;
-            public MonsterMovePacket.JumpInfo jumpInfo;
-            public ConversationData conversationData;
-            public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys;
-            public List<uint> virtualItems;
-            public List<QuestCompletedData> questCompletedData;
-            public HoverData hoverData;
+            [ProtoMember(1)]
+            public ObjectTypes objectType
+            {
+                get; set;
+            } = ObjectTypes.Unknown;
 
-            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData, Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys, List<uint> virtualItems, List<QuestCompletedData> questCompletedData, HoverData hoverData)
+            [ProtoMember(2)]
+            public PacketUpdateType updateType
+            {
+                get; set;
+            } = PacketUpdateType.Unknown;
+
+            [ProtoMember(3)]
+            public uint entry
+            {
+                get; set;
+            } = 0;
+
+            [ProtoMember(4)]
+            public string guid
+            {
+                get; set;
+            } = "";
+
+            [ProtoMember(5)]
+            public string transportGuid
+            {
+                get; set;
+            } = "";
+
+            [ProtoMember(6)]
+            public int currentHealth
+            {
+                get; set;
+            } = -1;
+
+            [ProtoMember(7)]
+            public ulong maxHealth
+            {
+                get; set;
+            } = 0;
+
+            [ProtoMember(8)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            } = new TimeSpan();
+
+            [ProtoMember(9)]
+            public Position spawnPosition
+            {
+                get; set;
+            } = new Position();
+
+            [ProtoMember(10)]
+            public uint? mapId
+            {
+                get; set;
+            } = null;
+
+            [ProtoMember(11)]
+            public List<Waypoint> waypoints { get; set; } = new List<Waypoint>();
+
+            [ProtoMember(12)]
+            public uint? emoteStateId
+            {
+                get; set;
+            } = null;
+
+            [ProtoMember(13)]
+            public uint? sheatheState
+            {
+                get; set;
+            } = null;
+
+            [ProtoMember(14)]
+            public uint? standState
+            {
+                get; set;
+            } = null;
+
+            [ProtoMember(15)]
+            public bool hasDisableGravity
+            {
+                get; set;
+            } = false;
+
+            [ProtoMember(16)]
+            public bool isCyclic
+            {
+                get; set;
+            } = false;
+
+            [ProtoMember(17)]
+            public uint moveTime
+            {
+                get; set;
+            } = 0;
+
+            [ProtoMember(18)]
+            public uint? unitFlags
+            {
+                get; set;
+            } = null;
+
+            [ProtoMember(19)]
+            public MonsterMovePacket.JumpInfo jumpInfo
+            {
+                get; set;
+            } = new MonsterMovePacket.JumpInfo();
+
+            [ProtoMember(20)]
+            public ConversationData conversationData
+            {
+                get; set;
+            } = new ConversationData();
+
+            [ProtoMember(21)]
+            public Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys { get; set; } = new Dictionary<uint, MonsterMovePacket.FilterKey>();
+
+            [ProtoMember(22)]
+            public List<VirtualItemData> virtualItems { get; set; } = new List<VirtualItemData>();
+
+            [ProtoMember(23)]
+            public List<QuestCompletedData> questCompletedData { get; set; } = new List<QuestCompletedData>();
+
+            [ProtoMember(24)]
+            public HoverData hoverData
+            {
+                get; set;
+            } = new HoverData();
+
+            [ProtoMember(25)]
+            public List<string> destroyedObjectGuids
+            {
+                get; set;
+            } = new List<string>();
+
+            public UpdateObjectPacket() { }
+
+            public UpdateObjectPacket(ObjectTypes objectType, uint entry, string guid, string transportGuid, string name, int curHealth, uint maxHealth, TimeSpan time, Position spawnPos, uint? mapId, List<Waypoint> waypoints, uint? emote, uint? sheatheState, uint? standState, bool hasDisableGravity, bool isCyclic, uint moveTime, uint? unitFlags, MonsterMovePacket.JumpInfo jumpInfo, ConversationData conversationData, Dictionary<uint, MonsterMovePacket.FilterKey> filterKeys, List<VirtualItemData> virtualItems, List<QuestCompletedData> questCompletedData, HoverData hoverData)
             { this.objectType = objectType; this.entry = entry; this.guid = guid; this.transportGuid = transportGuid; currentHealth = curHealth; this.maxHealth = maxHealth; packetSendTime = time; spawnPosition = spawnPos; this.mapId = mapId; this.waypoints = waypoints; emoteStateId = emote; this.sheatheState = sheatheState; this.standState = standState; this.hasDisableGravity = hasDisableGravity; this.isCyclic = isCyclic; this.moveTime = moveTime; this.unitFlags = unitFlags; this.jumpInfo = jumpInfo; this.conversationData = conversationData; this.filterKeys = filterKeys; this.virtualItems = virtualItems; this.questCompletedData = questCompletedData; this.hoverData = hoverData; }
 
-            public enum ObjectTypes
+            [ProtoContract]
+            public class ConversationData
             {
-                Unit         = 5,
-                ActivePlayer = 7,
-                GameObject   = 8,
-                Conversation = 13,
-            }
+                [ProtoMember(1)]
+                public List<ConversationActorData> conversationActors
+                {
+                    get; set;
+                } = new List<ConversationActorData>();
 
-            [Serializable]
-            public struct ConversationData
-            {
-                public List<KeyValuePair<string, uint>> conversationActors;
-                public List<KeyValuePair<uint, uint?>> conversationLines;
+                [ProtoMember(2)]
+                public List<ConversationLineData> conversationLines
+                {
+                    get; set;
+                } = new List<ConversationLineData>();
 
-                public ConversationData(List<KeyValuePair<string, uint>> conversationActors, List<KeyValuePair<uint, uint?>> conversationLines)
+                [ProtoContract]
+                public class ConversationActorData
+                {
+                    [ProtoMember(1)]
+                    public string ActorGuid
+                    {
+                        get; set;
+                    } = "";
+
+                    [ProtoMember(2)]
+                    public uint? ActorIndex
+                    {
+                        get; set;
+                    } = null;
+
+                    public ConversationActorData() { }
+
+                    public ConversationActorData(KeyValuePair<string, uint?> actorData)
+                    {
+                        ActorGuid = actorData.Key;
+                        ActorIndex = actorData.Value;
+                    }
+                }
+
+                [ProtoContract]
+                public class ConversationLineData
+                {
+                    [ProtoMember(1)]
+                    public uint ConversationLineId
+                    {
+                        get; set;
+                    } = 0;
+
+                    [ProtoMember(2)]
+                    public uint? ActorIndex
+                    {
+                        get; set;
+                    } = null;
+
+                    public ConversationLineData() { }
+
+                    public ConversationLineData(uint lineId, uint? actorIdx)
+                    {
+                        ConversationLineId = lineId;
+                        ActorIndex = actorIdx;
+                    }
+                }
+
+                public ConversationData() { }
+
+                public ConversationData(List<ConversationActorData> conversationActors, List<ConversationLineData> conversationLines)
                 { this.conversationActors = conversationActors; this.conversationLines = conversationLines; }
             }
 
-            [Serializable]
-            public struct QuestCompletedData
+            [ProtoContract]
+            public class QuestCompletedData
             {
-                public int Index;
-                public ulong Flags;
+                [ProtoMember(1)]
+                public int Index
+                {
+                    get; set;
+                }
+
+                [ProtoMember(2)]
+                public ulong Flags
+                {
+                    get; set;
+                }
+
+                public QuestCompletedData() { }
 
                 public QuestCompletedData(int index, ulong flags)
                 {
@@ -398,21 +727,77 @@ namespace WoWDeveloperAssistant.Misc
                 }
             }
 
-            [Serializable]
+            [ProtoContract]
             public class HoverData
             {
-                public bool Hover = false;
-                public float HoverHeight = 0.0f;
+                [ProtoMember(1)]
+                public bool Hover
+                {
+                    get; set;
+                } = false;
+
+                [ProtoMember(2)]
+                public float HoverHeight
+                {
+                    get; set;
+                } = 0.0f;
+
+                public HoverData() { }
 
                 public HoverData(bool hover, ulong hoverHeight)
                 {
                     Hover = hover;
                     HoverHeight = hoverHeight;
                 }
-                public HoverData()
+            }
+
+            [ProtoContract]
+            public class VirtualItemData
+            {
+                [ProtoMember(1)]
+                public uint? ItemId
                 {
-                    Hover = false;
-                    HoverHeight = 0.0f;
+                    get; set;
+                } = null;
+
+                [ProtoMember(2)]
+                public uint? ItemIdx
+                {
+                    get; set;
+                } = null;
+
+                public VirtualItemData() { }
+
+                public VirtualItemData(uint? itemId, uint? itemIdx)
+                {
+                    ItemId = itemId;
+                    ItemIdx = itemIdx;
+                }
+            }
+
+            [ProtoContract]
+            public class CombatTimingsData
+            {
+                [ProtoMember(1)]
+                public TimeSpan CombatStartTime
+                {
+                    get; set;
+                } = new TimeSpan();
+
+                [ProtoMember(2)]
+                public TimeSpan CombatStopTime
+                {
+                    get; set;
+                } = new TimeSpan();
+
+                public CombatTimingsData()
+                {
+                }
+
+                public CombatTimingsData(TimeSpan combatStartTime, TimeSpan combatStopTime)
+                {
+                    CombatStartTime = combatStartTime;
+                    CombatStopTime = combatStopTime;
                 }
             }
 
@@ -431,6 +816,9 @@ namespace WoWDeveloperAssistant.Misc
                     return false;
 
                 if (line.Contains("UpdateType: 0 (Values)") || line.Contains("UpdateType: Values"))
+                    return false;
+
+                if (line.Contains("DataSize"))
                     return false;
 
                 return true;
@@ -472,33 +860,35 @@ namespace WoWDeveloperAssistant.Misc
                 return 0;
             }
 
-            public static bool GetSpawnPositionFromLine(ref Position spawnPos, string xyznLine, string oriLine)
+            public static Position GetSpawnPositionFromLine(string xyzLine, string oriLine)
             {
-                if (xyznLine.Contains("TransportPosition"))
+                Position position = new Position();
+
+                if (xyzLine.Contains("TransportPosition"))
                 {
                     Regex xyzRegex = new Regex(@"TransportPosition:\s{1}X:{1}\s{1}");
-                    if (xyzRegex.IsMatch(xyznLine))
+                    if (xyzRegex.IsMatch(xyzLine))
                     {
-                        string[] splittedLine = xyznLine.Split(' ');
+                        string[] splittedLine = xyzLine.Split(' ');
 
-                        spawnPos.x = float.Parse(splittedLine[4], CultureInfo.InvariantCulture.NumberFormat);
-                        spawnPos.y = float.Parse(splittedLine[6], CultureInfo.InvariantCulture.NumberFormat);
-                        spawnPos.z = float.Parse(splittedLine[8], CultureInfo.InvariantCulture.NumberFormat);
-                        spawnPos.orientation = float.Parse(splittedLine[10], CultureInfo.InvariantCulture.NumberFormat);
+                        position.x = float.Parse(splittedLine[4], CultureInfo.InvariantCulture.NumberFormat);
+                        position.y = float.Parse(splittedLine[6], CultureInfo.InvariantCulture.NumberFormat);
+                        position.z = float.Parse(splittedLine[8], CultureInfo.InvariantCulture.NumberFormat);
+                        position.orientation = float.Parse(splittedLine[10], CultureInfo.InvariantCulture.NumberFormat);
                     }
 
-                    return true;
+                    return position;
                 }
-                else if (!spawnPos.IsValid() && xyznLine.Contains("Position:"))
+                else if (xyzLine.Contains("Position:"))
                 {
                     Regex xyzRegex = new Regex(@"Position:\s{1}X:{1}\s{1}");
-                    if (xyzRegex.IsMatch(xyznLine))
+                    if (xyzRegex.IsMatch(xyzLine))
                     {
-                        string[] splittedLine = xyznLine.Split(' ');
+                        string[] splittedLine = xyzLine.Split(' ');
 
-                        spawnPos.x = float.Parse(splittedLine[3], CultureInfo.InvariantCulture.NumberFormat);
-                        spawnPos.y = float.Parse(splittedLine[5], CultureInfo.InvariantCulture.NumberFormat);
-                        spawnPos.z = float.Parse(splittedLine[7], CultureInfo.InvariantCulture.NumberFormat);
+                        position.x = float.Parse(splittedLine[3], CultureInfo.InvariantCulture.NumberFormat);
+                        position.y = float.Parse(splittedLine[5], CultureInfo.InvariantCulture.NumberFormat);
+                        position.z = float.Parse(splittedLine[7], CultureInfo.InvariantCulture.NumberFormat);
                     }
 
                     Regex oriRegex = new Regex(@"Orientation:\s{1}");
@@ -506,13 +896,13 @@ namespace WoWDeveloperAssistant.Misc
                     {
                         string[] splittedLine = oriLine.Split(' ');
 
-                        spawnPos.orientation = float.Parse(splittedLine[2], CultureInfo.InvariantCulture.NumberFormat);
+                        position.orientation = float.Parse(splittedLine[2], CultureInfo.InvariantCulture.NumberFormat);
                     }
 
-                    return true;
+                    return position;
                 }
 
-                return false;
+                return position;
             }
 
             public static uint? GetMapIdFromLine(string line)
@@ -588,9 +978,13 @@ namespace WoWDeveloperAssistant.Misc
 
             public static uint GetDurationFromLine(string line)
             {
-                Regex durationRegex = new Regex(@"] Duration:{1}\s{1}\w+");
-                if (durationRegex.IsMatch(line))
-                    return Convert.ToUInt32(durationRegex.Match(line).ToString().Replace("] Duration: ", ""));
+                Regex durationRegexFirst = new Regex(@"] Duration:{1}\s{1}\w+");
+                Regex durationRegexSecond = new Regex(@"\(MovementSpline\) Duration:{1}\s{1}\w+");
+
+                if (durationRegexFirst.IsMatch(line))
+                    return Convert.ToUInt32(durationRegexFirst.Match(line).ToString().Replace("] Duration: ", ""));
+                else if (durationRegexSecond.IsMatch(line))
+                    return Convert.ToUInt32(durationRegexSecond.Match(line).ToString().Replace("(MovementSpline) Duration: ", ""));
 
                 return 0;
             }
@@ -613,13 +1007,27 @@ namespace WoWDeveloperAssistant.Misc
                 return 0.0f;
             }
 
-            public static uint GetObjectTypeFromLine(string line)
+            public static ObjectTypes GetObjectTypeFromLine(string line)
             {
-                Regex objectTypeRegex = new Regex(@"ObjectType:{1}\s{1}\w+");
+                Regex objectTypeRegex = new Regex(@"TypeName:{1}\s{1}\w+");
                 if (objectTypeRegex.IsMatch(line))
-                    return Convert.ToUInt32(objectTypeRegex.Match(line).ToString().Replace("ObjectType: ", ""));
+                {
+                    switch (Convert.ToString(objectTypeRegex.Match(line).ToString().Replace("TypeName: ", "")))
+                    {
+                        case "Creature":
+                            return ObjectTypes.Creature;
+                        case "GameObject":
+                            return ObjectTypes.GameObject;
+                        case "Player":
+                            return ObjectTypes.Player;
+                        case "Conversation":
+                            return ObjectTypes.Conversation;
+                        default:
+                            return ObjectTypes.Unknown;
+                    }
+                }
 
-                return 0;
+                return ObjectTypes.Unknown;
             }
 
             public static bool ObjectIsValidForParse(string line)
@@ -648,10 +1056,10 @@ namespace WoWDeveloperAssistant.Misc
                 return null;
             }
 
-            public static KeyValuePair<string, uint> GetActorDataFromLine(string line, BuildVersions buildVersion)
+            public static KeyValuePair<string, uint?> GetActorDataFromLine(string line, BuildVersions buildVersion)
             {
                 string actorGuid = LineGetters.GetGuidFromLine(line, buildVersion, conversationActorGuid: true);
-                uint actorIndex = 0;
+                uint? actorIndex = null;
 
                 Regex actorIndexRegex = new Regex(@"\(ConversationData\) \(Actors\){1}\s\[{1}\w+\]{1}");
                 if (actorIndexRegex.IsMatch(line))
@@ -659,7 +1067,7 @@ namespace WoWDeveloperAssistant.Misc
                     actorIndex = Convert.ToUInt32(actorIndexRegex.Match(line).ToString().Replace("(ConversationData) (Actors) [", "").Replace("]", ""));
                 }
 
-                return new KeyValuePair<string, uint>(actorGuid, actorIndex);
+                return new KeyValuePair<string, uint?>(actorGuid, actorIndex);
             }
 
             public static uint? GetFilterKeysCountFromLine(string line)
@@ -683,13 +1091,29 @@ namespace WoWDeveloperAssistant.Misc
                 return 0.0f;
             }
 
-            public static uint? GetItemIdFromLine(string line)
+            public static VirtualItemData GetItemDataFromLine(string line)
             {
-                Regex itemIdRegex = new Regex(@"ItemID:{1}\s{1}\w+");
-                if (itemIdRegex.IsMatch(line))
-                    return Convert.ToUInt32(itemIdRegex.Match(line).ToString().Replace("ItemID: ", ""));
+                if (!line.Contains("(VirtualItems)"))
+                    return null;
 
-                return null;
+                VirtualItemData data = new VirtualItemData();
+
+                Regex itemIdRegex = new Regex(@"ItemID:\s(\d+)");
+                Match itemMatch = itemIdRegex.Match(line);
+                if (!itemMatch.Success)
+                    return null;
+
+                data.ItemId = Convert.ToUInt32(itemMatch.Groups[1].Value);
+
+                Regex itemIdxRegex = new Regex(@"\(VirtualItems\)\s\[(\d+)\]");
+                Match idxMatch = itemIdxRegex.Match(line);
+
+                if (idxMatch.Success)
+                {
+                    data.ItemIdx = Convert.ToUInt32(idxMatch.Groups[1].Value);
+                }
+
+                return data;
             }
 
             public static QuestCompletedData GetQuestCompletedFromLine(string line)
@@ -738,8 +1162,9 @@ namespace WoWDeveloperAssistant.Misc
                 {
                     if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, objectFieldGuid: true), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<VirtualItemData>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<VirtualItemData>(), new List<QuestCompletedData>(), new HoverData());
+                        updatePacket.updateType = PacketUpdateType.CreateObject;
                         Position tempPointPosition = new Position();
                         uint? filterKeysCount = null;
 
@@ -757,14 +1182,13 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                             }
 
-                            if (updatePacket.objectType == 0)
+                            if (updatePacket.objectType == ObjectTypes.Unknown)
                             {
-                                tempUpdatePacket.objectType = (ObjectTypes)GetObjectTypeFromLine(lines[index]);
+                                tempUpdatePacket.objectType = GetObjectTypeFromLine(lines[index]);
 
-                                if (tempUpdatePacket.objectType != 0)
+                                if (tempUpdatePacket.objectType != ObjectTypes.Unknown)
                                 {
                                     updatePacket.objectType = tempUpdatePacket.objectType;
-                                    index++;
                                     continue;
                                 }
                             }
@@ -779,7 +1203,7 @@ namespace WoWDeveloperAssistant.Misc
 
                                     do
                                     {
-                                        Waypoint wp = new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, updatePacket.hasDisableGravity ? MonsterMovePacket.MoveType.MOVE_FLIGHT : MonsterMovePacket.MoveType.MOVE_UNKNOWN);
+                                        Waypoint wp = new Waypoint(MonsterMovePacket.GetPointPositionFromLine(lines[index]), 0.0f, 0, new Position(), 0, packetSendTime, new TimeSpan(), new List<WaypointScript>(), pointId, updatePacket.hasDisableGravity ? MoveType.MOVE_FLIGHT : MoveType.MOVE_UNKNOWN);
                                         wp.packetNumber = packetNumber;
                                         updatePacket.waypoints.Add(wp);
                                         pointId++;
@@ -801,10 +1225,16 @@ namespace WoWDeveloperAssistant.Misc
                                 }
                             }
 
-                            if (GetSpawnPositionFromLine(ref updatePacket.spawnPosition, lines[index], lines[index + 1]))
+                            if (!updatePacket.spawnPosition.IsValid())
                             {
-                                index++;
-                                continue;
+                                tempUpdatePacket.spawnPosition = GetSpawnPositionFromLine(lines[index], lines[index + 1]);
+
+                                if (tempUpdatePacket.spawnPosition.IsValid())
+                                {
+                                    updatePacket.spawnPosition = tempUpdatePacket.spawnPosition;
+                                    index++;
+                                    continue;
+                                }
                             }
 
                             if (updatePacket.entry == 0)
@@ -825,7 +1255,7 @@ namespace WoWDeveloperAssistant.Misc
 
                                 if (tempUpdatePacket.maxHealth != 0)
                                 {
-                                    updatePacket.maxHealth = tempUpdatePacket.entry;
+                                    updatePacket.maxHealth = tempUpdatePacket.maxHealth;
                                     index++;
                                     continue;
                                 }
@@ -945,10 +1375,10 @@ namespace WoWDeveloperAssistant.Misc
 
                             if (updatePacket.virtualItems.Count != 3)
                             {
-                                uint? itemId = GetItemIdFromLine(lines[index]);
-                                if (itemId != null)
+                                VirtualItemData itemData = GetItemDataFromLine(lines[index]);
+                                if (itemData != null)
                                 {
-                                    updatePacket.virtualItems.Add((uint)itemId);
+                                    updatePacket.virtualItems.Add(itemData);
                                     index++;
                                     continue;
                                 }
@@ -989,7 +1419,7 @@ namespace WoWDeveloperAssistant.Misc
                         }
                         while (IsLineValidForObjectParse(lines[index]));
 
-                        if (updatePacket.objectType != ObjectTypes.ActivePlayer && (updatePacket.entry == 0 || updatePacket.guid == ""))
+                        if (updatePacket.objectType != ObjectTypes.Player && (updatePacket.entry == 0 || updatePacket.guid == ""))
                             continue;
 
                         if (Properties.Settings.Default.CombatMovement && updatePacket.unitFlags != null && ((UnitFlags)updatePacket.unitFlags & UnitFlags.AffectingCombat) != 0)
@@ -1020,14 +1450,14 @@ namespace WoWDeveloperAssistant.Misc
                                     {
                                         for (int i = 0; i < updatePacket.waypoints.Count; i++)
                                         {
-                                            updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_RUN;
+                                            updatePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
                                         }
                                     }
                                     else
                                     {
                                         for (int i = 0; i < updatePacket.waypoints.Count; i++)
                                         {
-                                            updatePacket.waypoints[i].moveType = MonsterMovePacket.MoveType.MOVE_WALK;
+                                            updatePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
                                         }
                                     }
                                 }
@@ -1045,18 +1475,30 @@ namespace WoWDeveloperAssistant.Misc
                     }
                     else if ((lines[index].Contains("UpdateType: 0 (Values)") || lines[index].Contains("UpdateType: Values")) && ObjectIsValidForParse(lines[index + 1]))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<VirtualItemData>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<VirtualItemData>(), new List<QuestCompletedData>(), new HoverData());
+                        updatePacket.updateType = PacketUpdateType.Values;
 
                         do
                         {
+                            if (updatePacket.objectType == ObjectTypes.Unknown)
+                            {
+                                tempUpdatePacket.objectType = GetObjectTypeFromLine(lines[index]);
+
+                                if (tempUpdatePacket.objectType != ObjectTypes.Unknown)
+                                {
+                                    updatePacket.objectType = tempUpdatePacket.objectType;
+                                    continue;
+                                }
+                            }
+
                             if (updatePacket.maxHealth == 0)
                             {
                                 tempUpdatePacket.maxHealth = GetMaxHealthFromLine(lines[index]);
 
                                 if (tempUpdatePacket.maxHealth != 0)
                                 {
-                                    updatePacket.maxHealth = tempUpdatePacket.entry;
+                                    updatePacket.maxHealth = tempUpdatePacket.maxHealth;
                                     index++;
                                     continue;
                                 }
@@ -1163,21 +1605,49 @@ namespace WoWDeveloperAssistant.Misc
 
                         --index;
                     }
-                    else if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && lines[index + 1].IsConversationLine())
+                    else if (lines[index].Contains("DestroyedObjCount"))
                     {
-                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(new List<KeyValuePair<string, uint>>(), new List<KeyValuePair<uint, uint?>>()), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
-                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<uint>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket
+                        {
+                            updateType = PacketUpdateType.Destroy,
+                            packetSendTime = packetSendTime,
+                        };
 
                         do
                         {
-                            if (updatePacket.objectType == 0)
-                            {
-                                tempUpdatePacket.objectType = (ObjectTypes)GetObjectTypeFromLine(lines[index]);
+                            string guid = LineGetters.GetGuidFromLine(lines[index], buildVersion, destroyObjectGuid: true);
 
-                                if (tempUpdatePacket.objectType != 0)
+                            if (guid != "")
+                            {
+                                updatePacket.destroyedObjectGuids.Add(guid);
+                            }
+
+                            index++;
+                        }
+                        while (IsLineValidForObjectParse(lines[index]));
+
+                        if (updatePacket.destroyedObjectGuids.Count == 0)
+                            continue;
+
+                        updatePacketsList.Add(updatePacket);
+
+                        --index;
+                    }
+                    else if (((lines[index].Contains("UpdateType: 1 (CreateObject1)") || lines[index].Contains("UpdateType: CreateObject1")) || (lines[index].Contains("UpdateType: 2 (CreateObject2)") || lines[index].Contains("UpdateType: CreateObject2"))) && lines[index + 1].IsConversationLine())
+                    {
+                        UpdateObjectPacket updatePacket = new UpdateObjectPacket(0, 0, LineGetters.GetGuidFromLine(lines[index + 1], buildVersion), "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<VirtualItemData>(), new List<QuestCompletedData>(), new HoverData());
+                        UpdateObjectPacket tempUpdatePacket = new UpdateObjectPacket(0, 0, "", "", "Unknown", -1, 0, packetSendTime, new Position(), null, new List<Waypoint>(), null, null, null, false, false, 0, null, new MonsterMovePacket.JumpInfo(), new ConversationData(), new Dictionary<uint, MonsterMovePacket.FilterKey>(), new List<VirtualItemData>(), new List<QuestCompletedData>(), new HoverData());
+                        updatePacket.updateType = PacketUpdateType.CreateObject;
+
+                        do
+                        {
+                            if (updatePacket.objectType == ObjectTypes.Unknown)
+                            {
+                                tempUpdatePacket.objectType = GetObjectTypeFromLine(lines[index]);
+
+                                if (tempUpdatePacket.objectType != ObjectTypes.Unknown)
                                 {
                                     updatePacket.objectType = tempUpdatePacket.objectType;
-                                    index++;
                                     continue;
                                 }
                             }
@@ -1202,7 +1672,7 @@ namespace WoWDeveloperAssistant.Misc
                                 {
                                     if (GetActorIndexFromLine(lines[index]) != null)
                                     {
-                                        updatePacket.conversationData.conversationLines.Add(new KeyValuePair<uint, uint?>(conversationLineId, GetActorIndexFromLine(lines[index])));
+                                        updatePacket.conversationData.conversationLines.Add(new ConversationData.ConversationLineData(conversationLineId, GetActorIndexFromLine(lines[index])));
                                     }
 
                                     index++;
@@ -1213,7 +1683,7 @@ namespace WoWDeveloperAssistant.Misc
 
                             if (LineGetters.GetGuidFromLine(lines[index], buildVersion, conversationActorGuid: true) != "")
                             {
-                                updatePacket.conversationData.conversationActors.Add(GetActorDataFromLine(lines[index], buildVersion));
+                                updatePacket.conversationData.conversationActors.Add(new ConversationData.ConversationActorData(GetActorDataFromLine(lines[index], buildVersion)));
                             }
 
                             index++;
@@ -1280,15 +1750,6 @@ namespace WoWDeveloperAssistant.Misc
             {
                 get; set;
             } = new JumpInfo();
-
-            [ProtoContract]
-            public enum MoveType
-            {
-                MOVE_WALK,
-                MOVE_RUN,
-                MOVE_FLIGHT,
-                MOVE_UNKNOWN
-            };
 
             [ProtoContract]
             public class JumpInfo
@@ -1497,47 +1958,6 @@ namespace WoWDeveloperAssistant.Misc
                 return 0.0f;
             }
 
-            public bool HasCombatMovement(SortedDictionary<long, Packet> updateObjectPacketsDict)
-            {
-                string guid = creatureGuid;
-                TimeSpan sendTime = packetSendTime;
-
-                List<UpdateObjectPacket> creatureUpdateObjectPackets = new List<UpdateObjectPacket>();
-
-                foreach (Packet packet in updateObjectPacketsDict.Values.Where(x => x.HasCreatureWithGuid(guid) && x.sendTime.TotalSeconds < sendTime.TotalSeconds).OrderBy(x => x.sendTime.TotalSeconds))
-                {
-                    creatureUpdateObjectPackets.Add((UpdateObjectPacket)packet.parsedPacketsList.First(x => ((UpdateObjectPacket)x).guid == guid));
-                }
-
-                UpdateObjectPacket firstNonCombatPacketFromDescent = new UpdateObjectPacket();
-                UpdateObjectPacket firstCombatPacketFromDescent = new UpdateObjectPacket();
-
-                for (int i = creatureUpdateObjectPackets.Count() - 1; i >= 0; i--)
-                {
-                    if (creatureUpdateObjectPackets[i].unitFlags != null && ((UnitFlags)creatureUpdateObjectPackets[i].unitFlags & UnitFlags.AffectingCombat) == 0)
-                    {
-                        firstNonCombatPacketFromDescent = creatureUpdateObjectPackets[i];
-                        break;
-                    }
-                }
-
-                for (int i = creatureUpdateObjectPackets.Count() - 1; i >= 0; i--)
-                {
-                    if (creatureUpdateObjectPackets[i].unitFlags != null && ((UnitFlags)creatureUpdateObjectPackets[i].unitFlags & UnitFlags.AffectingCombat) != 0)
-                    {
-                        firstCombatPacketFromDescent = creatureUpdateObjectPackets[i];
-                        break;
-                    }
-                }
-
-                if (firstNonCombatPacketFromDescent.guid == "" && firstCombatPacketFromDescent.guid != "")
-                    return true;
-                else if (firstNonCombatPacketFromDescent.guid != "" && firstCombatPacketFromDescent.guid != "" && firstNonCombatPacketFromDescent.packetSendTime.TotalSeconds < firstCombatPacketFromDescent.packetSendTime.TotalSeconds)
-                    return true;
-
-                return false;
-            }
-
             public static MonsterMovePacket ParseMovementPacket(string[] lines, long index, BuildVersions buildVersion, long packetNumber)
             {
                 MonsterMovePacket movePacket = new MonsterMovePacket(LineGetters.GetGuidFromLine(lines[index + 1], buildVersion, moverGuid: true), 0.0f, LineGetters.GetTimeSpanFromLine(lines[index]), new List<Waypoint>(), 0, new Position(), new JumpInfo());
@@ -1741,9 +2161,6 @@ namespace WoWDeveloperAssistant.Misc
 
                 if (LineGetters.IsCreatureLine(lines[index + 1]))
                 {
-                    if (skipCombatMovement && movePacket.creatureGuid != "" && movePacket.HasCombatMovement(updateObjectPacketsDict))
-                        return tempMovePacket;
-
                     Position lastPosition = new Position();
                     bool isFlying = false;
                     bool isCyclic = false;
@@ -2141,12 +2558,28 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct AttackStopPacket
+        [ProtoContract]
+        public class AttackStopPacket
         {
-            public string creatureGuid;
-            public bool nowDead;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string creatureGuid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public bool nowDead
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public AttackStopPacket() { }
 
             public AttackStopPacket(string guid, bool dead, TimeSpan time)
             { creatureGuid = guid; nowDead = dead; packetSendTime = time; }
@@ -2160,7 +2593,7 @@ namespace WoWDeveloperAssistant.Misc
                 return false;
             }
 
-            public static AttackStopPacket ParseAttackStopkPacket(string[] lines, long index, BuildVersions buildVersion)
+            public static AttackStopPacket ParseAttackStopPacket(string[] lines, long index, BuildVersions buildVersion)
             {
                 AttackStopPacket attackPacket = new AttackStopPacket("", false, LineGetters.GetTimeSpanFromLine(lines[index]));
 
@@ -2183,20 +2616,52 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct TimePacket
+        [ProtoContract]
+        public class TimePacket
         {
-            public string hours;
-            public string minutes;
-            public string seconds;
+            [ProtoMember(1)]
+            public string hours
+            {
+                get; set;
+            } = "";
+
+            [ProtoMember(2)]
+            public string minutes
+            {
+                get; set;
+            } = "";
+
+            [ProtoMember(3)]
+            public string seconds
+            {
+                get; set;
+            } = "";
+
+            public TimePacket() { }
         }
 
-        [Serializable]
-        public struct AIReactionPacket
+        [ProtoContract]
+        public class AIReactionPacket
         {
-            public string creatureGuid;
-            public uint creatureEntry;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string creatureGuid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint creatureEntry
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public AIReactionPacket() { }
 
             public AIReactionPacket(string guid, uint entry, TimeSpan time)
             { creatureGuid = guid; creatureEntry = entry; packetSendTime = time; }
@@ -2222,14 +2687,40 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct AuraUpdatePacket
+        [ProtoContract]
+        public class AuraUpdatePacket
         {
-            public string unitGuid;
-            public uint? slot;
-            public uint spellId;
-            public bool? HasAura;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string unitGuid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint? slot
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public uint spellId
+            {
+                get; set;
+            }
+
+            [ProtoMember(4)]
+            public bool? HasAura
+            {
+                get; set;
+            }
+
+            [ProtoMember(5)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public AuraUpdatePacket() { }
 
             public AuraUpdatePacket(string guid, uint? slot, uint spellId, bool? hasAUra, TimeSpan time)
             { unitGuid = guid; this.slot = slot; this.spellId = spellId; this.HasAura = hasAUra; packetSendTime = time; }
@@ -2305,8 +2796,8 @@ namespace WoWDeveloperAssistant.Misc
                             if (GetHasAuraFromLine(lines[index]) != null)
                                 auraUpdatePacket.HasAura = GetHasAuraFromLine(lines[index]);
 
-                            if (SpellStartPacket.GetSpellIdFromLine(lines[index]) != 0)
-                                auraUpdatePacket.spellId = SpellStartPacket.GetSpellIdFromLine(lines[index]);
+                            if (SpellPacket.GetSpellIdFromLine(lines[index]) != 0)
+                                auraUpdatePacket.spellId = SpellPacket.GetSpellIdFromLine(lines[index]);
 
                             if (guid == "" && LineGetters.GetGuidFromLine(lines[index], buildVersion, unitGuid: true) != "")
                             {
@@ -2350,12 +2841,28 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct EmotePacket
+        [ProtoContract]
+        public class EmotePacket
         {
-            public string guid;
-            public uint emoteId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string guid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint emoteId
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public EmotePacket() { }
 
             public EmotePacket(string guid, uint emote, TimeSpan time)
             { this.guid = guid; emoteId = emote; packetSendTime = time; }
@@ -2398,12 +2905,28 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct SetAiAnimKitPacket
+        [ProtoContract]
+        public class SetAiAnimKitPacket
         {
-            public string guid;
-            public uint? aiAnimKitId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string guid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint? aiAnimKitId
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public SetAiAnimKitPacket() { }
 
             public SetAiAnimKitPacket(string guid, uint animKitId, TimeSpan time)
             { this.guid = guid; aiAnimKitId = animKitId; packetSendTime = time; }
@@ -2446,12 +2969,28 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
+        [ProtoContract]
         public class PlayOneShotAnimKitPacket
         {
-            public string guid;
-            public uint? animKitId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string guid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint? animKitId
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public PlayOneShotAnimKitPacket() { }
 
             public PlayOneShotAnimKitPacket(string guid, uint animKitId, TimeSpan time)
             {
@@ -2498,11 +3037,22 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct QuestGiverAcceptQuestPacket
+        [ProtoContract]
+        public class QuestGiverAcceptQuestPacket
         {
-            public uint questId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public uint questId
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public QuestGiverAcceptQuestPacket() { }
 
             public QuestGiverAcceptQuestPacket(uint questId, TimeSpan time)
             { this.questId = questId; packetSendTime = time; }
@@ -2533,11 +3083,22 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct QuestGiverQuestCompletePacket
+        [ProtoContract]
+        public class QuestGiverQuestCompletePacket
         {
-            public uint questId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public uint questId
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public QuestGiverQuestCompletePacket() { }
 
             public QuestGiverQuestCompletePacket(uint questId, TimeSpan time)
             { this.questId = questId; packetSendTime = time; }
@@ -2568,12 +3129,28 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct PlayerMovePacket
+        [ProtoContract]
+        public class PlayerMovePacket
         {
-            public string playerGuid;
-            public Position position;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public string playerGuid
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public Position position
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public PlayerMovePacket() { }
 
             public PlayerMovePacket(string playerGuid, Position position, TimeSpan time)
             { this.playerGuid = playerGuid; this.position = position; packetSendTime = time; }
@@ -2615,12 +3192,28 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct QuestUpdateAddCreditPacket
+        [ProtoContract]
+        public class QuestUpdateAddCreditPacket
         {
-            public uint questId;
-            public uint objectId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public uint questId
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public uint objectId
+            {
+                get; set;
+            }
+
+            [ProtoMember(3)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public QuestUpdateAddCreditPacket() { }
 
             public QuestUpdateAddCreditPacket(uint questId, uint objectId, TimeSpan time)
             { this.questId = questId; this.objectId = objectId; packetSendTime = time; }
@@ -2663,11 +3256,22 @@ namespace WoWDeveloperAssistant.Misc
             }
         }
 
-        [Serializable]
-        public struct QuestUpdateCompletePacket
+        [ProtoContract]
+        public class QuestUpdateCompletePacket
         {
-            public uint questId;
-            public TimeSpan packetSendTime;
+            [ProtoMember(1)]
+            public uint questId
+            {
+                get; set;
+            }
+
+            [ProtoMember(2)]
+            public TimeSpan packetSendTime
+            {
+                get; set;
+            }
+
+            public QuestUpdateCompletePacket() { }
 
             public QuestUpdateCompletePacket(uint questId, TimeSpan time)
             { this.questId = questId; packetSendTime = time; }
@@ -2695,100 +3299,6 @@ namespace WoWDeveloperAssistant.Misc
                     return Convert.ToUInt32(questIdRegex.Match(line).ToString().Replace("QuestID: ", ""));
 
                 return 0;
-            }
-        }
-
-        [Serializable]
-
-        public struct InitWorldStatesPacket
-        {
-            public Dictionary<uint, uint> worldStates;
-            public TimeSpan packetSendTime;
-
-            public InitWorldStatesPacket(Dictionary<uint, uint> worldStates, TimeSpan time)
-            {
-                this.worldStates = worldStates;
-                packetSendTime = time;
-            }
-
-            public static InitWorldStatesPacket ParseInitWorldStatesPacket(string[] lines, long index)
-            {
-                InitWorldStatesPacket initWorldStatesPacket = new InitWorldStatesPacket(new Dictionary<uint, uint>(), LineGetters.GetTimeSpanFromLine(lines[index]));
-
-                do
-                {
-                    KeyValuePair<uint, uint> worldState = GetWorldStateFromLine(lines[index]);
-                    if (worldState.Key != 0)
-                        initWorldStatesPacket.worldStates.Add(worldState.Key, worldState.Value);
-
-                    index++;
-                }
-                while (lines[index] != "");
-
-                return initWorldStatesPacket;
-            }
-
-            private static KeyValuePair<uint, uint> GetWorldStateFromLine(string line)
-            {
-                uint worldStateId = 0;
-                uint worldStateValue = 0;
-                Regex worldStateIdRegex = new Regex(@"VariableID:{1}\s{1}\d+");
-                Regex worldStateValueRegex = new Regex(@"Value:{1}\s{1}\d+");
-
-                if (worldStateIdRegex.IsMatch(line))
-                    worldStateId = Convert.ToUInt32(worldStateIdRegex.Match(line).ToString().Replace("VariableID: ", ""));
-
-                if (worldStateValueRegex.IsMatch(line))
-                    worldStateValue = Convert.ToUInt32(worldStateValueRegex.Match(line).ToString().Replace("Value: ", ""));
-
-                return new KeyValuePair<uint, uint>(worldStateId, worldStateValue);
-            }
-        }
-
-        [Serializable]
-
-        public struct UpdateWorldStatePacket
-        {
-            public KeyValuePair<uint, uint> worldState;
-            public TimeSpan packetSendTime;
-
-            public UpdateWorldStatePacket(KeyValuePair<uint, uint> worldState, TimeSpan time)
-            {
-                this.worldState = worldState;
-                packetSendTime = time;
-            }
-
-            public static UpdateWorldStatePacket ParseUpdateWorldStatePacket(string[] lines, long index)
-            {
-                UpdateWorldStatePacket updateWorldStatePacket = new UpdateWorldStatePacket(new KeyValuePair<uint, uint>(), LineGetters.GetTimeSpanFromLine(lines[index]));
-
-                do
-                {
-                    KeyValuePair<uint, uint> worldState = GetWorldStateFromLine(lines[index]);
-                    if (worldState.Key != 0)
-                        updateWorldStatePacket.worldState = worldState;
-
-                    index++;
-                }
-                while (lines[index] != "");
-
-                return updateWorldStatePacket;
-            }
-
-            private static KeyValuePair<uint, uint> GetWorldStateFromLine(string line)
-            {
-                uint worldStateId = 0;
-                uint worldStateValue = 0;
-                Regex worldStateIdRegex = new Regex(@"VariableID:{1}\s{1}\d+");
-                Regex worldStateValueRegex = new Regex(@"Value:{1}\s{1}\d+");
-
-                if (worldStateIdRegex.IsMatch(line))
-                    worldStateId = Convert.ToUInt32(worldStateIdRegex.Match(line).ToString().Replace("VariableID: ", ""));
-
-                if (worldStateValueRegex.IsMatch(line))
-                    worldStateValue = Convert.ToUInt32(worldStateValueRegex.Match(line).ToString().Replace("Value: ", ""));
-
-                return new KeyValuePair<uint, uint>(worldStateId, worldStateValue);
             }
         }
     }

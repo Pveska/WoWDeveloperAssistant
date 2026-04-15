@@ -8,7 +8,7 @@ namespace WoWDeveloperAssistant.Misc
 {
     public static class LineGetters
     {
-        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool casterUnit = false, bool transportGuid = false, bool conversationActorGuid = false)
+        public static string GetGuidFromLine(string line, BuildVersions buidVersion, bool objectFieldGuid = false, bool unitGuid = false, bool senderGuid = false, bool moverGuid = false, bool attackerGuid = false, bool casterGuid = false, bool casterUnit = false, bool transportGuid = false, bool conversationActorGuid = false, bool destroyObjectGuid = false, bool targetUnit = false)
         {
             if (!line.Contains("TypeName: Creature; Full:") && !line.Contains("TypeName: Vehicle; Full:") && !line.Contains("TypeName: Player; Full:") && !line.Contains("TypeName: Transport; Full:"))
                 return "";
@@ -68,6 +68,18 @@ namespace WoWDeveloperAssistant.Misc
                 Regex guidRegex = new Regex(@"ActorGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
                 if (guidRegex.IsMatch(line))
                     return guidRegex.Match(line).ToString().Replace("ActorGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+            }
+            else if (destroyObjectGuid)
+            {
+                Regex guidRegex = new Regex(@"ObjectGUID: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
+                if (guidRegex.IsMatch(line))
+                    return guidRegex.Match(line).ToString().Replace("ObjectGUID: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
+            }
+            else if (targetUnit)
+            {
+                Regex guidRegex = new Regex(@"\(Target\) Unit: TypeName:{1}\s{1}[a-zA-Z]+;{1}\s{1}Full:{1}\s{1}\w{20,}");
+                if (guidRegex.IsMatch(line))
+                    return guidRegex.Match(line).ToString().Replace("(Target) Unit: TypeName: ", "").Replace(objectTypeRegex.Match(line).ToString(), "");
             }
             else
             {
@@ -130,7 +142,7 @@ namespace WoWDeveloperAssistant.Misc
 
             if (timeRegex.IsMatch(line))
             {
-                TimePacket packet;
+                TimePacket packet = new TimePacket();
                 string[] splittedLine = timeRegex.Match(line).ToString().Split(':');
 
                 packet.hours = splittedLine[0];
@@ -219,6 +231,8 @@ namespace WoWDeveloperAssistant.Misc
                         return BuildVersions.BUILD_11_2_7;
                     else if (line.Contains("12_0_1"))
                         return BuildVersions.BUILD_12_0_1;
+                    else if (line.Contains("12_0_5"))
+                        return BuildVersions.BUILD_12_0_5;
 
                     return BuildVersions.BUILD_UNKNOWN;
                 }
