@@ -211,7 +211,7 @@ namespace WoWDeveloperAssistant
                     DB2.Db2.Load();
                 }
 
-                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileName) != 0)
+                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileName))
                 {
                     waypointsCreator.ImportSuccessful(false);
                 }

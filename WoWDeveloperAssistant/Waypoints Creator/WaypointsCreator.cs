@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.UI.DataVisualization.Charting;
 using System.Windows.Forms;
@@ -36,10 +37,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public class WaypointData
         {
             [ProtoMember(1)]
-            public Dictionary<string, Creature> Creatures { get; set; }
+            public Dictionary<string, Creature> Creatures { get; set; } = new Dictionary<string, Creature>();
 
             [ProtoMember(2)]
-            public Dictionary<string, GameObject> GameObjects { get; set; }
+            public Dictionary<string, GameObject> GameObjects { get; set; } = new Dictionary<string, GameObject>();
         }
 
         public WaypointsCreator(MainForm mainForm)
@@ -48,25 +49,14 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.chart_WaypointsCreator_Path.PostPaint += DrawSpawnArrows;
         }
 
-        public uint GetDataFromFiles(string fileName)
+        public bool GetDataFromFiles(string fileName)
         {
-            uint successfullyParsedFilesCount = 0;
-
-            if (fileName.Contains("txt") && GetDataFromTxtFile(fileName))
-            {
-                successfullyParsedFilesCount++;
-            }
-            else if (fileName.Contains("proto") && GetDataFromBinFile(fileName))
-            {
-                successfullyParsedFilesCount++;
-            }
-
-            return successfullyParsedFilesCount;
+            ClearContainers();
+            return (fileName.Contains("txt") && GetDataFromTxtFile(fileName)) || (fileName.Contains("proto") && GetDataFromBinFile(fileName));
         }
 
         public bool GetDataFromTxtFile(string fileName)
         {
-            ClearContainers();
             mainForm.SetCurrentStatus("Getting lines...");
 
             var lines = File.ReadAllLines(fileName);
@@ -525,7 +515,6 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         public bool GetDataFromBinFile(string fileName)
         {
-            ClearContainers();
             mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
             using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
@@ -819,6 +808,27 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return alreadyHaveRandomMovement;
         }
 
+        public List<KeyValuePair<uint, uint>> GetRandomMovementForCreatureFromDb(uint entry)
+        {
+            List<KeyValuePair<uint, uint>> randomMovements = new List<KeyValuePair<uint, uint>>();
+
+            var creatureMovementDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `MovementType`, `spawndist` FROM `creature` WHERE `id` = '{entry}';") : null;
+
+            if (creatureMovementDs != null && creatureMovementDs.Tables["table"].Rows.Count > 0)
+            {
+                foreach (DataRow row in creatureMovementDs.Tables["table"].Rows)
+                {
+                    if (Convert.ToInt32(row.ItemArray[0]) == 1 || Convert.ToInt32(row.ItemArray[0]) == 21)
+                    {
+                        randomMovements.Add(new KeyValuePair<uint, uint>(Convert.ToUInt32(row.ItemArray[0]), Convert.ToUInt32(row.ItemArray[1])));
+                        break;
+                    }
+                }
+            }
+
+            return randomMovements;
+        }
+
         public KeyValuePair<bool, bool> GetCosmeticDataFromCreatureAddon(string linkedid)
         {
             bool hasCosmeticData = false;
@@ -1019,9 +1029,16 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             string sleepAuraOutput = "";
             string emotesOutput = "";
             string rolePlayEventsOutput = "";
+            string invalidMoveTypeOutput = "";
+            string guessedMoveTypesOutput = "";
+            string guessedAveragedDistanceOutput = "";
+            string guessedAveragedDistanceAndMoveTypesOutput = "";
 
             List<string> linkedIds = new List<string>();
             List<Creature> creatures = new List<Creature>();
+            List<uint> straightFlightMovementCreatures = new List<uint>();
+            Dictionary<uint, int> averagedMoveDistances = new Dictionary<uint, int>();
+            Dictionary<uint, MoveType> moveTypes = new Dictionary<uint, MoveType>();
 
             foreach (object item in mainForm.listBox_WaypointsCreator_CreatureGuids.Items)
             {
@@ -1046,45 +1063,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         continue;
                 }
 
-                float totalX = 0.0f, totalY = 0.0f, totalZ = 0.0f;
-
-                foreach (Waypoint wp in waypoints)
-                {
-                    totalX += wp.movePosition.x;
-                    totalY += wp.movePosition.y;
-                    totalZ += wp.movePosition.z;
-                }
-
-                Position centerPos = new Position(totalX / waypoints.Count, totalY / waypoints.Count, totalZ / waypoints.Count);
-                List<Position> polygonPositions = new List<Position>();
-
-                for (int deg = 0; deg < 360; deg++)
-                {
-                    List<Position> infRontPositions = new List<Position>();
-
-                    centerPos.orientation = Position.toRadians(deg);
-
-                    foreach (Waypoint wp in waypoints)
-                    {
-                        if (centerPos.IsInFront(wp.movePosition, Position.toRadians(90.0f)) && !infRontPositions.Contains(wp.movePosition))
-                        {
-                            infRontPositions.Add(wp.movePosition);
-                        }
-                    }
-
-                    infRontPositions = infRontPositions.OrderBy(x => centerPos.GetDistance(x)).ToList();
-                    if (infRontPositions.Count == 0)
-                        continue;
-
-                    if (!polygonPositions.Contains(infRontPositions.Last()))
-                    {
-                        polygonPositions.Add(infRontPositions.Last());
-                    }
-                }
-
                 if (!IsCreatureExistOnDb(creature.guid))
                 {
-                    List<Creature> possibleCreatures = GetPossibleCreaturesForRandomMovement(creature, polygonPositions);
+                    List<Creature> possibleCreatures = GetPossibleCreaturesForRandomMovement(creature);
                     if (possibleCreatures.Count == 0)
                         continue;
 
@@ -1093,6 +1074,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                         continue;
 
                     creature = possibleCreatures[0];
+                    creature.waypoints = waypoints;
                 }
 
                 if (!linkedIds.Contains(creature.GetLinkedId()))
@@ -1102,131 +1084,82 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 else
                     continue;
 
-                Dictionary<uint, uint> moveTypesCount = new Dictionary<uint, uint>();
+                bool moveTypeIsGuessed = false;
+                bool averagedMoveDistanceIsGuessed = false;
 
-                foreach (MoveType moveType in waypoints.Select(x => x.moveType).Distinct())
+                MoveType moveType = GetDominantMoveType(waypoints);
+                if (moveType == MoveType.MOVE_UNKNOWN)
                 {
-                    moveTypesCount.Add(moveType.GetMoveTypeNumber(), (uint)waypoints.Where(x => x.moveType == moveType).Count());
+                    moveType = GetDominantMoveTypeForCreaturesWithEntry(creature.entry, ref moveTypes);
+
+                    if (moveType != MoveType.MOVE_UNKNOWN)
+                        moveTypeIsGuessed = true;
                 }
 
-                uint averagedMoveType = (uint)moveTypesCount.First(x => x.Value == moveTypesCount.Values.Max()).Key;
+                bool hasStraightFlightMovement = moveType == MoveType.MOVE_FLIGHT && IsStraightFlightMovement(creature, waypoints);
 
-                List<float> moveDistances = new List<float>();
-
-                foreach (Position position in polygonPositions)
+                if (hasStraightFlightMovement && !straightFlightMovementCreatures.Contains(creature.entry))
                 {
-                    moveDistances.Add((float)Math.Ceiling((double)centerPos.GetDistance(position)));
+                    straightFlightMovementCreatures.Add(creature.entry);
                 }
 
-                int averagedMoveDistance = (int)moveDistances.Average();
+                int averagedMoveDistance = GetAvegaredMoveDistanceFromWaypoints(waypoints);
+                if (averagedMoveDistance == 0 || waypoints.Count < 10)
+                {
+                    int averagedDistance = GetAveragedMoveDistanceForCreaturesWithEntry(creature.entry, ref averagedMoveDistances);
+                    averagedMoveDistance = averagedDistance != 0 ? averagedDistance : averagedMoveDistance;
+
+                    if (averagedDistance != 0)
+                        averagedMoveDistanceIsGuessed = true;
+                }
+
                 var cosmeticData = GetCosmeticDataFromCreatureAddon(creature.GetLinkedId());
 
                 if (cosmeticData.Value)
                 {
-                    if (averagedMoveType == 0)
-                    {
-                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 1)
-                    {
-                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 4)
-                    {
-                        sleepAuraOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
+                    sleepAuraOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                 }
                 else if (cosmeticData.Key)
                 {
-                    if (averagedMoveType == 0)
-                    {
-                        emotesOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 1)
-                    {
-                        emotesOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 4)
-                    {
-                        emotesOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
+                    emotesOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                 }
                 else if (IsCreatureHasRolePlayEvents(creature.linkedId))
                 {
-                    if (averagedMoveType == 0)
-                    {
-                        rolePlayEventsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 1)
-                    {
-                        rolePlayEventsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 4)
-                    {
-                        rolePlayEventsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
+                    rolePlayEventsOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                 }
                 else if (averagedMoveDistance == 0 || averagedMoveDistance >= 15)
                 {
-                    if (averagedMoveType == 0)
-                    {
-                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 1)
-                    {
-                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
-                    else if (averagedMoveType == 4)
-                    {
-                        invalidDistanceOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                    }
+                    invalidDistanceOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
+                }
+                else if (moveType == MoveType.MOVE_UNKNOWN)
+                {
+                    invalidMoveTypeOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
+                }
+                else if (moveTypeIsGuessed && averagedMoveDistanceIsGuessed)
+                {
+                    guessedAveragedDistanceAndMoveTypesOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
+                }
+                else if (moveTypeIsGuessed)
+                {
+                    guessedMoveTypesOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
+                }
+                else if (averagedMoveDistanceIsGuessed)
+                {
+                    guessedAveragedDistanceOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                 }
                 else
                 {
                     if (waypoints.Count >= 500)
                     {
-                        if (averagedMoveType == 0)
-                        {
-                            largePointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
-                        else if (averagedMoveType == 1)
-                        {
-                            largePointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
-                        else if (averagedMoveType == 4)
-                        {
-                            largePointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
+                        largePointsOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                     }
                     else if (waypoints.Count < 500 && waypoints.Count >= 100)
                     {
-                        if (averagedMoveType == 0)
-                        {
-                            mediumPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
-                        else if (averagedMoveType == 1)
-                        {
-                            mediumPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
-                        else if (averagedMoveType == 4)
-                        {
-                            mediumPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
+                        mediumPointsOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                     }
                     else if (waypoints.Count < 100)
                     {
-                        if (averagedMoveType == 0)
-                        {
-                            smallPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with walk type .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
-                        else if (averagedMoveType == 1)
-                        {
-                            smallPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 21, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with run type .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
-                        else if (averagedMoveType == 4)
-                        {
-                            smallPointsOutput += $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
-                        }
+                        smallPointsOutput += GetMovementUpdateString(creature, averagedMoveDistance, moveType, hasStraightFlightMovement);
                     }
                 }
             }
@@ -1234,11 +1167,207 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainOutput += largePointsOutput != "" ? "-- Movements with large count of points:\r\n" + largePointsOutput + "\r\n" : "";
             mainOutput += mediumPointsOutput != "" ? "-- Movements with medium count of points:\r\n" + mediumPointsOutput + "\r\n" : "";
             mainOutput += smallPointsOutput != "" ? "-- Movements with small count of points:\r\n" + smallPointsOutput + "\r\n" : "";
+            mainOutput += guessedAveragedDistanceAndMoveTypesOutput != "" ? "-- Movements with guessed averaged move distance and move type:\r\n" + guessedAveragedDistanceAndMoveTypesOutput + "\r\n" : "";
+            mainOutput += guessedMoveTypesOutput != "" ? "-- Movements with guessed move type:\r\n" + guessedMoveTypesOutput + "\r\n" : "";
+            mainOutput += guessedAveragedDistanceOutput != "" ? "-- Movements with guessed averaged move distance:\r\n" + guessedAveragedDistanceOutput + "\r\n" : "";
             mainOutput += invalidDistanceOutput != "" ? "-- Movements with invalid distance:\r\n" + invalidDistanceOutput + "\r\n" : "";
+            mainOutput += invalidMoveTypeOutput != "" ? "-- Movements with invalid move type:\r\n" + invalidMoveTypeOutput + "\r\n" : "";
             mainOutput += sleepAuraOutput != "" ? "-- Movements with sleeping auras in addon:\r\n" + sleepAuraOutput + "\r\n" : "";
             mainOutput += emotesOutput != "" ? "-- Movements with emotes in addon:\r\n" + emotesOutput + "\r\n" : "";
             mainOutput += rolePlayEventsOutput != "" ? "-- Movements with role play events:\r\n" + rolePlayEventsOutput + "\r\n" : "";
+
+            if (straightFlightMovementCreatures.Count > 0)
+            {
+                mainOutput += "\r\n-- Movement overrides:\r\n";
+                mainOutput += "DELETE FROM `creature_template_movement` WHERE `CreatureId` IN (" + string.Join(", ", straightFlightMovementCreatures) + ");\r\n";
+                mainOutput += "INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `WaterWalking`, `Chase`, `Random`) VALUES\r\n";
+
+                for (int i = 0; i < straightFlightMovementCreatures.Count; i++)
+                {
+                    mainOutput += $"({straightFlightMovementCreatures[i]}, 1, 1, 1, 0, 0, 0, 5)";
+
+                    if (i < straightFlightMovementCreatures.Count - 1)
+                    {
+                        mainOutput += ",";
+                    }
+                    else
+                    {
+                        mainOutput += ";";
+                    }
+
+                    mainOutput += $"-- {creatures.First(x => x.entry == straightFlightMovementCreatures[i]).name}\r\n";
+                }
+            }
+
             mainForm.textBox_SqlOutput.Text = mainOutput;
+        }
+
+        private int GetAvegaredMoveDistanceFromWaypoints(List<Waypoint> waypoints)
+        {
+            Position centerPos = GetCenterPosFromWaypoints(waypoints);
+            List<Position> polygon = GetPolygonFromWaypoints(waypoints);
+            List<float> moveDistances = new List<float>();
+
+            foreach (Position position in polygon)
+            {
+                moveDistances.Add((float)Math.Ceiling((double)centerPos.GetDistance(position)));
+            }
+
+            return (int)moveDistances.Average();
+        }
+
+        private Position GetCenterPosFromWaypoints(List<Waypoint> waypoints)
+        {
+            float totalX = 0.0f, totalY = 0.0f, totalZ = 0.0f;
+
+            foreach (Waypoint wp in waypoints)
+            {
+                totalX += wp.movePosition.x;
+                totalY += wp.movePosition.y;
+                totalZ += wp.movePosition.z;
+            }
+
+            return new Position(totalX / waypoints.Count, totalY / waypoints.Count, totalZ / waypoints.Count);
+        }
+
+        private List<Position> GetPolygonFromWaypoints(List<Waypoint> waypoints)
+        {
+            Position centerPos = GetCenterPosFromWaypoints(waypoints);
+            List<Position> polygonPositions = new List<Position>();
+
+            for (int deg = 0; deg < 360; deg++)
+            {
+                List<Position> infRontPositions = new List<Position>();
+
+                centerPos.orientation = Position.toRadians(deg);
+
+                foreach (Waypoint wp in waypoints)
+                {
+                    if (centerPos.IsInFront(wp.movePosition, Position.toRadians(90.0f)) && !infRontPositions.Contains(wp.movePosition))
+                    {
+                        infRontPositions.Add(wp.movePosition);
+                    }
+                }
+
+                infRontPositions = infRontPositions.OrderBy(x => centerPos.GetDistance(x)).ToList();
+                if (infRontPositions.Count == 0)
+                    continue;
+
+                if (!polygonPositions.Contains(infRontPositions.Last()))
+                {
+                    polygonPositions.Add(infRontPositions.Last());
+                }
+            }
+
+            return polygonPositions;
+        }
+
+        private MoveType GetDominantMoveTypeForCreaturesWithEntry(uint entry, ref Dictionary<uint, MoveType> moveTypes)
+        {
+            if (moveTypes.ContainsKey(entry))
+                return moveTypes[entry];
+
+            Dictionary<MoveType, int> moveTypeCounts = new Dictionary<MoveType, int>
+            {
+                { MoveType.MOVE_WALK,   0 },
+                { MoveType.MOVE_RUN,    0 },
+                { MoveType.MOVE_FLIGHT, 0 }
+            };
+
+            bool isFlyingCreature = false;
+
+            foreach (Creature creature in creaturesDict.Values.Where(x => x.entry == entry))
+            {
+                MoveType creatureMoveType = GetDominantMoveType(creature.waypoints.Where(x => !creature.combatTimings.IsCombatTimer(x.moveStartTime)).ToList());
+
+                if (creatureMoveType != MoveType.MOVE_UNKNOWN)
+                    moveTypeCounts[creatureMoveType]++;
+
+                if (!isFlyingCreature && creature.hasDisableGravity)
+                    isFlyingCreature = true;
+            }
+
+            List<KeyValuePair<uint, uint>> randomMovementsFromDb = GetRandomMovementForCreatureFromDb(entry);
+
+            foreach (var movement in randomMovementsFromDb)
+            {
+                if (movement.Key == 1)
+                {
+                    if (isFlyingCreature)
+                        moveTypeCounts[MoveType.MOVE_FLIGHT]++;
+                    else
+                        moveTypeCounts[MoveType.MOVE_WALK]++;
+                }
+                else if (movement.Key == 21)
+                    moveTypeCounts[MoveType.MOVE_RUN]++;
+            }
+
+            if (moveTypeCounts.Values.All(x => x == 0))
+                return MoveType.MOVE_UNKNOWN;
+            else
+            {
+                moveTypes.Add(entry, moveTypeCounts.OrderByDescending(x => x.Value).First().Key);
+                return moveTypes[entry];
+            }
+        }
+
+        private int GetAveragedMoveDistanceForCreaturesWithEntry(uint entry, ref Dictionary<uint, int> averagedMoveDistances)
+        {
+            if (averagedMoveDistances.ContainsKey(entry))
+                return averagedMoveDistances[entry];
+
+            List<KeyValuePair<uint, uint>> randomMovementsFromDb = GetRandomMovementForCreatureFromDb(entry);
+
+            var creaturesWithEntry = creaturesDict.Values.Where(x => x.entry == entry && x.waypoints.Count > 0 && !IsCreatureAlreadyHavePathOrFormationOnDb(x.guid)).ToList();
+            if (creaturesWithEntry.Count == 0 && randomMovementsFromDb.Count == 0)
+                return 0;
+
+            List<int> totalDistances = new List<int>();
+            totalDistances.AddRange(creaturesWithEntry.Select(x => GetAvegaredMoveDistanceFromWaypoints(x.waypoints)));
+            totalDistances.AddRange(randomMovementsFromDb.Select(x => (int)x.Value));
+            averagedMoveDistances.Add(entry, (int)totalDistances.Average());
+            return averagedMoveDistances[entry];
+        }
+
+        private bool IsStraightFlightMovement(Creature creature, List<Waypoint> waypoints)
+        {
+            if (waypoints == null || waypoints.Count < 2)
+                return true;
+
+            float allowedDeviation = 1.0f;
+            float startZ = creature.spawnPosition.z;
+
+            foreach (var waypoint in waypoints)
+            {
+                float currentZ = waypoint.movePosition.z;
+                float deviation = currentZ - startZ;
+
+                if (deviation < 0)
+                    deviation = -deviation;
+
+                if (deviation > allowedDeviation)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private string GetMovementUpdateString(Creature creature, int averagedMoveDistance, MoveType moveType, bool hasStraightFlightMovement)
+        {
+            Position centerPos = GetCenterPosFromWaypoints(creature.waypoints);
+
+            if (creature.waypoints.Count < 10)
+                return $"UPDATE `creature` SET `MovementType` = {(moveType == MoveType.MOVE_WALK ? 1 : (moveType == MoveType.MOVE_RUN ? 21 : 1))}, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {creature.waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with {(moveType == MoveType.MOVE_WALK ? "walk" : (moveType == MoveType.MOVE_RUN ? "run" : "flight"))} type .go cre lid {creature.GetLinkedId()}\r\n";
+
+            if (moveType == MoveType.MOVE_FLIGHT)
+            {
+                if (hasStraightFlightMovement)
+                    return $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {creature.waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+                else
+                    return $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = 1, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {creature.waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Flying creature .go cre lid {creature.GetLinkedId()}\r\n";
+            }
+            else
+                return $"UPDATE `creature` SET `position_x` = {centerPos.x.GetValueWithoutComma()}, `position_y` = {centerPos.y.GetValueWithoutComma()}, `position_z` = {centerPos.z.GetValueWithoutComma()}, `MovementType` = {(moveType == MoveType.MOVE_WALK ? 1 : (moveType == MoveType.MOVE_RUN ? 21 : 1))}, `spawndist` = {averagedMoveDistance} WHERE `linked_id` = '{creature.GetLinkedId()}'; -- Points count: {creature.waypoints.Count}, Name: {creature.name}, Entry: {creature.entry}, New LinkedId: \"{creature.BuildLinkedId(centerPos)}\" - Ground creature with {(moveType == MoveType.MOVE_WALK ? "walk" : (moveType == MoveType.MOVE_RUN ? "run" : "flight"))} type .go cre lid {creature.GetLinkedId()}\r\n";
         }
 
         private float GetDbSpeedFromVelocity(float velocity, MoveType moveType)
@@ -1246,17 +1375,11 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             switch (moveType)
             {
                 case MoveType.MOVE_WALK:
-                {
                     return (float)(Math.Round((velocity / 2.5f), 1));
-                }
                 case MoveType.MOVE_RUN:
-                {
                     return (float)(Math.Round((velocity / 7.0f), 1));
-                }
                 case MoveType.MOVE_FLIGHT:
-                {
                     return (float)(Math.Round((velocity / 7.0f), 1));
-                }
                 default:
                     return 0.0f;
             }
@@ -1727,7 +1850,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
         private MoveType GetDominantMoveType(List<Waypoint> waypoints)
         {
-            return waypoints.GroupBy(w => w.moveType).OrderByDescending(g => g.Count()).First().Key;
+            if (waypoints.All(w => w.moveType == MoveType.MOVE_UNKNOWN))
+                return MoveType.MOVE_UNKNOWN;
+            else
+                return waypoints.Where(x => x.moveType != MoveType.MOVE_UNKNOWN).GroupBy(w => w.moveType).OrderByDescending(g => g.Count()).First().Key;
         }
 
         public void RemoveNearestPoints()
@@ -2000,8 +2126,9 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             return possibleCreatures;
         }
 
-        private List<Creature> GetPossibleCreaturesForRandomMovement(Creature creature, List<Position> polygon)
+        private List<Creature> GetPossibleCreaturesForRandomMovement(Creature creature)
         {
+            List<Position> polygon = GetPolygonFromWaypoints(creature.waypoints);
             var creaturesDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery($"SELECT `linked_id`, `id`, `position_x`, `position_y`, `position_z`, `orientation`, `map` FROM `creature` WHERE `id` = {creature.entry};") : null;
             List<Creature> possibleCreatures = new List<Creature>();
 
@@ -2021,6 +2148,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 {
                     if (possibleCreature.Value.spawnPosition.IsInPolygon(polygon))
                     {
+                        possibleCreature.Value.linkedId = possibleCreature.Key;
                         possibleCreatures.Add(possibleCreature.Value);
                     }
                 }

@@ -1428,39 +1428,11 @@ namespace WoWDeveloperAssistant.Misc
                         }
                         else if (updatePacket.waypoints.Count != 0)
                         {
-                            float velocity = MonsterMovePacket.GetWaypointsVelocity(updatePacket.waypoints, updatePacket.isCyclic ? updatePacket.waypoints.First().movePosition : updatePacket.spawnPosition, updatePacket.moveTime);
-
-                            if (velocity != 0.0f)
+                            for (int i = 0; i < updatePacket.waypoints.Count; i++)
                             {
-                                for (int i = 0; i < updatePacket.waypoints.Count; i++)
-                                {
-                                    updatePacket.waypoints[i].velocity = velocity;
-                                    updatePacket.waypoints[i].moveTime = updatePacket.moveTime;
-                                    updatePacket.waypoints[i].moveStartTime = updatePacket.packetSendTime;
-                                    updatePacket.waypoints[i].startPosition = updatePacket.spawnPosition;
-                                }
-
-                                if (!updatePacket.hasDisableGravity && velocity != 0.0f)
-                                {
-                                    if (updatePacket.jumpInfo.IsValid())
-                                    {
-                                        updatePacket.waypoints.Clear();
-                                    }
-                                    else if (velocity >= 4.2)
-                                    {
-                                        for (int i = 0; i < updatePacket.waypoints.Count; i++)
-                                        {
-                                            updatePacket.waypoints[i].moveType = MoveType.MOVE_RUN;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (int i = 0; i < updatePacket.waypoints.Count; i++)
-                                        {
-                                            updatePacket.waypoints[i].moveType = MoveType.MOVE_WALK;
-                                        }
-                                    }
-                                }
+                                updatePacket.waypoints[i].moveTime = updatePacket.moveTime;
+                                updatePacket.waypoints[i].moveStartTime = updatePacket.packetSendTime;
+                                updatePacket.waypoints[i].startPosition = updatePacket.spawnPosition;
                             }
                         }
 
