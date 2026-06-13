@@ -281,14 +281,6 @@ namespace WoWDeveloperAssistant.Misc
             });
         }
 
-        public void UpdateCombatSpells(AIReactionPacket reactionPacket)
-        {
-            Parallel.ForEach(castedSpells, spell =>
-            {
-                spell.Value.MarkSpellAsCombat(reactionPacket);
-            });
-        }
-
         public void RemoveNonCombatCastTimes()
         {
             Parallel.ForEach(castedSpells, spell =>
@@ -301,7 +293,15 @@ namespace WoWDeveloperAssistant.Misc
         {
             Parallel.ForEach(castedSpells, spell =>
             {
-                spell.Value.CreateTimings(this);
+                spell.Value.CreateCombatTimings(this);
+            });
+        }
+
+        public void CreateCombatSpells()
+        {
+            Parallel.ForEach(castedSpells, spell =>
+            {
+                spell.Value.MarkSpellAsCombat(this);
             });
         }
 

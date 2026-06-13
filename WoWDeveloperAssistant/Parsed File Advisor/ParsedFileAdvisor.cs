@@ -149,7 +149,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             } = new Dictionary<string, List<UpdateObjectPacket>>();
         }
 
-        public bool GetDataFromFiles(string fileName)
+        public bool GetDataFromFile(string fileName)
         {
             if (fileName.Contains("txt") && GetDataFromTxtFile(fileName))
                 return true;

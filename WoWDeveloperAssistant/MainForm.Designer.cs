@@ -492,13 +492,6 @@
             this.createSmartAISqlToolStripMenuItem.Text = "Create SmartAI SQL";
             this.createSmartAISqlToolStripMenuItem.Click += new System.EventHandler(this.createSQLToolStripMenuItem_Click);
             // 
-            // createLegionCombatAISqlToolStripMenuItem
-            // 
-            this.createLegionCombatAISqlToolStripMenuItem.Name = "createLegionCombatAISqlToolStripMenuItem";
-            this.createLegionCombatAISqlToolStripMenuItem.Size = new System.Drawing.Size(310, 32);
-            this.createLegionCombatAISqlToolStripMenuItem.Text = "Create LegionCombatAI SQL";
-            this.createLegionCombatAISqlToolStripMenuItem.Click += new System.EventHandler(this.createLegionCombatAISqlToolStripMenuItem_Click);
-            // 
             // createCoreScriptToolStripMenuItem
             // 
             this.createCoreScriptToolStripMenuItem.Name = "createCoreScriptToolStripMenuItem";

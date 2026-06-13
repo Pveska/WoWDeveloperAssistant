@@ -93,7 +93,7 @@ namespace WoWDeveloperAssistant
                     DB2.Db2.Load();
                 }
 
-                if (creatureScriptsCreator.GetDataFromFiles(openFileDialog.FileNames) != 0)
+                if (creatureScriptsCreator.GetDataFromFile(openFileDialog.FileName))
                 {
                     creatureScriptsCreator.ImportSuccessful();
                 }
@@ -211,7 +211,7 @@ namespace WoWDeveloperAssistant
                     DB2.Db2.Load();
                 }
 
-                if (waypointsCreator.GetDataFromFiles(openFileDialog.FileName))
+                if (waypointsCreator.GetDataFromFile(openFileDialog.FileName))
                 {
                     waypointsCreator.ImportSuccessful(false);
                 }
@@ -547,11 +547,6 @@ namespace WoWDeveloperAssistant
             ModifierTreesHandler.ShowModifierTreeRequirements(this);
         }
 
-        private void createLegionCombatAISqlToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            creatureScriptsCreator.GenerateCombatAISQL();
-        }
-
         private void toolStripButton_ParsedFileAdvisor_ImportSniff_Click(object sender, EventArgs e)
         {
             parsedFileAdvisor.OpenFileDialog();
@@ -565,7 +560,7 @@ namespace WoWDeveloperAssistant
                     DB2.Db2.Load();
                 }
 
-                if (parsedFileAdvisor.GetDataFromFiles(openFileDialog.FileName))
+                if (parsedFileAdvisor.GetDataFromFile(openFileDialog.FileName))
                 {
                     parsedFileAdvisor.ImportSuccessful();
                 }

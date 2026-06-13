@@ -49,7 +49,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
             mainForm.chart_WaypointsCreator_Path.PostPaint += DrawSpawnArrows;
         }
 
-        public bool GetDataFromFiles(string fileName)
+        public bool GetDataFromFile(string fileName)
         {
             ClearContainers();
             return (fileName.Contains("txt") && GetDataFromTxtFile(fileName)) || (fileName.Contains("proto") && GetDataFromBinFile(fileName));

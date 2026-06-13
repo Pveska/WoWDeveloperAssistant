@@ -15,25 +15,25 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         public uint spellId
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(2)]
         public TimeSpan spellCastTime
         {
             get; set;
-        }
+        } = new TimeSpan();
 
         [ProtoMember(3)]
         public bool hasConeType
         {
             get; set;
-        }
+        } = false;
 
         [ProtoMember(4)]
         public bool needConeDelay
         {
             get; set;
-        }
+        } = false;
 
         [ProtoMember(5)]
         public List<TimeSpan> spellStartCastTimes
@@ -45,31 +45,31 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         public uint castTimes
         {
             get; set;
-        }
+        } = 0;
 
         [ProtoMember(7)]
         public bool isCombatSpell
         {
             get; set;
-        }
+        } = false;
 
         [ProtoMember(8)]
         public string name
         {
             get; set;
-        }
+        } = string.Empty;
 
         [ProtoMember(9)]
         public CombatCastTimings combatCastTimings
         {
             get; set;
-        }
+        } = new CombatCastTimings();
 
         [ProtoMember(10)]
         public bool isDeathSpell
         {
             get; set;
-        }
+        } = false;
 
         [ProtoContract]
         public class CombatCastTimings
@@ -78,25 +78,27 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             public TimeSpan minCastTime
             {
                 get; set;
-            }
+            } = new TimeSpan();
 
             [ProtoMember(2)]
             public TimeSpan maxCastTime
             {
                 get; set;
-            }
+            } = new TimeSpan();
 
             [ProtoMember(3)]
             public TimeSpan minRepeatTime
             {
                 get; set;
-            }
+            } = new TimeSpan();
 
             [ProtoMember(4)]
             public TimeSpan maxRepeatTime
             {
                 get; set;
-            }
+            } = new TimeSpan();
+
+            public CombatCastTimings() {}
 
             public CombatCastTimings(TimeSpan minCast, TimeSpan maxCast, TimeSpan minRepeat, TimeSpan maxRepeat)
             { minCastTime = minCast; maxCastTime = maxCast; minRepeatTime = minRepeat; maxRepeatTime = maxRepeat; }
@@ -185,16 +187,15 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             if (spellId == spellPacket.spellId)
             {
                 castTimes++;
-
                 spellStartCastTimes.Add(spellPacket.spellCastStartTime);
             }
         }
 
-        public void MarkSpellAsCombat(Packets.AIReactionPacket reactionPacket)
+        public void MarkSpellAsCombat(Creature creature)
         {
             Parallel.ForEach(spellStartCastTimes, time =>
             {
-                if (time >= reactionPacket.packetSendTime)
+                if (creature.combatTimings.IsCombatTimer(time))
                 {
                     isCombatSpell = true;
                     return;
@@ -219,50 +220,55 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             });
         }
 
-        public void CreateTimings(Creature currentCreature)
+        public void CreateCombatTimings(Creature currentCreature)
         {
             if (!isCombatSpell)
                 return;
 
-            CombatCastTimings castTimings = new CombatCastTimings(new TimeSpan(), new TimeSpan(), new TimeSpan(), new TimeSpan());
-
             List<TimeSpan> maxCastTimesList = new List<TimeSpan>();
             List<TimeSpan> maxRepeatCastTimesList = new List<TimeSpan>();
 
-            spellStartCastTimes = new List<TimeSpan>(
-                from time in spellStartCastTimes
-                orderby time.TotalSeconds ascending
-                select time);
+            spellStartCastTimes = spellStartCastTimes.OrderBy(x => x.TotalMilliseconds).ToList();
 
-            Parallel.ForEach(CreatureScriptsCreator.creaturesDict, creature =>
+            Parallel.ForEach(CreatureScriptsCreator.creaturesDict.Values, creature =>
             {
-                if (creature.Value.entry == currentCreature.entry)
+                if (creature.entry == currentCreature.entry && creature.castedSpells.ContainsKey(spellId) && creature.castedSpells[spellId] is Spell spellData && spellData.isCombatSpell)
                 {
-                    if (creature.Value.castedSpells.ContainsKey(spellId))
+                    foreach (TimeSpan castTime in spellData.spellStartCastTimes)
                     {
-                        var spellData = creature.Value.castedSpells[spellId];
+                        var combatTiming = creature.combatTimings?.FirstOrDefault(t => castTime >= t.CombatStartTime && castTime <= t.CombatStopTime);
 
-                        if (spellData.isCombatSpell)
+                        if (combatTiming != null)
                         {
-                            foreach (var castTime in spellData.spellStartCastTimes)
+                            lock (maxCastTimesList)
                             {
-                                var combatTiming = creature.Value.combatTimings?
-                                    .FirstOrDefault(t =>
-                                        castTime >= t.CombatStartTime &&
-                                        castTime <= t.CombatStopTime);
-
-                                if (combatTiming != null)
-                                {
-                                    lock (maxCastTimesList)
-                                    {
-                                        maxCastTimesList.Add(castTime - combatTiming.CombatStartTime);
-                                    }
-                                }
+                                maxCastTimesList.Add(castTime - combatTiming.CombatStartTime);
                             }
                         }
                     }
                 }
             });
+
+            if (maxCastTimesList.Count != 0)
+            {
+                combatCastTimings.minCastTime = maxCastTimesList.Min();
+                combatCastTimings.maxCastTime = GetAverageTimeSpanFromList(maxCastTimesList) >= combatCastTimings.minCastTime ? GetAverageTimeSpanFromList(maxCastTimesList) : combatCastTimings.minCastTime;
+            }
+
+            if (spellStartCastTimes.Count == 1)
+                return;
+
+            combatCastTimings.minRepeatTime = spellStartCastTimes[1] - spellStartCastTimes[0];
+
+            for (int i = 0; i < spellStartCastTimes.Count; i++)
+            {
+                if (i + 1 < spellStartCastTimes.Count)
+                {
+                    maxRepeatCastTimesList.Add(spellStartCastTimes[i + 1] - spellStartCastTimes[i]);
+                }
+            }
+
+            combatCastTimings.maxRepeatTime = GetAverageTimeSpanFromList(maxRepeatCastTimesList) >= combatCastTimings.minRepeatTime ? GetAverageTimeSpanFromList(maxRepeatCastTimesList) : combatCastTimings.minRepeatTime;
         }
 
         public void MarkSpellAsDeath(Creature currentCreature)
@@ -275,25 +281,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                     return;
                 }
             });
-        }
-        public uint GetCombatAITargetType()
-        {
-            for (uint i = 0; i < 32; i++)
-            {
-                var spellEffectTuple = Tuple.Create(spellId, i);
-
-                if (DB2.Db2.SpellEffectStore.ContainsKey(spellEffectTuple))
-                {
-                    var spellEffect = DB2.Db2.SpellEffectStore[spellEffectTuple];
-
-                    if (IsSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
-                        return 4;
-                    if (IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[0]) || IsNonSelfTargetType((uint)spellEffect.ImplicitTarget[1]))
-                        return 1;
-                }
-            }
-
-            return 99;
         }
 
         public uint GetTargetType()

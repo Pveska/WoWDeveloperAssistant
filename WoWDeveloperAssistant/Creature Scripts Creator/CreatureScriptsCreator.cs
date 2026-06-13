@@ -1,28 +1,46 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WoWDeveloperAssistant.Core_Script_Templates;
 using WoWDeveloperAssistant.Misc;
 using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Data;
-using WoWDeveloperAssistant.Core_Script_Templates;
-using System.Text.RegularExpressions;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 {
     public class CreatureScriptsCreator
     {
         private readonly MainForm mainForm;
+
+        [ProtoContract]
+        public class ScriptsData
+        {
+            [ProtoMember(1)]
+            public Dictionary<string, Creature> CreaturesDict { get; set; } = new Dictionary<string, Creature>();
+
+            [ProtoMember(2)]
+            public Dictionary<uint, List<CreatureText>> CreatureTextsDict { get; set; } = new Dictionary<uint, List<CreatureText>>();
+        }
+
         public static Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
         public static Dictionary<uint, List<CreatureText>> creatureTextsDict = new Dictionary<uint, List<CreatureText>>();
 
         public CreatureScriptsCreator(MainForm mainForm)
         {
             this.mainForm = mainForm;
+        }
+
+        private void ClearContainers()
+        {
+            creaturesDict.Clear();
+            creatureTextsDict.Clear();
         }
 
         public void FillSpellsGrid()
@@ -81,26 +99,13 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             mainForm.listBox_CreatureScriptCreator_CreatureGuids.Enabled = true;
         }
 
-        public uint GetDataFromFiles(string[] fileNames)
+        public bool GetDataFromFile(string fileName)
         {
-            uint successfullyParsedFilesCount = 0;
-
-            foreach (string fileName in fileNames)
-            {
-                if (fileName.Contains("txt") && GetDataFromTxtFile(fileName, fileNames.Length > 1))
-                {
-                    successfullyParsedFilesCount++;
-                }
-                else if (fileName.Contains("dat") && GetDataFromBinFile(fileName, fileNames.Length > 1))
-                {
-                    successfullyParsedFilesCount++;
-                }
-            }
-
-            return successfullyParsedFilesCount;
+            ClearContainers();
+            return (fileName.Contains("txt") && GetDataFromTxtFile(fileName)) || (fileName.Contains("proto") && GetDataFromBinFile(fileName));
         }
 
-        public bool GetDataFromTxtFile(string fileName, bool multiSelect)
+        public bool GetDataFromTxtFile(string fileName)
         {
             mainForm.SetCurrentStatus("Getting lines...");
 
@@ -110,11 +115,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             if (!IsTxtFileValidForParse(fileName, lines, buildVersion))
                 return false;
-
-            if (!multiSelect)
-            {
-                creaturesDict.Clear();
-            }
 
             mainForm.SetCurrentStatus("Searching for packet indexes in lines...");
 
@@ -126,11 +126,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 {
                     lock (packetIndexes)
                         packetIndexes.Add(index, PacketType.SMSG_UPDATE_OBJECT);
-                }
-                else if (packetType == PacketType.SMSG_AI_REACTION && !packetIndexes.ContainsKey(index))
-                {
-                    lock (packetIndexes)
-                        packetIndexes.Add(index, PacketType.SMSG_AI_REACTION);
                 }
                 else if (packetType == PacketType.SMSG_SPELL_START && !packetIndexes.ContainsKey(index))
                 {
@@ -200,31 +195,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                                 creaturesDict[spellPacket.casterGuid].castedSpells.Add(spellPacket.spellId, new Spell(spellPacket));
                             else
                                 creaturesDict[spellPacket.casterGuid].UpdateSpells(spellPacket);
-                        }
-                    }
-                }
-            });
-
-            mainForm.SetCurrentStatus("Parsing SMSG_AI_REACTION packets...");
-
-            Parallel.ForEach(packetIndexes, value =>
-            {
-                if (value.Value == PacketType.SMSG_AI_REACTION)
-                {
-                    AIReactionPacket reactionPacket = AIReactionPacket.ParseAIReactionPacket(lines, value.Key, buildVersion);
-                    if (reactionPacket.creatureGuid == "")
-                        return;
-
-                    lock (creaturesDict)
-                    {
-                        if (creaturesDict.ContainsKey(reactionPacket.creatureGuid))
-                        {
-                            if (creaturesDict[reactionPacket.creatureGuid].combatTimings.Count(x => x.CombatStartTime == reactionPacket.packetSendTime) == 0)
-                            {
-                                creaturesDict[reactionPacket.creatureGuid].combatTimings.Add(new UpdateObjectPacket.CombatTimingsData(reactionPacket.packetSendTime, new TimeSpan()));
-                            }
-
-                            creaturesDict[reactionPacket.creatureGuid].UpdateCombatSpells(reactionPacket);
                         }
                     }
                 }
@@ -336,6 +306,11 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             Parallel.ForEach(creaturesDict, creature =>
             {
+                creature.Value.CreateCombatSpells();
+            });
+
+            Parallel.ForEach(creaturesDict, creature =>
+            {
                 creature.Value.RemoveNonCombatCastTimes();
             });
 
@@ -351,33 +326,15 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             if (mainForm.checkBox_CreatureScriptsCreator_CreateDataFile.Checked)
             {
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-
-                if (!multiSelect)
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.proto"), FileMode.OpenOrCreate))
                 {
-                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.dat"), FileMode.OpenOrCreate))
+                    ScriptsData data = new ScriptsData
                     {
-                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
-                        {
-                            { 0, creaturesDict },
-                            { 1, creatureTextsDict }
-                        };
+                        CreaturesDict = creaturesDict,
+                        CreatureTextsDict = creatureTextsDict
+                    };
 
-                        binaryFormatter.Serialize(fileStream, dictToSerialize);
-                    }
-                }
-                else
-                {
-                    using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "multi_selected_script_packets.dat"), FileMode.OpenOrCreate))
-                    {
-                        Dictionary<uint, object> dictToSerialize = new Dictionary<uint, object>
-                        {
-                            { 0, creaturesDict },
-                            { 1, creatureTextsDict }
-                        };
-
-                        binaryFormatter.Serialize(fileStream, dictToSerialize);
-                    }
+                    Serializer.Serialize(fileStream, data);
                 }
             }
 
@@ -385,83 +342,18 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             return true;
         }
 
-        public bool GetDataFromBinFile(string fileName, bool multiSelect)
+        public bool GetDataFromBinFile(string fileName)
         {
             mainForm.toolStripStatusLabel_FileStatus.Text = "Current status: Getting packets from data file...";
 
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            Dictionary<uint, object> dictFromSerialize = new Dictionary<uint, object>();
-
-            using (FileStream fileStream = new FileStream(fileName, FileMode.OpenOrCreate))
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
             {
-                dictFromSerialize = (Dictionary<uint, object>)binaryFormatter.Deserialize(fileStream);
-            }
-
-            Dictionary<string, Creature> creatureDictFromSerialize = (Dictionary<string, Creature>)dictFromSerialize[0];
-            Dictionary<uint, List<CreatureText>> creatureTextsDictFromSerialize = (Dictionary<uint, List<CreatureText>>)dictFromSerialize[1];
-
-            if (multiSelect)
-            {
-                creaturesDict = creaturesDict.Concat(creatureDictFromSerialize.Where(x => !creaturesDict.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
-                creatureTextsDict = creatureTextsDict.Concat(creatureTextsDictFromSerialize.Where(x => !creatureTextsDict.ContainsKey(x.Key))).ToDictionary(x => x.Key, x => x.Value);
-            }
-            else
-            {
-                creaturesDict = creatureDictFromSerialize;
-                creatureTextsDict = creatureTextsDictFromSerialize;
+                ScriptsData data = Serializer.Deserialize<ScriptsData>(fileStream);
+                creaturesDict = data.CreaturesDict;
+                creatureTextsDict = data.CreatureTextsDict;
             }
 
             return true;
-        }
-
-        public void GenerateCombatAISQL()
-        {
-            Creature creature = creaturesDict[mainForm.listBox_CreatureScriptCreator_CreatureGuids.SelectedItem.ToString()];
-            int i = 0;
-
-            var SQLtext = "UPDATE `creature_template` SET `AIName` = 'LegionCombatAI' WHERE `entry` = " + creature.entry + ";\r\n";
-            SQLtext += "DELETE FROM `combat_ai_events` WHERE `entry` = " + creature.entry + ";\r\n";
-            SQLtext += "INSERT INTO `combat_ai_events` (`entry`, `id`, `start_min`, `start_max`, `repeat_min`, `repeat_max`, `repeat_fail`, `spell_id`, `event_check`, `event_flags`, `attack_dist`, `difficulty_mask`, `comment`) VALUES\r\n";
-
-            for (int l = 0; l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount; l++, i++)
-            {
-                Spell spell = (Spell)mainForm.dataGridView_CreatureScriptsCreator_Spells[8, l].Value;
-
-                double startMin = Math.Floor(spell.combatCastTimings.minCastTime.TotalSeconds) * 1000;
-                double startMax = Math.Floor(spell.combatCastTimings.maxCastTime.TotalSeconds) * 1000;
-                double repeatMin = Math.Floor(spell.combatCastTimings.minRepeatTime.TotalSeconds) * 1000;
-                double repeatMax = Math.Floor(spell.combatCastTimings.maxRepeatTime.TotalSeconds) * 1000;
-
-                if (spell.isDeathSpell)
-                {
-                    if (spell.ShouldBeCastedBeforeDeath())
-                    {
-                        SQLtext += "(" + creature.entry + ", " + i + ", " + 1000 + ", " + 1000 + ", " + 0 + ", " + 0 + ", 1000, " + spell.spellId + ", " +
-                         spell.GetCombatAITargetType() + "4, " + GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast On Death " + spell.name + ")";
-                    }
-                    else
-                    {
-                        SQLtext += "(" + creature.entry + ", " + i + ", " + 1000 + ", " + 1000 + ", " + 0 + ", " + 0 + ", 1000, " + spell.spellId + ", " +
-                         spell.GetCombatAITargetType() + "2, " + GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast After Death " + spell.name + ")";
-                    }
-                }
-                else
-                {
-                    SQLtext += "(" + creature.entry + ", " + i + ", " + startMin + ", " + startMax + ", " + repeatMin + ", " + repeatMax + ", 1000, " + spell.spellId + ", " +
-                        spell.GetCombatAITargetType() + ", 0, " + GetSpellRadius(spell.spellId) + ", 0, \"" + creature.name + " - Cast: " + spell.name + "\")";
-                }
-
-                if (l < mainForm.dataGridView_CreatureScriptsCreator_Spells.RowCount - 1)
-                {
-                    SQLtext += ",\r\n";
-                }
-                else
-                {
-                    SQLtext += ";\r\n";
-                }
-            }
-
-            mainForm.textBox_SqlOutput.Text = SQLtext;
         }
 
         public void FillSQLOutput()
