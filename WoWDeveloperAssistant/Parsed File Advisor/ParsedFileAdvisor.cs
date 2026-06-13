@@ -1270,7 +1270,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             {
                 foreach (Creature creature in creatures.Values)
                 {
-                    if (!equipTemplates.ContainsKey(creature.entry) || !IsCreatureExistOnDb(creature.guid))
+                    if (!equipTemplates.ContainsKey(creature.entry) || !IsCreatureExistOnDb(creature.guid) || IsCreatureAlreadyHaveUpdatedEquipment(creature.guid))
                         continue;
 
                     var equipTemplate = equipTemplates[creature.entry];
@@ -1392,6 +1392,19 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             var creatureDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(creatureQuery) : null;
 
             if (creatureDs != null && creatureDs.Tables["table"].Rows.Count > 0)
+                return true;
+
+            return false;
+        }
+
+        public bool IsCreatureAlreadyHaveUpdatedEquipment(string guid)
+        {
+            string linkedId = creatures[guid].GetLinkedId();
+
+            string creatureQuery = "SELECT `equipment_id` FROM `creature` WHERE `linked_id` = '" + linkedId + "';";
+            var creatureDs = Properties.Settings.Default.UsingDB ? SQLModule.WorldSelectQuery(creatureQuery) : null;
+
+            if (creatureDs != null && creatureDs.Tables["table"].Rows.Count > 0 && Convert.ToInt32(creatureDs.Tables["table"].Rows[0].ItemArray[0]) != 0)
                 return true;
 
             return false;
@@ -2052,7 +2065,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                     new { role = "system", content = systemStr },
                     new { role = "user", content = promptStr }
                 },
-                max_tokens = 50,
+                max_tokens = 1000,
                 temperature = 0.1f,
                 top_p = 0.9f,
                 top_k = 40,
@@ -2061,7 +2074,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
             });
 
             var response = await http.PostAsync(
-                "http://localhost:8080/v1/chat/completions",
+                "http://127.0.0.1:1234/v1/chat/completions",
                 new StringContent(json, Encoding.UTF8, "application/json"),
                 cancellationToken
             ).ConfigureAwait(false);

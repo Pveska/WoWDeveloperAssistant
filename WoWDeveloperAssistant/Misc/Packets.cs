@@ -1433,6 +1433,7 @@ namespace WoWDeveloperAssistant.Misc
                                 updatePacket.waypoints[i].moveTime = updatePacket.moveTime;
                                 updatePacket.waypoints[i].moveStartTime = updatePacket.packetSendTime;
                                 updatePacket.waypoints[i].startPosition = updatePacket.spawnPosition;
+                                updatePacket.waypoints[i].moveType = MoveType.MOVE_UNKNOWN;
                             }
                         }
 
