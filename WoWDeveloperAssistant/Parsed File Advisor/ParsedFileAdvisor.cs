@@ -14,8 +14,7 @@ using System.Threading.Tasks;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Misc;
 using WoWDeveloperAssistant.Waypoints_Creator;
-using static WoWDeveloperAssistant.Misc.Packets;
-using static WoWDeveloperAssistant.Misc.Packets.UpdateObjectPacket;
+using static WoWDeveloperAssistant.Misc.UpdateObjectPacket;
 using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Parsed_File_Advisor
@@ -314,7 +313,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                         {
                             if (creatures[reactionPacket.creatureGuid].combatTimings.Count(x => x.CombatStartTime == reactionPacket.packetSendTime) == 0)
                             {
-                                creatures[reactionPacket.creatureGuid].combatTimings.Add(new CombatTimingsData(reactionPacket.packetSendTime, new TimeSpan()));
+                                creatures[reactionPacket.creatureGuid].combatTimings.Add(new CombatTimingsData(reactionPacket.packetSendTime, TimeSpan.Zero));
                             }
                         }
                     }
@@ -536,7 +535,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
 
             if (mainForm.checkBox_ParsedFileAdvisor_CreateDataFile.Checked)
             {
-                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_parsed_file_advisor_packets.proto"), FileMode.OpenOrCreate))
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_parsed_file_advisor_proto"), FileMode.OpenOrCreate))
                 {
                     ParsedFileData data = new ParsedFileData
                     {
@@ -594,7 +593,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed sniff or data file (*.txt;*.proto)|*parsed.txt;*parsed_file_advisor_packets.proto";
+            mainForm.openFileDialog.Filter = "Parsed sniff or data file (*.txt;*.proto)|*parsed.txt;*parsed_file_advisor_proto";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
             mainForm.openFileDialog.Multiselect = true;

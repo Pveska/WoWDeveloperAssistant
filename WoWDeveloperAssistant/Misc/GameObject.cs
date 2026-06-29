@@ -1,5 +1,4 @@
 ﻿using ProtoBuf;
-using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -17,6 +16,7 @@ namespace WoWDeveloperAssistant.Misc
         {
             get; set;
         } = 0;
+
         GameObject() { }
 
         public GameObject(UpdateObjectPacket updatePacket)

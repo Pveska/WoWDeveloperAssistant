@@ -62,7 +62,7 @@ namespace WoWDeveloperAssistant.Parsed_File_Advisor
                             if (LineGetters.GetSpellIdFromLine(lines[i]) != "")
                                 spellId = LineGetters.GetSpellIdFromLine(lines[i]);
                         }
-                        while (Packets.UpdateObjectPacket.IsLineValidForObjectParse(lines[i]));
+                        while (UpdateObjectPacket.IsLineValidForObjectParse(lines[i]));
 
                         if (spellId != "")
                         {

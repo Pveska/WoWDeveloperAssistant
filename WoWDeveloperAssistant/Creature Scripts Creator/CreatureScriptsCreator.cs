@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Core_Script_Templates;
 using WoWDeveloperAssistant.Misc;
-using static WoWDeveloperAssistant.Misc.Packets;
 using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Creature_Scripts_Creator
@@ -18,17 +16,6 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
     public class CreatureScriptsCreator
     {
         private readonly MainForm mainForm;
-
-        [ProtoContract]
-        public class ScriptsData
-        {
-            [ProtoMember(1)]
-            public Dictionary<string, Creature> CreaturesDict { get; set; } = new Dictionary<string, Creature>();
-
-            [ProtoMember(2)]
-            public Dictionary<uint, List<CreatureText>> CreatureTextsDict { get; set; } = new Dictionary<uint, List<CreatureText>>();
-        }
-
         public static Dictionary<string, Creature> creaturesDict = new Dictionary<string, Creature>();
         public static Dictionary<uint, List<CreatureText>> creatureTextsDict = new Dictionary<uint, List<CreatureText>>();
 
@@ -41,6 +28,16 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         {
             creaturesDict.Clear();
             creatureTextsDict.Clear();
+        }
+
+        [ProtoContract]
+        public class ScriptsData
+        {
+            [ProtoMember(1)]
+            public Dictionary<string, Creature> Creatures { get; set; } = new Dictionary<string, Creature>();
+
+            [ProtoMember(2)]
+            public Dictionary<uint, List<CreatureText>> CreatureTexts { get; set; } = new Dictionary<uint, List<CreatureText>>();
         }
 
         public void FillSpellsGrid()
@@ -149,7 +146,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 }
             });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
+            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT ..");
 
             foreach (var value in packetIndexes)
             {
@@ -177,7 +174,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 creature.name = MainForm.GetCreatureNameByEntry(creature.entry);
             });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
+            mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START ..");
 
             Parallel.ForEach(packetIndexes, value =>
             {
@@ -200,65 +197,7 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 }
             });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_CHAT packets...");
-
-            Parallel.ForEach(packetIndexes, value =>
-            {
-                if (value.Value == PacketType.SMSG_CHAT)
-                {
-                    ChatPacket chatPacket = ChatPacket.ParseChatPacket(lines, value.Key, buildVersion);
-                    if (chatPacket.creatureGuid == "")
-                        return;
-
-                    lock (creaturesDict)
-                    {
-                        Parallel.ForEach(creaturesDict, creature =>
-                        {
-                            if (creature.Value.entry == chatPacket.creatureEntry)
-                            {
-                                CreatureText text = new CreatureText(chatPacket, true);
-
-                                if (creature.Value.combatTimings.IsCombatTimer(chatPacket.packetSendTime))
-                                {
-                                    lock (creatureTextsDict)
-                                    {
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
-                                        {
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                        }
-                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
-                                        {
-                                            creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
-                                        }
-                                    }
-                                }
-
-                                if (Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) ||
-                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) + 1 ||
-                                Math.Floor(creature.Value.deathTime.TotalSeconds) == Math.Floor(chatPacket.packetSendTime.TotalSeconds) - 1)
-                                {
-                                    lock (creatureTextsDict)
-                                    {
-
-                                        if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry) && creatureTextsDict[chatPacket.creatureEntry].Count(x => x.creatureText == text.creatureText) == 0)
-                                        {
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                        }
-                                        else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
-                                        {
-                                            creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
-                                            creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-
-            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE and SMSG_ATTACK_STOP packets...");
+            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE and SMSG_ATTACK_STOP ..");
 
             Parallel.ForEach(packetIndexes, value =>
             {
@@ -304,6 +243,69 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
                 }
             });
 
+            mainForm.SetCurrentStatus("Parsing SMSG_CHAT ..");
+
+            Parallel.ForEach(packetIndexes, value =>
+            {
+                if (value.Value == PacketType.SMSG_CHAT)
+                {
+                    ChatPacket chatPacket = ChatPacket.ParseChatPacket(lines, value.Key, buildVersion);
+                    if (chatPacket.creatureGuid == "")
+                        return;
+
+                    CreatureText text = new CreatureText(chatPacket);
+                    Creature sender = creaturesDict.FirstOrDefault(x => x.Value.guid == chatPacket.creatureGuid).Value;
+                    if (sender == null)
+                        return;
+
+                    if ((sender.deathTime - chatPacket.packetSendTime).Duration() <= TimeSpan.FromSeconds(1))
+                    {
+                        lock (creatureTextsDict)
+                        {
+                            if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                            }
+                            else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, false, true));
+                            }
+                        }
+                    }
+                    else if (sender.combatTimings.IsCombatTimer(chatPacket.packetSendTime))
+                    {
+                        lock (creatureTextsDict)
+                        {
+                            if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                            }
+                            else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket, true));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        lock (creatureTextsDict)
+                        {
+                            if (creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket));
+                            }
+                            else if (!creatureTextsDict.ContainsKey(chatPacket.creatureEntry))
+                            {
+                                creatureTextsDict.Add(chatPacket.creatureEntry, new List<CreatureText>());
+                                creatureTextsDict[chatPacket.creatureEntry].Add(new CreatureText(chatPacket));
+                            }
+                        }
+                    }
+                }
+            });
+
             Parallel.ForEach(creaturesDict, creature =>
             {
                 creature.Value.CreateCombatSpells();
@@ -326,12 +328,12 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
 
             if (mainForm.checkBox_CreatureScriptsCreator_CreateDataFile.Checked)
             {
-                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_packets.proto"), FileMode.OpenOrCreate))
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_script_proto"), FileMode.OpenOrCreate))
                 {
                     ScriptsData data = new ScriptsData
                     {
-                        CreaturesDict = creaturesDict,
-                        CreatureTextsDict = creatureTextsDict
+                        Creatures = creaturesDict,
+                        CreatureTexts = creatureTextsDict
                     };
 
                     Serializer.Serialize(fileStream, data);
@@ -349,8 +351,8 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
             using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
             {
                 ScriptsData data = Serializer.Deserialize<ScriptsData>(fileStream);
-                creaturesDict = data.CreaturesDict;
-                creatureTextsDict = data.CreatureTextsDict;
+                creaturesDict = data.Creatures;
+                creatureTextsDict = data.CreatureTexts;
             }
 
             return true;
@@ -676,10 +678,10 @@ namespace WoWDeveloperAssistant.Creature_Scripts_Creator
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed sniff or data file with scripts (*.txt;*.dat)|*parsed.txt;*script_packets.dat";
+            mainForm.openFileDialog.Filter = "Parsed sniff or data file with scripts (*.txt;*.proto)|*parsed.txt;*script_proto";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
-            mainForm.openFileDialog.Multiselect = true;
+            mainForm.openFileDialog.Multiselect = false;
             mainForm.openFileDialog.CheckFileExists = true;
             mainForm.openFileDialog.FileName = " ";
         }

@@ -5,17 +5,10 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.UI.DataVisualization.Charting;
 using System.Windows.Forms;
-using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Misc;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
-using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
-using static WoWDeveloperAssistant.Misc.Packets;
-using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
+using static WoWDeveloperAssistant.Misc.MonsterMovePacket;
 using static WoWDeveloperAssistant.Misc.Utils;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
@@ -164,7 +157,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT packets...");
+            mainForm.SetCurrentStatus("Parsing SMSG_UPDATE_OBJECT ..");
 
             foreach (Packet packet in updateObjectPacketsDict.Values)
             {
@@ -219,7 +212,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                 }
             });
 
-            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE packets...");
+            mainForm.SetCurrentStatus("Parsing SMSG_ON_MONSTER_MOVE ..");
 
             Parallel.ForEach(movementPacketsDict.Values, packet =>
             {
@@ -263,7 +256,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (Properties.Settings.Default.Scripts)
             {
-                mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START packets...");
+                mainForm.SetCurrentStatus("Parsing SMSG_SPELL_START ..");
 
                 Parallel.ForEach(spellPacketsDict.Values, packet =>
                 {
@@ -277,7 +270,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
-                mainForm.SetCurrentStatus("Parsing SMSG_AURA_UPDATE packets...");
+                mainForm.SetCurrentStatus("Parsing SMSG_AURA_UPDATE ..");
 
                 Parallel.ForEach(auraPacketsDict.Values, packet =>
                 {
@@ -300,7 +293,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
-                mainForm.SetCurrentStatus("Parsing SMSG_EMOTE packets...");
+                mainForm.SetCurrentStatus("Parsing SMSG_EMOTE ..");
 
                 Parallel.ForEach(emotePacketsDict.Values, packet =>
                 {
@@ -314,7 +307,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
-                mainForm.SetCurrentStatus("Parsing SMSG_SET_AI_ANIM_KIT packets...");
+                mainForm.SetCurrentStatus("Parsing SMSG_SET_AI_ANIM_KIT ..");
 
                 Parallel.ForEach(animKitPacketsDict.Values, packet =>
                 {
@@ -328,7 +321,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
                     }
                 });
 
-                mainForm.SetCurrentStatus("Parsing SMSG_PLAY_ONE_SHOT_ANIM_KIT packets...");
+                mainForm.SetCurrentStatus("Parsing SMSG_PLAY_ONE_SHOT_ANIM_KIT ..");
 
                 Parallel.ForEach(playOneShotAnimKitPacketsDict.Values, packet =>
                 {
@@ -497,7 +490,7 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
 
             if (mainForm.checkBox_WaypointsCreator_CreateDataFile.Checked)
             {
-                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_packets.proto"), FileMode.OpenOrCreate))
+                using (FileStream fileStream = new FileStream(fileName.Replace("_parsed.txt", "_waypoint_proto"), FileMode.OpenOrCreate))
                 {
                     WaypointData data = new WaypointData
                     {
@@ -2025,10 +2018,10 @@ namespace WoWDeveloperAssistant.Waypoints_Creator
         public void OpenFileDialog()
         {
             mainForm.openFileDialog.Title = "Open File";
-            mainForm.openFileDialog.Filter = "Parsed sniff or data file with waypoints (*.txt;*.proto)|*parsed.txt;*waypoint_packets.proto";
+            mainForm.openFileDialog.Filter = "Parsed sniff or data file with waypoints (*.txt;*.proto)|*parsed.txt;*waypoint_proto";
             mainForm.openFileDialog.FilterIndex = 1;
             mainForm.openFileDialog.ShowReadOnly = false;
-            mainForm.openFileDialog.Multiselect = true;
+            mainForm.openFileDialog.Multiselect = false;
             mainForm.openFileDialog.CheckFileExists = true;
             mainForm.openFileDialog.FileName = " ";
         }

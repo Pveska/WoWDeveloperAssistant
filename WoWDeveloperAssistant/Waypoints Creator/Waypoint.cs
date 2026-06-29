@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WoWDeveloperAssistant.Misc;
-using static WoWDeveloperAssistant.Misc.Packets.MonsterMovePacket;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {

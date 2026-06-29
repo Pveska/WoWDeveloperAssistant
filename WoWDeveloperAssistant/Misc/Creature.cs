@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WoWDeveloperAssistant.Creature_Scripts_Creator;
 using WoWDeveloperAssistant.Waypoints_Creator;
-using static WoWDeveloperAssistant.Misc.Packets;
-using static WoWDeveloperAssistant.Misc.Packets.UpdateObjectPacket;
+using static WoWDeveloperAssistant.Misc.UpdateObjectPacket;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -47,7 +46,7 @@ namespace WoWDeveloperAssistant.Misc
         public TimeSpan deathTime
         {
             get; set;
-        } = new TimeSpan();
+        } = TimeSpan.Zero;
 
         [ProtoMember(7)]
         public Position spawnPosition
@@ -83,7 +82,7 @@ namespace WoWDeveloperAssistant.Misc
         public TimeSpan lastUpdatePacketTime
         {
             get; set;
-        } = new TimeSpan();
+        } = TimeSpan.Zero;
 
         [ProtoMember(13)]
         public bool hasDisableGravity

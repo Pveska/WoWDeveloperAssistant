@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using WoWDeveloperAssistant.Misc;
-using static WoWDeveloperAssistant.Misc.Packets;
 
 namespace WoWDeveloperAssistant.Waypoints_Creator
 {

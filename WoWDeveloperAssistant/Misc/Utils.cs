@@ -7,8 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using WoWDeveloperAssistant.Waypoints_Creator;
 using static WoWDeveloperAssistant.Database_Advisor.CreatureFlagsAdvisor;
-using static WoWDeveloperAssistant.Misc.Packets;
-using static WoWDeveloperAssistant.Misc.Packets.UpdateObjectPacket;
+using static WoWDeveloperAssistant.Misc.UpdateObjectPacket;
 
 namespace WoWDeveloperAssistant.Misc
 {
@@ -447,17 +446,16 @@ namespace WoWDeveloperAssistant.Misc
             return $"{emoteTimers.Key} {emoteTimers.Value}";
         }
 
-        public static bool IsCombatTimer(this List<CombatTimingsData> combatTimings, TimeSpan time)
+        public static bool IsCombatTimer(this List<CombatTimingsData> combatTimings, TimeSpan time, bool isSpellTime = false)
         {
             if (combatTimings == null || combatTimings.Count == 0)
                 return false;
 
             foreach (var timing in combatTimings)
             {
-                if (timing.CombatStartTime != TimeSpan.Zero && timing.CombatStopTime == TimeSpan.Zero && time >= timing.CombatStartTime)
+                if (!isSpellTime && timing.CombatStartTime != TimeSpan.Zero && timing.CombatStopTime == TimeSpan.Zero && time >= timing.CombatStartTime)
                     return true;
-                else if (timing.CombatStartTime != TimeSpan.Zero && timing.CombatStopTime != TimeSpan.Zero && time >= timing.CombatStartTime &&
-                    time <= timing.CombatStopTime)
+                else if (timing.CombatStartTime != TimeSpan.Zero && timing.CombatStopTime != TimeSpan.Zero && time >= timing.CombatStartTime && time <= timing.CombatStopTime)
                     return true;
             }
 
