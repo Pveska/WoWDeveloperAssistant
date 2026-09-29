@@ -217,7 +217,7 @@ namespace DB2Storage
         public MySqlWorldStorage()
         {
             WorldStorage = true;
-            Init("world_midnight");
+            Init("world");
         }
     }
 }
