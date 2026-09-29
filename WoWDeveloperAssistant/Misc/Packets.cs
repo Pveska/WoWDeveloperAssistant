@@ -1934,6 +1934,20 @@ namespace WoWDeveloperAssistant.Misc
             return startPosition;
         }
 
+        // Start position line can be placed either before or after spline points depending on parser version, so look through the whole packet
+        public static Position GetStartPositionFromPacket(string[] lines, long index)
+        {
+            for (long i = index; i < lines.Length && lines[i] != ""; i++)
+            {
+                Position startPosition = GetStartPositionFromLine(lines[i]);
+
+                if (startPosition.IsValid())
+                    return startPosition;
+            }
+
+            return new Position();
+        }
+
         public static float GetJumpGravityFromLine(string line)
         {
             Regex jumpGravityRegex = new Regex(@"JumpGravity:{1}\s+.+");
@@ -2001,7 +2015,7 @@ namespace WoWDeveloperAssistant.Misc
 
         public static float GetWaypointsVelocity(List<Waypoint> waypoints, Position startPosition, float moveTime)
         {
-            if (moveTime != 0 && waypoints.Count() != 0)
+            if (moveTime != 0 && waypoints.Count() != 0 && startPosition.IsValid())
             {
                 return GetWaypointsDistance(waypoints, startPosition) / moveTime * 1000;
             }
@@ -2023,20 +2037,10 @@ namespace WoWDeveloperAssistant.Misc
                 bool isFlying = false;
                 bool isCyclic = false;
 
+                movePacket.startPos = GetStartPositionFromPacket(lines, index);
+
                 do
                 {
-                    if (!movePacket.startPos.IsValid())
-                    {
-                        tempMovePacket.startPos = GetStartPositionFromLine(lines[index]);
-
-                        if (tempMovePacket.startPos.IsValid())
-                        {
-                            movePacket.startPos = tempMovePacket.startPos;
-                            index++;
-                            continue;
-                        }
-                    }
-
                     if (movePacket.moveTime == 0)
                     {
                         tempMovePacket.moveTime = GetMoveTimeFromLine(lines[index]);
@@ -2216,20 +2220,10 @@ namespace WoWDeveloperAssistant.Misc
                 bool isFlying = false;
                 bool isCyclic = false;
 
+                movePacket.startPos = GetStartPositionFromPacket(lines, index);
+
                 do
                 {
-                    if (!movePacket.startPos.IsValid())
-                    {
-                        tempMovePacket.startPos = GetStartPositionFromLine(lines[index]);
-
-                        if (tempMovePacket.startPos.IsValid())
-                        {
-                            movePacket.startPos = tempMovePacket.startPos;
-                            index++;
-                            continue;
-                        }
-                    }
-
                     if (movePacket.moveTime == 0)
                     {
                         tempMovePacket.moveTime = GetMoveTimeFromLine(lines[index]);
@@ -2418,20 +2412,10 @@ namespace WoWDeveloperAssistant.Misc
                 bool isFlying = false;
                 bool isCyclic = false;
 
+                movePacket.startPos = GetStartPositionFromPacket(lines, index);
+
                 do
                 {
-                    if (!movePacket.startPos.IsValid())
-                    {
-                        tempMovePacket.startPos = GetStartPositionFromLine(lines[index]);
-
-                        if (tempMovePacket.startPos.IsValid())
-                        {
-                            movePacket.startPos = tempMovePacket.startPos;
-                            index++;
-                            continue;
-                        }
-                    }
-
                     if (movePacket.moveTime == 0)
                     {
                         tempMovePacket.moveTime = GetMoveTimeFromLine(lines[index]);
